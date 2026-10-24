@@ -44,7 +44,7 @@
             {% elif oh.status == 'full' %}
             <p style="color:var(--b-muted);font-size:.88rem;margin-top:.8rem;">This session is full — try another slot.</p>
             {% else %}
-            <form class="mentor-book-form" data-oh="{{ oh.id }}" onsubmit="return false;" style="margin-top:.8rem;">
+            <form class="mentor-book-form" data-oh="{{ oh.id }}" style="margin-top:.8rem;">
                 <label class="b-label" for="tmpl-{{ oh.id }}">Start from a template</label>
                 <select id="tmpl-{{ oh.id }}" class="b-input tmpl-select" style="width:100%;" data-oh="{{ oh.id }}">
                     <option value="">— Choose a question prompt (optional) —</option>
@@ -98,7 +98,7 @@
     <div class="b-card b-reveal">
         <h2 style="margin-top:0;">Something wrong?</h2>
         <p style="color:var(--b-muted);">Report this mentor or a session — our team reviews every report.</p>
-        <form id="mentor-report-form" onsubmit="return false;">
+        <form id="mentor-report-form">
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
                 <div>
                     <label class="b-label" for="report-reason">Reason</label>
@@ -124,7 +124,7 @@
     </div>
 </section>
 
-<script>
+<script nonce="{{ csp_nonce() }}">
 (function () {
     'use strict';
     var MENTOR_ID = {{ mentor.id }};
@@ -156,7 +156,8 @@
 
     // Booking.
     document.querySelectorAll('.mentor-book-form').forEach(function (form) {
-        form.addEventListener('submit', function () {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
             var ohId = form.getAttribute('data-oh');
             var err = document.getElementById('err-' + ohId);
             var ok = document.getElementById('ok-' + ohId);
@@ -217,10 +218,10 @@
                     html += '</div>';
                     if (b.status === 'attended') {
                         html += '<div style="margin-top:.8rem;"><label class="b-label">Action notes — what will you do with what you learned?</label>';
-                        html += '<textarea class="b-input note-box" data-id="' + b.id + '" rows="2" style="width:100%;"></textarea>';
+                        html += '<textarea class="b-input note-box" aria-label="Action notes" data-id="' + b.id + '" rows="2" style="width:100%;"></textarea>';
                         html += '<div class="b-cta-row" style="margin-top:.6rem;"><button class="b-btn b-btn--sm" data-act="note" data-id="' + b.id + '">Save notes</button></div></div>';
                         html += '<div style="margin-top:.8rem;"><label class="b-label">Rate this session</label><div class="stars" data-id="' + b.id + '">' + starRow(0) + '</div>';
-                        html += '<textarea class="b-input help-box" data-id="' + b.id + '" rows="2" style="width:100%;margin-top:.4rem;" placeholder="What helped most?"></textarea>';
+                        html += '<textarea class="b-input help-box" aria-label="What helped you most" data-id="' + b.id + '" rows="2" style="width:100%;margin-top:.4rem;" placeholder="What helped most?"></textarea>';
                         html += '<div class="b-cta-row" style="margin-top:.6rem;"><button class="b-btn b-btn--sm" data-act="feedback" data-id="' + b.id + '">Send feedback</button></div></div>';
                     }
                     html += '<p class="b-form-error" id="berr-' + b.id + '" style="display:none;" role="alert"></p>';
@@ -295,7 +296,8 @@
         });
     }
 
-    document.getElementById('mentor-report-form').addEventListener('submit', function () {
+    document.getElementById('mentor-report-form').addEventListener('submit', function (e) {
+        e.preventDefault();
         var status = document.getElementById('report-status');
         status.style.display = 'none';
         api('/mentors/api/report', {

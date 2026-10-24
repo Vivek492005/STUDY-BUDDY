@@ -43,6 +43,8 @@ OPPORTUNITY JSON SCHEMA (for extending data/opportunities.json):
 }
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import os
@@ -50,6 +52,7 @@ import threading
 import time
 from datetime import date, datetime
 from functools import lru_cache
+from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
 log = logging.getLogger(__name__)
@@ -73,7 +76,7 @@ class OpportunityDataError(Exception):
     """Raised when the opportunity dataset is missing or malformed."""
 
 
-def _parse_deadline(value, opp_id):
+def _parse_deadline(value: str | None, opp_id: str) -> date | None:
     if value is None:
         return None
     try:
@@ -84,7 +87,10 @@ def _parse_deadline(value, opp_id):
             f"Opportunity {opp_id!r} has an invalid deadline.") from exc
 
 
-def _validate_entry(o, seen_ids):
+def _validate_entry(
+    o: dict[str, Any],
+    seen_ids: set[str],
+) -> dict[str, Any]:
     """Validate one raw entry dict. Returns normalized entry or raises."""
     for key in ("id", "title", "organization", "type", "deadline",
                 "eligibility", "link"):
@@ -112,7 +118,7 @@ def _validate_entry(o, seen_ids):
 
 
 @lru_cache(maxsize=1)
-def load_dataset():
+def load_dataset() -> dict[str, Any]:
     """Load and validate the opportunity dataset (cached for process lifetime).
 
     If the data is stale (> STALE_AFTER_DAYS), kicks off a background refresh
@@ -123,7 +129,7 @@ def load_dataset():
     return data
 
 
-def _load_from_disk():
+def _load_from_disk() -> dict[str, Any]:
     if not os.path.exists(DATA_PATH):
         raise OpportunityDataError("Opportunity dataset not found.")
     try:
@@ -144,7 +150,7 @@ def _load_from_disk():
     return data
 
 
-def _is_stale(meta, today=None):
+def _is_stale(meta: dict[str, Any], today: date | None = None) -> bool:
     """True if meta.last_updated is older than STALE_AFTER_DAYS."""
     today = today or date.today()
     try:
@@ -155,7 +161,7 @@ def _is_stale(meta, today=None):
     return (today - updated).days >= STALE_AFTER_DAYS
 
 
-def _refresh_already_running():
+def _refresh_already_running() -> bool:
     """Cross-process guard: True if a fresh lock file exists."""
     try:
         with open(_LOCK_PATH, encoding="utf-8") as f:
@@ -165,7 +171,7 @@ def _refresh_already_running():
         return False
 
 
-def _take_refresh_lock():
+def _take_refresh_lock() -> None:
     try:
         with open(_LOCK_PATH, "w", encoding="utf-8") as f:
             f.write(str(time.time()))
@@ -173,7 +179,7 @@ def _take_refresh_lock():
         log.warning("Could not write refresh lock: %s", exc)
 
 
-def _maybe_trigger_refresh(data):
+def _maybe_trigger_refresh(data: dict[str, Any]) -> None:
     """Spawn a background refresh if data is stale. Never raises."""
     try:
         # Tests and operators can disable auto-refresh entirely.
@@ -192,7 +198,7 @@ def _maybe_trigger_refresh(data):
         log.warning("Failed to trigger opportunity refresh: %s", exc)
 
 
-def _normalize_link(url):
+def _normalize_link(url: str) -> str:
     """Normalize a URL for dedupe: lowercase, strip trailing slash."""
     try:
         parts = urlsplit(str(url).strip())
@@ -203,12 +209,16 @@ def _normalize_link(url):
         return str(url).strip().lower()
 
 
-def _is_curated(o):
+def _is_curated(o: dict[str, Any]) -> bool:
     # Missing flag = curated (protects legacy entries).
     return o.get("curated", True) is True
 
 
-def merge_opportunities(existing, fetched, today=None):
+def merge_opportunities(
+    existing: list[dict[str, Any]],
+    fetched: list[dict[str, Any]],
+    today: date | None = None,
+) -> list[dict[str, Any]]:
     """Merge fetched auto entries into the existing list.
 
     Pure function (no IO) — easy to test. Returns the new list.
@@ -295,7 +305,7 @@ def merge_opportunities(existing, fetched, today=None):
     return curated + all_auto
 
 
-def _atomic_write(data):
+def _atomic_write(data: dict[str, Any]) -> None:
     """Write JSON atomically: temp file + os.replace. Never leaves partial."""
     tmp_path = DATA_PATH + ".tmp"
     with open(tmp_path, "w", encoding="utf-8") as f:
@@ -305,7 +315,7 @@ def _atomic_write(data):
     os.replace(tmp_path, DATA_PATH)
 
 
-def refresh_opportunities():
+def refresh_opportunities() -> bool:
     """Fetch sources, merge, atomically rewrite the dataset. Never raises."""
     try:
         from studybuddy.opportunity_sources import fetch_all  # local import: no cycle
@@ -346,11 +356,14 @@ def refresh_opportunities():
         return False
 
 
-def get_meta():
+def get_meta() -> dict[str, Any]:
     return dict(load_dataset()["meta"])
 
 
-def freshness_label(meta=None, now=None):
+def freshness_label(
+    meta: dict[str, Any] | None = None,
+    now: datetime | None = None,
+) -> str:
     """Human label like 'Updated 5 hours ago · auto-refreshes every 2 days'."""
     meta = meta or get_meta()
     now = now or datetime.now()
@@ -373,7 +386,7 @@ def freshness_label(meta=None, now=None):
     return f"Updated {ago} · auto-refreshes every {STALE_AFTER_DAYS} days"
 
 
-def _enrich(o, today):
+def _enrich(o: dict[str, Any], today: date) -> dict[str, Any]:
     """Return the public dict for one opportunity with countdown fields."""
     deadline = _parse_deadline(o["deadline"], o["id"])
     days_left = (deadline - today).days if deadline else None
@@ -392,7 +405,11 @@ def _enrich(o, today):
     }
 
 
-def list_opportunities(opp_type=None, today=None, include_past=False):
+def list_opportunities(
+    opp_type: str | None = None,
+    today: date | None = None,
+    include_past: bool = False,
+) -> list[dict[str, Any]]:
     """List opportunities, optionally filtered by type, sorted by deadline.
 
     Rolling-deadline (null) entries sort last. Unknown type -> [].
@@ -412,7 +429,7 @@ def list_opportunities(opp_type=None, today=None, include_past=False):
     return out
 
 
-def get_opportunity(opp_id):
+def get_opportunity(opp_id: str) -> dict[str, Any] | None:
     """Return the enriched opportunity dict, or None if unknown."""
     for o in load_dataset()["opportunities"]:
         if o["id"] == opp_id:
@@ -420,7 +437,7 @@ def get_opportunity(opp_id):
     return None
 
 
-def opp_exists(opp_id):
+def opp_exists(opp_id: str) -> bool:
     return any(o["id"] == opp_id for o in load_dataset()["opportunities"])
 
 
@@ -430,11 +447,14 @@ def opp_exists(opp_id):
 import re as _re19
 
 
-def _clean19(text):
+def _clean19(text: str | None) -> str:
     return _re19.sub(r"<[^>]*>", "", text or "")
 
 
-def deadline_alerts(opportunities, today=None):
+def deadline_alerts(
+    opportunities: list[dict[str, Any]],
+    today: date | None = None,
+) -> dict[str, Any]:
     """Bucket opportunities by deadline urgency: 1/3/7-day alerts.
 
     opportunities: list of enriched dicts (with days_left). Returns
@@ -473,7 +493,10 @@ def deadline_alerts(opportunities, today=None):
                         if n_alert else "No urgent deadlines. Browse freely.")}
 
 
-def fit_score(opportunity, skills):
+def fit_score(
+    opportunity: dict[str, Any],
+    skills: list[str],
+) -> dict[str, Any]:
     """Score how well an opportunity matches the user's skills (0-100).
 
     Returns {score, matched, missing_hint, verdict}.
@@ -500,7 +523,7 @@ def fit_score(opportunity, skills):
             "verdict": verdict}
 
 
-def to_tracker_payload(opportunity):
+def to_tracker_payload(opportunity: dict[str, Any]) -> dict[str, Any]:
     """Convert an opportunity to a job-tracker add payload (one-click apply tracking).
 
     Returns {company, role, jd_url, notes, stage}.

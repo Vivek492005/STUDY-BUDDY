@@ -34,6 +34,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Attach to global scope for button onclicks
     window.showSection = showSection;
 
+    // CSP: delegated handlers replacing inline onclick attributes.
+    // Retry + Browse buttons are re-created via innerHTML, so one
+    // delegated listener covers every instance, static or dynamic.
+    document.addEventListener('click', (e) => {
+        const retry = e.target.closest('.js-retry');
+        if (retry) { location.reload(); return; }
+        const browse = e.target.closest('.js-browse');
+        if (browse) {
+            const fi = document.getElementById('file-input');
+            if (fi) fi.click();
+        }
+    });
+    document.querySelectorAll('[data-show-section]').forEach((btn) => {
+        btn.addEventListener('click', () => showSection(btn.getAttribute('data-show-section')));
+    });
+
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             const sectionId = link.dataset.section;
@@ -348,7 +364,7 @@ I am now grounding my responses 100% in the text of this paper. Ask me anything 
                 uploadScreen.innerHTML = `
                     <div class="processor-card glass">
                         <p style="color: #ff4d4d;">Error indexing document. Please ensure it's a valid PDF.</p>
-                        <button class="btn btn-primary btn-sm" onclick="location.reload()">Retry</button>
+                        <button class="btn btn-primary btn-sm js-retry">Retry</button>
                     </div>
                 `;
             }
@@ -518,7 +534,7 @@ I've loaded the context for **"${sessionName}"**. How can I help you explore thi
                     <h3>Upload Research Papers</h3>
                     <p>Drag and drop PDF files or click to browse</p>
                     <input type="file" id="file-input" multiple accept=".pdf" class="hidden">
-                    <button class="btn btn-primary btn-sm" onclick="document.getElementById('file-input').click()">Browse Files</button>
+                    <button class="btn btn-primary btn-sm js-browse">Browse Files</button>
                 </div>
             `;
 

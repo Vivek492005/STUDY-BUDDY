@@ -2,7 +2,7 @@
 <html lang="en" class="no-js" data-theme="resume">
 <head>
     <meta charset="UTF-8">
-    <script>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Prepare for interviews with company-specific questions and curated coding challenges from top tech companies.">
     <title>Interview Practice | AI Resume Analyzer</title>
@@ -104,15 +104,16 @@
                 <div class="practice-search">
                     <label class="sr-only" for="interviewCompanySearch">Search companies</label>
                     <input type="search" id="interviewCompanySearch" placeholder="Search companies… (try Google, Flipkart, Paytm)"
-                           oninput="filterInterviewCompanies(this.value)" autocomplete="off">
+                           autocomplete="off">
                 </div>
                 <div class="company-grid" id="interviewCompanyGrid">
                     {% for company in companies_interview %}
-                    <div class="company-card b-card b-card--lite" data-company="{{ company }}" onclick="selectInterviewCompany('{{ company }}')">
+                    <div class="company-card b-card b-card--lite" data-company="{{ company }}">
                         <div class="company-logo">
                             {% set slug = logo_map.get(company.strip()) %}
                             {% if slug %}
-                                <img src="https://unpkg.com/simple-icons@v13/icons/{{ slug }}.svg" alt="{{ company }}" loading="lazy" onerror="logoFallback(this, '{{ company }}')">
+                                {# Brand logos used to load from a third-party icon CDN; removed for CSP self-hosting. Letter avatar matches what logoFallback() in bento.js renders when a logo fails. logo_map is retained so a future self-hosted logo pass can reuse the slugs. #}
+                                <div class="logo-fallback" aria-hidden="true">{{ company.strip()[0]|upper }}</div>
                             {% else %}
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" style="width:2rem;height:2rem;opacity:.7"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/></svg>
                             {% endif %}
@@ -126,14 +127,14 @@
                         {% if company_stats.get(company) and company_stats[company].top_categories %}
                         <div class="company-focus">{{ company_stats[company].top_categories|join(' · ') }}</div>
                         {% endif %}
-                        <a class="company-mock-link" href="{{ url_for('interview_home') }}" onclick="event.stopPropagation()">Start mock →</a>
+                        <a class="company-mock-link" href="{{ url_for('interview_home') }}">Start mock →</a>
                     </div>
                     {% endfor %}
                 </div>
 
                 <!-- Filters -->
                 <div class="filter-bar" id="interviewFilters" style="display: none;">
-                    <select class="filter-select" id="interviewCategoryFilter" onchange="filterInterviewQuestions()">
+                    <select class="filter-select" id="interviewCategoryFilter">
                         <option value="">All Categories</option>
                         <option value="Behavioral">Behavioral</option>
                         <option value="Technical">Technical</option>
@@ -142,7 +143,7 @@
                         <option value="HR">HR</option>
                         <option value="Puzzles">Puzzles</option>
                     </select>
-                    <select class="filter-select" id="interviewDifficultyFilter" onchange="filterInterviewQuestions()">
+                    <select class="filter-select" id="interviewDifficultyFilter">
                         <option value="">All Difficulties</option>
                         <option value="Easy">Easy</option>
                         <option value="Medium">Medium</option>
@@ -161,11 +162,12 @@
                 <!-- Company Grid -->
                 <div class="company-grid" id="codingCompanyGrid">
                     {% for company in companies_coding %}
-                    <div class="company-card b-card b-card--lite" data-company="{{ company }}" onclick="selectCodingCompany('{{ company }}')">
+                    <div class="company-card b-card b-card--lite" data-company="{{ company }}">
                         <div class="company-logo">
                             {% set slug = logo_map.get(company.strip()) %}
                             {% if slug %}
-                                <img src="https://unpkg.com/simple-icons@v13/icons/{{ slug }}.svg" alt="{{ company }}" loading="lazy" onerror="logoFallback(this, '{{ company }}')">
+                                {# Brand logos used to load from a third-party icon CDN; removed for CSP self-hosting. Letter avatar matches what logoFallback() in bento.js renders when a logo fails. #}
+                                <div class="logo-fallback" aria-hidden="true">{{ company.strip()[0]|upper }}</div>
                             {% else %}
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" style="width:2rem;height:2rem;opacity:.7"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/></svg>
                             {% endif %}
@@ -182,13 +184,13 @@
 
                 <!-- Filters -->
                 <div class="filter-bar" id="codingFilters" style="display: none;">
-                    <select class="filter-select" id="codingTopicFilter" onchange="filterCodingQuestions()">
+                    <select class="filter-select" id="codingTopicFilter">
                         <option value="">All Topics</option>
                         {% for topic in topics %}
                         <option value="{{ topic }}">{{ topic }}</option>
                         {% endfor %}
                     </select>
-                    <select class="filter-select" id="codingDifficultyFilter" onchange="filterCodingQuestions()">
+                    <select class="filter-select" id="codingDifficultyFilter">
                         <option value="">All Difficulties</option>
                         <option value="Easy">Easy</option>
                         <option value="Medium">Medium</option>
@@ -215,7 +217,7 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/resume_script.js') }}"></script>
-    <script>
+    <script nonce="{{ csp_nonce() }}">
         // ---- Practice Page Logic ----
         let currentInterviewCompany = null;
         let currentCodingCompany = null;
@@ -365,6 +367,15 @@
                 </div>
             `).join('');
         }
+        // CSP: listeners replacing inline event-handler attributes.
+        document.getElementById('interviewCompanySearch').addEventListener('input', function (e) { filterInterviewCompanies(e.target.value); });
+        document.querySelectorAll('#interviewCompanyGrid .company-card').forEach(function (card) { card.addEventListener('click', function () { selectInterviewCompany(card.dataset.company); }); });
+        document.querySelectorAll('#codingCompanyGrid .company-card').forEach(function (card) { card.addEventListener('click', function () { selectCodingCompany(card.dataset.company); }); });
+        document.querySelectorAll('.company-mock-link').forEach(function (a) { a.addEventListener('click', function (e) { e.stopPropagation(); }); });
+        document.getElementById('interviewCategoryFilter').addEventListener('change', filterInterviewQuestions);
+        document.getElementById('interviewDifficultyFilter').addEventListener('change', filterInterviewQuestions);
+        document.getElementById('codingTopicFilter').addEventListener('change', filterCodingQuestions);
+        document.getElementById('codingDifficultyFilter').addEventListener('change', filterCodingQuestions);
     </script>
 
     <script src="{{ url_for('static', filename='js/bento.js') }}" defer></script>

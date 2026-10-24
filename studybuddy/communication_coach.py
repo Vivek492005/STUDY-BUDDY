@@ -10,9 +10,12 @@ and practice drills. Gemini (wired in unified_app.py) can polish the
 rewrite and drills; the rule-based versions below always work.
 """
 
+from __future__ import annotations
+
 import json
 import os
 import re
+from typing import Any
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                          "data", "filler_words.json")
@@ -20,7 +23,7 @@ BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file_
 _bank = None
 
 
-def _load_bank():
+def _load_bank() -> list[dict[str, Any]]:
     global _bank
     if _bank is None:
         with open(BANK_PATH, encoding="utf-8") as f:
@@ -39,16 +42,16 @@ PASSIVE_RE = re.compile(
     re.IGNORECASE)
 
 
-def _sentences(text):
+def _sentences(text: str | None) -> list[str]:
     parts = [s.strip() for s in re.split(r"(?<=[.!?])\s+", (text or "").strip())]
     return [s for s in parts if s]
 
 
-def _words(text):
+def _words(text: str | None) -> list[str]:
     return re.findall(r"[A-Za-z][A-Za-z0-9'\-]*", text or "")
 
 
-def find_filler_hits(text):
+def find_filler_hits(text: str | None) -> list[dict[str, Any]]:
     """Return list of {word, category, severity, alternatives, note, count, positions}."""
     lowered = (text or "").lower()
     hits = []
@@ -71,7 +74,7 @@ def find_filler_hits(text):
     return hits
 
 
-def _rewrite_clean(text, hits):
+def _rewrite_clean(text: str, hits: list[dict[str, Any]]) -> str:
     """Rule-based cleanup: drop severity-3 fillers, apply first alternatives."""
     out = text
     for h in hits:
@@ -112,7 +115,7 @@ QUESTIONS_PATH = os.path.join(
 _questions = None
 
 
-def coach_questions():
+def coach_questions() -> list[dict[str, Any]]:
     """The practice-question bank (data/coach_questions.json)."""
     global _questions
     if _questions is None:
@@ -124,7 +127,7 @@ def coach_questions():
     return _questions
 
 
-def get_coach_question(question_id):
+def get_coach_question(question_id: str) -> dict[str, Any] | None:
     for q in coach_questions():
         if q.get("id") == question_id:
             return q
@@ -186,11 +189,11 @@ _STOPWORDS = {
 }
 
 
-def _marker_count(lowered, markers):
+def _marker_count(lowered: str, markers: tuple[str, ...]) -> int:
     return sum(lowered.count(m) for m in markers)
 
 
-def _star_analysis(lowered, sentences):
+def _star_analysis(lowered: str, sentences: list[str]) -> dict[str, Any]:
     situation = _marker_count(lowered, _SITUATION_MARKERS) > 0
     task = _marker_count(lowered, _TASK_MARKERS) > 0
     i_actions = 0
@@ -210,7 +213,7 @@ def _star_analysis(lowered, sentences):
             "score": round(25 * (4 - len(missing)))}
 
 
-def _impact_analysis(lowered, words_lower):
+def _impact_analysis(lowered: str, words_lower: list[str]) -> dict[str, Any]:
     metrics = [m.group(0) for m in _METRIC_RE.finditer(lowered)][:10]
     verbs = sum(1 for w in words_lower if w in _ACTION_VERBS)
     i_count = words_lower.count("i")
@@ -224,7 +227,7 @@ def _impact_analysis(lowered, words_lower):
             "score": max(0, min(100, score))}
 
 
-def _confidence_analysis(lowered, hedge_events):
+def _confidence_analysis(lowered: str, hedge_events: int) -> dict[str, Any]:
     apologies = _marker_count(lowered, _APOLOGY_MARKERS)
     certainty = _marker_count(lowered, _CERTAINTY_MARKERS)
     score = 100 - min(60, hedge_events * 6 + apologies * 10) \
@@ -233,7 +236,11 @@ def _confidence_analysis(lowered, hedge_events):
             "score": max(0, min(100, round(score)))}
 
 
-def _delivery_analysis(n_words, question_type, spoken_seconds=None):
+def _delivery_analysis(
+    n_words: int,
+    question_type: str,
+    spoken_seconds: int | None = None,
+) -> dict[str, Any]:
     est_seconds = round(n_words / 140 * 60)
     lo, hi = QUESTION_TYPES[question_type]["target_seconds"]
     wpm = None
@@ -265,7 +272,7 @@ def _delivery_analysis(n_words, question_type, spoken_seconds=None):
             "score": pace_part + length_part}
 
 
-def _vocabulary_analysis(lowered, words_lower):
+def _vocabulary_analysis(lowered: str, words_lower: list[str]) -> dict[str, Any]:
     n = len(words_lower)
     ttr = round(len(set(words_lower)) / n, 3) if n else 0.0
     counts = {}
@@ -288,7 +295,10 @@ def _vocabulary_analysis(lowered, words_lower):
             "score": score}
 
 
-def _dimension_suggestions(dims, question_type):
+def _dimension_suggestions(
+    dims: dict[str, dict[str, Any]],
+    question_type: str,
+) -> list[str]:
     out = []
     star = dims["star"]
     if star["missing"] and (question_type == "behavioral"
@@ -330,7 +340,11 @@ def _dimension_suggestions(dims, question_type):
     return out
 
 
-def analyze_transcript(text, question_type=None, spoken_seconds=None):
+def analyze_transcript(
+    text: str | None,
+    question_type: str | None = None,
+    spoken_seconds: int | None = None,
+) -> dict[str, Any]:
     """Full analysis. Returns a JSON-serializable report dict."""
     text = (text or "").strip()
     if question_type not in QUESTION_TYPES:
@@ -459,7 +473,9 @@ def analyze_transcript(text, question_type=None, spoken_seconds=None):
     }
 
 
-def validate_coach_inputs(payload):
+def validate_coach_inputs(
+    payload: dict[str, Any],
+) -> tuple[str | None, str | None]:
     """Validate the analyze form. Returns (text, error)."""
     text = (payload.get("text") or "").strip()
     if len(text) < MIN_CHARS:
@@ -469,7 +485,9 @@ def validate_coach_inputs(payload):
     return text, None
 
 
-def validate_coach_extras(payload):
+def validate_coach_extras(
+    payload: dict[str, Any] | None,
+) -> tuple[str | None, dict[str, Any] | None, int | None, str | None]:
     """Validate the optional v2 fields of an analyze request.
 
     Returns (question_type, question, spoken_seconds, error). When a
@@ -506,7 +524,7 @@ def validate_coach_extras(payload):
 import re as _re7
 
 
-def _clean7(text):
+def _clean7(text: str | None) -> str:
     return _re7.sub(r"<[^>]*>", "", text or "")
 
 
@@ -522,7 +540,9 @@ _VIDEO_CHECKS = [
 ]
 
 
-def video_presence_checklist(self_scores=None):
+def video_presence_checklist(
+    self_scores: dict[str, bool] | None = None,
+) -> dict[str, Any]:
     """Self-scored video presence checklist for AI video screens.
 
     self_scores: optional dict {check_id: True/False}. Returns {checks,
@@ -583,7 +603,7 @@ _HR_QUESTIONS = [
 ]
 
 
-def hr_round_simulator(question_id=None):
+def hr_round_simulator(question_id: str | None = None) -> dict[str, Any]:
     """HR-round practice: questions + frameworks + model answers.
 
     question_id: specific one, or None for the full set.
@@ -599,7 +619,7 @@ def hr_round_simulator(question_id=None):
             "guidance": "Practice each aloud in 90 seconds. Record yourself once."}
 
 
-def clarity_score(transcript):
+def clarity_score(transcript: str | None) -> dict[str, Any]:
     """Accent-clarity score for Indian English speakers (0-100).
 
     Checks: pace (via analyze_transcript if available), sentence length,

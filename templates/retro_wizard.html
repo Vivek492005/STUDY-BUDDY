@@ -184,7 +184,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
+<script nonce="{{ csp_nonce() }}">
     window.RT_APP_ID = {{ application.id }};
     window.RT_COMPLETED = {{ 'true' if retro and retro.completed else 'false' }};
 </script>

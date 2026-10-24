@@ -13,7 +13,7 @@
         </div>
     </footer>
 
-    <script>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interview Report | AI Resume Analyzer</title>
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
@@ -43,8 +43,14 @@
         .rp-back { display: inline-block; margin-bottom: 1.4rem; color: var(--accent-secondary); font-weight: 600; text-decoration: none; }
         @media (max-width: 700px) { .rp-wrap { padding-top: 5.5rem; } .rp-card { padding: 1.4rem; } .rp-bar-row { grid-template-columns: 110px 1fr 40px; } }
     </style>
+    <style>
+    /* a11y: skip link (same rules as base.html) */
+    .skip-link{position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:.75rem 1.25rem;z-index:9999;font-weight:700;border-radius:0 0 8px 0}
+    .skip-link:focus{left:0}
+    </style>
 </head>
 <body class="sb-app">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="b-scroll-progress" data-scroll-progress aria-hidden="true"></div>
     <div class="b-ambient" aria-hidden="true">
         <div class="b-blob b-b1"></div>
@@ -55,6 +61,7 @@
 
     {% set nav_active = 'practice' %}
     {% include "_site_nav.html" %}
+    <main id="main-content" tabindex="-1">
 
     <div class="rp-wrap">
         <a class="rp-back" href="{{ url_for('interview_home') }}">&larr; All mock interviews</a>
@@ -96,6 +103,7 @@
         </div>
         {% endfor %}
     </div>
+    </main>
     <script src="{{ url_for('static', filename='js/bento.js') }}" defer></script>
     {% include "_csp_beacon.html" %}
     <script src="{{ url_for('static', filename='js/cursor.js') }}" defer></script>

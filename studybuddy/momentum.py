@@ -28,7 +28,9 @@ same dedupe keys, so it is timezone-safe on both SQLite and Postgres.
 from __future__ import annotations
 
 import logging
-from datetime import UTC, datetime, timedelta
+from collections.abc import Iterable
+from datetime import UTC, date, datetime, timedelta
+from typing import Any
 
 log = logging.getLogger(__name__)
 
@@ -108,7 +110,7 @@ ALL_EVENT_TYPES = frozenset(XP_RULES) | {DAY_ONE_EVENT}
 # Pure helpers: dates, levels, streaks (never raise, no DB)
 # ---------------------------------------------------------------------------
 
-def _coerce_now(now):
+def _coerce_now(now: datetime | None) -> datetime:
     """Normalize the optional ``now`` override to an aware UTC datetime."""
     try:
         if now is None:
@@ -120,7 +122,7 @@ def _coerce_now(now):
         return datetime.now(UTC)
 
 
-def week_start_date(now=None):
+def week_start_date(now: datetime | None = None) -> date:
     """Monday (date) of the ISO week containing ``now``. Never raises."""
     try:
         d = _coerce_now(now).date()
@@ -130,7 +132,7 @@ def week_start_date(now=None):
         return d - timedelta(days=d.weekday())
 
 
-def iso_week_key(now=None):
+def iso_week_key(now: datetime | None = None) -> str:
     """Compact ISO-week key like "2026-W42". Never raises."""
     try:
         iso = _coerce_now(now).isocalendar()
@@ -140,7 +142,7 @@ def iso_week_key(now=None):
         return "%d-W%02d" % (iso[0], iso[1])
 
 
-def month_key(now=None):
+def month_key(now: datetime | None = None) -> str:
     """Calendar-month key like "2026-10" (shield accounting). Never raises."""
     try:
         d = _coerce_now(now).date()
@@ -149,7 +151,7 @@ def month_key(now=None):
     return "%04d-%02d" % (d.year, d.month)
 
 
-def dedupe_key_for(user_id, event_type, day):
+def dedupe_key_for(user_id: int, event_type: str, day: date) -> str:
     """Daily idempotency key: "<user_id>:<event_type>:<YYYY-MM-DD>"."""
     try:
         return "%d:%s:%s" % (int(user_id), str(event_type), day.isoformat())
@@ -157,7 +159,7 @@ def dedupe_key_for(user_id, event_type, day):
         return ""
 
 
-def level_for_xp(total_xp):
+def level_for_xp(total_xp: float | int | None) -> int:
     """Level from lifetime XP: level = floor(sqrt(total/100)) + 1.
 
     Level 1: 0-99 XP, level 2: 100-399, level 3: 400-899, ... gentle curve,
@@ -171,7 +173,7 @@ def level_for_xp(total_xp):
     return int(math.floor(math.sqrt(total / 100.0))) + 1
 
 
-def xp_for_level(level):
+def xp_for_level(level: int) -> int:
     """Minimum lifetime XP needed to reach ``level``. Never raises."""
     try:
         level = max(1, int(level))
@@ -180,7 +182,9 @@ def xp_for_level(level):
     return 100 * (level - 1) ** 2
 
 
-def level_progress(total_xp):
+def level_progress(
+    total_xp: float | int | None,
+) -> tuple[int, int, int, float]:
     """(level, xp_into_level, xp_for_next_level, pct) tuple. Never raises."""
     level = level_for_xp(total_xp)
     base = xp_for_level(level)
@@ -195,8 +199,14 @@ def level_progress(total_xp):
     return level, into, nxt - base, pct
 
 
-def apply_streak(current, longest, last_active, shields_used_month,
-                 shields_month, today):
+def apply_streak(
+    current: int | None,
+    longest: int | None,
+    last_active: date | None,
+    shields_used_month: int | None,
+    shields_month: str | None,
+    today: date,
+) -> dict[str, Any]:
     """Pure streak transition for one active day.
 
     ``today`` is a date. Returns a dict with the new
@@ -255,7 +265,11 @@ def apply_streak(current, longest, last_active, shields_used_month,
     return out
 
 
-def _week_dedupe_keys(user_id, event_types, week_start):
+def _week_dedupe_keys(
+    user_id: int,
+    event_types: Iterable[str] | None,
+    week_start: date,
+) -> list[str]:
     """All daily dedupe keys for (user, events, Mon-Sun week)."""
     keys = []
     try:
@@ -276,7 +290,7 @@ def _week_dedupe_keys(user_id, event_types, week_start):
 # Internal DB helpers (lazy unified_app imports; callers wrap in try/except)
 # ---------------------------------------------------------------------------
 
-def _models():
+def _models() -> tuple[Any, ...]:
     from unified_app import (
         LeagueMember,
         LeagueResult,
@@ -292,7 +306,7 @@ def _models():
             QuestProgress, WeeklyReflection, MomentumSettings, User)
 
 
-def _is_opted_out(MomentumSettings, user_id):
+def _is_opted_out(MomentumSettings: Any, user_id: int) -> bool:
     try:
         row = MomentumSettings.query.filter_by(user_id=user_id).first()
         return bool(row and row.momentum_opt_out)
@@ -300,7 +314,12 @@ def _is_opted_out(MomentumSettings, user_id):
         return False
 
 
-def _count_events_in_week(XPLedger, user_id, event_type, wk_start):
+def _count_events_in_week(
+    XPLedger: Any,
+    user_id: int,
+    event_type: str,
+    wk_start: date,
+) -> int:
     try:
         keys = _week_dedupe_keys(user_id, [event_type], wk_start)
         if not keys:
@@ -313,7 +332,13 @@ def _count_events_in_week(XPLedger, user_id, event_type, wk_start):
         return 0
 
 
-def _weekly_stats(db, XPLedger, QuestProgress, user_id, wk_start):
+def _weekly_stats(
+    db: Any,
+    XPLedger: Any,
+    QuestProgress: Any,
+    user_id: int,
+    wk_start: date,
+) -> dict[str, Any]:
     """Consistency-first weekly stats: active days + quests, XP as garnish.
 
     score = 10 * active_days + 25 * quests_completed + 0.1 * xp — leagues
@@ -351,7 +376,7 @@ def _weekly_stats(db, XPLedger, QuestProgress, user_id, wk_start):
     return stats
 
 
-def _total_xp(db, XPLedger, user_id):
+def _total_xp(db: Any, XPLedger: Any, user_id: int) -> int:
     try:
         total = (db.session.query(db.func.sum(XPLedger.xp))
                  .filter(XPLedger.user_id == user_id).scalar())
@@ -364,7 +389,11 @@ def _total_xp(db, XPLedger, user_id):
 # Public DB operations — none of these ever raises.
 # ---------------------------------------------------------------------------
 
-def record_event(user_id, event_type, now=None):
+def record_event(
+    user_id: int,
+    event_type: str,
+    now: datetime | None = None,
+) -> dict[str, Any]:
     """Record one XP-earning career action.
 
     Creates an XPLedger row (idempotent per user/event/day), updates the
@@ -386,7 +415,11 @@ def record_event(user_id, event_type, now=None):
         return {"ok": False}
 
 
-def _record_event(user_id, event_type, now):
+def _record_event(
+    user_id: int,
+    event_type: str,
+    now: datetime | None,
+) -> dict[str, Any]:
     (db, XPLedger, StreakState, _LM, _LR, QuestProgress,
      _WR, MomentumSettings, _User) = _models()
     try:
@@ -477,7 +510,11 @@ def _record_event(user_id, event_type, now):
             "streak": t["current"]}
 
 
-def claim_quest(user_id, quest_id, now=None):
+def claim_quest(
+    user_id: int,
+    quest_id: str,
+    now: datetime | None = None,
+) -> dict[str, Any]:
     """Award the quest-completion bonus for a finished weekly quest.
 
     Idempotent: claiming twice (or racing two requests) awards the 50 XP
@@ -495,7 +532,11 @@ def claim_quest(user_id, quest_id, now=None):
         return {"ok": False}
 
 
-def _claim_quest(user_id, quest_id, now):
+def _claim_quest(
+    user_id: int,
+    quest_id: str,
+    now: datetime | None,
+) -> dict[str, Any]:
     (db, XPLedger, _SS, _LM, _LR, QuestProgress,
      _WR, MomentumSettings, _User) = _models()
     try:
@@ -558,7 +599,10 @@ def _claim_quest(user_id, quest_id, now):
     return {"ok": True, "xp": bonus, "quest_id": quest_id}
 
 
-def join_league(user_id, now=None):
+def join_league(
+    user_id: int,
+    now: datetime | None = None,
+) -> dict[str, Any]:
     """Opt into this ISO week's league cohort. Idempotent. Never raises."""
     try:
         return _join_league(user_id, now)
@@ -572,7 +616,7 @@ def join_league(user_id, now=None):
         return {"ok": False}
 
 
-def _join_league(user_id, now):
+def _join_league(user_id: int, now: datetime | None) -> dict[str, Any]:
     (db, _XL, _SS, LeagueMember, _LR, _QP,
      _WR, MomentumSettings, _User) = _models()
     try:
@@ -606,7 +650,7 @@ def _join_league(user_id, now):
     return {"ok": True, "league_key": league_key}
 
 
-def leave_league(user_id):
+def leave_league(user_id: int) -> dict[str, Any]:
     """Opt out of the league board (membership history is kept, the board
     only shows active members). Never raises."""
     try:
@@ -629,7 +673,12 @@ def leave_league(user_id):
         return {"ok": False}
 
 
-def save_reflection(user_id, wins, focus_next, now=None):
+def save_reflection(
+    user_id: int,
+    wins: str | None,
+    focus_next: str | None,
+    now: datetime | None = None,
+) -> dict[str, Any]:
     """Save this week's 2-minute reflection (upsert). Also logs the
     retrospective_logged XP event so the "Look back" quest is completable.
     Never raises."""
@@ -645,7 +694,12 @@ def save_reflection(user_id, wins, focus_next, now=None):
         return {"ok": False}
 
 
-def _save_reflection(user_id, wins, focus_next, now):
+def _save_reflection(
+    user_id: int,
+    wins: str | None,
+    focus_next: str | None,
+    now: datetime | None,
+) -> dict[str, Any]:
     (db, _XL, _SS, _LM, _LR, _QP, WeeklyReflection,
      MomentumSettings, _User) = _models()
     try:
@@ -686,7 +740,7 @@ def _save_reflection(user_id, wins, focus_next, now):
     return {"ok": True, "week_start": wk_start.isoformat()}
 
 
-def set_opt_out(user_id, opt_out):
+def set_opt_out(user_id: int, opt_out: bool) -> dict[str, Any]:
     """Set the momentum opt-out flag. When opted out, record_event() is a
     no-op and the hub shows a rejoin CTA. Never raises."""
     try:
@@ -712,7 +766,7 @@ def set_opt_out(user_id, opt_out):
         return {"ok": False}
 
 
-def finalize_league_week(now=None):
+def finalize_league_week(now: datetime | None = None) -> dict[str, Any]:
     """Write LeagueResult rows for the ISO week that just ended, for every
     league cohort with active members. Idempotent (skips already-finalized
     league/week pairs). Called opportunistically from the hub/summary so no
@@ -729,7 +783,7 @@ def finalize_league_week(now=None):
         return {"ok": False}
 
 
-def _finalize_league_week(now):
+def _finalize_league_week(now: datetime | None) -> dict[str, Any]:
     (db, XPLedger, _SS, LeagueMember, LeagueResult, QuestProgress,
      _WR, _MS, User) = _models()
     now = _coerce_now(now)
@@ -783,7 +837,7 @@ def _finalize_league_week(now):
 # Summary for the hub page, the JSON API, and the dashboard widget.
 # ---------------------------------------------------------------------------
 
-def empty_summary():
+def empty_summary() -> dict[str, Any]:
     """Safe fallback summary (used when anything goes wrong)."""
     return {
         "opted_out": False,
@@ -798,7 +852,10 @@ def empty_summary():
     }
 
 
-def get_momentum_summary(user_id, now=None):
+def get_momentum_summary(
+    user_id: int,
+    now: datetime | None = None,
+) -> dict[str, Any]:
     """Build the full hub/summary dict. Never raises — falls back to
     empty_summary() on any failure."""
     try:
@@ -813,7 +870,7 @@ def get_momentum_summary(user_id, now=None):
         return empty_summary()
 
 
-def _build_summary(user_id, now):
+def _build_summary(user_id: int, now: datetime | None) -> dict[str, Any]:
     (db, XPLedger, StreakState, LeagueMember, LeagueResult, QuestProgress,
      WeeklyReflection, MomentumSettings, User) = _models()
     user_id = int(user_id)
@@ -953,11 +1010,16 @@ import re as _re20
 from datetime import date as _date20
 
 
-def _clean20(text):
+def _clean20(text: str | None) -> str:
     return _re20.sub(r"<[^>]*>", "", text or "")
 
 
-def streak_freeze_status(last_active, freezes_used_week, week_start=None, today=None):
+def streak_freeze_status(
+    last_active: date | None,
+    freezes_used_week: int | None,
+    week_start: date | None = None,
+    today: date | None = None,
+) -> dict[str, Any]:
     """Weekly rest day: 1 streak freeze per week, auto-applied on missed days.
 
     Returns {freezes_available, freeze_would_apply, message}.
@@ -986,7 +1048,10 @@ def streak_freeze_status(last_active, freezes_used_week, week_start=None, today=
                         "Freeze used this week — stay active to keep the streak.")}
 
 
-def squad_leaderboard(members, week_key=None):
+def squad_leaderboard(
+    members: list[dict[str, Any]],
+    week_key: str | None = None,
+) -> dict[str, Any]:
     """Weekly XP competition between friends.
 
     members: list of {user_id, name, weekly_xp}. Returns ranked {squad,
@@ -1032,7 +1097,10 @@ _REWARD_TIERS = [
 ]
 
 
-def reward_tiers(current_streak, total_xp):
+def reward_tiers(
+    current_streak: int | None,
+    total_xp: int | None,
+) -> dict[str, Any]:
     """What has the user unlocked? What's next?
 
     Returns {unlocked: [...], next_up: {...} or None, progress}.

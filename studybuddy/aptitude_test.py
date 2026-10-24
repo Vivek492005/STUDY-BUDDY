@@ -5,9 +5,13 @@ across quantitative / logical / verbal). Scoring is fully server-side;
 the client timer is display-only — the server validates the time window
 from its own start timestamp.
 """
+
+from __future__ import annotations
+
 import json
 import os
 import random
+from typing import Any
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                          "data", "aptitude_questions.json")
@@ -23,7 +27,7 @@ _bank = None
 _by_id = None
 
 
-def _load():
+def _load() -> list[dict[str, Any]]:
     global _bank, _by_id
     if _bank is None:
         with open(BANK_PATH, encoding="utf-8") as f:
@@ -32,16 +36,16 @@ def _load():
     return _bank
 
 
-def all_questions():
+def all_questions() -> list[dict[str, Any]]:
     return _load()
 
 
-def get_question(qid):
+def get_question(qid: str) -> dict[str, Any] | None:
     _load()
     return _by_id.get(qid)
 
 
-def categories():
+def categories() -> list[tuple[str, int]]:
     """[(category, count)] for the setup page."""
     counts = {}
     for q in _load():
@@ -79,14 +83,14 @@ CONCEPTS_PATH = os.path.join(
 _concepts = None
 
 
-def track_of_category(category):
+def track_of_category(category: str) -> str | None:
     for name, meta in TRACKS.items():
         if category in meta["categories"]:
             return name
     return None
 
 
-def track_counts():
+def track_counts() -> list[tuple[str, str, int]]:
     """[(track, label, question_count)] for the two tracks."""
     counts = {name: 0 for name in TRACKS}
     for q in _load():
@@ -96,7 +100,7 @@ def track_counts():
     return [(name, TRACKS[name]["label"], counts[name]) for name in TRACKS]
 
 
-def topics(track=None):
+def topics(track: str | None = None) -> list[tuple[str, str, int]]:
     """[(subcategory, category, count)] — optionally for one track only."""
     counts = {}
     for q in _load():
@@ -107,7 +111,7 @@ def topics(track=None):
     return sorted((sub, cat, n) for (sub, cat), n in counts.items())
 
 
-def topic_category(subcategory):
+def topic_category(subcategory: str) -> str | None:
     for q in _load():
         if q["subcategory"] == subcategory:
             return q["category"]
@@ -154,7 +158,7 @@ COMPANY_TESTS = {
 }
 
 
-def concepts():
+def concepts() -> list[dict[str, Any]]:
     global _concepts
     if _concepts is None:
         try:
@@ -165,14 +169,17 @@ def concepts():
     return _concepts
 
 
-def get_concept(topic):
+def get_concept(topic: str) -> dict[str, Any] | None:
     for c in concepts():
         if c.get("topic") == topic:
             return c
     return None
 
 
-def check_answer(question_id, chosen):
+def check_answer(
+    question_id: str,
+    chosen: int,
+) -> dict[str, Any] | None:
     """Practice-mode instant check. Returns a result dict or None."""
     q = get_question(question_id)
     if q is None:
@@ -190,7 +197,9 @@ def check_answer(question_id, chosen):
     }
 
 
-def mistakes_from_attempts(results_history):
+def mistakes_from_attempts(
+    results_history: list[list[dict[str, Any]]],
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """Latest state per question across a user's attempts.
 
     results_history: list of per-attempt results lists, NEWEST first
@@ -210,7 +219,9 @@ def mistakes_from_attempts(results_history):
     return wrong, by_sub
 
 
-def mastery_from_attempts(results_history):
+def mastery_from_attempts(
+    results_history: list[list[dict[str, Any]]],
+) -> dict[str, dict[str, float]]:
     """Per-subcategory accuracy across attempts (all appearances)."""
     agg = {}
     for results in results_history:
@@ -225,7 +236,7 @@ def mastery_from_attempts(results_history):
     return agg
 
 
-def subcategories(category):
+def subcategories(category: str) -> list[tuple[str, int]]:
     counts = {}
     for q in _load():
         if q["category"] == category:
@@ -234,7 +245,7 @@ def subcategories(category):
     return sorted(counts.items())
 
 
-def public_question(q):
+def public_question(q: dict[str, Any]) -> dict[str, Any]:
     """Client-safe view: statement + options, no answer/explanation."""
     return {
         "id": q["id"],
@@ -247,8 +258,14 @@ def public_question(q):
     }
 
 
-def pick_questions(category=None, n=10, seed=None, subcategory=None,
-                   track=None, difficulty=None):
+def pick_questions(
+    category: str | None = None,
+    n: int = 10,
+    seed: int | None = None,
+    subcategory: str | None = None,
+    track: str | None = None,
+    difficulty: str | None = None,
+) -> list[dict[str, Any]]:
     """Pick n questions (shuffled). category=None/'mixed' draws evenly."""
     pool = _load()
     if track in TRACKS:
@@ -266,7 +283,7 @@ def pick_questions(category=None, n=10, seed=None, subcategory=None,
     return [public_question(q) for q in picked]
 
 
-def selection_counts():
+def selection_counts() -> dict[str, Any]:
     """Exact pool sizes for the custom-test builder UI.
 
     Returns {"tracks": {track: {"total": n, "Easy": n, ...}},
@@ -288,7 +305,10 @@ def selection_counts():
     return {"tracks": tracks, "topics": topics_map}
 
 
-def pick_for_setup(cleaned, seed=None):
+def pick_for_setup(
+    cleaned: dict[str, Any],
+    seed: int | None = None,
+) -> list[dict[str, Any]]:
     """Materialize the public question list for a validated setup."""
     mode = cleaned.get("mode", "category")
     rnd = random.Random(seed)
@@ -318,7 +338,10 @@ def pick_for_setup(cleaned, seed=None):
                           difficulty=cleaned.get("difficulty"))
 
 
-def _setup_time_limit(payload, default):
+def _setup_time_limit(
+    payload: dict[str, Any],
+    default: int,
+) -> tuple[int | None, str | None]:
     try:
         limit = int(payload.get("time_limit") or default)
     except (TypeError, ValueError):
@@ -328,7 +351,7 @@ def _setup_time_limit(payload, default):
     return limit, None
 
 
-def _setup_n(payload):
+def _setup_n(payload: dict[str, Any]) -> tuple[int | None, str | None]:
     try:
         n = int(payload.get("num_questions") or 0)
     except (TypeError, ValueError):
@@ -338,7 +361,9 @@ def _setup_n(payload):
     return n, None
 
 
-def _setup_difficulty(payload):
+def _setup_difficulty(
+    payload: dict[str, Any],
+) -> tuple[str | None, str | None]:
     """Optional difficulty filter: (value_or_None, error)."""
     raw = str(payload.get("difficulty") or "").strip()
     if not raw or raw.lower() == "mixed":
@@ -349,7 +374,9 @@ def _setup_difficulty(payload):
     return None, "Unknown difficulty."
 
 
-def validate_test_setup(payload):
+def validate_test_setup(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
     """Return (cleaned, error).
 
     Modes: legacy category test; track test; single-topic test;
@@ -430,7 +457,10 @@ def validate_test_setup(payload):
             "time_limit": limit}, None
 
 
-def score_attempt(question_ids, answers):
+def score_attempt(
+    question_ids: list[str],
+    answers: dict[str, Any],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Server-side scoring. answers: {qid: option_index}.
 
     Returns (results, summary). results: per-question dicts with
@@ -475,7 +505,7 @@ def score_attempt(question_ids, answers):
             if ok:
                 b["correct"] += 1
 
-    def _pct(bucket):
+    def _pct(bucket: dict[str, dict[str, int]]) -> dict[str, dict[str, Any]]:
         return {k: {"total": v["total"], "correct": v["correct"],
                     "pct": round(v["correct"] / v["total"] * 100, 1)}
                 for k, v in bucket.items()}

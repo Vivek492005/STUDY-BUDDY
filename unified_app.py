@@ -2551,8 +2551,10 @@ def register_security_headers(app):
         resp.headers.setdefault("Permissions-Policy",
                                 "camera=(), microphone=(), geolocation=()")
         # SEC-05: CSP in report-only mode. Violations go to /csp-report
-        # (rate-limited, logged without payloads). Full enforcement after
-        # inline scripts are eliminated (43 blocks) via nonces.
+        # (rate-limited, logged without payloads). 2026-10-25 rollout:
+        # nonces on all 60 inline script blocks + all 20 inline event
+        # handlers converted to addEventListener (incl. JS-generated
+        # buttons via delegation); unpkg dropped from the policy.
         # Use the per-request nonce minted in _mint_csp_nonce
         # (before_request): templates render BEFORE after_request runs,
         # so a nonce created here could never match the rendered pages —
@@ -2563,10 +2565,10 @@ def register_security_headers(app):
         g.csp_nonce = nonce
         csp = (
             "default-src 'self'; "
-            f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com https://unpkg.com; "
+            f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com data:; "
-            "img-src 'self' data: https://unpkg.com; "
+            "img-src 'self' data:; "
             "connect-src 'self'; "
             "frame-ancestors 'self'; "
             "object-src 'none'; "
@@ -2574,11 +2576,13 @@ def register_security_headers(app):
             "form-action 'self'; "
             "report-uri /csp-report"
         )
-        # Report-only for now; switch to enforcing after cleanup.
-        # Set CSP_ENFORCE=1 in env to enforce.
+        # Enforced by default since the 2026-10-25 nonce rollout (all
+        # inline blocks nonced, all handlers converted, enforce-mode
+        # browser sweep clean). Set CSP_REPORT_ONLY=1 in env to
+        # temporarily revert to report-only.
         import os as _os
-        header = "Content-Security-Policy" if _os.environ.get("CSP_ENFORCE") == "1" \
-            else "Content-Security-Policy-Report-Only"
+        header = "Content-Security-Policy-Report-Only" if _os.environ.get("CSP_REPORT_ONLY") == "1" \
+            else "Content-Security-Policy"
         resp.headers.setdefault(header, csp)
         if request.is_secure:
             resp.headers.setdefault(

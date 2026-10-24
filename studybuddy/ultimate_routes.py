@@ -12,7 +12,9 @@ oversized bodies.
 """
 import importlib
 import json
+import re
 from datetime import date, datetime
+from typing import get_origin
 
 from flask import jsonify, render_template, request
 from flask_login import current_user, login_required
@@ -87,6 +89,204 @@ def _load_fn(tool):
     return fn
 
 
+# ---------------------------------------------------------------------------
+# Structured-form schemas (P1 Labs UX).
+#
+# The Lab page used to render every tool from its legacy field defs, and
+# every field marked json=True was a bare textarea with a "must be valid
+# JSON" hint — 54 of 91 tools. The form schema below is ONE generic
+# derivation, computed server-side from the sources of truth that already
+# exist:
+#   * migrated tools -> the pydantic input model in labs_registry
+#     (field names, types, required-ness, defaults, constraints);
+#   * legacy tools   -> their registry field defs, with the shape hints
+#     already documented in the label text ("JSON with {a, b, c}",
+#     "JSON array of {...}") parsed into keys + an example skeleton.
+# The schema is descriptive only: it never changes what run_tool accepts.
+# Payload keys are identical to the legacy/pydantic field names (verified
+# equal for all 20 overlapping migrated tools), and both dispatchers
+# already accept parsed values (lists/dicts) for JSON fields, so a form
+# submission is exactly the payload the old raw-JSON textarea produced
+# after JSON.parse — only the user no longer writes the JSON by hand.
+# ---------------------------------------------------------------------------
+
+_BRACE_RE = re.compile(r"\{([^{}]*)\}")
+
+
+def _humanize(name):
+    return name.replace("_", " ").strip().capitalize()
+
+
+def _brace_keys(label):
+    """Key names from a label's '{a, b, c}' shape note, or []."""
+    m = _BRACE_RE.search(label or "")
+    if not m:
+        return []
+    keys = []
+    for part in m.group(1).split(","):
+        key = part.split(":")[0].strip().strip("'\"")
+        if key and key not in keys:
+            keys.append(key)
+    return keys
+
+
+def _example_for(kind, keys):
+    """Insertable JSON skeleton for a guided editor, or None."""
+    if kind == "object" and keys:
+        return json.dumps({k: "" for k in keys}, indent=2)
+    if kind == "json" and keys:
+        return json.dumps([{k: "" for k in keys}], indent=2)
+    return None
+
+
+def _constraint(metadata, cls, attr):
+    for m in metadata:
+        if isinstance(m, cls):
+            return getattr(m, attr, None)
+    return None
+
+
+def _pydantic_form_fields(model, legacy_labels):
+    """One schema field per pydantic model field."""
+    from annotated_types import Ge, Le, MaxLen, MinLen
+    from pydantic import BeforeValidator
+
+    from studybuddy.labs_registry import (
+        _as_json_list,
+        _as_json_object,
+        _as_json_value,
+    )
+
+    fields = []
+    for name, finfo in model.model_fields.items():
+        ann = finfo.annotation
+        origin = get_origin(ann)
+        validator = None
+        for m in finfo.metadata:
+            if isinstance(m, BeforeValidator):
+                validator = m.func
+                break
+        if validator is _as_json_object:
+            kind = "object"
+        elif validator is _as_json_list:
+            kind = "lines"
+        elif validator is _as_json_value:
+            kind = "json"
+        elif ann is bool:
+            kind = "boolean"
+        elif ann is int:
+            kind = "integer"
+        elif ann is float:
+            kind = "number"
+        elif ann is str:
+            maxlen = _constraint(finfo.metadata, MaxLen, "max_length")
+            kind = "text" if (maxlen is None or maxlen > 500) else "string"
+        elif ann is list or origin is list:
+            kind = "lines"
+        elif ann is dict or origin is dict:
+            kind = "object"
+        else:
+            kind = "json"
+        entry = {
+            "name": name,
+            "label": legacy_labels.get(name) or _humanize(name),
+            "kind": kind,
+            "required": bool(finfo.is_required()),
+        }
+        if kind in ("integer", "number"):
+            ge = _constraint(finfo.metadata, Ge, "ge")
+            le = _constraint(finfo.metadata, Le, "le")
+            if ge is not None:
+                entry["min"] = ge
+            if le is not None:
+                entry["max"] = le
+        if kind in ("string", "text"):
+            minlen = _constraint(finfo.metadata, MinLen, "min_length")
+            maxlen = _constraint(finfo.metadata, MaxLen, "max_length")
+            if minlen is not None:
+                entry["min_length"] = minlen
+            if maxlen is not None:
+                entry["max_length"] = maxlen
+        default = finfo.default
+        if isinstance(default, (str, int, float, bool)):
+            entry["default"] = default
+        if kind in ("object", "json"):
+            keys = _brace_keys(legacy_labels.get(name, ""))
+            if keys:
+                entry["keys"] = keys
+                example = _example_for(kind, keys)
+                if example is not None:
+                    entry["example"] = example
+        fields.append(entry)
+    return fields
+
+
+def _legacy_form_fields(tool):
+    """Convert legacy registry field defs to the same schema shape."""
+    out = []
+    for f in tool.get("fields", []):
+        name = f["name"]
+        label = f.get("label") or _humanize(name)
+        entry = {"name": name, "label": label,
+                 "required": bool(f.get("required"))}
+        if f.get("json"):
+            keys = _brace_keys(label)
+            if "array" in label.lower():
+                entry["kind"] = "json"
+                entry["hint"] = "JSON array"
+                if keys:
+                    entry["keys"] = keys
+                    entry["example"] = json.dumps(
+                        [{k: "" for k in keys}], indent=2)
+            elif keys:
+                entry["kind"] = "object"
+                entry["keys"] = keys
+                entry["example"] = json.dumps(
+                    {k: "" for k in keys}, indent=2)
+            else:
+                entry["kind"] = "json"
+                entry["hint"] = "JSON format"
+        elif f.get("type") == "textarea":
+            entry["kind"] = "text"
+        elif f.get("type") == "number":
+            entry["kind"] = "number"
+        elif f.get("type") == "select":
+            entry["kind"] = "enum"
+            entry["options"] = [
+                str(o.get("value", o.get("label")) if isinstance(o, dict)
+                    else o)
+                for o in (f.get("options") or [])
+            ]
+        elif f.get("type") == "checkbox":
+            entry["kind"] = "boolean"
+        else:
+            entry["kind"] = "string"
+        out.append(entry)
+    return out
+
+
+def form_schema(tool):
+    """Structured-form schema for one tool (descriptive only).
+
+    Returns {"source": "schema"|"legacy"|"none", "fields": [...]}.
+    "schema" tools derive from the pydantic input model; "legacy" tools
+    from their registry field defs; "none" tools take no inputs.
+    """
+    from studybuddy.labs_registry import TOOL_HANDLERS
+
+    handler = TOOL_HANDLERS.get(tool["id"])
+    if handler is not None:
+        legacy_labels = {
+            f["name"]: f.get("label") or ""
+            for f in tool.get("fields", [])
+        }
+        return {"source": "schema",
+                "fields": _pydantic_form_fields(handler.input_model,
+                                                legacy_labels)}
+    fields = _legacy_form_fields(tool)
+    return {"source": "legacy" if fields else "none", "fields": fields}
+
+
 def run_tool(tool_id, payload):
     """Execute one registered tool. Returns (result_dict, error_str)."""
     # ARC-05: migrated tools dispatch through the typed allowlist first
@@ -122,10 +322,16 @@ def run_tool(tool_id, payload):
 
 
 def public_tools():
-    """Metadata for the frontend (no function refs)."""
+    """Metadata for the frontend (no function refs).
+
+    Each tool additionally carries its structured-form schema ("form"):
+    an additive key — the tool count and every legacy field are unchanged.
+    """
     out = []
     for t in ALL_TOOLS:
-        out.append({k: t[k] for k in ("id", "feature", "name", "description", "fields")})
+        d = {k: t[k] for k in ("id", "feature", "name", "description", "fields")}
+        d["form"] = form_schema(t)
+        out.append(d)
     return out
 
 

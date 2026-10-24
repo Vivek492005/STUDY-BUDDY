@@ -6,9 +6,12 @@ in LPA. The data is curated for student guidance (October 2026) and is NOT
 live-scraped; callers must surface the disclaimer and last-updated note.
 """
 
+from __future__ import annotations
+
 import json
 import os
 from functools import lru_cache
+from typing import Any
 
 DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                          "data", "salary_ranges.json")
@@ -19,7 +22,7 @@ class SalaryDataError(Exception):
 
 
 @lru_cache(maxsize=1)
-def load_dataset():
+def load_dataset() -> dict[str, Any]:
     """Load and validate the salary dataset (cached for the process lifetime)."""
     if not os.path.exists(DATA_PATH):
         raise SalaryDataError("Salary dataset not found.")
@@ -50,7 +53,7 @@ def load_dataset():
     return data
 
 
-def get_options():
+def get_options() -> dict[str, Any]:
     """Return filter options: roles, tiers, experience bands + meta."""
     data = load_dataset()
     return {
@@ -62,7 +65,11 @@ def get_options():
     }
 
 
-def query(role=None, tier=None, band=None):
+def query(
+    role: str | None = None,
+    tier: str | None = None,
+    band: str | None = None,
+) -> list[dict[str, Any]]:
     """Return matching salary entries. All filters optional; invalid values -> []."""
     data = load_dataset()
     valid_roles = set(data["roles"])
@@ -95,13 +102,17 @@ def query(role=None, tier=None, band=None):
     return out
 
 
-def lookup(role, tier, band):
+def lookup(role: str, tier: str, band: str) -> dict[str, Any] | None:
     """Return the single entry for an exact role/tier/band, or None."""
     rows = query(role=role, tier=tier, band=band)
     return rows[0] if rows else None
 
 
-def city_query(role=None, city=None, band=None):
+def city_query(
+    role: str | None = None,
+    city: str | None = None,
+    band: str | None = None,
+) -> list[dict[str, Any]]:
     """Return city-level entries (#11), provenance fields included.
 
     The tier table gives one range per city group; city_entries refine
@@ -120,7 +131,7 @@ def city_query(role=None, city=None, band=None):
     return out
 
 
-def lookup_city(role, city, band):
+def lookup_city(role: str, city: str, band: str) -> dict[str, Any] | None:
     """Return the single city entry for role/city/band, or None."""
     rows = city_query(role=role, city=city, band=band)
     return rows[0] if rows else None
@@ -129,7 +140,7 @@ def lookup_city(role, city, band):
 # ---- Live Data Engine: freshness ----
 SALARY_STALE_AFTER_DAYS = 90  # curated indicative ranges; review quarterly
 
-def get_freshness():
+def get_freshness() -> dict[str, Any]:
     """Freshness badge info for the salary explorer."""
     from studybuddy.live_data import freshness_badge
     try:
@@ -145,11 +156,16 @@ def get_freshness():
 import re as _re3
 
 
-def _clean3(text):
+def _clean3(text: str | None) -> str:
     return _re3.sub(r"<[^>]*>", "", text or "")
 
 
-def evaluate_offer(role, tier, band, offer_lpa):
+def evaluate_offer(
+    role: str,
+    tier: str,
+    band: str,
+    offer_lpa: float,
+) -> dict[str, Any]:
     """Paste an offer, get a verdict: below/at/above market + negotiation script.
 
     Returns {verdict, percentile_hint, market: {min, median, max}, script, gap_lpa}.
@@ -202,7 +218,7 @@ def evaluate_offer(role, tier, band, offer_lpa):
             "negotiation_script": script}
 
 
-def negotiation_coach(situation):
+def negotiation_coach(situation: str) -> dict[str, Any]:
     """Rule-based negotiation playbook for common situations.
 
     situation: one of 'lowball', 'at_median', 'competing_offers',
@@ -256,7 +272,7 @@ def negotiation_coach(situation):
             "dont": pb["dont"]}
 
 
-def band_comparison(role, tier):
+def band_comparison(role: str, tier: str) -> dict[str, Any]:
     """Fresher vs experienced bands side-by-side: the growth trajectory.
 
     Returns {bands: [{band, min, median, max}], growth_note}.

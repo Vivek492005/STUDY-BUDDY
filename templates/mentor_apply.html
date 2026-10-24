@@ -34,7 +34,7 @@
 {% else %}
 <section class="b-section" aria-label="Application form">
     <div class="b-card b-card--form b-reveal">
-        <form id="mentor-apply-form" onsubmit="return false;">
+        <form id="mentor-apply-form">
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
                 <div>
                     <label class="b-label" for="m-name">Full name *</label>
@@ -79,7 +79,7 @@
 </section>
 {% endif %}
 
-<script>
+<script nonce="{{ csp_nonce() }}">
 (function () {
     'use strict';
     var form = document.getElementById('mentor-apply-form');
@@ -90,7 +90,8 @@
         if (m) headers['X-CSRFToken'] = m.getAttribute('content');
         return headers;
     }
-    form.addEventListener('submit', function () {
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
         var err = document.getElementById('m-error');
         var status = document.getElementById('m-status');
         err.style.display = 'none'; status.style.display = 'none';

@@ -2,7 +2,7 @@
 <html lang="en" class="no-js" data-theme="resume">
 <head>
     <meta charset="UTF-8">
-    <script>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>AI Mock Interviews | Study-Buddy</title>
@@ -11,11 +11,18 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bento.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/kinetic.css') }}">
+    <style>
+    /* a11y: skip link (same rules as base.html) */
+    .skip-link{position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:.75rem 1.25rem;z-index:9999;font-weight:700;border-radius:0 0 8px 0}
+    .skip-link:focus{left:0}
+    </style>
 </head>
 <body class="sb-iv">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     {% set nav_active = 'practice' %}
     {% include "_site_nav.html" %}
     {% with sb_active="interview", sb_title="Mock Interview" %}{% include "_app_sidebar.html" %}{% endwith %}
+    <main id="main-content" tabindex="-1">
 
     <div class="sb-iv-wrap">
         <div class="iv-head">
@@ -56,7 +63,7 @@
                         {% for c in options.companies %}<button type="button" class="iv-co" data-company="{{ c }}">{{ c }}<small>{{ company_counts.get(c, 0) }}</small></button>{% endfor %}
                     </div>
                     <div style="display:none">
-                        <select id="sel-company">
+                        <select id="sel-company" aria-label="Company">
                             {% for c in options.companies %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
                         </select>
                     </div>
@@ -88,7 +95,7 @@
                         <button type="button" data-n="10">10</button>
                     </div>
                     <div style="display:none">
-                        <select id="sel-n">
+                        <select id="sel-n" aria-label="Number of questions">
                             <option value="3">3</option>
                             <option value="5" selected>5</option>
                             <option value="8">8</option>
@@ -113,7 +120,7 @@
                     <input type="file" id="resume-file" accept=".pdf,.docx">
                 </label>
                 <p style="margin:0 0 1rem;"><a href="#" id="paste-toggle">…or paste the resume text instead</a></p>
-                <textarea class="iv-answer" id="resume-text" style="display:none;min-height:150px;" placeholder="Paste your full resume text here — sections like Projects, Skills and Experience help us ask better questions."></textarea>
+                <textarea class="iv-answer" id="resume-text" aria-label="Paste your full resume text here" style="display:none;min-height:150px;" placeholder="Paste your full resume text here — sections like Projects, Skills and Experience help us ask better questions."></textarea>
                 <button class="iv-btn b-magnet" id="btn-resume-start">Build My Interview</button>
                 <div class="iv-error" id="resume-error" role="alert"></div>
                 <div class="iv-profile" id="resume-profile">
@@ -151,7 +158,7 @@
                     <span class="iv-timer" id="q-timer"></span>
                 </div>
                 <div class="iv-q" id="q-text"></div>
-                <textarea class="iv-answer" id="q-answer" placeholder="Type your answer here. Aim for a structured 60-120 word response..."></textarea>
+                <textarea class="iv-answer" id="q-answer" aria-label="Your answer" placeholder="Type your answer here. Aim for a structured 60-120 word response..."></textarea>
                 <div class="iv-kp">
                     <details>
                         <summary>Peek at ideal-answer key points (self-honesty!)</summary>
@@ -168,6 +175,7 @@
         <div id="results-area" style="display:none"></div>
     </div>
 
+    </main>
     <footer class="b-footer">
         <div class="b-wrap b-foot-in">
             <span>&copy; 2026 Study-Buddy</span>
@@ -180,7 +188,7 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/interview.js') }}"></script>
-    <script>
+    <script nonce="{{ csp_nonce() }}">
     (function () {
       'use strict';
       function el(id) { return document.getElementById(id); }

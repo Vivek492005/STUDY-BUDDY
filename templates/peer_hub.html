@@ -51,7 +51,7 @@
 <section class="b-section" aria-label="Create a peer room">
     <div class="b-sec-head"><h2>Start a <span class="b-grad">room</span></h2><p>Pick a role and category — you'll get a shareable link for your peer.</p></div>
     <div class="b-card b-card--form b-reveal">
-        <form id="peer-create" onsubmit="return false;">
+        <form id="peer-create">
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
                 <div>
                     <label for="peer-role" class="b-label">Role</label>
@@ -174,7 +174,7 @@
     {% endif %}
 </section>
 
-<script>
+<script nonce="{{ csp_nonce() }}">
 (function () {
     'use strict';
     function csrfHeaders(extra) {
@@ -205,6 +205,7 @@
         });
     })();
 
+    document.getElementById('peer-create').addEventListener('submit', function (e) { e.preventDefault(); });
     var btn = document.getElementById('peer-create-btn');
     btn.addEventListener('click', function () {
         document.getElementById('peer-create-error').style.display = 'none';

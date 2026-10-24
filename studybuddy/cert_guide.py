@@ -10,8 +10,11 @@ Study plans spread a cert's prep resources (plus overlapping roadmap
 topics when available) across N weeks.
 """
 
+from __future__ import annotations
+
 import json
 import os
+from typing import Any, Callable
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                          "data", "certifications.json")
@@ -22,7 +25,7 @@ _bank = None
 _by_id = None
 
 
-def _load():
+def _load() -> list[dict[str, Any]]:
     global _bank, _by_id
     if _bank is None:
         try:
@@ -34,20 +37,20 @@ def _load():
     return _bank
 
 
-def _by_id_map():
+def _by_id_map() -> dict[str, dict[str, Any]]:
     _load()
     return _by_id
 
 
-def all_certs():
+def all_certs() -> list[dict[str, Any]]:
     return _load()
 
 
-def get_cert(cert_id):
+def get_cert(cert_id: str) -> dict[str, Any] | None:
     return _by_id_map().get(cert_id)
 
 
-def domains():
+def domains() -> list[tuple[str, int]]:
     """Sorted [(domain, count)]."""
     counts = {}
     for c in _load():
@@ -56,7 +59,11 @@ def domains():
     return sorted(counts.items())
 
 
-def filter_certs(domain=None, max_cost_inr=None, difficulty=None):
+def filter_certs(
+    domain: str | None = None,
+    max_cost_inr: float | None = None,
+    difficulty: str | None = None,
+) -> list[dict[str, Any]]:
     out = []
     for c in _load():
         if domain and c.get("domain") != domain:
@@ -73,11 +80,16 @@ def filter_certs(domain=None, max_cost_inr=None, difficulty=None):
     return out
 
 
-def _norm_skills(skills):
+def _norm_skills(skills: list[str] | None) -> set[str]:
     return {str(s).strip().lower() for s in (skills or []) if str(s).strip()}
 
 
-def recommend(skills=None, target_role=None, budget_inr=None, top_n=8):
+def recommend(
+    skills: list[str] | None = None,
+    target_role: str | None = None,
+    budget_inr: float | None = None,
+    top_n: int = 8,
+) -> list[dict[str, Any]]:
     """Rank certifications for a learner.
 
     skills: list of skill ids the learner has (e.g. ["python", "sql"]).
@@ -142,7 +154,7 @@ def recommend(skills=None, target_role=None, budget_inr=None, top_n=8):
     return ranked[:max(1, min(int(top_n or 8), 20))]
 
 
-def _roadmap_lookup():
+def _roadmap_lookup() -> Callable[[str], dict[str, Any] | None] | None:
     """Lazy import of the roadmap bank for study-plan enrichment."""
     try:
         from studybuddy.learning_roadmaps import get_skill
@@ -151,7 +163,10 @@ def _roadmap_lookup():
         return None
 
 
-def build_study_plan(cert_id, weeks=8):
+def build_study_plan(
+    cert_id: str,
+    weeks: int = 8,
+) -> tuple[dict[str, Any] | None, str | None]:
     """Generate a week-by-week study plan for a certification.
 
     Uses the cert's prep resources spread across weeks; when the roadmap
@@ -232,7 +247,7 @@ def build_study_plan(cert_id, weeks=8):
     }, None
 
 
-def _week_tasks(week, total):
+def _week_tasks(week: int, total: int) -> list[str]:
     if week == 1:
         return ["Read the official exam guide end-to-end.",
                 "Take a baseline practice test to find gaps.",
@@ -249,7 +264,9 @@ def _week_tasks(week, total):
             "Write a one-page summary of what you learned."]
 
 
-def validate_recommend_payload(payload):
+def validate_recommend_payload(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
     if not isinstance(payload, dict):
         return None, "Provide a JSON object."
     skills = payload.get("skills") or []
@@ -273,7 +290,9 @@ def validate_recommend_payload(payload):
             "budget_inr": budget, "top_n": max(1, min(top_n, 20))}, None
 
 
-def validate_plan_payload(payload):
+def validate_plan_payload(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
     if not isinstance(payload, dict):
         return None, "Provide a JSON object."
     cert_id = (payload.get("cert_id") or "").strip()
@@ -289,7 +308,7 @@ def validate_plan_payload(payload):
 # ---- Live Data Engine: freshness ----
 CERT_STALE_AFTER_DAYS = 60  # exam fees/syllabi change; review bi-monthly
 
-def get_freshness():
+def get_freshness() -> dict[str, Any]:
     """Freshness badge info for the certification hub."""
     import json as _json
 
@@ -309,11 +328,11 @@ import re as _re11
 from datetime import UTC, date, datetime, timedelta
 
 
-def _clean11(text):
+def _clean11(text: str | None) -> str:
     return _re11.sub(r"<[^>]*>", "", text or "")
 
 
-def _parse_exam_format(exam_format):
+def _parse_exam_format(exam_format: str | None) -> tuple[int, int]:
     """Extract (questions, minutes) from 'exam_format' text. Defaults (50, 90)."""
     text = _clean11(exam_format or "")
     q = _re11.search(r"(\d+)\s*(questions|multiple-choice|items)", text, _re11.I)
@@ -329,7 +348,10 @@ def _parse_exam_format(exam_format):
     return max(5, min(200, n_q)), max(15, min(300, n_m))
 
 
-def exam_day_simulator(cert_id, seed=None):
+def exam_day_simulator(
+    cert_id: str,
+    seed: int | None = None,
+) -> dict[str, Any]:
     """Full exam-day mock: real question count + time limit.
 
     Pulls matching skill-quiz questions where possible; falls back to a
@@ -369,7 +391,7 @@ _CERT_BUMP = {
 }
 
 
-def cert_roi(cert_id, current_lpa):
+def cert_roi(cert_id: str, current_lpa: float) -> dict[str, Any]:
     """Cost vs expected salary bump for a certification.
 
     Returns {cert, cost_inr, expected_bump_lpa, payback_months, verdict}.
@@ -404,7 +426,10 @@ def cert_roi(cert_id, current_lpa):
                         "Slow payback — do it for skills, not salary.")}
 
 
-def renewal_status(cert_id, earned_date):
+def renewal_status(
+    cert_id: str,
+    earned_date: str | date,
+) -> dict[str, Any]:
     """Track certification expiry; 90/30/7-day reminders.
 
     earned_date: ISO date string or date. Returns {cert, earned, expires,

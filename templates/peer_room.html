@@ -177,7 +177,7 @@
     {% if not my_feedback_done %}
     <div class="b-card b-card--form b-reveal">
         <h3 style="margin-top:0;">Feedback for {{ partner.name if partner else 'your peer' }}</h3>
-        <form id="peer-feedback-form" onsubmit="return false;">
+        <form id="peer-feedback-form">
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;">
                 {% for dim in rubric_dims %}
                 <div>
@@ -233,7 +233,7 @@
 </section>
 {% endif %}
 
-<script>
+<script nonce="{{ csp_nonce() }}">
 (function () {
     'use strict';
     var TOKEN = {{ room.token|tojson }};
@@ -364,6 +364,7 @@
     });
 
     /* ---- feedback ---- */
+    document.getElementById('peer-feedback-form').addEventListener('submit', function (e) { e.preventDefault(); });
     var fbBtn = document.getElementById('peer-feedback-btn');
     if (fbBtn) {
         fbBtn.addEventListener('click', function () {

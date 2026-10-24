@@ -5,7 +5,7 @@
 <div class="sb-dash">
 <div style="margin-top:2rem;">
     <p class="sb-kicker">Your workspace — real work, not sample data</p>
-    <h1 class="sb-display" style="font-size:clamp(3rem,8vw,6.5rem);margin:0;"><span id="sb-greet">Good evening</span>,<br>{{ current_user.name.split(' ')[0] if current_user.name else 'there' }}<span style="color:var(--sb-blue)">.</span></h1><script>try{var _h=new Date().getHours(),_g=_h<12?"Good morning":(_h<17?"Good afternoon":"Good evening");document.getElementById("sb-greet").textContent=_g;}catch(e){}</script>
+    <h1 class="sb-display" style="font-size:clamp(3rem,8vw,6.5rem);margin:0;"><span id="sb-greet">Good evening</span>,<br>{{ current_user.name.split(' ')[0] if current_user.name else 'there' }}<span style="color:var(--sb-blue)">.</span></h1><script nonce="{{ csp_nonce() }}">try{var _h=new Date().getHours(),_g=_h<12?"Good morning":(_h<17?"Good afternoon":"Good evening");document.getElementById("sb-greet").textContent=_g;}catch(e){}</script>
     <p class="sb-lede">Every analysis you run while logged in is saved here. Keep building, {{ current_user.name }}.</p>
 </div>
 
@@ -328,7 +328,7 @@
 <div class="b-card b-reveal" style="margin-bottom:var(--b-gap);">
     <form method="POST" action="{{ url_for('goal_add') }}" style="display:flex;gap:.7rem;flex-wrap:wrap;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input class="b-input" type="text" name="title" placeholder="e.g. Crack SDE-1 interviews by March" maxlength="255" required style="flex:2;min-width:200px;">
+        <input class="b-input" type="text" name="title" aria-label="Career goal title" placeholder="e.g. Crack SDE-1 interviews by March" maxlength="255" required style="flex:2;min-width:200px;">
         <input class="b-input" type="date" name="target_date" aria-label="Target date" style="flex:1;min-width:150px;">
         <button type="submit" class="b-btn b-btn--primary">Add Goal</button>
     </form>
@@ -344,7 +344,7 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button class="b-btn b-btn--ghost b-btn--sm" type="submit">{% if g.status == 'done' %}Reopen{% else %}Done{% endif %}</button>
             </form>
-            <form method="POST" action="{{ url_for('goal_delete', goal_id=g.id) }}" onsubmit="return confirm('Delete this goal?');">
+            <form method="POST" action="{{ url_for('goal_delete', goal_id=g.id) }}" class="js-confirm-delete" data-confirm="Delete this goal?">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button class="b-btn b-btn--danger b-btn--sm" type="submit">Delete</button>
             </form>
@@ -356,4 +356,5 @@
 <div class="b-card b-reveal"><p style="color:var(--b-muted);">No goals yet — set your first career target above.</p></div>
 {% endif %}
 </div>
+<script nonce="{{ csp_nonce() }}">document.querySelectorAll('.js-confirm-delete').forEach(function (f) { f.addEventListener('submit', function (e) { if (!confirm(f.getAttribute('data-confirm') || 'Are you sure?')) e.preventDefault(); }); });</script>
 {% endblock %}

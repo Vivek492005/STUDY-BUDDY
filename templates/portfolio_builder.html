@@ -2,7 +2,7 @@
 <html lang="en" class="no-js" data-theme="resume">
 <head>
     <meta charset="UTF-8">
-    <script>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Portfolio Builder | AI Resume Analyzer</title>
@@ -65,8 +65,14 @@
         .pb-pub a { color: var(--accent-primary); font-weight: 700; word-break: break-all; }
         @media (prefers-reduced-motion: reduce) { .pb-btn:hover { filter: none; } }
     </style>
+    <style>
+    /* a11y: skip link (same rules as base.html) */
+    .skip-link{position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:.75rem 1.25rem;z-index:9999;font-weight:700;border-radius:0 0 8px 0}
+    .skip-link:focus{left:0}
+    </style>
 </head>
 <body class="sb-app">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="b-scroll-progress" data-scroll-progress aria-hidden="true"></div>
     <div class="b-ambient" aria-hidden="true">
         <div class="b-blob b-b1"></div>
@@ -76,6 +82,7 @@
     </div>
     {% set nav_active = 'career' %}
     {% include "_site_nav.html" %}
+    <main id="main-content" tabindex="-1">
 
     <div class="pb-wrap">
         <div class="pb-head b-reveal">
@@ -146,6 +153,7 @@
                 </div>
             </div>
         </div>
+    </main>
     <footer class="b-footer">
         <div class="b-wrap b-foot-in">
             <span>&copy; 2026 Study-Buddy</span>
@@ -156,7 +164,7 @@
             </span>
         </div>
     </footer>
-    <script>
+    <script nonce="{{ csp_nonce() }}">
         window.PORTFOLIO_EXISTING = {{ (portfolio_payload|tojson) if portfolio_payload else 'null' }};
     </script>
     <script src="{{ url_for('static', filename='js/portfolio.js') }}"></script>

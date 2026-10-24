@@ -19,9 +19,12 @@ Keys are read from the environment on every call (never cached), so key
 rotation via Render env vars takes effect without a restart.
 """
 
+from __future__ import annotations
+
 import logging
 import os
 import re
+from typing import Any, Callable
 
 import requests
 
@@ -74,7 +77,7 @@ _CACHE_TTL = 3600  # 1 hour
 _CACHE_MAX = 1000
 
 
-def _cache_get(prompt):
+def _cache_get(prompt: str) -> str | None:
     """LLM-04: Get cached response if fresh."""
     import hashlib
     import time
@@ -89,7 +92,7 @@ def _cache_get(prompt):
     return None
 
 
-def _cache_put(prompt, response):
+def _cache_put(prompt: str, response: str) -> None:
     """LLM-04: Cache a response."""
     import hashlib
     import time
@@ -101,7 +104,7 @@ def _cache_put(prompt, response):
     _CACHE[key] = (response, time.time())
 
 
-def _circuit_open(provider):
+def _circuit_open(provider: str) -> bool:
     """Check if circuit breaker is open for provider."""
     import time
     state = _CIRCUIT.get(provider, {})
@@ -114,7 +117,7 @@ def _circuit_open(provider):
     return False
 
 
-def _circuit_record(provider, success):
+def _circuit_record(provider: str, success: bool) -> None:
     """Record success/failure for circuit breaker."""
     import time
     state = _CIRCUIT.setdefault(provider, {"failures": 0, "open_until": 0})
@@ -128,7 +131,11 @@ def _circuit_record(provider, success):
             log.warning("circuit_open provider=%s", provider)
 
 
-def _retry_with_backoff(fn, provider, max_retries=3):
+def _retry_with_backoff(
+    fn: Callable[[], str],
+    provider: str,
+    max_retries: int = 3,
+) -> str:
     """LLM-01: Exponential backoff with jitter on 429/5xx."""
     import random
     import time
@@ -164,41 +171,41 @@ def _retry_with_backoff(fn, provider, max_retries=3):
     raise ProviderDown(f"{provider}: all retries failed: {last_exc}")
 
 
-def _key(name):
+def _key(name: str) -> str | None:
     key = (os.getenv(name) or "").strip().strip('"').strip("'")
     return key if key and key not in _KEY_SENTINELS else None
 
 
-def gemini_configured():
+def gemini_configured() -> bool:
     return _key("GEMINI_API_KEY") is not None
 
 
-def groq_configured():
+def groq_configured() -> bool:
     return _key("GROQ_API_KEY") is not None
 
 
-def openrouter_configured():
+def openrouter_configured() -> bool:
     return _key("OPENROUTER_API_KEY") is not None
 
 
-def ai_ready():
+def ai_ready() -> bool:
     """True when at least one provider key is configured."""
     return gemini_configured() or groq_configured() or openrouter_configured() \
         or local_configured()
 
 
-def local_configured():
+def local_configured() -> bool:
     """PRIV-05: True when LLM_BASE_URL points at a local OpenAI-compatible endpoint."""
     return bool(os.getenv("LLM_BASE_URL", "").strip())
 
 
-def llm_mode():
+def llm_mode() -> str:
     """PRIV-05: current LLM mode — off|byok|server (from env, default server)."""
     mode = os.getenv("LLM_MODE", "server").strip().lower()
     return mode if mode in ("off", "byok", "server") else "server"
 
 
-def _local_generate(prompt, api_key=None):
+def _local_generate(prompt: str, api_key: str | None = None) -> str:
     """PRIV-05: generate via local OpenAI-compatible endpoint (Ollama etc.)."""
     base = os.getenv("LLM_BASE_URL", "").strip().rstrip("/")
     if not base:
@@ -208,7 +215,7 @@ def _local_generate(prompt, api_key=None):
         os.getenv("LLM_MODEL", "llama3.2"), prompt, "local")
 
 
-def providers_configured():
+def providers_configured() -> list[str]:
     """Ordered list of configured provider names (for status pages)."""
     out = []
     if gemini_configured():
@@ -220,9 +227,15 @@ def providers_configured():
     return out
 
 
-def _openai_compatible_generate(url, key, model, prompt, provider):
+def _openai_compatible_generate(
+    url: str,
+    key: str,
+    model: str,
+    prompt: str,
+    provider: str,
+) -> str:
     """POST a chat-completion request to an OpenAI-compatible endpoint."""
-    def _call():
+    def _call() -> str:
         headers = {
             "Authorization": f"Bearer {key}",
             "Content-Type": "application/json",
@@ -246,14 +259,14 @@ def _openai_compatible_generate(url, key, model, prompt, provider):
     return _retry_with_backoff(_call, provider)
 
 
-def _groq_generate(prompt):
+def _groq_generate(prompt: str) -> str:
     key = _key("GROQ_API_KEY")
     if not key:
         raise AIError("Groq key not configured")
     return _openai_compatible_generate(_GROQ_URL, key, _GROQ_MODEL, prompt, "groq")
 
 
-def _openrouter_generate(prompt):
+def _openrouter_generate(prompt: str) -> str:
     key = _key("OPENROUTER_API_KEY")
     if not key:
         raise AIError("OpenRouter key not configured")
@@ -261,14 +274,14 @@ def _openrouter_generate(prompt):
                                        prompt, "openrouter")
 
 
-def _gemini_generate(prompt):
+def _gemini_generate(prompt: str) -> str:
     """Delegate to the existing Gemini implementation in unified_app."""
     # Local import to avoid a hard dependency cycle at module load.
     import unified_app as app_mod
     return app_mod.call_gemini_direct(prompt)
 
 
-def _model_for(provider_name):
+def _model_for(provider_name: str) -> str:
     """Map a gateway provider key to the model id for the LLM ledger.
 
     Gemini's model is discovered dynamically in unified_app, so we record
@@ -283,8 +296,13 @@ def _model_for(provider_name):
     }.get(provider_name, provider_name)
 
 
-def generate(prompt, user_key=None, redact_pii=True,
-             _llm_user_id=None, _llm_feature="generate"):
+def generate(
+    prompt: str,
+    user_key: str | None = None,
+    redact_pii: bool = True,
+    _llm_user_id: int | None = None,
+    _llm_feature: str = "generate",
+) -> str:
     """Generate text via the first working provider.
 
     PRIV-05 modes:
@@ -387,8 +405,14 @@ def generate(prompt, user_key=None, redact_pii=True,
 
 
 # LLM-02: Structured outputs with pydantic validation
-def generate_structured(prompt, schema_cls, user_key=None, max_repair=1,
-                        _llm_user_id=None, _llm_feature="generate_structured"):
+def generate_structured(
+    prompt: str,
+    schema_cls: type[Any],
+    user_key: str | None = None,
+    max_repair: int = 1,
+    _llm_user_id: int | None = None,
+    _llm_feature: str = "generate_structured",
+) -> Any:
     """Generate JSON conforming to a pydantic schema.
 
     Args:

@@ -37,7 +37,7 @@ import os
 import re
 import unicodedata
 from collections import Counter
-from typing import BinaryIO
+from typing import Any, BinaryIO
 
 import pypdf
 
@@ -91,7 +91,7 @@ _SENT_END_RE = re.compile(r"[.!?](?=\s|$)")
 # 1. Upload validation
 # ---------------------------------------------------------------------------
 
-def _upload_name_error(file_storage) -> str | None:
+def _upload_name_error(file_storage: Any) -> str | None:
     """Error string when the filename is missing/not a PDF, else None."""
     filename = getattr(file_storage, "filename", None) or ""
     filename = os.path.basename(filename).strip()
@@ -102,7 +102,7 @@ def _upload_name_error(file_storage) -> str | None:
     return None
 
 
-def _upload_mime_error(file_storage) -> str | None:
+def _upload_mime_error(file_storage: Any) -> str | None:
     """Error string when a declared MIME type is not PDF-ish, else None."""
     mimetype = (
         getattr(file_storage, "mimetype", None)
@@ -115,7 +115,7 @@ def _upload_mime_error(file_storage) -> str | None:
     return None
 
 
-def _upload_stream(file_storage):
+def _upload_stream(file_storage: Any) -> BinaryIO | None:
     """Resolve the readable stream, or None when unreadable."""
     stream = getattr(file_storage, "stream", None)
     if stream is None and hasattr(file_storage, "read"):
@@ -123,7 +123,7 @@ def _upload_stream(file_storage):
     return stream
 
 
-def _upload_size_error(stream) -> str | None:
+def _upload_size_error(stream: BinaryIO) -> str | None:
     """Error string when the stream is empty/oversized/unreadable, else None."""
     try:
         stream.seek(0, os.SEEK_END)
@@ -138,7 +138,7 @@ def _upload_size_error(stream) -> str | None:
     return None
 
 
-def _upload_magic_error(stream, pos) -> str | None:
+def _upload_magic_error(stream: BinaryIO, pos: int | None) -> str | None:
     """Error string when %PDF is missing from the first 1024 bytes.
 
     Restores the stream to ``pos`` (captured before the size check) on every
@@ -163,7 +163,7 @@ def _upload_magic_error(stream, pos) -> str | None:
     return None
 
 
-def validate_upload(file_storage) -> tuple[bool, str]:
+def validate_upload(file_storage: Any) -> tuple[bool, str]:
     """Validate an uploaded file before any PDF parsing is attempted.
 
     Accepts any object with a ``filename`` attribute and either a ``stream``
@@ -262,7 +262,7 @@ class ChunkList(list):
     tell the user only the first 2000 chunks were indexed.
     """
 
-    def __init__(self, *args, truncated: bool = False):
+    def __init__(self, *args: Any, truncated: bool = False) -> None:
         super().__init__(*args)
         self.truncated = truncated
 
@@ -608,7 +608,9 @@ def retrieve(chunks: list[dict], query: str, top_k: int = 5) -> list[dict]:
 
     # Sort by combined score descending, then chunk index ascending — fully
     # deterministic.
-    def _sort_key(item):
+    def _sort_key(
+        item: tuple[float, dict[str, Any], dict[str, Any]],
+    ) -> tuple[float, int]:
         chunk = item[2]
         idx = chunk.get("index", 0) if isinstance(chunk, dict) else 0
         try:
@@ -722,11 +724,15 @@ def answer_question(
 import re as _re12
 
 
-def _clean12(text):
+def _clean12(text: str | None) -> str:
     return _re12.sub(r"<[^>]*>", "", text or "")
 
 
-def answer_across_docs(query, docs, top_k=3):
+def answer_across_docs(
+    query: str | None,
+    docs: list[dict[str, Any]],
+    top_k: int = 3,
+) -> dict[str, Any]:
     """Ask one question across multiple documents.
 
     docs: list of {title, chunks}. Retrieves from the merged pool, then
@@ -784,7 +790,7 @@ def answer_across_docs(query, docs, top_k=3):
             "docs_consulted": n_docs}
 
 
-def verify_citations(answer_dict):
+def verify_citations(answer_dict: dict[str, Any]) -> dict[str, Any]:
     """Check that every claim in an answer carries a citation marker.
 
     Returns {claims, cited, uncited, ok}. A claim = one quoted segment.
@@ -802,7 +808,10 @@ def verify_citations(answer_dict):
                         f"{uncited} claim(s) missing citations.")}
 
 
-def qa_to_notes(qa_pairs, title="Study Notes"):
+def qa_to_notes(
+    qa_pairs: list[dict[str, Any]],
+    title: str = "Study Notes",
+) -> dict[str, Any]:
     """Export Q&A pairs to structured markdown study notes.
 
     qa_pairs: list of {question, answer, citations?}. Returns {markdown, sections}.

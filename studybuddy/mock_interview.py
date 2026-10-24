@@ -4,7 +4,9 @@ Question bank: data/interview_questions.json (tagged by
 company/role/category/difficulty, each with ideal-answer key points).
 
 Rubric (per answer, 0-100, deterministic and server-side):
-  - correctness / approach ........ 40
+  - correctness / approach ........ 40 (key-point coverage, plus a bounded
+    lexical TF-IDF cosine similarity bonus — word-overlap statistics,
+    NOT embeddings; see _key_point_similarity)
   - communication ................. 25
   - depth ......................... 20
   - edge cases / completeness ..... 15
@@ -14,11 +16,15 @@ available; the rule-based feedback below is the guaranteed fallback.
 The numeric score never depends on the LLM.
 """
 
+from __future__ import annotations
+
 import json
+import math
 import os
 import random
 import re
 from collections import Counter, defaultdict
+from typing import Any
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                          "data", "interview_questions.json")
@@ -26,7 +32,7 @@ BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file_
 _bank = None
 
 
-def _load_bank():
+def _load_bank() -> list[dict[str, Any]]:
     global _bank
     if _bank is None:
         with open(BANK_PATH, encoding="utf-8") as f:
@@ -34,7 +40,7 @@ def _load_bank():
     return _bank
 
 
-def _filler_entries():
+def _filler_entries() -> list[dict[str, Any]]:
     path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                         "data", "filler_words.json")
     try:
@@ -47,14 +53,14 @@ def _filler_entries():
 _FILLERS = None
 
 
-def _fillers():
+def _fillers() -> list[dict[str, Any]]:
     global _FILLERS
     if _FILLERS is None:
         _FILLERS = _filler_entries()
     return _FILLERS
 
 
-def interview_options():
+def interview_options() -> dict[str, list[str]]:
     """Distinct companies, roles, categories for the setup form."""
     bank = _load_bank()
     companies = sorted({c for q in bank for c in q["companies"]})
@@ -75,7 +81,7 @@ CATEGORY_DISPLAY = {
 _DISPLAY_TO_BANK = {v.lower(): k for k, v in CATEGORY_DISPLAY.items()}
 
 
-def category_from_display(value):
+def category_from_display(value: str | None) -> str | None:
     """Accept a hub filter value (display label or bank value) and return
     the bank category, or None when it matches nothing."""
     if not value:
@@ -86,7 +92,7 @@ def category_from_display(value):
     return _DISPLAY_TO_BANK.get(key)
 
 
-def interview_hub_data():
+def interview_hub_data() -> dict[str, Any]:
     """Aggregates for the /practice hub, computed from the JSON bank
     (single source of truth — the legacy CSV is no longer served here).
 
@@ -117,7 +123,11 @@ def interview_hub_data():
     }
 
 
-def hub_company_questions(company, category=None, difficulty=None):
+def hub_company_questions(
+    company: str,
+    category: str | None = None,
+    difficulty: str | None = None,
+) -> list[dict[str, Any]]:
     """Bank rows for one company, shaped for the /practice question cards
     (display category, time estimate, rubric key points included)."""
     bank = _load_bank()
@@ -143,7 +153,7 @@ def hub_company_questions(company, category=None, difficulty=None):
     return out
 
 
-def _content_words(text):
+def _content_words(text: str | None) -> list[str]:
     words = re.findall(r"[a-z][a-z0-9+\-#]*", (text or "").lower())
     stop = {"the", "a", "an", "and", "or", "of", "to", "in", "on", "for",
             "with", "is", "are", "was", "were", "be", "it", "its", "that",
@@ -164,7 +174,7 @@ def _content_words(text):
     return out
 
 
-def _stem(w):
+def _stem(w: str) -> str:
     """Very light stemmer so 'recovered' matches 'recovery', etc."""
     if len(w) > 5:
         for suf in ("ational", "tion", "ing", "edly", "ed", "ies", "es", "s", "ly"):
@@ -175,7 +185,67 @@ def _stem(w):
     return w
 
 
-def _key_point_coverage(key_points, answer):
+def _tfidf_cosine(a_tokens: list[str], b_tokens: list[str]) -> float:
+    """Lexical TF-IDF cosine similarity between two token lists.
+
+    NOT embeddings and NOT semantic: this is pure word-overlap statistics.
+    Term frequency within each document is weighted by inverse document
+    frequency over the two documents (shared terms get weight 1.0, terms
+    unique to one side get log(3/2) + 1), then cosine similarity is taken
+    over the two vectors. Returns a float in [0, 1]; 0.0 when either side
+    has no tokens. Deterministic, stdlib only.
+    """
+    if not a_tokens or not b_tokens:
+        return 0.0
+    ca, cb = Counter(a_tokens), Counter(b_tokens)
+    idf = {}
+    for term in set(ca) | set(cb):
+        df = (1 if term in ca else 0) + (1 if term in cb else 0)
+        idf[term] = math.log(3.0 / (1.0 + df)) + 1.0
+    va = {t: (c / len(a_tokens)) * idf[t] for t, c in ca.items()}
+    vb = {t: (c / len(b_tokens)) * idf[t] for t, c in cb.items()}
+    dot = sum(va[t] * vb.get(t, 0.0) for t in va)
+    na = math.sqrt(sum(v * v for v in va.values()))
+    nb = math.sqrt(sum(v * v for v in vb.values()))
+    if na == 0.0 or nb == 0.0:
+        return 0.0
+    return round(max(0.0, min(1.0, dot / (na * nb))), 4)
+
+
+def _key_point_similarity(
+    key_points: list[str] | None,
+    answer: str | None,
+) -> tuple[float, list[float]]:
+    """Mean lexical TF-IDF cosine similarity between the answer and each
+    key point, plus the per-point scores.
+
+    LEXICAL signal only: it rewards answers that use the key points'
+    vocabulary with similar emphasis, and it penalizes off-topic
+    verbosity (answer terms absent from a key point dilute the cosine).
+    It is NOT semantic similarity — a paraphrase sharing no words scores
+    0 here, which is exactly why it only ever blends into (never
+    replaces) the coverage metric. Mirrors _key_point_coverage: an empty
+    answer scores 0.0, and no usable key points score 1.0 (nothing to
+    miss, so the blend leaves correctness unchanged).
+    """
+    ans_tokens = _content_words(answer)
+    if not ans_tokens:
+        return 0.0, []
+    sims = []
+    for kp in key_points or []:
+        kp_tokens = _content_words(kp)
+        if not kp_tokens:
+            continue
+        sims.append(_tfidf_cosine(ans_tokens, kp_tokens))
+    if not sims:
+        return 1.0, []
+    return sum(sims) / len(sims), sims
+
+
+def _key_point_coverage(
+    key_points: list[str] | None,
+    answer: str | None,
+) -> tuple[float, list[str]]:
     """Mean partial credit per key point (50% overlap = full credit)."""
     ans_words = set(_content_words(answer))
     if not ans_words:
@@ -194,7 +264,7 @@ def _key_point_coverage(key_points, answer):
     return mean_ratio, hits
 
 
-def _filler_penalty(answer):
+def _filler_penalty(answer: str | None) -> tuple[float, list[str]]:
     """Severity-weighted filler hits per 100 words, capped."""
     words = _content_words(answer)
     n = max(1, len(words))
@@ -220,13 +290,19 @@ EDGE_SIGNALS = ("edge case", "complexity", "o(n", "o(log", "scale", "failure",
                  "validate", "assumption")
 
 
-def _signal_ratio(answer, signals):
+def _signal_ratio(
+    answer: str | None,
+    signals: tuple[str, ...],
+) -> tuple[float, list[str]]:
     lowered = (answer or "").lower()
     found = [s for s in signals if s in lowered]
     return min(1.0, len(found) / 3.0), found
 
 
-def score_answer(question, answer):
+def score_answer(
+    question: dict[str, Any],
+    answer: str | None,
+) -> dict[str, Any]:
     """Score one answer against the rubric. Returns a detailed dict."""
     answer = (answer or "").strip()
     words = _content_words(answer)
@@ -238,6 +314,8 @@ def score_answer(question, answer):
             "total": 0.0,
             "key_points_hit": [],
             "key_points_total": len(question.get("key_points") or []),
+            "key_point_similarity": 0.0,
+            "key_point_similarities": [],
             "filler_hits": [],
             "word_count": 0,
             "depth_signals": [],
@@ -246,8 +324,17 @@ def score_answer(question, answer):
     key_points = question.get("key_points") or []
 
     # --- correctness / approach (40) ---
+    # Coverage-led: 40 * key-point word coverage, plus a bounded bonus
+    # from the lexical TF-IDF cosine similarity (NOT embeddings — see
+    # _key_point_similarity). Bonus-only is deliberate: per-point cosine
+    # between a long answer and a short key point is inherently small
+    # (length dilution — a strong test answer measured 0.04), so a
+    # subtractive blend would systematically penalize thorough answers.
+    # The bonus (max +2.0) rewards topical alignment without ever
+    # lowering a coverage-based score. Deterministic and rule-based.
     coverage, hits = _key_point_coverage(key_points, answer)
-    correctness = 40.0 * coverage
+    similarity, similarities = _key_point_similarity(key_points, answer)
+    correctness = 40.0 * coverage + min(2.0, 8.0 * similarity)
     if len(words) < 20:
         correctness *= 0.4  # too thin to judge
     correctness = round(min(40.0, correctness), 1)
@@ -290,6 +377,8 @@ def score_answer(question, answer):
         "total": total,
         "key_points_hit": hits,
         "key_points_total": len(key_points),
+        "key_point_similarity": round(similarity, 4),
+        "key_point_similarities": similarities,
         "filler_hits": filler_hits,
         "word_count": len(words),
         "depth_signals": depth_found,
@@ -297,7 +386,10 @@ def score_answer(question, answer):
     }
 
 
-def generate_rule_based_feedback(scored, question):
+def generate_rule_based_feedback(
+    scored: dict[str, Any],
+    question: dict[str, Any],
+) -> dict[str, list[str]]:
     """Strengths + improvements from the rubric, no LLM needed."""
     s = scored["scores"]
     strengths, improvements = [], []
@@ -332,7 +424,13 @@ def generate_rule_based_feedback(scored, question):
     return {"strengths": strengths, "improvements": improvements}
 
 
-def pick_questions(company, role, category, n=5, seed=None):
+def pick_questions(
+    company: str,
+    role: str,
+    category: str,
+    n: int = 5,
+    seed: int | None = None,
+) -> list[dict[str, Any]]:
     """Select n questions matching the filters (randomized, seedable)."""
     bank = _load_bank()
     pool = [q for q in bank
@@ -348,7 +446,9 @@ def pick_questions(company, role, category, n=5, seed=None):
     return rng.sample(pool, min(n, len(pool)))
 
 
-def validate_interview_setup(payload):
+def validate_interview_setup(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
     """Validate the setup form. Returns (cleaned, error)."""
     company = (payload.get("company") or "").strip()
     role = (payload.get("role") or "").strip()
@@ -375,11 +475,15 @@ def validate_interview_setup(payload):
 import re as _re5
 
 
-def _clean5(text):
+def _clean5(text: str | None) -> str:
     return _re5.sub(r"<[^>]*>", "", text or "")
 
 
-def voice_interview_prep(question, answer_text, seconds_taken):
+def voice_interview_prep(
+    question: dict[str, Any],
+    answer_text: str | None,
+    seconds_taken: float,
+) -> dict[str, Any]:
     """Spoken-answer simulator: score content + delivery pacing.
 
     question: dict with question text. answer_text: what they said (transcribed).
@@ -426,7 +530,7 @@ def voice_interview_prep(question, answer_text, seconds_taken):
                         else "Keep practicing — see tips above.")}
 
 
-def company_intel(company):
+def company_intel(company: str | None) -> dict[str, Any]:
     """Interview intel card per company from the question bank.
 
     Returns {company, total_questions, categories: {cat: count},
@@ -460,7 +564,9 @@ def company_intel(company):
             "focus_tip": f"{top_cat} questions dominate — master those first."}
 
 
-def redo_tracker(attempts):
+def redo_tracker(
+    attempts: list[dict[str, Any]] | tuple[dict[str, Any], ...],
+) -> dict[str, Any]:
     """Track re-answers of the same question; measure improvement.
 
     attempts: list of {question_id, score, timestamp?} in chronological order.

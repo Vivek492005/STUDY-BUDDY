@@ -11,8 +11,11 @@ validation never depend on an LLM. Gemini (wired in unified_app.py) may
 polish study tips only.
 """
 
+from __future__ import annotations
+
 import json
 import os
+from typing import Any
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                          "data", "learning_roadmaps.json")
@@ -24,7 +27,7 @@ VALID_STATUSES = {"not_started", "in_progress", "completed"}
 _bank = None
 
 
-def _load():
+def _load() -> dict[str, Any]:
     global _bank
     if _bank is None:
         try:
@@ -35,15 +38,15 @@ def _load():
     return _bank
 
 
-def _skills():
+def _skills() -> list[dict[str, Any]]:
     return _load().get("skills", [])
 
 
-def _roles():
+def _roles() -> list[dict[str, Any]]:
     return _load().get("roles", [])
 
 
-def list_skills(domain=None):
+def list_skills(domain: str | None = None) -> list[dict[str, Any]]:
     """All skills, optionally filtered by domain. Returns summary dicts."""
     out = []
     for s in _skills():
@@ -60,7 +63,7 @@ def list_skills(domain=None):
     return out
 
 
-def list_domains():
+def list_domains() -> list[tuple[str, int]]:
     """Sorted [(domain, skill_count)]."""
     counts = {}
     for s in _skills():
@@ -69,7 +72,7 @@ def list_domains():
     return sorted(counts.items())
 
 
-def get_skill(skill_id):
+def get_skill(skill_id: str) -> dict[str, Any] | None:
     """Full skill dict or None."""
     for s in _skills():
         if s.get("id") == skill_id:
@@ -77,7 +80,7 @@ def get_skill(skill_id):
     return None
 
 
-def list_roles():
+def list_roles() -> list[dict[str, Any]]:
     """Role summaries for the gap-analyzer form."""
     return [{"id": r["id"], "name": r["name"], "short": r.get("short", ""),
              "description": r.get("description", ""),
@@ -85,22 +88,25 @@ def list_roles():
             for r in _roles()]
 
 
-def get_role(role_id):
+def get_role(role_id: str) -> dict[str, Any] | None:
     for r in _roles():
         if r.get("id") == role_id:
             return r
     return None
 
 
-def skill_ids():
+def skill_ids() -> list[str]:
     return [s["id"] for s in _skills()]
 
 
-def _stage_index(name):
+def _stage_index(name: str | None) -> int:
     return STAGE_ORDER.get((name or "").lower(), 0)
 
 
-def analyze_gap(current_skills, target_role_id):
+def analyze_gap(
+    current_skills: list[dict[str, Any]] | None,
+    target_role_id: str,
+) -> tuple[list[dict[str, Any]] | None, dict[str, Any] | None]:
     """Rank missing/under-levelled skills for a target role.
 
     current_skills: [{"skill_id": "...", "stage": "beginner|intermediate|advanced"}]
@@ -146,7 +152,9 @@ def analyze_gap(current_skills, target_role_id):
     return gaps, role
 
 
-def build_personal_roadmap(gap_items):
+def build_personal_roadmap(
+    gap_items: list[dict[str, Any]] | None,
+) -> dict[str, Any]:
     """Combine gap items into one ordered study plan.
 
     Returns {"items": [...], "total_weeks": n} where items keep gap order
@@ -160,7 +168,9 @@ def build_personal_roadmap(gap_items):
     }
 
 
-def validate_progress_payload(payload):
+def validate_progress_payload(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
     """Validate {skill_id, stage, status} for the progress endpoint."""
     if not isinstance(payload, dict):
         return None, "Provide a JSON object."
@@ -176,7 +186,9 @@ def validate_progress_payload(payload):
     return {"skill_id": sid, "stage": stage, "status": status}, None
 
 
-def validate_gap_payload(payload):
+def validate_gap_payload(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
     """Validate {target_role, current_skills} for the gap analyzer."""
     if not isinstance(payload, dict):
         return None, "Provide a JSON object."
@@ -207,7 +219,7 @@ def validate_gap_payload(payload):
             "current_skills": list(best.values())}, None
 
 
-def progress_summary(progress_rows):
+def progress_summary(progress_rows: list[Any]) -> list[dict[str, Any]]:
     """Aggregate RoadmapProgress rows into per-skill dashboard data."""
     by_skill = {}
     for r in progress_rows:
@@ -235,7 +247,7 @@ import re as _re9
 from datetime import UTC, datetime, timedelta
 
 
-def _clean9(text):
+def _clean9(text: str | None) -> str:
     return _re9.sub(r"<[^>]*>", "", text or "")
 
 
@@ -261,7 +273,7 @@ _AGENTIC_TRACK = {
 }
 
 
-def agentic_ai_track():
+def agentic_ai_track() -> dict[str, Any]:
     """Return the Agentic AI roadmap (the 234%-growth cluster)."""
     track = {"id": _AGENTIC_TRACK["id"], "name": _AGENTIC_TRACK["name"],
              "tagline": _AGENTIC_TRACK["tagline"],
@@ -270,7 +282,9 @@ def agentic_ai_track():
     return track
 
 
-def project_milestones(roadmap_stages):
+def project_milestones(
+    roadmap_stages: list[dict[str, Any]],
+) -> dict[str, Any]:
     """Attach a portfolio-worthy project milestone to each roadmap stage.
 
     roadmap_stages: list of {stage/name, weeks?, project?}. Stages without a
@@ -303,7 +317,11 @@ def project_milestones(roadmap_stages):
             "guidance": "Finish each stage's project before moving on — half-done tutorials don't count."}
 
 
-def weekly_planner(roadmap_stages, hours_per_week=6, start_date=None):
+def weekly_planner(
+    roadmap_stages: list[dict[str, Any]],
+    hours_per_week: float = 6,
+    start_date: str | None = None,
+) -> dict[str, Any]:
     """Turn roadmap stages into a week-by-week calendar plan.
 
     Returns {weeks: [{week, dates, focus, project, hours}], total_weeks}.

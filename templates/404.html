@@ -3,7 +3,7 @@
    request_id so users can quote it when reporting the problem (UX-06). #}
 {% block title %}Page not found | STUDY-BUDDY{% endblock %}
 {% block content %}
-<main style="max-width: 40rem; margin: 0 auto; padding: var(--sb-space-16) var(--sb-space-4); text-align: center;">
+<div style="max-width: 40rem; margin: 0 auto; padding: var(--sb-space-16) var(--sb-space-4); text-align: center;">
   <p style="font-size: var(--sb-text-3xl);" aria-hidden="true">&#128269;</p>
   <h1 style="font-size: var(--sb-text-3xl);">That page doesn't exist</h1>
   <p class="sb-card__meta">The link you followed may be broken, or the page may have moved.
@@ -19,5 +19,5 @@
     when reporting it.
   </p>
   {% endif %}
-</main>
+</div>
 {% endblock %}

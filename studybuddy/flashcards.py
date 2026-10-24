@@ -68,6 +68,8 @@ import math
 import random
 import re
 from collections import Counter
+from collections.abc import Iterable
+from typing import Any
 
 # ---------------------------------------------------------------------------
 # Tunables
@@ -168,7 +170,9 @@ def _sentences(text: str) -> list[str]:
     return [s.strip() for s in _SENT_RE.findall(text) if s.strip()]
 
 
-def _unpack(chunks_with_meta) -> list[tuple[dict, str, int]]:
+def _unpack(
+    chunks_with_meta: Iterable[tuple[dict[str, Any], str] | dict[str, Any]] | None,
+) -> list[tuple[dict, str, int]]:
     """Normalize ``chunks_with_meta`` to (chunk, doc_title, position) triples.
 
     Accepts ``(chunk, doc_title)`` tuples (preferred) or bare chunk dicts.
@@ -218,14 +222,14 @@ def _assign_ids(cards: list[dict], kind: str) -> None:
         card["id"] = "%s-%d" % (kind, n)
 
 
-def _qkey(question) -> str:
+def _qkey(question: str | None) -> str:
     """Normalized question for near-duplicate detection."""
     q = str(question or "").lower().replace(BLANK, " ")
     q = _PAGE_HINT_RE.sub(" ", q)
     return re.sub(r"[^a-z0-9]+", " ", q).strip()
 
 
-def _valid_index(value, n: int):
+def _valid_index(value: Any, n: int) -> int | None:
     """Return ``value`` as an int index into ``range(n)``, else None."""
     if isinstance(value, bool):
         return None
@@ -262,7 +266,10 @@ def _unigram_qualified(norm: str, tf: int, surfaces: Counter) -> bool:
     return capitalized >= 2
 
 
-def key_terms(chunks, top_n: int = DEFAULT_TOP_TERMS) -> list[tuple[str, float]]:
+def key_terms(
+    chunks: Iterable[dict[str, Any]] | None,
+    top_n: int = DEFAULT_TOP_TERMS,
+) -> list[tuple[str, float]]:
     """Extract the document's key terms with TF-IDF scores.
 
     Candidate terms are uni/bi/trigrams of content words (nothing from the
@@ -282,7 +289,10 @@ def key_terms(chunks, top_n: int = DEFAULT_TOP_TERMS) -> list[tuple[str, float]]
         return []
 
 
-def _key_terms(chunks, top_n) -> list[tuple[str, float]]:
+def _key_terms(
+    chunks: Iterable[dict[str, Any]] | None,
+    top_n: int,
+) -> list[tuple[str, float]]:
     try:
         top_n = int(top_n)
     except (TypeError, ValueError):
@@ -346,7 +356,7 @@ def _key_terms(chunks, top_n) -> list[tuple[str, float]]:
 # 2. Definition (QA) cards
 # ---------------------------------------------------------------------------
 
-def _clean_defined_term(raw_x: str):
+def _clean_defined_term(raw_x: str) -> str | None:
     """Validate/clean the subject of a definition sentence; None if unusable."""
     x = (raw_x or "").strip().strip(",;:")
     x = _LEADING_ARTICLE_RE.sub("", x).strip()
@@ -363,7 +373,7 @@ def _clean_defined_term(raw_x: str):
     return x
 
 
-def _match_definition(sentence: str):
+def _match_definition(sentence: str) -> tuple[str, str] | None:
     """Return ("is", X) / ("refer", X) for definition sentences, else None."""
     s = (sentence or "").strip()
     for pattern, kind in (
@@ -381,7 +391,10 @@ def _match_definition(sentence: str):
     return None
 
 
-def make_qa_cards(chunks_with_meta, max_n: int = 12) -> list[dict]:
+def make_qa_cards(
+    chunks_with_meta: Iterable[tuple[dict[str, Any], str] | dict[str, Any]] | None,
+    max_n: int = 12,
+) -> list[dict]:
     """Build definition-style QA cards from definition sentences.
 
     Matches "X is/are/was/were Y", "X refers to Y", "X is defined as Y".
@@ -396,7 +409,10 @@ def make_qa_cards(chunks_with_meta, max_n: int = 12) -> list[dict]:
         return []
 
 
-def _make_qa_cards(chunks_with_meta, max_n) -> list[dict]:
+def _make_qa_cards(
+    chunks_with_meta: Iterable[tuple[dict[str, Any], str] | dict[str, Any]] | None,
+    max_n: int,
+) -> list[dict]:
     try:
         max_n = int(max_n)
     except (TypeError, ValueError):
@@ -445,7 +461,9 @@ def _make_qa_cards(chunks_with_meta, max_n) -> list[dict]:
 # 3. Cloze (fill-in-the-blank) cards
 # ---------------------------------------------------------------------------
 
-def _usable_terms(terms) -> list[str]:
+def _usable_terms(
+    terms: Iterable[tuple[str, float] | str] | str | None,
+) -> list[str]:
     """Normalize the ``terms`` arg to a deduped list of usable term strings.
 
     Accepts ``key_terms`` output ``[(term, score), ...]`` or plain strings.
@@ -475,7 +493,11 @@ def _usable_terms(terms) -> list[str]:
     return out
 
 
-def _blank_term(sentence: str, term: str, other_terms=()):
+def _blank_term(
+    sentence: str,
+    term: str,
+    other_terms: Iterable[str] = (),
+) -> str | None:
     """Blank the FIRST whole-word occurrence of ``term``; None if absent.
 
     Word boundaries (``\\b``) guarantee the term is never blanked as a
@@ -510,7 +532,12 @@ def _blank_term(sentence: str, term: str, other_terms=()):
     return sentence[:m.start()] + BLANK + sentence[m.end():]
 
 
-def _first_placement(items, usable, term, used):
+def _first_placement(
+    items: list[tuple[dict, str, int]],
+    usable: list[str],
+    term: str,
+    used: set[tuple[int, int]],
+) -> tuple[int, int, str, dict, str, int, int, str] | None:
     """First free sentence containing ``term`` as a blankable whole word.
 
     Returns ``(pos, si, sent, chunk, title, page, cidx, blanked)`` or None.
@@ -532,7 +559,11 @@ def _first_placement(items, usable, term, used):
     return None
 
 
-def make_cloze_cards(chunks_with_meta, terms, max_n: int = 12) -> list[dict]:
+def make_cloze_cards(
+    chunks_with_meta: Iterable[tuple[dict[str, Any], str] | dict[str, Any]] | None,
+    terms: Iterable[tuple[str, float] | str] | str | None,
+    max_n: int = 12,
+) -> list[dict]:
     """Build fill-in-the-blank cards from sentences containing top key terms.
 
     For each usable term (in term order), the first sentence containing it as
@@ -547,7 +578,12 @@ def make_cloze_cards(chunks_with_meta, terms, max_n: int = 12) -> list[dict]:
         return []
 
 
-def _make_cloze_cards(chunks_with_meta, terms, max_n, skip=frozenset()):
+def _make_cloze_cards(
+    chunks_with_meta: Iterable[tuple[dict[str, Any], str] | dict[str, Any]] | None,
+    terms: Iterable[tuple[str, float] | str] | str | None,
+    max_n: int,
+    skip: Iterable[tuple[int, int]] = frozenset(),
+) -> tuple[list[dict], set[tuple[int, int]]]:
     """Inner cloze builder. Also returns the used (chunk_pos, sent_idx) set
     so a caller can keep a second card kind off the same sentences."""
     try:
@@ -637,7 +673,11 @@ def _shuffle_seed(card_id: str) -> int:
     return int.from_bytes(digest[:8], "big")
 
 
-def make_mcq_cards(chunks_with_meta, terms, max_n: int = 12) -> list[dict]:
+def make_mcq_cards(
+    chunks_with_meta: Iterable[tuple[dict[str, Any], str] | dict[str, Any]] | None,
+    terms: Iterable[tuple[str, float] | str] | str | None,
+    max_n: int = 12,
+) -> list[dict]:
     """Build multiple-choice cards: blanked key sentence + 4 options.
 
     The stem is a key sentence with the key term blanked; the correct answer
@@ -654,7 +694,12 @@ def make_mcq_cards(chunks_with_meta, terms, max_n: int = 12) -> list[dict]:
         return []
 
 
-def _make_mcq_cards(chunks_with_meta, terms, max_n, skip=frozenset()):
+def _make_mcq_cards(
+    chunks_with_meta: Iterable[tuple[dict[str, Any], str] | dict[str, Any]] | None,
+    terms: Iterable[tuple[str, float] | str] | str | None,
+    max_n: int,
+    skip: Iterable[tuple[int, int]] = frozenset(),
+) -> tuple[list[dict], set[tuple[int, int]]]:
     """Inner MCQ builder. Also returns the used (chunk_pos, sent_idx) set."""
     try:
         max_n = int(max_n)
@@ -717,7 +762,7 @@ def _make_mcq_cards(chunks_with_meta, terms, max_n, skip=frozenset()):
 # 5. Deck generation from a StudyDoc
 # ---------------------------------------------------------------------------
 
-def generate_deck(doc, max_per_kind: int = DEFAULT_MAX_PER_KIND) -> dict:
+def generate_deck(doc: Any, max_per_kind: int = DEFAULT_MAX_PER_KIND) -> dict:
     """Generate a full flashcard deck from a StudyDoc.
 
     ``doc`` is duck-typed: it needs ``.data["chunks"]`` (pdf_qa chunk dicts)
@@ -741,7 +786,7 @@ def generate_deck(doc, max_per_kind: int = DEFAULT_MAX_PER_KIND) -> dict:
         return {"cards": [], "progress": {}}
 
 
-def _generate_deck(doc, max_per_kind) -> dict:
+def _generate_deck(doc: Any, max_per_kind: int) -> dict:
     try:
         max_per_kind = int(max_per_kind)
     except (TypeError, ValueError):
@@ -852,7 +897,7 @@ def _generate_deck(doc, max_per_kind) -> dict:
 # 6. MCQ grading -> PaperQuizAttempt.data
 # ---------------------------------------------------------------------------
 
-def grade_mcq(cards, answers: dict) -> dict:
+def grade_mcq(cards: list[dict] | None, answers: dict) -> dict:
     """Grade an MCQ attempt; returns the PaperQuizAttempt.data shape.
 
     Only ``kind == "mcq"`` cards are scored. ``answers`` maps card id ->
@@ -867,7 +912,7 @@ def grade_mcq(cards, answers: dict) -> dict:
         return {"answers": {}, "details": [], "score": 0, "total": 0}
 
 
-def _grade_mcq(cards, answers) -> dict:
+def _grade_mcq(cards: list[dict] | None, answers: dict | None) -> dict:
     try:
         card_list = list(cards or [])
     except TypeError:
@@ -929,7 +974,7 @@ def _grade_mcq(cards, answers) -> dict:
 # 7. Mastery statistics from the progress map
 # ---------------------------------------------------------------------------
 
-def mastery_stats(set_data) -> dict:
+def mastery_stats(set_data: dict | None) -> dict:
     """Summarize review progress: total/reviewed/known/unknown/mastery_pct.
 
     A card counts as "reviewed" once its progress entry has ``reviews >= 1``;
@@ -964,11 +1009,15 @@ SRS_MIN_EASE = 1.3
 SRS_MAX_EASE = 2.8
 
 
-def _today_str(today=None):
+def _today_str(today: _date | None = None) -> str:
     return (today or _date.today()).isoformat()
 
 
-def srs_update(entry, known, today=None):
+def srs_update(
+    entry: dict | None,
+    known: bool,
+    today: _date | None = None,
+) -> dict:
     """Advance one card's schedule after a review. Mutates and returns
     the entry. ``today`` is a datetime.date (defaults to today)."""
     today = today or _date.today()
@@ -1002,7 +1051,7 @@ def srs_update(entry, known, today=None):
     return entry
 
 
-def card_due_state(entry, today=None):
+def card_due_state(entry: dict | None, today: _date | None = None) -> str:
     """'new' (never reviewed), 'due' (due today or overdue), or
     'scheduled' (due in the future) for one progress entry."""
     if not isinstance(entry, dict) or not entry.get("reviews"):
@@ -1013,7 +1062,7 @@ def card_due_state(entry, today=None):
     return "due" if str(due) <= _today_str(today) else "scheduled"
 
 
-def due_count(set_data, today=None) -> int:
+def due_count(set_data: dict | None, today: _date | None = None) -> int:
     """Cards in a deck that are new or due today."""
     data = set_data if isinstance(set_data, dict) else {}
     cards = data.get("cards") if isinstance(data.get("cards"), list) else []
@@ -1025,7 +1074,7 @@ def due_count(set_data, today=None) -> int:
     return n
 
 
-def _mastery_stats(set_data) -> dict:
+def _mastery_stats(set_data: dict | None) -> dict:
     data = set_data if isinstance(set_data, dict) else {}
     cards = data.get("cards")
     total = len(cards) if isinstance(cards, list) else 0
@@ -1062,11 +1111,14 @@ import random as _random17
 import re as _re17
 
 
-def _clean17(text):
+def _clean17(text: str | None) -> str:
     return _re17.sub(r"<[^>]*>", "", text or "")
 
 
-def anki_export(cards, deck_name="STUDY-BUDDY"):
+def anki_export(
+    cards: list[dict] | tuple[dict, ...],
+    deck_name: str = "STUDY-BUDDY",
+) -> dict:
     """Export cards to Anki-importable TSV (tab-separated, UTF-8).
 
     cards: list of {question/front, answer/back, ...}. Returns {tsv, count,
@@ -1095,7 +1147,11 @@ def anki_export(cards, deck_name="STUDY-BUDDY"):
                              "Fields separated by: Tab > Deck: " + deck_name)}
 
 
-def exam_sprint(cards, seconds_per_card=20, seed=None):
+def exam_sprint(
+    cards: list[dict] | tuple[dict, ...],
+    seconds_per_card: int = 20,
+    seed: Any = None,
+) -> dict:
     """Timed recall sprint: N cards, countdown per card.
 
     Returns {rounds: [{card_id, question, seconds}], total_seconds, rules}.
@@ -1128,7 +1184,10 @@ def exam_sprint(cards, seconds_per_card=20, seed=None):
                       "Mark got-it / missed — missed cards come back in the weak loop.")}
 
 
-def weak_card_loop(card_stats, cards):
+def weak_card_loop(
+    card_stats: dict,
+    cards: list[dict] | tuple[dict, ...],
+) -> dict:
     """Missed cards resurface first.
 
     card_stats: {card_id: {wrong (int), right (int)}}. cards: list of card dicts.

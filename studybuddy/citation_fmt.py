@@ -29,8 +29,12 @@ Style rules are taken from the official guides (verified 2026-10-14):
                Pages``.
 """
 
+from __future__ import annotations
+
 import re
 import unicodedata
+from collections.abc import Iterable, Iterator
+from typing import Any
 
 STYLES = ("ieee", "apa", "mla", "vancouver", "chicago")
 
@@ -47,7 +51,7 @@ _STYLE_ALIASES = {
 # Small helpers
 # ---------------------------------------------------------------------------
 
-def _norm_style(style):
+def _norm_style(style: str | None) -> str:
     key = str(style or "").strip().lower()
     if key in _STYLE_ALIASES:
         return _STYLE_ALIASES[key]
@@ -57,21 +61,21 @@ def _norm_style(style):
     )
 
 
-def _str(meta, key):
+def _str(meta: dict[str, Any] | None, key: str) -> str:
     val = (meta or {}).get(key)
     if val is None:
         return ""
     return str(val).strip()
 
 
-def _authors(meta):
+def _authors(meta: dict[str, Any] | None) -> list[str]:
     raw = (meta or {}).get("authors") or []
     if isinstance(raw, str):
         raw = [raw]
     return [str(a).strip() for a in raw if str(a).strip()]
 
 
-def _split_name(name):
+def _split_name(name: str | None) -> tuple[str, str]:
     """Split an author string into (first_names, surname)."""
     name = (name or "").strip()
     if "," in name:
@@ -83,7 +87,7 @@ def _split_name(name):
     return " ".join(parts[:-1]), parts[-1]
 
 
-def _initials(first):
+def _initials(first: str | None) -> str:
     """'Aidan N.' -> 'A. N.'; 'Ai-Jun' -> 'A.-J.' (APA hyphen rule)."""
     out = []
     for token in (first or "").split():
@@ -93,7 +97,7 @@ def _initials(first):
     return " ".join(out)
 
 
-def _sentence_case(title):
+def _sentence_case(title: str | None) -> str:
     """APA/IEEE/Vancouver rule: first word (+ first word after a colon)
     capitalised, everything else lowercased."""
     title = (title or "").strip().rstrip(".")
@@ -111,13 +115,13 @@ _MINOR_WORDS = frozenset(
 )
 
 
-def _title_case(title):
+def _title_case(title: str | None) -> str:
     """Headline style for MLA/Chicago: capitalise major words."""
     title = (title or "").strip().rstrip(".")
     if not title:
         return ""
 
-    def cap_word(word, first_or_last):
+    def cap_word(word: str, first_or_last: bool) -> str:
         subs = []
         for i, sub in enumerate(word.split("-")):
             low = sub.lower()
@@ -138,20 +142,20 @@ def _title_case(title):
     return " ".join(out)
 
 
-def _pages(raw):
+def _pages(raw: Any) -> str:
     p = _str({"p": raw}, "p").rstrip(".")
     p = re.sub(r"\s*--\s*", "\u2013", p)
     p = re.sub(r"(?<=\d)\s*-\s*(?=\d)", "\u2013", p)
     return p
 
 
-def _doi(raw):
+def _doi(raw: Any) -> str:
     d = _str({"d": raw}, "d")
     d = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:\s*)", "", d, flags=re.I).strip()
     return d
 
 
-def _tidy(text):
+def _tidy(text: str | None) -> str:
     """Collapse whitespace and duplicated punctuation; never emits 'None'."""
     text = re.sub(r"\s+", " ", text or "").strip()
     text = re.sub(r"\s+([,.;:!?])", r"\1", text)
@@ -159,7 +163,7 @@ def _tidy(text):
     return text
 
 
-def _is_preprint(meta):
+def _is_preprint(meta: dict[str, Any] | None) -> bool:
     return bool(_str(meta, "arxiv_id")) and not _str(meta, "venue")
 
 
@@ -167,7 +171,7 @@ def _is_preprint(meta):
 # Per-style author lists
 # ---------------------------------------------------------------------------
 
-def _ieee_authors(authors):
+def _ieee_authors(authors: list[str]) -> str:
     fmt = ["%s %s" % (_initials(f), l) if f else l
            for f, l in (_split_name(a) for a in authors)]
     if len(fmt) > 6:
@@ -179,7 +183,7 @@ def _ieee_authors(authors):
     return ", ".join(fmt)
 
 
-def _apa_authors(authors):
+def _apa_authors(authors: list[str]) -> str:
     fmt = ["%s, %s" % (l, _initials(f)) if f else l
            for f, l in (_split_name(a) for a in authors)]
     if len(fmt) > 20:
@@ -189,7 +193,7 @@ def _apa_authors(authors):
     return ", ".join(fmt)
 
 
-def _mla_authors(authors):
+def _mla_authors(authors: list[str]) -> str:
     if len(authors) >= 3:
         f, l = _split_name(authors[0])
         first = ("%s, %s" % (l, f)).strip(", ") if f else l
@@ -206,7 +210,7 @@ def _mla_authors(authors):
     return ""
 
 
-def _vancouver_authors(authors):
+def _vancouver_authors(authors: list[str]) -> str:
     fmt = ["%s %s" % (l, _initials(f).replace(". ", "").replace(".", ""))
            for f, l in (_split_name(a) for a in authors)]
     # "A. N." -> "AN": strip periods and spaces from the initials block.
@@ -215,7 +219,7 @@ def _vancouver_authors(authors):
     return ", ".join(fmt)
 
 
-def _chicago_authors(authors):
+def _chicago_authors(authors: list[str]) -> str:
     if len(authors) > 10:
         shown = authors[:7]
         tail = ", et al."
@@ -239,7 +243,7 @@ def _chicago_authors(authors):
 # Per-style formatters
 # ---------------------------------------------------------------------------
 
-def _fmt_ieee(meta):
+def _fmt_ieee(meta: dict[str, Any] | None) -> str:
     authors = _ieee_authors(_authors(meta))
     title = _sentence_case(_str(meta, "title"))
     venue = _str(meta, "venue")
@@ -276,7 +280,7 @@ def _fmt_ieee(meta):
     return _tidy(s)
 
 
-def _fmt_apa(meta):
+def _fmt_apa(meta: dict[str, Any] | None) -> str:
     authors = _apa_authors(_authors(meta))
     year = _str(meta, "year")
     title = _sentence_case(_str(meta, "title"))
@@ -322,7 +326,7 @@ def _fmt_apa(meta):
     return _tidy(s)
 
 
-def _fmt_mla(meta):
+def _fmt_mla(meta: dict[str, Any] | None) -> str:
     authors = _mla_authors(_authors(meta))
     title = _title_case(_str(meta, "title"))
     venue = _str(meta, "venue")
@@ -365,7 +369,7 @@ def _fmt_mla(meta):
     return _tidy(s)
 
 
-def _fmt_vancouver(meta):
+def _fmt_vancouver(meta: dict[str, Any] | None) -> str:
     authors = _vancouver_authors(_authors(meta))
     title = _sentence_case(_str(meta, "title"))
     venue = _str(meta, "venue")
@@ -409,7 +413,7 @@ def _fmt_vancouver(meta):
     return _tidy(s)
 
 
-def _fmt_chicago(meta):
+def _fmt_chicago(meta: dict[str, Any] | None) -> str:
     authors = _chicago_authors(_authors(meta))
     year = _str(meta, "year") or "n.d."
     title = _title_case(_str(meta, "title"))
@@ -461,12 +465,12 @@ _FORMATTERS = {
 # Public API
 # ---------------------------------------------------------------------------
 
-def _strip_html(text):
+def _strip_html(text: str | None) -> str:
     """Remove HTML tags from citation fields — never legitimate in citations."""
     return re.sub(r"<[^>]*>", "", text or "")
 
 
-def _clean_meta(meta):
+def _clean_meta(meta: dict[str, Any] | None) -> dict[str, Any]:
     """Strip HTML from all string values in a citation metadata dict."""
     cleaned = {}
     for k, v in (meta or {}).items():
@@ -479,7 +483,7 @@ def _clean_meta(meta):
     return cleaned
 
 
-def format_citation(meta, style):
+def format_citation(meta: dict[str, Any] | None, style: str) -> str:
     """Format one metadata dict in the given style.
 
     Raises ValueError for an unknown style name.
@@ -488,14 +492,17 @@ def format_citation(meta, style):
     return _FORMATTERS[style](_clean_meta(meta))
 
 
-def _sort_key(meta):
+def _sort_key(meta: dict[str, Any] | None) -> str:
     authors = _authors(meta)
     if authors:
         return _split_name(authors[0])[1].lower()
     return _str(meta, "title").lower()
 
 
-def format_bibliography(metas, style):
+def format_bibliography(
+    metas: list[dict[str, Any]] | None,
+    style: str,
+) -> str:
     """Format many metadata dicts.
 
     IEEE/Vancouver are numbered in the given order ("[1]", "1.");
@@ -517,26 +524,26 @@ def format_bibliography(metas, style):
 # BibTeX
 # ---------------------------------------------------------------------------
 
-def _bibtex_escape(value):
+def _bibtex_escape(value: str | None) -> str:
     return re.sub(r"([\\&%$#_{}])", r"\\\1", value or "")
 
 
-def _bibtex_unescape(value):
+def _bibtex_unescape(value: str | None) -> str:
     value = re.sub(r"(?<!\\)[{}]", "", value or "")
     return re.sub(r"\\([\\&%$#_{}])", r"\1", value)
 
 
-def _protect_title_caps(title):
+def _protect_title_caps(title: str | None) -> str:
     """Brace-protect capitalised words so BibTeX styles don't downcase them."""
     return re.sub(r"(^|\s)([A-Z][^\s]*)", r"\1{\2}", title or "")
 
 
-def _ascii_fold(text):
+def _ascii_fold(text: str | None) -> str:
     return unicodedata.normalize("NFKD", text or "").encode(
         "ascii", "ignore").decode("ascii")
 
 
-def _bibtex_key(meta):
+def _bibtex_key(meta: dict[str, Any] | None) -> str:
     authors = _authors(meta)
     if authors:
         surname = _split_name(authors[0])[1] or "anon"
@@ -547,7 +554,10 @@ def _bibtex_key(meta):
     return "%s%s" % (stem, year)
 
 
-def to_bibtex(meta, existing_keys=None):
+def to_bibtex(
+    meta: dict[str, Any] | None,
+    existing_keys: Iterable[str] | None = None,
+) -> str:
     """Export one metadata dict as a BibTeX entry string.
 
     existing_keys: iterable of keys already taken; on collision the key
@@ -615,7 +625,7 @@ def to_bibtex(meta, existing_keys=None):
 _ENTRY_RE = re.compile(r"@(\w+)")
 
 
-def _extract_bibtex_entries(text):
+def _extract_bibtex_entries(text: str) -> Iterator[tuple[str, str]]:
     """Yield (entry_type, inner_text) for each balanced @entry{...}."""
     i, n = 0, len(text)
     while True:
@@ -661,7 +671,7 @@ def _extract_bibtex_entries(text):
         i = k + 1
 
 
-def _split_top_level(text, sep=","):
+def _split_top_level(text: str, sep: str = ",") -> list[str]:
     parts, depth, cur = [], 0, []
     in_quote, escaped = False, False
     for ch in text:
@@ -691,7 +701,7 @@ def _split_top_level(text, sep=","):
     return parts
 
 
-def _clean_bibtex_value(value):
+def _clean_bibtex_value(value: str) -> str:
     value = value.strip()
     if len(value) >= 2 and value.startswith("{") and value.endswith("}"):
         value = value[1:-1]
@@ -700,7 +710,10 @@ def _clean_bibtex_value(value):
     return _bibtex_unescape(value).strip()
 
 
-def _parse_bibtex_entry(entry_type, inner):
+def _parse_bibtex_entry(
+    entry_type: str,
+    inner: str,
+) -> dict[str, Any] | None:
     chunks = _split_top_level(inner)
     if not chunks:
         return None
@@ -740,7 +753,7 @@ def _parse_bibtex_entry(entry_type, inner):
     return meta
 
 
-def from_bibtex(text):
+def from_bibtex(text: str | None) -> list[dict[str, Any]]:
     """Parse BibTeX source into a list of metadata dicts.
 
     Handles @article/@inproceedings/@conference/@misc/@book (others map to
@@ -874,7 +887,7 @@ _GUIDES = {
 }
 
 
-def style_guide(style):
+def style_guide(style: str) -> dict[str, Any]:
     """Return usage guidance for a style.
 
     {"in_text": str, "reference_rules": [str, ...], "notes": str}.
@@ -893,11 +906,11 @@ def style_guide(style):
 import re as _re14
 
 
-def _clean14(text):
+def _clean14(text: str | None) -> str:
     return _re14.sub(r"<[^>]*>", "", text or "")
 
 
-def _intext_bibtex_key(meta):
+def _intext_bibtex_key(meta: dict[str, Any] | None) -> str:
     authors = _authors(meta)
     first = _split_name(authors[0])[1] if authors else "unknown"
     year = _str(meta, "year") or "nodate"
@@ -910,7 +923,10 @@ def _intext_bibtex_key(meta):
     return key or "ref"
 
 
-def in_text_citation(meta, style="apa"):
+def in_text_citation(
+    meta: dict[str, Any],
+    style: str = "apa",
+) -> dict[str, Any]:
     """Copy-paste-ready in-text citation snippets.
 
     Returns {bibtex_key, snippets: {latex, apa, mla, ieee, numeric}}.
@@ -966,7 +982,7 @@ _STYLE_FINGERPRINTS = [
 ]
 
 
-def match_journal_style(sample_citation):
+def match_journal_style(sample_citation: str | None) -> dict[str, Any]:
     """Guess which citation style a sample reference follows.
 
     Returns {guesses: [{style, confidence, why}], best}.
@@ -989,7 +1005,10 @@ def match_journal_style(sample_citation):
             "verdict": f"Closest match: {scored[0]['style'].upper()} ({scored[0]['why']})"}
 
 
-def find_duplicates(references, threshold=0.85):
+def find_duplicates(
+    references: list[Any],
+    threshold: float = 0.85,
+) -> dict[str, Any]:
     """Flag near-duplicate references in a bibliography.
 
     references: list of formatted reference strings (or dicts with title).
@@ -1003,7 +1022,7 @@ def find_duplicates(references, threshold=0.85):
         threshold = 0.85
     threshold = max(0.5, min(1.0, threshold))
 
-    def _norm(ref):
+    def _norm(ref: dict[str, Any] | str | None) -> set[str]:
         if isinstance(ref, dict):
             text = str(ref.get("title") or "") + " " + str(ref.get("doi") or "")
         else:

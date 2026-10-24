@@ -105,7 +105,7 @@
 <section class="sb-learn" style="padding-top:3.5rem;" aria-label="Find a skill fast">
     <h2 class="sb-learn-h2">Find a skill fast</h2>
     <p class="sb-learn-sub">Search across {{ num_skills }} roadmaps, {{ num_quiz_skills }} quiz skills and {{ num_certs }} certifications.</p>
-    <input type="search" id="learn-search" placeholder="Try 'python', 'aws' or 'react'…" autocomplete="off"
+    <input type="search" id="learn-search" aria-label="Search skills" placeholder="Try 'python', 'aws' or 'react'…" autocomplete="off"
            style="width:100%;max-width:560px;padding:.85rem 1rem;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:inherit;font-size:1rem;">
     <div id="learn-search-results" style="display:grid;gap:.5rem;margin-top:1rem;max-width:720px;"></div>
 </section>
@@ -122,7 +122,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
+<script nonce="{{ csp_nonce() }}">
 (function () {
     var INDEX = {{ search_index|tojson }};
     var input = document.getElementById('learn-search');

@@ -2,7 +2,7 @@
 <html lang="en" class="no-js" data-theme="resume">
 <head>
     <meta charset="UTF-8">
-    <script>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Striver A2Z Sheet | Study-Buddy</title>
@@ -27,6 +27,7 @@
                <a href="{{ url_for('dsa_tracker_page') }}" style="color:var(--accent-primary);font-weight:700;">progress tracker</a> fill up.</p>
             <p class="sb-card__meta"><span class="sb-badge sb-badge--rule">Practice tracker</span>
                Self-reported progress — not an auto-judge. Sheet structure: Striver's A2Z DSA course (takeUforward).</p>
+            <p class="sb-card__meta">Source note: this sheet follows the structure of Striver's public A2Z DSA course (takeUforward). Each problem links to its original platform, and all problems and content belong to their respective owners — STUDY-BUDDY does not claim ownership of the sheet or its problems, and no permission beyond public linking is claimed.</p>
             {% if current_user.is_authenticated %}
             <p style="margin-top:0.8rem;">You have solved <strong id="az-solved-count">{{ solved }}</strong> of {{ total }}.
                <a href="{{ url_for('dsa_tracker_page') }}" style="color:var(--accent-primary);font-weight:700;">See the full tracker →</a></p>
@@ -87,7 +88,7 @@
         </div>
     </footer>
 
-    <script>
+    <script nonce="{{ csp_nonce() }}">
     (function () {
       var csrf = document.querySelector('meta[name="csrf-token"]').content;
       function post(url, body) {

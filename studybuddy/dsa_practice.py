@@ -2,8 +2,11 @@
 (Wave 2 feature #15). Backed by the committed bank data/dsa_problems.json
 (120 problems across 43 topics)."""
 
+from __future__ import annotations
+
 import json
 import os
+from typing import Any
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                          "data", "dsa_problems.json")
@@ -15,7 +18,7 @@ _bank = None
 _by_id = None
 
 
-def _load():
+def _load() -> list[dict[str, Any]]:
     global _bank, _by_id
     if _bank is None:
         with open(BANK_PATH, encoding="utf-8") as f:
@@ -28,20 +31,20 @@ def _load():
     return _bank
 
 
-def all_problems():
+def all_problems() -> list[dict[str, Any]]:
     return _load()
 
 
-def get_problem(problem_id):
+def get_problem(problem_id: str | int) -> dict[str, Any] | None:
     return _load_by_id().get(problem_id)
 
 
-def _load_by_id():
+def _load_by_id() -> dict[Any, dict[str, Any]]:
     _load()
     return _by_id
 
 
-def topics():
+def topics() -> list[tuple[str, int]]:
     """Sorted [(topic, count)] across the bank."""
     counts = {}
     for p in _load():
@@ -50,7 +53,7 @@ def topics():
     return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
 
 
-def difficulties():
+def difficulties() -> list[tuple[str, int]]:
     counts = {}
     for p in _load():
         d = p.get("difficulty", "Medium")
@@ -59,7 +62,10 @@ def difficulties():
     return [(d, counts.get(d, 0)) for d in order]
 
 
-def filter_problems(topic=None, difficulty=None):
+def filter_problems(
+    topic: str | None = None,
+    difficulty: str | None = None,
+) -> list[dict[str, Any]]:
     """Return summary dicts for problems matching the filters."""
     out = []
     for p in _load():
@@ -73,7 +79,10 @@ def filter_problems(topic=None, difficulty=None):
     return out
 
 
-def public_problem(problem_id, hints_revealed=0):
+def public_problem(
+    problem_id: str | int,
+    hints_revealed: int = 0,
+) -> dict[str, Any] | None:
     """Problem payload for the client. Hints beyond `hints_revealed` are
     withheld; the approach outline is withheld until explicitly requested."""
     p = get_problem(problem_id)
@@ -96,7 +105,10 @@ def public_problem(problem_id, hints_revealed=0):
     }
 
 
-def reveal_hint(problem_id, hints_revealed):
+def reveal_hint(
+    problem_id: str | int,
+    hints_revealed: int,
+) -> tuple[str | None, int]:
     """Next progressive hint, or None when exhausted."""
     p = get_problem(problem_id)
     if not p:
@@ -107,7 +119,7 @@ def reveal_hint(problem_id, hints_revealed):
     return None, hints_revealed
 
 
-def reveal_approach(problem_id):
+def reveal_approach(problem_id: str | int) -> str | None:
     """Full approach outline — only when the user explicitly asks."""
     p = get_problem(problem_id)
     return p.get("approach") if p else None
@@ -116,7 +128,9 @@ def reveal_approach(problem_id):
 VALID_STATUSES = {"attempted", "solved", "stuck"}
 
 
-def validate_status_payload(payload):
+def validate_status_payload(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
     status = (payload.get("status") or "").strip().lower()
     if status not in VALID_STATUSES:
         return None, "Status must be one of: attempted, solved, stuck."
@@ -126,7 +140,10 @@ def validate_status_payload(payload):
     return {"status": status, "code": code}, None
 
 
-def _aggregate_topic_stats(progress_rows, problems):
+def _aggregate_topic_stats(
+    progress_rows: list[dict[str, Any]],
+    problems: dict[Any, dict[str, Any]],
+) -> tuple[dict[str, dict[str, int]], int, int, int, set[Any]]:
     """Fold progress rows into per-topic counters.
 
     Returns (by_topic, solved, stuck, attempted, solved_ids).
@@ -156,7 +173,9 @@ def _aggregate_topic_stats(progress_rows, problems):
     return by_topic, solved, stuck, attempted, solved_ids
 
 
-def _topic_rows(by_topic) -> list:
+def _topic_rows(
+    by_topic: dict[str, dict[str, int]],
+) -> list[dict[str, Any]]:
     """Per-topic solve/stuck rates, weakest first."""
     rows = []
     for t, agg in by_topic.items():
@@ -171,7 +190,10 @@ def _topic_rows(by_topic) -> list:
     return rows
 
 
-def _weak_topic_recommendations(topic_rows, solved_ids) -> list:
+def _weak_topic_recommendations(
+    topic_rows: list[dict[str, Any]],
+    solved_ids: set[Any],
+) -> list[dict[str, Any]]:
     """Unsolved easy-first problems from the weakest topics (max 6)."""
     recommendations = []
     order = {"Easy": 0, "Medium": 1, "Hard": 2}
@@ -193,7 +215,10 @@ def _weak_topic_recommendations(topic_rows, solved_ids) -> list:
     return recommendations
 
 
-def _strong_topic_recommendations(topic_rows, solved_ids) -> list:
+def _strong_topic_recommendations(
+    topic_rows: list[dict[str, Any]],
+    solved_ids: set[Any],
+) -> list[dict[str, Any]]:
     """Hard problems in practiced topics, when nothing is weak."""
     recommendations = []
     strong = [tr for tr in topic_rows if tr["solve_rate"] >= 80][:2]
@@ -211,7 +236,9 @@ def _strong_topic_recommendations(topic_rows, solved_ids) -> list:
     return recommendations
 
 
-def weak_topic_diagnosis(progress_rows):
+def weak_topic_diagnosis(
+    progress_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
     """Per-topic solve/stuck rates + recommended next topics/problems.
 
     progress_rows: iterable of dicts {problem_id, status, hints_used}.
@@ -244,7 +271,7 @@ import re as _re6
 from datetime import UTC, datetime, timedelta
 
 
-def _clean6(text):
+def _clean6(text: str | None) -> str:
     return _re6.sub(r"<[^>]*>", "", text or "")
 
 
@@ -267,7 +294,10 @@ _PATTERNS = [
 ]
 
 
-def pattern_mastery(solved_ids, attempted_ids=None):
+def pattern_mastery(
+    solved_ids: list[str | int],
+    attempted_ids: list[str | int] | None = None,
+) -> dict[str, Any]:
     """Mastery % per DSA pattern from solved problem IDs.
 
     solved_ids: list of problem ids (str or int) the user solved.
@@ -305,7 +335,11 @@ def pattern_mastery(solved_ids, attempted_ids=None):
                          if weakest else "No pattern data.")}
 
 
-def mock_oa(num_questions=2, minutes=60, seed=None):
+def mock_oa(
+    num_questions: int = 2,
+    minutes: int = 60,
+    seed: int | None = None,
+) -> dict[str, Any]:
     """Simulate a real Online Assessment: N questions, time limit, mixed difficulty.
 
     Returns {questions: [public dicts], minutes, total, instructions}.
@@ -345,7 +379,10 @@ def mock_oa(num_questions=2, minutes=60, seed=None):
                 "Score yourself after: 1 point per solved, 0.5 per partial.")}
 
 
-def spaced_repetition_queue(mistakes, now=None):
+def spaced_repetition_queue(
+    mistakes: list[dict[str, Any]],
+    now: datetime | None = None,
+) -> dict[str, Any]:
     """Wrong problems resurface after 3/7/14 days.
 
     mistakes: list of {problem_id, wrong_at (iso str), streak (consecutive
@@ -403,7 +440,7 @@ def spaced_repetition_queue(mistakes, now=None):
 _a2z = None
 
 
-def _load_a2z():
+def _load_a2z() -> list[dict[str, Any]]:
     global _a2z
     if _a2z is None:
         try:
@@ -414,7 +451,7 @@ def _load_a2z():
     return _a2z
 
 
-def _a2z_public(entry):
+def _a2z_public(entry: dict[str, Any]) -> dict[str, Any]:
     """The minimal problem-shaped view of a sheet row, so the shared
     diagnosis machinery can read its category."""
     return {
@@ -427,11 +464,13 @@ def _a2z_public(entry):
     }
 
 
-def a2z_problems():
+def a2z_problems() -> list[dict[str, Any]]:
     return _load_a2z()
 
 
-def sheet_structure(statuses=None):
+def sheet_structure(
+    statuses: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
     """Sheet rows grouped by module, in sheet order.
 
     ``statuses`` maps problem_id -> status for the current user; each
@@ -465,7 +504,9 @@ def sheet_structure(statuses=None):
     return [steps[key] for key in order]
 
 
-def a2z_tracker(progress_rows):
+def a2z_tracker(
+    progress_rows: list[tuple[str, str]],
+) -> dict[str, Any]:
     """Aggregate a user's progress over the A2Z sheet.
 
     ``progress_rows`` is an iterable of (problem_id, status) pairs, as
@@ -530,14 +571,14 @@ _STATUS_RANK = {"attempted": 1, "stuck": 2, "solved": 3}
 _counterparts_cache = None
 
 
-def _lc_slug(url):
+def _lc_slug(url: str | None) -> str | None:
     if not url:
         return None
     m = _SLUG_RE.search(url)
     return m.group(1) if m else None
 
 
-def _counterpart_map():
+def _counterpart_map() -> dict[Any, set[Any]]:
     """problem_id -> ids of the SAME problem in the other set.
 
     The classic bank and the A2Z sheet are independent lists, but many
@@ -566,12 +607,14 @@ def _counterpart_map():
     return _counterparts_cache
 
 
-def counterpart_ids(problem_id):
+def counterpart_ids(problem_id: str | int) -> list[Any]:
     """Ids of the same problem in the other set (may be empty)."""
     return sorted(_counterpart_map().get(problem_id, ()))
 
 
-def expand_statuses(progress_rows):
+def expand_statuses(
+    progress_rows: list[tuple[Any, str]],
+) -> dict[Any, str]:
     """Best status per problem id, shared across both sets.
 
     A status recorded against either copy of a problem counts for
@@ -582,7 +625,7 @@ def expand_statuses(progress_rows):
     pairs = list(progress_rows)
     best = {}
 
-    def offer(pid, status):
+    def offer(pid: Any, status: str) -> None:
         if status not in _STATUS_RANK:
             return
         current = best.get(pid)
@@ -598,7 +641,9 @@ def expand_statuses(progress_rows):
     return best
 
 
-def progress_summary(progress_rows):
+def progress_summary(
+    progress_rows: list[tuple[Any, str]],
+) -> dict[str, Any]:
     """Full DSA progress summary for tracker surfaces.
 
     Combines the Striver A2Z aggregate with the classic problem-set

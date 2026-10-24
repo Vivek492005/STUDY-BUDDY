@@ -121,7 +121,7 @@
 {% endif %}
 
 {% if is_current %}
-<script>
+<script nonce="{{ csp_nonce() }}">
 (function () {
     var btn = document.getElementById('hr-regen');
     if (!btn) return;

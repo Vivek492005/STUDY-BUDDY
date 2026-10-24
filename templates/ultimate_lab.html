@@ -67,6 +67,9 @@
   }
   @keyframes lab-spin { to { transform: rotate(360deg); } }
   .lab-status { font-size: 0.88rem; opacity: 0.7; margin: 14px 2px 0; }
+  .lab-example-btn { margin-top: 8px; }
+  .lab-json-ok { color: #4ade80; }
+  .lab-json-bad { color: #f87171; }
   .lab-empty { grid-column: 1 / -1; text-align: center; padding: 48px 20px; }
   .lab-search { max-width: 420px; margin-top: 18px; }
   .lab-hero-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
@@ -108,7 +111,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
+<script nonce="{{ csp_nonce() }}">
 /* Study-Buddy Labs: dynamic tool grid. XSS-safe: textContent only, no innerHTML with API data. */
 (function () {
     'use strict';
@@ -254,8 +257,88 @@
         return card;
     }
 
+    /* ONE generic structured-form renderer (P1 Labs UX). The server ships
+       tool.form.fields, derived from the tool's pydantic schema (migrated
+       tools) or its legacy field defs (the rest); this renderer turns each
+       schema field into the right control. If a tool ever arrives without
+       a form, legacyToForm converts its legacy field defs with the same
+       rules. Payload keys and wire shapes are unchanged from the old
+       raw-JSON textarea flow: strings stay strings, numbers stay numbers,
+       "lines" become arrays, and object/json fields are JSON.parsed before
+       sending — the user just no longer writes the JSON by hand. */
+    function legacyToForm(tool) {
+        var fields = (Array.isArray(tool.fields) ? tool.fields : []).map(function (f) {
+            var entry = { name: f.name || '', label: f.label || f.name || 'Field',
+                          kind: 'string', required: !!f.required };
+            var type = f.type || 'text';
+            if (f.json) {
+                var label = f.label || '';
+                var m = /\{([^{}]*)\}/.exec(label);
+                var keys = [];
+                if (m) {
+                    keys = m[1].split(',').map(function (p) {
+                        return p.split(':')[0].trim().replace(/^['"]|['"]$/g, '');
+                    }).filter(function (k) { return k.length > 0; });
+                }
+                if (/array/i.test(label)) {
+                    entry.kind = 'json';
+                    entry.hint = 'JSON array';
+                } else if (keys.length) {
+                    entry.kind = 'object';
+                } else {
+                    entry.kind = 'json';
+                    entry.hint = 'JSON format';
+                }
+                if (keys.length) {
+                    entry.keys = keys;
+                    var skel = {};
+                    keys.forEach(function (k) { skel[k] = ''; });
+                    entry.example = JSON.stringify(/array/i.test(label) ? [skel] : skel, null, 2);
+                }
+            } else if (type === 'textarea') {
+                entry.kind = 'text';
+            } else if (type === 'number') {
+                entry.kind = 'number';
+            } else if (type === 'select') {
+                entry.kind = 'enum';
+                entry.options = (Array.isArray(f.options) ? f.options : []).map(function (o) {
+                    if (o !== null && typeof o === 'object') {
+                        return String(o.value !== undefined ? o.value : (o.id !== undefined ? o.id : (o.label || '')));
+                    }
+                    return String(o);
+                });
+            } else if (type === 'checkbox') {
+                entry.kind = 'boolean';
+            }
+            return entry;
+        });
+        return { source: 'legacy-fallback', fields: fields };
+    }
+
+    function checkJson(textarea, note, kind) {
+        var raw = (textarea.value || '').trim();
+        if (!raw) {
+            note.textContent = '';
+            note.style.display = 'none';
+            return;
+        }
+        note.style.display = '';
+        try {
+            var parsed = JSON.parse(raw);
+            if (kind === 'object' && (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed))) {
+                throw new Error('not an object');
+            }
+            note.textContent = 'Valid JSON ✓';
+            note.className = 'lab-hint lab-json-ok';
+        } catch (e) {
+            note.textContent = kind === 'object' ? 'Must be a valid JSON object.' : 'Not valid JSON yet.';
+            note.className = 'lab-hint lab-json-bad';
+        }
+    }
+
     function buildForm(tool, formWrap, resultBox, toggle) {
-        var fields = Array.isArray(tool.fields) ? tool.fields : [];
+        var form = (tool.form && Array.isArray(tool.form.fields)) ? tool.form : legacyToForm(tool);
+        var fields = form.fields;
         if (fields.length === 0) {
             formWrap.appendChild(el('p', 'lab-desc', 'This tool takes no inputs — just hit Run.'));
         }
@@ -279,59 +362,93 @@
             star.setAttribute('aria-label', 'required');
             label.appendChild(star);
         }
-        var input;
-        var type = f.type || 'text';
+        var kind = f.kind || 'string';
+        var input = null;
 
-        if (type === 'textarea') {
-            input = el('textarea', 'b-textarea');
-            input.rows = 4;
-        } else if (type === 'number') {
-            input = el('input', 'b-input');
-            input.type = 'number';
-        } else if (type === 'select') {
-            input = el('select', 'b-select');
-            var opts = Array.isArray(f.options) ? f.options : [];
-            opts.forEach(function (o) {
-                var opt = document.createElement('option');
-                if (o !== null && typeof o === 'object') {
-                    var v = o.value !== undefined ? o.value : (o.id !== undefined ? o.id : String(o.label || ''));
-                    opt.value = String(v);
-                    opt.textContent = o.label !== undefined ? String(o.label) : String(v);
-                } else {
-                    opt.value = String(o);
-                    opt.textContent = String(o);
-                }
-                input.appendChild(opt);
-            });
-        } else if (type === 'checkbox') {
+        if (kind === 'boolean') {
             var row = el('div', 'lab-checkrow');
             input = el('input', 'b-check');
             input.type = 'checkbox';
+            if (f.default === true) input.checked = true;
             row.appendChild(input);
             row.appendChild(label);
             wrap.appendChild(row);
-        } else {
+        } else if (kind === 'enum') {
+            input = el('select', 'b-select');
+            (Array.isArray(f.options) ? f.options : []).forEach(function (o) {
+                var opt = document.createElement('option');
+                opt.value = String(o);
+                opt.textContent = String(o);
+                input.appendChild(opt);
+            });
+            if (f.default !== undefined && f.default !== null) input.value = String(f.default);
+            wrap.appendChild(label);
+            wrap.appendChild(input);
+        } else if (kind === 'text' || kind === 'lines' || kind === 'object' || kind === 'json') {
+            input = el('textarea', 'b-textarea');
+            input.rows = (kind === 'object' || kind === 'json') ? 6 : (kind === 'lines' ? 3 : 4);
+            if (f.default !== undefined && f.default !== null) input.value = String(f.default);
+            wrap.appendChild(label);
+            wrap.appendChild(input);
+        } else if (kind === 'integer' || kind === 'number') {
             input = el('input', 'b-input');
-            input.type = 'text';
-        }
-
-        if (type !== 'checkbox') {
-            input.name = f.name || '';
-            input.id = 'lab-' + Math.random().toString(36).slice(2) + '-' + (f.name || 'f');
-            label.setAttribute('for', input.id);
+            input.type = 'number';
+            if (f.min !== undefined && f.min !== null) input.min = String(f.min);
+            if (f.max !== undefined && f.max !== null) input.max = String(f.max);
+            if (kind === 'integer') input.step = '1';
+            if (f.default !== undefined && f.default !== null) input.value = String(f.default);
             wrap.appendChild(label);
             wrap.appendChild(input);
         } else {
-            input.name = f.name || '';
-            wrap.dataset.checkboxName = f.name || '';
+            input = el('input', 'b-input');
+            input.type = 'text';
+            if (f.max_length) input.maxLength = f.max_length;
+            if (f.default !== undefined && f.default !== null) input.value = String(f.default);
+            wrap.appendChild(label);
+            wrap.appendChild(input);
         }
 
-        if (f.json) {
-            wrap.appendChild(el('small', 'lab-hint', 'JSON format — must be valid JSON.'));
+        if (kind !== 'boolean') {
+            input.name = f.name || '';
+            input.id = 'lab-' + Math.random().toString(36).slice(2) + '-' + (f.name || 'f');
+            label.setAttribute('for', input.id);
+        } else {
+            input.name = f.name || '';
         }
-        wrap.dataset.fieldType = type;
+
+        if (kind === 'lines') {
+            wrap.appendChild(el('small', 'lab-hint', 'One item per line — each line becomes one item.'));
+        } else if (kind === 'object' || kind === 'json') {
+            var hintText = (kind === 'object') ? 'JSON object — must be valid JSON.' : 'JSON format — must be valid JSON.';
+            if (Array.isArray(f.keys) && f.keys.length) {
+                hintText = 'Expected keys: ' + f.keys.join(', ') + '. ' + hintText;
+            } else if (f.hint) {
+                hintText = f.hint + '. ' + hintText;
+            }
+            wrap.appendChild(el('small', 'lab-hint', hintText));
+            var validity = el('small', 'lab-hint lab-json-note');
+            validity.style.display = 'none';
+            wrap.appendChild(validity);
+            if (f.example) {
+                var exBtn = el('button', 'b-btn b-btn--sm b-btn--ghost lab-example-btn', 'Insert example');
+                exBtn.type = 'button';
+                (function (ta, example, note) {
+                    exBtn.addEventListener('click', function () {
+                        ta.value = example;
+                        checkJson(ta, note, kind);
+                    });
+                    ta.addEventListener('input', function () { checkJson(ta, note, kind); });
+                })(input, f.example, validity);
+                wrap.appendChild(exBtn);
+            } else {
+                (function (ta, note) {
+                    ta.addEventListener('input', function () { checkJson(ta, note, kind); });
+                })(input, validity);
+            }
+        }
+
         wrap.dataset.fieldName = f.name || '';
-        wrap.dataset.fieldJson = f.json ? '1' : '';
+        wrap.dataset.fieldKind = kind;
         wrap.dataset.fieldRequired = f.required ? '1' : '';
         return wrap;
     }
@@ -342,34 +459,48 @@
         for (var i = 0; i < nodes.length; i++) {
             var node = nodes[i];
             var name = node.dataset.fieldName;
-            var type = node.dataset.fieldType;
-            var isJson = node.dataset.fieldJson === '1';
+            var kind = node.dataset.fieldKind || 'string';
             var required = node.dataset.fieldRequired === '1';
             var input = node.querySelector('input, textarea, select');
             if (!input || !name) continue;
 
-            var raw;
-            if (type === 'checkbox') {
+            if (kind === 'boolean') {
                 values[name] = !!input.checked;
                 continue;
             }
-            raw = (input.value || '').trim();
-
+            var raw = (input.value || '').trim();
             if (!raw) {
                 if (required) {
                     return { error: 'Required field "' + name + '" is empty.' };
                 }
                 continue; // omit empty optional fields
             }
-            if (isJson) {
+            if (kind === 'lines') {
+                var items = input.value.split('\n').map(function (s) { return s.trim(); })
+                    .filter(function (s) { return s.length > 0; });
+                if (items.length === 0) {
+                    if (required) {
+                        return { error: 'Required field "' + name + '" is empty.' };
+                    }
+                    continue;
+                }
+                values[name] = items;
+                continue;
+            }
+            if (kind === 'object' || kind === 'json') {
+                var parsed;
                 try {
-                    values[name] = JSON.parse(raw);
+                    parsed = JSON.parse(input.value);
                 } catch (e) {
                     return { error: 'Field "' + name + '" must be valid JSON.' };
                 }
+                if (kind === 'object' && (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed))) {
+                    return { error: 'Field "' + name + '" must be a JSON object.' };
+                }
+                values[name] = parsed;
                 continue;
             }
-            if (type === 'number') {
+            if (kind === 'integer' || kind === 'number') {
                 var num = Number(raw);
                 if (isNaN(num)) {
                     return { error: 'Field "' + name + '" must be a number.' };

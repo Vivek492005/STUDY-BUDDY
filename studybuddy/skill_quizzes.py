@@ -8,9 +8,12 @@ Answers/explanations never leave the server except through the graded
 check endpoint. Scoring is fully deterministic.
 """
 
+from __future__ import annotations
+
 import json
 import os
 import random
+from typing import Any
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                          "data", "skill_quizzes.json")
@@ -22,7 +25,7 @@ _bank = None
 _by_id = None
 
 
-def _load():
+def _load() -> list[dict[str, Any]]:
     global _bank, _by_id
     if _bank is None:
         try:
@@ -34,16 +37,16 @@ def _load():
     return _bank
 
 
-def _by_id_map():
+def _by_id_map() -> dict[str, dict[str, Any]]:
     _load()
     return _by_id
 
 
-def get_question(qid):
+def get_question(qid: str) -> dict[str, Any] | None:
     return _by_id_map().get(qid)
 
 
-def quiz_skills():
+def quiz_skills() -> list[tuple[str, int]]:
     """Sorted [(skill_id, question_count)]."""
     counts = {}
     for q in _load():
@@ -51,7 +54,7 @@ def quiz_skills():
     return sorted(counts.items())
 
 
-def skill_topics(skill):
+def skill_topics(skill: str) -> list[tuple[str, int]]:
     """Sorted [(topic, count)] for one skill."""
     counts = {}
     for q in _load():
@@ -61,14 +64,19 @@ def skill_topics(skill):
     return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
 
 
-def public_question(q):
+def public_question(q: dict[str, Any]) -> dict[str, Any]:
     """Client-safe question payload (no answer, no explanation)."""
     return {"id": q["id"], "skill": q.get("skill"), "topic": q.get("topic"),
             "difficulty": q.get("difficulty"), "question": q.get("question"),
             "options": list(q.get("options", []))}
 
 
-def build_quiz(skill, n=10, difficulties=None, seed=None):
+def build_quiz(
+    skill: str,
+    n: int = 10,
+    difficulties: list[str] | None = None,
+    seed: int | None = None,
+) -> list[dict[str, Any]]:
     """Pick n questions for a skill, optionally filtered by difficulty.
 
     Returns list of FULL question dicts (server-side). Use public_question
@@ -109,7 +117,10 @@ def build_quiz(skill, n=10, difficulties=None, seed=None):
     return rng.sample(pool, n)
 
 
-def check_answer(question, chosen_index):
+def check_answer(
+    question: dict[str, Any],
+    chosen_index: int,
+) -> dict[str, Any]:
     """Grade one answer. Returns {correct, correct_index, explanation}."""
     try:
         chosen = int(chosen_index)
@@ -121,7 +132,10 @@ def check_answer(question, chosen_index):
             "explanation": question.get("explanation", "")}
 
 
-def grade_quiz(questions, answers):
+def grade_quiz(
+    questions: list[dict[str, Any]],
+    answers: dict[str, Any],
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Grade a full attempt.
 
     questions: list of full question dicts (in attempt order).
@@ -181,7 +195,7 @@ def grade_quiz(questions, answers):
     return results, summary
 
 
-def _verdict(ratio):
+def _verdict(ratio: float) -> str:
     if ratio >= 0.85:
         return "Excellent — interview-ready on this skill."
     if ratio >= 0.65:
@@ -191,7 +205,9 @@ def _verdict(ratio):
     return "Foundations needed — start from the beginner stage of the roadmap."
 
 
-def validate_start_payload(payload):
+def validate_start_payload(
+    payload: dict[str, Any],
+) -> tuple[dict[str, Any] | None, str | None]:
     """Validate {skill, num_questions, difficulties, timed, time_limit_sec}."""
     if not isinstance(payload, dict):
         return None, "Provide a JSON object."
@@ -220,7 +236,7 @@ def validate_start_payload(payload):
             "timed": timed, "time_limit_sec": limit}, None
 
 
-def best_scores(attempt_rows):
+def best_scores(attempt_rows: list[Any]) -> dict[str, dict[str, Any]]:
     """Per-skill best percentage across a user's attempts."""
     best = {}
     for r in attempt_rows:
@@ -237,7 +253,7 @@ def best_scores(attempt_rows):
     return best
 
 
-def quiz_mistakes(attempts):
+def quiz_mistakes(attempts: list[dict[str, Any]]) -> dict[str, Any]:
     """Latest-state mistake book across a user's submitted quiz attempts.
 
     attempts: list of dicts {skill, results, submitted_at, attempt_id}
@@ -282,7 +298,7 @@ def quiz_mistakes(attempts):
 import re as _re10
 
 
-def _clean10(text):
+def _clean10(text: str | None) -> str:
     return _re10.sub(r"<[^>]*>", "", text or "")
 
 
@@ -303,7 +319,11 @@ _EXAM_FORMATS = {
 }
 
 
-def certification_exam_mode(skill, exam_id="generic", seed=None):
+def certification_exam_mode(
+    skill: str,
+    exam_id: str = "generic",
+    seed: int | None = None,
+) -> dict[str, Any]:
     """Build a quiz like the real certification exam: timed, weighted, pass/fail.
 
     Returns {exam, questions, minutes, pass_pct, instructions}.
@@ -331,7 +351,11 @@ def certification_exam_mode(skill, exam_id="generic", seed=None):
                 "No pausing — train under pressure.")}
 
 
-def grade_exam(questions, answers, exam_id="generic"):
+def grade_exam(
+    questions: list[dict[str, Any]],
+    answers: dict[str, Any],
+    exam_id: str = "generic",
+) -> dict[str, Any]:
     """Grade a certification-exam attempt with pass/fail verdict.
 
     questions may be public (client-safe) or full dicts — full versions are
@@ -362,7 +386,12 @@ def grade_exam(questions, answers, exam_id="generic"):
             "weak_topics": summary.get("weak_topics", [])}
 
 
-def weakness_drill(skill, past_results, n=10, seed=None):
+def weakness_drill(
+    skill: str,
+    past_results: dict[str, Any] | list[dict[str, Any]],
+    n: int = 10,
+    seed: int | None = None,
+) -> dict[str, Any]:
     """Auto-generate a drill set targeting the user's weakest topics.
 
     past_results: list of {question_id/topic, correct (bool)} or a grade_quiz
@@ -421,7 +450,11 @@ def weakness_drill(skill, past_results, n=10, seed=None):
             "guidance": f"Drill set on: {', '.join(target) if target else 'mixed review'}."}
 
 
-def leaderboard(entries, current_user_id=None, top_n=10):
+def leaderboard(
+    entries: list[dict[str, Any]],
+    current_user_id: int | str | None = None,
+    top_n: int = 10,
+) -> dict[str, Any]:
     """Peer leaderboard for quiz scores. Pure function.
 
     entries: list of {user_id, name, skill, score_pct, quizzes_taken}.

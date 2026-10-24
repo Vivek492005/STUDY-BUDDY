@@ -30,6 +30,8 @@ from __future__ import annotations
 import logging
 import re
 from datetime import UTC, datetime, timedelta
+from types import ModuleType
+from typing import Any
 
 log = logging.getLogger(__name__)
 
@@ -57,18 +59,18 @@ DIMENSIONS = [
 DIMENSION_IDS = [d["id"] for d in DIMENSIONS]
 
 
-def valid_month_key(month_key):
+def valid_month_key(month_key: str) -> bool:
     """True iff month_key is a strict 'YYYY-MM' string."""
     return isinstance(month_key, str) and bool(MONTH_KEY_RE.match(month_key))
 
 
-def current_month_key(now=None):
+def current_month_key(now: datetime | None = None) -> str:
     """'YYYY-MM' for now (UTC)."""
     now = now or datetime.now(UTC)
     return "%04d-%02d" % (now.year, now.month)
 
 
-def prev_month_key(month_key):
+def prev_month_key(month_key: str) -> str:
     """The month before a valid month_key ('2026-01' -> '2025-12')."""
     if not valid_month_key(month_key):
         raise ValueError("month_key must be 'YYYY-MM', got %r" % (month_key,))
@@ -78,22 +80,31 @@ def prev_month_key(month_key):
     return "%04d-%02d" % (year, month - 1)
 
 
-def _clamp(score):
+def _clamp(score: float | int | None) -> int | None:
     return max(0, min(100, int(round(score)))) if score is not None else None
 
 
-def _models():
+def _models() -> ModuleType:
     """Lazy import of unified_app models (avoids circular import)."""
     import unified_app
     return unified_app
 
 
-def _locked(unlock_hint, confidence=0, signals=None):
+def _locked(
+    unlock_hint: str,
+    confidence: int = 0,
+    signals: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     return {"score": None, "trend": None, "confidence": confidence,
             "evidence": [unlock_hint], "signals": signals or {}}
 
 
-def _dim(score, confidence, evidence, signals=None):
+def _dim(
+    score: float | int | None,
+    confidence: float | int,
+    evidence: list[str],
+    signals: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     return {"score": _clamp(score), "trend": None,
             "confidence": _clamp(confidence), "evidence": evidence,
             "signals": signals or {}}
@@ -103,7 +114,7 @@ def _dim(score, confidence, evidence, signals=None):
 # Dimension aggregators — each reads existing tables only.
 # ---------------------------------------------------------------------------
 
-def _agg_direction(M, user_id):
+def _agg_direction(M: ModuleType, user_id: int) -> dict[str, Any]:
     """CareerAssessment exists? Goal rows count?"""
     assessment = (M.CareerAssessment.query
                   .filter_by(user_id=user_id)
@@ -139,7 +150,7 @@ def _agg_direction(M, user_id):
     return _dim(score, confidence, evidence, signals)
 
 
-def _agg_proof(M, user_id):
+def _agg_proof(M: ModuleType, user_id: int) -> dict[str, Any]:
     """ResumeAnalysis count + max resume-readiness score, Portfolio exists?, CertPlan count."""
     analyses = M.ResumeAnalysis.query.filter_by(user_id=user_id).all()
     ats_scores = [a.ats_score for a in analyses
@@ -184,7 +195,7 @@ def _agg_proof(M, user_id):
     return _dim(score, confidence, evidence, signals)
 
 
-def _agg_opportunity(M, user_id):
+def _agg_opportunity(M: ModuleType, user_id: int) -> dict[str, Any]:
     """JobApplication count by stage, OpportunityBookmark count."""
     apps = M.JobApplication.query.filter_by(user_id=user_id).all()
     bookmarks = M.OpportunityBookmark.query.filter_by(user_id=user_id).count()
@@ -223,7 +234,7 @@ def _agg_opportunity(M, user_id):
     return _dim(score, confidence, evidence, signals)
 
 
-def _quiz_avg(quizzes):
+def _quiz_avg(quizzes: list[Any]) -> float | None:
     pcts = []
     for q in quizzes:
         summary = q.summary_json or {}
@@ -233,7 +244,7 @@ def _quiz_avg(quizzes):
     return (sum(pcts) / len(pcts)) if pcts else None
 
 
-def _agg_preparation(M, user_id):
+def _agg_preparation(M: ModuleType, user_id: int) -> dict[str, Any]:
     """QuizAttempt count + avg score, DSA solved count, InterviewSession count,
     AptitudeAttempt count, PaperQuizAttempt count."""
     quizzes = M.QuizAttempt.query.filter_by(user_id=user_id).all()
@@ -290,7 +301,11 @@ def _agg_preparation(M, user_id):
     return _dim(score, confidence, evidence, signals)
 
 
-def _agg_wellbeing(M, user_id, now=None):
+def _agg_wellbeing(
+    M: ModuleType,
+    user_id: int,
+    now: datetime | None = None,
+) -> dict[str, Any]:
     """StreakState current/longest + shields used (forgiveness respected —
     score consistency, not grind). MomentumSettings opt-out respected: opted
     out -> score None with an affirming note. Rest days noted positively."""
@@ -359,7 +374,7 @@ _AGGREGATORS = {
 # unlocked dimension.
 # ---------------------------------------------------------------------------
 
-def _pick_next_action(dims):
+def _pick_next_action(dims: dict[str, dict[str, Any]]) -> str:
     unlocked = [(did, d) for did, d in dims.items()
                 if d.get("score") is not None]
     if not unlocked:
@@ -412,14 +427,14 @@ _MONTH_NAMES = ["", "January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"]
 
 
-def _month_label(month_key):
+def _month_label(month_key: str) -> str:
     try:
         return "%s %s" % (_MONTH_NAMES[int(month_key[5:7])], month_key[:4])
     except (ValueError, IndexError):
         return month_key
 
 
-def _build_narrative(dims, month_key):
+def _build_narrative(dims: dict[str, dict[str, Any]], month_key: str) -> str:
     meta = {d["id"]: d for d in DIMENSIONS}
     unlocked = [(did, dims[did]) for did in DIMENSION_IDS
                 if dims[did].get("score") is not None]
@@ -463,7 +478,11 @@ def _build_narrative(dims, month_key):
 # Public entry point.
 # ---------------------------------------------------------------------------
 
-def generate_review(user_id, month_key, now=None):
+def generate_review(
+    user_id: int,
+    month_key: str,
+    now: datetime | None = None,
+) -> tuple[Any, bool]:
     """Build (or rebuild) the review for (user_id, month_key). Idempotent:
     regenerating the same month updates the existing row in place.
 
@@ -525,11 +544,11 @@ def generate_review(user_id, month_key, now=None):
 import re as _re21
 
 
-def _clean21(text):
+def _clean21(text: str | None) -> str:
     return _re21.sub(r"<[^>]*>", "", text or "")
 
 
-def monthly_report(review):
+def monthly_report(review: dict[str, Any]) -> dict[str, Any]:
     """Turn a health review into a readable monthly digest.
 
     review: dict from generate_review() with {dimensions, overall?}.
@@ -576,7 +595,10 @@ def monthly_report(review):
             "markdown": "\n".join(lines)}
 
 
-def peer_benchmarks(my_scores, peer_scores):
+def peer_benchmarks(
+    my_scores: dict[str, float],
+    peer_scores: list[dict[str, float]],
+) -> dict[str, Any]:
     """Where do you stand vs peers? Returns percentiles per dimension.
 
     my_scores: {dimension: score}. peer_scores: list of {dimension: score}.
@@ -627,7 +649,10 @@ _NUDGE_RULES = [
 ]
 
 
-def action_nudges(current_scores, previous_scores=None):
+def action_nudges(
+    current_scores: dict[str, Any],
+    previous_scores: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Health dips trigger specific suggested actions.
 
     Returns {nudges: [{dimension, message, action}], urgent_count}.
