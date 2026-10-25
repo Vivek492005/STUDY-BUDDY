@@ -448,10 +448,18 @@ from studybuddy.mock_interview import (
 from studybuddy.opportunities import TYPES as OPP_TYPES
 from studybuddy.opportunities import OpportunityDataError, list_opportunities, opp_exists
 from studybuddy.opportunities import get_meta as opp_meta
+from studybuddy.pdf_qa import answer_across_docs as pdfqa_across
 from studybuddy.pdf_qa import answer_question as pdfqa_answer
+from studybuddy.pdf_qa import detect_contrasts as pdfqa_contrasts
+from studybuddy.pdf_qa import fluent_answer as pdfqa_fluent
+from studybuddy.pdf_qa import grounding_report as pdfqa_grounding
+from studybuddy.pdf_qa import verify_citations as pdfqa_verify
+from studybuddy.paper_dna import extract_dna as paper_dna_extract
+from studybuddy.exam_gen import build_exam_from_doc as exam_from_doc
+from studybuddy.exam_gen import build_exam_from_docs as exam_from_docs
+from studybuddy.exam_gen import grade_exam as exam_grade
 from studybuddy.pdf_qa import chunk_pages as pdfqa_chunk_pages
 from studybuddy.pdf_qa import parse_pdf_pages as pdfqa_parse_pages
-from studybuddy.pdf_qa import retrieve as pdfqa_retrieve
 from studybuddy.pdf_qa import validate_upload as pdfqa_validate_upload
 from studybuddy.portfolio import unique_slug, validate_portfolio_payload
 from studybuddy.salary_data import SalaryDataError
@@ -6611,6 +6619,14 @@ def register_routes(app):
 
         JSON body: {"doc_id": int|null, "question": str}.
         CSRF token via X-CSRFToken header (not exempt).
+
+        Single-doc asks answer extractively from that doc. Library-wide
+        asks (doc_id null) run true cross-document synthesis: evidence is
+        retrieved from the merged pool and grouped per document, with
+        heuristic contrast flags when docs point in opposite directions.
+        Every response carries a faithfulness badge: verification (every
+        quoted claim's citation marker) + grounding (share of claims
+        cited; abstentions score 1.0 — claiming nothing is grounded).
         """
         payload = request.get_json(silent=True) or {}
         question = (payload.get('question') or '').strip()
@@ -6625,47 +6641,150 @@ def register_routes(app):
                                                user_id=current_user.id).first()
                 if not doc:
                     return jsonify({'error': 'Document not found.'}), 404
-                candidates = [doc]
+                chunks = (doc.data or {}).get('chunks') or []
+                if not chunks:
+                    return jsonify({'error': 'No indexed passages found in your library.'}), 400
+                result = pdfqa_answer(question, doc.title, chunks, top_k=5)
+                response = {'success': True, 'doc_id': doc.id,
+                            'doc_title': doc.title,
+                            'answer': result.get('answer'),
+                            'citations': result.get('citations') or []}
+                stored_doc_id = doc.id
             else:
                 candidates = StudyDoc.query.filter_by(
                     user_id=current_user.id).order_by(
                     StudyDoc.created_at.desc()).all()
                 if not candidates:
                     return jsonify({'error': 'Your library is empty — upload a PDF first.'}), 400
-            # Pick the best-scoring doc for multi-doc queries (citation-clean).
-            # If chunks exist but nothing matches, still answer from the first
-            # doc so answer_question() can abstain honestly instead of 400ing.
-            best_doc, best_chunks, best_score = None, [], -1.0
-            first_with_chunks = None
-            for d in candidates:
-                chunks = (d.data or {}).get('chunks') or []
-                if not chunks:
-                    continue
-                if first_with_chunks is None:
-                    first_with_chunks = (d, chunks)
-                hits = pdfqa_retrieve(chunks, question, top_k=1)
-                score = hits[0]['score'] if hits else -1.0
-                if score > best_score:
-                    best_doc, best_chunks, best_score = d, chunks, score
-            if first_with_chunks is None:
-                return jsonify({'error': 'No indexed passages found in your library.'}), 400
-            if best_doc is None:
-                best_doc, best_chunks = first_with_chunks
-            result = pdfqa_answer(question, best_doc.title, best_chunks, top_k=5)
-            q = StudyQuestion(user_id=current_user.id, doc_id=best_doc.id,
+                docs_with_chunks = [
+                    {'title': d.title, 'chunks': (d.data or {}).get('chunks') or []}
+                    for d in candidates]
+                docs_with_chunks = [d for d in docs_with_chunks if d['chunks']]
+                if not docs_with_chunks:
+                    return jsonify({'error': 'No indexed passages found in your library.'}), 400
+                result = pdfqa_across(question, docs_with_chunks, top_k=3)
+                per_doc = result.get('per_doc') or []
+                response = {'success': True, 'doc_id': None,
+                            'doc_title': None,
+                            'answer': result.get('answer'),
+                            'citations': result.get('citations') or [],
+                            'per_doc': per_doc,
+                            'docs_consulted': result.get('docs_consulted', 0),
+                            'contrasts': pdfqa_contrasts(per_doc)}
+                stored_doc_id = None
+            response['verification'] = pdfqa_verify(
+                {'answer': response['answer']})
+            response['grounding'] = pdfqa_grounding(
+                {'answer': response['answer']})
+            # Optional fluent rewrite: same claims, same markers, readable
+            # prose — re-verified, otherwise the extractive answer stands.
+            response['fluent'] = False
+            response['fluent_reason'] = None
+            if payload.get('fluent') and not response['grounding']['abstained']:
+                try:
+                    from studybuddy import ai_gateway
+                    if ai_gateway.ai_ready():
+                        labels = None
+                        if not doc_id:
+                            labels = [e.get('doc') for e in
+                                      (response.get('per_doc') or [])]
+                        fluent = pdfqa_fluent(
+                            response['answer'],
+                            lambda prompt: ai_gateway.generate(
+                                prompt, _llm_user_id=current_user.id,
+                                _llm_feature='study_fluent'),
+                            required_labels=labels)
+                        if fluent['fluent']:
+                            response['answer'] = fluent['answer']
+                            response['verification'] = pdfqa_verify(
+                                {'answer': response['answer']})
+                            response['grounding'] = pdfqa_grounding(
+                                {'answer': response['answer']})
+                            response['fluent'] = True
+                        response['fluent_reason'] = fluent['reason']
+                    else:
+                        response['fluent_reason'] = 'no provider configured'
+                except Exception:
+                    log.exception("Study fluent rewrite failed; keeping extractive answer")
+                    response['fluent_reason'] = 'provider unavailable'
+            q = StudyQuestion(user_id=current_user.id, doc_id=stored_doc_id,
                               question=question[:2000],
-                              answer=result.get('answer'),
-                              citations=result.get('citations'))
+                              answer=response['answer'],
+                              citations=response['citations'])
             db.session.add(q)
             db.session.commit()
         except Exception:
             log.exception("Study ask failed")
             db.session.rollback()
             return jsonify({'error': 'Could not answer right now. Please try again.'}), 500
-        return jsonify({'success': True, 'doc_id': best_doc.id,
-                        'doc_title': best_doc.title,
-                        'answer': result.get('answer'),
-                        'citations': result.get('citations') or []})
+        return jsonify(response)
+
+    @app.route('/study/api/documents/<int:doc_id>/dna')
+    def study_dna(doc_id):
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Paper DNA card for one document, computed from its chunks.
+
+        Each field is a {text, page} citation or null when the document
+        does not state it. No LLM, no invention.
+        """
+        doc = StudyDoc.query.filter_by(id=doc_id,
+                                       user_id=current_user.id).first()
+        if not doc:
+            return jsonify({'error': 'Document not found.'}), 404
+        chunks = (doc.data or {}).get('chunks') or []
+        return jsonify({'success': True, 'doc_id': doc.id,
+                        'doc_title': doc.title,
+                        'dna': paper_dna_extract(chunks)})
+
+    @app.route('/study/api/exam/generate', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def study_exam_generate():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Mock exam from one doc (doc_id) or the whole library (null).
+
+        Questions come from the flashcard generators; the response
+        carries the key (self-test, like flashcards). An empty exam is
+        a plain 400, never invented questions.
+        """
+        payload = request.get_json(silent=True) or {}
+        doc_id = payload.get('doc_id')
+        try:
+            if doc_id:
+                doc = StudyDoc.query.filter_by(
+                    id=int(doc_id), user_id=current_user.id).first()
+                if not doc:
+                    return jsonify({'error': 'Document not found.'}), 404
+                exam = exam_from_doc(doc, payload.get('n', 10))
+            else:
+                docs = StudyDoc.query.filter_by(
+                    user_id=current_user.id).order_by(
+                    StudyDoc.created_at.desc()).all()
+                if not docs:
+                    return jsonify({'error': 'Your library is empty — upload a PDF first.'}), 400
+                exam = exam_from_docs(docs, payload.get('n', 10))
+        except (ValueError, TypeError):
+            return jsonify({'error': 'Invalid document id.'}), 400
+        if exam['total'] == 0:
+            return jsonify({'error': 'Not enough extractable material to build an exam — try a longer document with repeated key terms.'}), 400
+        return jsonify({'success': True, 'exam': exam})
+
+    @app.route('/study/api/exam/grade', methods=['POST'])
+    @limiter.limit("60 per hour")
+    def study_exam_grade():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Grade a mock exam. MCQ + cloze auto-scored; QA prompts return
+        with their model answer for self-check and are never auto-scored."""
+        payload = request.get_json(silent=True) or {}
+        questions = payload.get('questions')
+        if (not isinstance(questions, list) or not questions
+                or len(questions) > 50):
+            return jsonify({'error': 'Send 1–50 exam questions to grade.'}), 400
+        return jsonify({'success': True,
+                        'grade': exam_grade(questions,
+                                            payload.get('answers') or {})})
 
     @app.route('/study/api/documents/<int:doc_id>/history')
     def study_history(doc_id):

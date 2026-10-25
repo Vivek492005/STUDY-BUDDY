@@ -808,6 +808,176 @@ def verify_citations(answer_dict: dict[str, Any]) -> dict[str, Any]:
                         f"{uncited} claim(s) missing citations.")}
 
 
+def grounding_report(answer_dict: dict[str, Any]) -> dict[str, Any]:
+    """Faithfulness badge for an answer.
+
+    Returns {claims, cited, uncited, score, verdict, abstained}.
+    ``score`` is the share of quoted claims carrying a citation marker.
+    An abstention (zero claims) scores 1.0: claiming nothing is
+    perfectly grounded, and must never look like a failure.
+    """
+    v = verify_citations(answer_dict)
+    claims, cited = v["claims"], v["cited"]
+    if claims == 0:
+        return {"claims": 0, "cited": 0, "uncited": 0, "score": 1.0,
+                "verdict": "Abstained — nothing claimed.", "abstained": True}
+    return {"claims": claims, "cited": cited, "uncited": v["uncited"],
+            "score": round(cited / claims, 2), "verdict": v["verdict"],
+            "abstained": False}
+
+
+#: Direction words for the contrast heuristic below. A "contrast" here is
+#: a keyword-level divergence flag, NOT a semantic verdict: two claims
+#: that share real vocabulary but point in opposite directions (or one
+#: negated, one not) are worth reading side by side.
+_UP_MARKERS = frozenset(
+    "increase increases increased increasing rise rises rising rose grow grows "
+    "growing grew improve improves improved improving improvement higher better "
+    "effective beneficial significant positive boost boosts enhance enhances gain "
+    "gains".split())
+_DOWN_MARKERS = frozenset(
+    "decrease decreases decreased decreasing fall falls falling fell drop drops "
+    "dropping decline declines declining worsen worsens worsening lower worse "
+    "ineffective harmful negative reduce reduces reduced reducing loss fail "
+    "fails failed failing".split())
+_NEGATIONS = frozenset(
+    "not no never none without fails failed lack lacks".split())
+
+
+def _claim_content_tokens(text: str) -> set[str]:
+    return {t for t in _tokenize(text or "") if t not in _STOPWORDS and len(t) >= 3}
+
+
+def detect_contrasts(per_doc: list[dict[str, Any]], max_flags: int = 3) -> list[dict[str, Any]]:
+    """Flag possible disagreements between documents' claims.
+
+    ``per_doc`` is the answer_across_docs shape:
+    [{doc, claims: [{text, page}]}]. A flag fires when two claims from
+    DIFFERENT docs share real vocabulary (Jaccard >= 0.25 on content
+    tokens) AND point in opposite directions (up-markers vs
+    down-markers) or differ on negation. Every flag is labeled as a
+    heuristic and points back to both passages — the reader verifies,
+    the tool never declares a winner.
+    """
+    if not isinstance(per_doc, list) or len(per_doc) < 2:
+        return []
+    flat = []
+    for entry in per_doc:
+        doc = entry.get("doc") if isinstance(entry, dict) else None
+        for claim in (entry.get("claims") or []):
+            if isinstance(claim, dict) and claim.get("text"):
+                flat.append((doc, claim))
+    flags: list[dict[str, Any]] = []
+    seen_pairs: set[tuple[str, str]] = set()
+    for i in range(len(flat)):
+        if len(flags) >= max_flags:
+            break
+        doc_a, claim_a = flat[i]
+        toks_a = _claim_content_tokens(claim_a["text"])
+        if not toks_a:
+            continue
+        dir_a = ("up" if toks_a & _UP_MARKERS and not (toks_a & _DOWN_MARKERS)
+                 else "down" if toks_a & _DOWN_MARKERS and not (toks_a & _UP_MARKERS)
+                 else None)
+        neg_a = bool(toks_a & _NEGATIONS)
+        for j in range(i + 1, len(flat)):
+            doc_b, claim_b = flat[j]
+            if doc_b == doc_a:
+                continue
+            pair = tuple(sorted([str(doc_a), str(doc_b)]))
+            if pair in seen_pairs:
+                continue
+            toks_b = _claim_content_tokens(claim_b["text"])
+            if not toks_b:
+                continue
+            union = toks_a | toks_b
+            jaccard = len(toks_a & toks_b) / len(union) if union else 0.0
+            if jaccard < 0.25:
+                continue
+            dir_b = ("up" if toks_b & _UP_MARKERS and not (toks_b & _DOWN_MARKERS)
+                     else "down" if toks_b & _DOWN_MARKERS and not (toks_b & _UP_MARKERS)
+                     else None)
+            neg_b = bool(toks_b & _NEGATIONS)
+            opposed = (dir_a and dir_b and dir_a != dir_b) or (neg_a != neg_b and (dir_a or dir_b))
+            if not opposed:
+                continue
+            signal = f"{dir_a or 'stated'} vs {dir_b or 'stated'}"
+            if neg_a != neg_b:
+                signal += " (negation differs)"
+            flags.append({
+                "docs": [doc_a, doc_b],
+                "signal": signal,
+                "shared_terms": sorted(toks_a & toks_b)[:5],
+                "claims": [
+                    {"doc": doc_a, "text": claim_a["text"], "page": claim_a.get("page")},
+                    {"doc": doc_b, "text": claim_b["text"], "page": claim_b.get("page")},
+                ],
+                "note": ("Possible contrast (keyword heuristic) — read both "
+                         "passages before concluding they disagree."),
+            })
+            seen_pairs.add(pair)
+    return flags
+
+
+def _citation_markers(text: str) -> list[str]:
+    return _re12.findall(r"\[doc, p\.\d+\]|\[p\.\d+\]", text or "")
+
+
+def fluent_answer(extractive_answer: str, generate_fn,
+                  required_labels: list[str] | None = None) -> dict[str, Any]:
+    """Rewrite stitched quotes into fluent prose WITHOUT losing proof.
+
+    ``generate_fn`` is an injected callable(prompt) -> str (production
+    passes the LLM gateway; tests pass a stub, so no network is needed).
+
+    The rewrite must keep every claim in quotation marks with its exact
+    citation marker directly after it, add no new marker, and keep every
+    required doc label. Anything less — dropped quote, dropped or added
+    marker, uncited claim, provider error, empty output — falls back to
+    the extractive answer. Abstentions are never rewritten.
+
+    Returns {answer, fluent, reason}.
+    """
+    original = extractive_answer or ""
+    if original.strip() == NO_RESULT_ANSWER:
+        return {"answer": original, "fluent": False, "reason": "abstained"}
+    orig_verification = verify_citations({"answer": original})
+    orig_markers = sorted(_citation_markers(original))
+    if orig_verification["claims"] == 0 or not orig_markers:
+        return {"answer": original, "fluent": False, "reason": "nothing citable"}
+    claims = _re12.findall(r'"([^"]{10,})"', original)
+    claims_block = "\n".join(
+        f'"{c}" {m}' for c, m in zip(claims, orig_markers, strict=False))
+    prompt = (
+        "Rewrite the following quoted claims into fluent, readable prose "
+        "(2-4 sentences). Connect the claims with your own transition words, "
+        "but obey these rules exactly:\n"
+        "- Keep EVERY claim in quotation marks with its exact citation marker "
+        "directly after it.\n"
+        "- Do not drop any claim, do not add any new claim or fact, and do "
+        "not add, remove, or change any citation marker or page number.\n"
+        "- Do not add any introductory sentence.\n\n"
+        "Claims:\n" + claims_block)
+    try:
+        rewritten = (generate_fn(prompt) or "").strip()
+    except Exception:
+        return {"answer": original, "fluent": False,
+                "reason": "provider unavailable"}
+    if not rewritten:
+        return {"answer": original, "fluent": False, "reason": "empty rewrite"}
+    check = verify_citations({"answer": rewritten})
+    if (check["claims"] != orig_verification["claims"]
+            or check["uncited"] != 0
+            or sorted(_citation_markers(rewritten)) != orig_markers):
+        return {"answer": original, "fluent": False,
+                "reason": "rewrite lost or added citations"}
+    for label in (required_labels or []):
+        if label and label not in rewritten:
+            return {"answer": original, "fluent": False,
+                    "reason": "rewrite dropped a document label"}
+    return {"answer": rewritten, "fluent": True, "reason": None}
+
+
 def qa_to_notes(
     qa_pairs: list[dict[str, Any]],
     title: str = "Study Notes",

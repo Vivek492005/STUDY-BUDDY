@@ -37,6 +37,49 @@
     </div>
 </section>
 
+{% if documents %}
+<section class="b-section" aria-label="Ask your whole library">
+    <div class="b-card b-reveal">
+        <div class="b-sec-head" style="margin-top:0;">
+            <h2>Ask your <span class="b-grad">whole library</span></h2>
+            <p>One question across every document. Evidence is grouped per document, and when documents point in opposite directions you get a contrast flag — labelled as a heuristic, never a verdict.</p>
+        </div>
+        <label class="b-label" for="qa-lib-question">Your question</label>
+        <textarea class="b-textarea" id="qa-lib-question" rows="3" maxlength="1000" placeholder="e.g. Do these papers agree on whether spaced repetition works?"></textarea>
+        <div class="b-cta-row" style="margin-top:1rem;">
+            <button class="b-btn b-btn--primary" id="qa-lib-ask-btn" type="button">Ask the library</button>
+            <button class="b-btn b-btn--ghost" id="qa-lib-exam-btn" type="button">Mock exam from library</button>
+            <span class="b-pill" id="qa-lib-ask-status" style="display:none;"></span>
+        </div>
+        <p class="b-form-error" id="qa-lib-ask-error" style="display:none;" role="alert"></p>
+        <div id="qa-lib-answer-wrap" style="display:none;margin-top:1.5rem;">
+            <h3 style="margin-top:0;">Answer</h3>
+            <div class="b-card b-card--lite" id="qa-lib-answer"></div>
+            <div id="qa-lib-citations" style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.8rem;"></div>
+            <button class="b-btn b-btn--ghost b-btn--sm" id="qa-lib-fluent-btn" type="button" style="display:none;margin-top:.8rem;">Make this fluent</button>
+            <div id="qa-lib-per-doc" style="margin-top:1rem;display:grid;gap:.8rem;"></div>
+            <div id="qa-lib-contrasts" style="margin-top:1rem;display:grid;gap:.8rem;"></div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="b-section" aria-label="Mock exam" id="qa-exam" style="display:none;">
+    <div class="b-card b-reveal">
+        <div class="b-sec-head" style="margin-top:0;">
+            <h2 id="qa-exam-title">Mock exam</h2>
+            <p>Self-test — the key travels with the exam, like flashcards. Grade honestly. Short-answer prompts show their model answer for self-check and are never auto-scored.</p>
+        </div>
+        <div id="qa-exam-list" style="display:grid;gap:1rem;"></div>
+        <div class="b-cta-row" style="margin-top:1rem;">
+            <button class="b-btn b-btn--primary" id="qa-exam-grade-btn" type="button">Grade exam</button>
+            <span class="b-pill" id="qa-exam-status" style="display:none;"></span>
+        </div>
+        <p class="b-form-error" id="qa-exam-error" style="display:none;" role="alert"></p>
+        <div id="qa-exam-result" style="display:none;margin-top:1.5rem;"></div>
+    </div>
+</section>
+
 <section class="b-section" aria-label="Your documents">
     <div class="b-sec-head">
         <h2>Your <span class="b-grad">documents</span></h2>
@@ -54,8 +97,11 @@
             </div>
             <div class="b-cta-row" style="margin-top:auto;">
                 <button class="b-btn b-btn--primary b-btn--sm qa-open-doc" type="button" data-doc-id="{{ doc.id }}" data-doc-title="{{ doc.title }}">Ask questions</button>
+                <button class="b-btn b-btn--ghost b-btn--sm qa-dna-doc" type="button" data-doc-id="{{ doc.id }}">Paper DNA</button>
+                <button class="b-btn b-btn--ghost b-btn--sm qa-exam-doc" type="button" data-doc-id="{{ doc.id }}" data-doc-title="{{ doc.title }}">Mock exam</button>
                 <button class="b-btn b-btn--ghost b-btn--sm qa-delete-doc" type="button" data-doc-id="{{ doc.id }}" data-doc-title="{{ doc.title }}">Delete</button>
             </div>
+            <div class="qa-dna-panel" style="display:none;margin-top:1rem;"></div>
         </article>
         {% else %}
         <div class="b-card b-reveal" id="qa-lib-empty">
@@ -84,6 +130,7 @@
             <h3 style="margin-top:0;">Answer</h3>
             <div class="b-card b-card--lite" id="qa-answer"></div>
             <div id="qa-citations" style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.8rem;"></div>
+            <button class="b-btn b-btn--ghost b-btn--sm" id="qa-fluent-btn" type="button" style="display:none;margin-top:.8rem;">Make this fluent</button>
             <details id="qa-passages" style="margin-top:1rem;">
                 <summary style="cursor:pointer;font-weight:600;">Supporting passages</summary>
                 <div id="qa-passages-list" style="margin-top:.8rem;display:grid;gap:.8rem;"></div>

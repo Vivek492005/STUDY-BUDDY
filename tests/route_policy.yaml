@@ -17,11 +17,13 @@
 "/api/companies": public
 "/api/constructor_generate": auth
 "/api/dsa/problems": public
+"/api/dsa/progress": public
 "/api/eng/interview/score-v2": public
 "/api/eng/jd-v2/match": public
 "/api/eng/jobs/paste-jd": public
 "/api/eng/jobs/recommend": public
 "/api/interview-questions/<company>": public
+"/api/interview/intel/<company>": public
 "/api/parse_preview": auth
 "/api/star/examples": public
 "/api/study/import/<path:openalex_id>/graph": auth
@@ -33,6 +35,9 @@
 "/api/ultimate/tools": auth
 "/aptitude": public
 "/aptitude/<int:attempt_id>": auth
+"/aptitude/mistakes": auth
+"/aptitude/practice/<track>/<topic>": public
+"/aptitude/practice/check": auth
 "/aptitude/<int:attempt_id>/submit": auth
 "/aptitude/start": auth
 "/assessment": auth
@@ -41,6 +46,7 @@
 "/cards/leetcode/<username>.svg": public
 "/coach": public
 "/coach/<int:analysis_id>": auth
+"/coach/video-checklist": auth
 "/coach/analyze": auth
 "/consent/llm": auth
 "/consent/llm/withdraw": auth
@@ -49,6 +55,10 @@
 "/dashboard": auth
 "/dsa": public
 "/dsa/<problem_id>": auth
+"/dsa/<problem_id>/untrack": auth
+"/dsa/a2z": public
+"/dsa/a2z/<problem_id>/learn": public
+"/dsa/tracker": auth
 "/dsa/<problem_id>/approach": auth
 "/dsa/<problem_id>/hint": auth
 "/dsa/<problem_id>/status": auth
@@ -62,6 +72,7 @@
 "/healthz": public
 "/interview": public
 "/interview/<int:session_id>": auth
+"/interview/resume/start": auth
 "/interview/<int:session_id>/submit": auth
 "/interview/start": auth
 "/jd-match": auth
@@ -75,6 +86,8 @@
 "/learn/certs/recommend": auth
 "/learn/quizzes": public
 "/learn/quizzes/<int:attempt_id>": auth
+"/learn/quizzes/drill": auth
+"/learn/quizzes/mistakes": auth
 "/learn/quizzes/<int:attempt_id>/check": auth
 "/learn/quizzes/<int:attempt_id>/submit": auth
 "/learn/quizzes/history": auth
@@ -190,6 +203,9 @@
 "/study/api/ask": auth
 "/study/api/documents/<int:doc_id>": auth
 "/study/api/documents/<int:doc_id>/history": auth
+"/study/api/exam/generate": auth
+"/study/api/exam/grade": auth
+"/study/api/documents/<int:doc_id>/dna": auth
 "/study/api/upload": auth
 "/terms": public
 "/tracker": auth
