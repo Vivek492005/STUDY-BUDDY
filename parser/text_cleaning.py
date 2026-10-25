@@ -27,8 +27,12 @@ def clean_text(text):
     text = re.sub(r'[ \t]+', ' ', text)  # Collapse horizontal whitespace
     text = re.sub(r'\n{3,}', '\n\n', text) # Limit excessive newlines
 
-    # Remove special characters but keep useful punctuation
-    text = re.sub(r'[^\w\s@.,:;/\-+#()&|]', '', text)
+    # Remove special characters but keep useful punctuation.
+    # NOTE (2026-10-25): % $ ₹ € £ are kept on purpose — the ATS scorer's
+    # quantified-achievement detection needs them. An earlier version
+    # stripped them, which silently zeroed the metrics component for
+    # every resume (metrics were counted on cleaned text).
+    text = re.sub(r'[^\w\s@.,:;/\-+#()&|%$₹€£]', '', text)
 
     # Fix common encoding issues
     text = text.replace('â€™', "'")
@@ -36,8 +40,12 @@ def clean_text(text):
     text = text.replace('â€œ', '"')
     text = text.replace('â€', '"')
 
-    # Remove extra spaces around punctuation
-    text = re.sub(r'\s*([,:;])\s*', r'\1 ', text)
+    # Remove extra spaces around punctuation, but NOT inside digit groups:
+    # "$240,000" must survive as one number, not become "$240, 000".
+    # The lookahead must guard the whole ", spaces, digit" sequence:
+    # a plain (?!\d) backtracks past the spaces and still inserts one.
+    text = re.sub(r'\s*,(?!\s*\d)\s*', ', ', text)
+    text = re.sub(r'\s*([:;])\s*', r'\1 ', text)
 
     # Remove leading/trailing whitespace
     text = text.strip()

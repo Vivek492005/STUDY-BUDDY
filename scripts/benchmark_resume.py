@@ -59,7 +59,7 @@ def score_resume_text(text: str) -> dict:
     cleaned = clean_text(text or "")
     sections = extract_sections(cleaned)
     skills = extract_skills(cleaned)
-    experience_years = extract_experience_years(cleaned)
+    experience_years = extract_experience_years(cleaned, sections=sections)
     result = calculate_ats_score(cleaned, sections, skills, experience_years)
     breakdown = (result or {}).get("breakdown", {}) or {}
     components = {}

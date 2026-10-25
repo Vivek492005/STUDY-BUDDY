@@ -3757,7 +3757,9 @@ def register_routes(app):
             skill_names = get_skill_names(skills)
             skills_by_category = get_skills_by_category(skills)
             education = extract_education_details(sections.get('education', ''))
-            experience_years = extract_experience_years(cleaned_text)
+            # sections= excludes education dates from the year estimate
+            # (2026-10-25 fix: edu-only dates used to count as work years).
+            experience_years = extract_experience_years(cleaned_text, sections=sections)
             ats_result = calculate_ats_score(cleaned_text, sections, skills, experience_years)
             feedback = generate_feedback(ats_result, sections, skills, experience_years)
             summary = get_overall_summary(ats_result, skills, sections)
@@ -3942,7 +3944,7 @@ def register_routes(app):
         sections = extract_sections(cleaned)
         skills = extract_skills(cleaned)
         skill_names = get_skill_names(skills)
-        experience_years = extract_experience_years(cleaned)
+        experience_years = extract_experience_years(cleaned, sections=sections)
         contact = {'email': extract_email(cleaned), 'phone': extract_phone(cleaned)}
         report = score_jd_match(cleaned, skill_names, experience_years,
                                 sections, contact, jd_text)
