@@ -268,6 +268,7 @@ def test_normalize_metadata_exact_keys():
     assert set(out.keys()) == {
         "title", "authors", "abstract", "year", "venue", "doi",
         "arxiv_id", "pdf_url", "openalex_id", "url", "source", "fetched_at",
+        "is_retracted", "oa_version",
     }
     assert out["title"] == "Some Title"
     assert out["year"] == 2020
@@ -546,9 +547,9 @@ def test_fetch_arxiv_title_mismatch_logs_warning(monkeypatch, caplog):
     def fake_get(url, params=None, headers=None, timeout=None, stream=False):
         if "export.arxiv.org" in url:
             return FakeResp(200, content=SAMPLE_ATOM.encode())
-        filt = (params or {}).get("filter", "")
-        if filt.startswith("arxiv:"):
-            return FakeResp(200, json_data={"results": [{"id": "https://openalex.org/W9"}]})
+        # OpenAlex URL-form resolution: GET /works/https://arxiv.org/abs/<id>
+        if url.endswith("/works/https://arxiv.org/abs/1706.03762"):
+            return FakeResp(200, json_data={"id": "https://openalex.org/W9"})
         if url.endswith("/works/W9"):
             return FakeResp(200, json_data={
                 "id": "https://openalex.org/W9",
@@ -569,9 +570,9 @@ def test_fetch_arxiv_title_match_no_warning(monkeypatch, caplog):
     def fake_get(url, params=None, headers=None, timeout=None, stream=False):
         if "export.arxiv.org" in url:
             return FakeResp(200, content=SAMPLE_ATOM.encode())
-        filt = (params or {}).get("filter", "")
-        if filt.startswith("arxiv:"):
-            return FakeResp(200, json_data={"results": [{"id": "https://openalex.org/W9"}]})
+        # OpenAlex URL-form resolution: GET /works/https://arxiv.org/abs/<id>
+        if url.endswith("/works/https://arxiv.org/abs/1706.03762"):
+            return FakeResp(200, json_data={"id": "https://openalex.org/W9"})
         if url.endswith("/works/W9"):
             return FakeResp(200, json_data={
                 "id": "https://openalex.org/W9",

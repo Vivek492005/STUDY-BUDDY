@@ -40,6 +40,7 @@ from flask import (
     jsonify,
     redirect,
     render_template,
+    render_template_string,
     request,
     session,
     url_for,
@@ -337,6 +338,9 @@ from studybuddy.arxiv_import import (
     fetch_citation_graph,
     fetch_doi,
     normalize_metadata,
+    reading_queue,
+    recent_citations,
+    search_papers,
     validate_arxiv_id,
     validate_doi,
 )
@@ -924,10 +928,27 @@ class PaperImport(db.Model):
     source = db.Column(db.String(20))  # arxiv | openalex
     fetched_at = db.Column(db.DateTime(timezone=True))  # UTC provenance timestamp (ARC-04)
     data = db.Column(db.JSON)  # {"graph": {...}} cached citation graph
+    # Import upgrade: retraction + OA-version provenance (nullable so the
+    # additive prod schema self-heal covers existing rows).
+    is_retracted = db.Column(db.Boolean, default=False)
+    oa_version = db.Column(db.String(32))
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
 
     user = db.relationship("User", backref=db.backref("paper_imports", lazy="dynamic",
                                                       cascade="all, delete-orphan"))
+
+
+class Collection(db.Model):
+    """A token-shared, read-only set of imported papers (import upgrade)."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    name = db.Column(db.String(120), nullable=False)
+    token = db.Column(db.String(64), unique=True, nullable=False, index=True)
+    paper_ids = db.Column(db.JSON)  # [PaperImport ids, owner order]
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+
+    user = db.relationship("User", backref=db.backref("collections", lazy="dynamic",
+                                                     cascade="all, delete-orphan"))
 
 
 class LitReview(db.Model):
@@ -6852,9 +6873,30 @@ def register_routes(app):
             'id': p.id, 'title': p.title, 'authors': p.authors or [],
             'year': p.year, 'venue': p.venue, 'doi': p.doi,
             'arxiv_id': p.arxiv_id, 'openalex_id': p.openalex_id,
-            'source': p.source} for p in papers])
+            'source': p.source, 'pdf_url': p.pdf_url,
+            'is_retracted': bool(p.is_retracted),
+            'oa_version': p.oa_version} for p in papers])
 
     def _store_paper_import(meta):
+        """Store a paper import, deduplicated per user.
+
+        If the user already imported this paper (same arXiv ID, else same
+        DOI), the existing row is returned and nothing is duplicated.
+        Returns (paper, deduped: bool). Existing rows are returned as-is
+        (no field refresh) so a re-import never silently rewrites history.
+        """
+        arxiv_id = (meta.get('arxiv_id') or '').strip() or None
+        doi = (meta.get('doi') or '').strip() or None
+        if arxiv_id:
+            existing = PaperImport.query.filter_by(
+                user_id=current_user.id, arxiv_id=arxiv_id).first()
+            if existing is not None:
+                return existing, True
+        elif doi:
+            existing = PaperImport.query.filter_by(
+                user_id=current_user.id, doi=doi).first()
+            if existing is not None:
+                return existing, True
         # ARC-04: fetched_at is now DateTime(timezone=True); parse ISO strings.
         _fetched = meta.get('fetched_at')
         if isinstance(_fetched, str):
@@ -6868,10 +6910,12 @@ def register_routes(app):
             year=meta.get('year'), venue=meta.get('venue'), doi=meta.get('doi'),
             arxiv_id=meta.get('arxiv_id'), pdf_url=meta.get('pdf_url'),
             openalex_id=meta.get('openalex_id'), source=meta.get('source'),
+            is_retracted=bool(meta.get('is_retracted')),
+            oa_version=meta.get('oa_version'),
             fetched_at=_fetched)
         db.session.add(paper)
         db.session.commit()
-        return paper
+        return paper, False
 
     @app.route('/api/study/import/arxiv', methods=['POST'])
     @limiter.limit("30 per hour")
@@ -6887,12 +6931,13 @@ def register_routes(app):
         if meta.get('error'):
             return jsonify({'error': meta['error']}), 502
         try:
-            paper = _store_paper_import(meta)
+            paper, deduped = _store_paper_import(meta)
         except Exception:
             log.exception("arXiv import store failed")
             db.session.rollback()
             return jsonify({'error': 'Could not save this paper.'}), 500
         meta['import_id'] = paper.id
+        meta['deduped'] = deduped
         return jsonify(json_safe(meta))
 
     @app.route('/api/study/import/doi', methods=['POST'])
@@ -6909,12 +6954,13 @@ def register_routes(app):
         if meta.get('error'):
             return jsonify({'error': meta['error']}), 502
         try:
-            paper = _store_paper_import(meta)
+            paper, deduped = _store_paper_import(meta)
         except Exception:
             log.exception("DOI import store failed")
             db.session.rollback()
             return jsonify({'error': 'Could not save this paper.'}), 500
         meta['import_id'] = paper.id
+        meta['deduped'] = deduped
         return jsonify(json_safe(meta))
 
     @app.route('/api/study/import/<path:openalex_id>/graph')
@@ -6928,6 +6974,65 @@ def register_routes(app):
         if graph.get('error'):
             return jsonify({'error': graph['error']}), 502
         return jsonify(json_safe(graph))
+
+    def _fetch_pdf_into_library(pdf_url, title, arxiv_id, doi):
+        """Download a PDF and store it as a StudyDoc for the current user.
+
+        Shared by the two-step PDF route and one-click full import so both
+        build the identical StudyDoc shape. Returns (doc_dict, err_type)
+        where err_type is None on success else "download" | "no-text" |
+        "failed". The downloaded file is removed on every failure path;
+        on success it stays as the doc's stored_filename.
+        """
+        if not (pdf_url or '').lower().startswith(('http://', 'https://')):
+            return None, "download"
+        filename = f"{uuid.uuid4().hex}.pdf"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        try:
+            downloaded = arxiv_download_pdf(pdf_url, filepath)
+            if not downloaded and arxiv_id:
+                # OpenAlex sometimes points at mirrors that block direct
+                # download; arXiv's own PDF URL is deterministic — try it.
+                downloaded = arxiv_download_pdf(
+                    f"https://arxiv.org/pdf/{arxiv_id}", filepath)
+            if not downloaded:
+                return None, "download"
+            pages = pdfqa_parse_pages(filepath)
+            if not any((p or '').strip() for p in pages):
+                try:
+                    os.remove(filepath)
+                except OSError:
+                    pass
+                return None, "no-text"
+            chunks = pdfqa_chunk_pages(pages)
+            doc = StudyDoc(
+                user_id=current_user.id,
+                title=(title or 'Imported paper').strip()[:255],
+                stored_filename=filename,
+                source='arxiv' if arxiv_id else 'doi',
+                source_ref=arxiv_id or doi,
+                num_pages=len(pages), num_chunks=len(chunks),
+                char_count=sum(len(c.get('text', '')) for c in chunks),
+                data={'chunks': [dict(c) for c in chunks],
+                      'truncated': bool(getattr(chunks, 'truncated', False))})
+            db.session.add(doc)
+            db.session.commit()
+        except Exception:
+            log.exception("Study import-PDF failed")
+            db.session.rollback()
+            try:
+                os.remove(filepath)
+            except OSError:
+                pass
+            return None, "failed"
+        return {'id': doc.id, 'title': doc.title, 'pages': doc.num_pages,
+                'chunks': doc.num_chunks}, None
+
+    _PDF_ERRORS = {
+        "download": (502, 'Could not download the PDF.'),
+        "no-text": (400, 'No extractable text found in this PDF.'),
+        "failed": (500, 'Could not import this PDF into your library.'),
+    }
 
     @app.route('/api/study/import/pdf', methods=['POST'])
     @limiter.limit("20 per hour")
@@ -6944,52 +7049,271 @@ def register_routes(app):
             return jsonify({'error': 'Invalid PDF URL.'}), 400
         arxiv_id = (payload.get('arxiv_id') or '').strip()
         doi = (payload.get('doi') or '').strip()
-        filename = f"{uuid.uuid4().hex}.pdf"
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        doc, err = _fetch_pdf_into_library(
+            pdf_url, payload.get('title'), arxiv_id, doi)
+        if err:
+            status, message = _PDF_ERRORS[err]
+            return jsonify({'error': message}), status
+        return jsonify({'success': True, 'doc': doc})
+
+    @app.route('/api/study/import/search', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def study_import_search():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Keyword search across OpenAlex + arXiv + Semantic Scholar.
+
+        JSON body: {"query": "...", "max_results"?: 10} (capped at 25).
+        Results are merged + deduped (DOI, else arXiv ID, else title).
+        """
+        payload = request.get_json(silent=True) or {}
+        query = (payload.get('query') or '').strip()
+        if not query:
+            return jsonify({'error': 'Please provide a search query.'}), 400
         try:
-            downloaded = arxiv_download_pdf(pdf_url, filepath)
-            if not downloaded and arxiv_id:
-                # OpenAlex sometimes points at mirrors that block direct
-                # download; arXiv's own PDF URL is deterministic — try it.
-                downloaded = arxiv_download_pdf(
-                    f"https://arxiv.org/pdf/{arxiv_id}", filepath)
-            if not downloaded:
-                return jsonify({'error': 'Could not download the PDF.'}), 502
-            pages = pdfqa_parse_pages(filepath)
-            if not any((p or '').strip() for p in pages):
-                raise ValueError("no-text")
-            chunks = pdfqa_chunk_pages(pages)
-            doc = StudyDoc(
-                user_id=current_user.id,
-                title=(payload.get('title') or 'Imported paper').strip()[:255],
-                stored_filename=filename,
-                source='arxiv' if arxiv_id else 'doi',
-                source_ref=arxiv_id or doi,
-                num_pages=len(pages), num_chunks=len(chunks),
-                char_count=sum(len(c.get('text', '')) for c in chunks),
-                data={'chunks': [dict(c) for c in chunks],
-                      'truncated': bool(getattr(chunks, 'truncated', False))})
-            db.session.add(doc)
-            db.session.commit()
-        except ValueError as e:
-            if str(e) == "no-text":
-                try:
-                    os.remove(filepath)
-                except OSError:
-                    pass
-                return jsonify({'error': 'No extractable text found in this PDF.'}), 400
-            raise
+            max_results = int(payload.get('max_results') or 10)
+        except (TypeError, ValueError):
+            max_results = 10
+        max_results = max(1, min(25, max_results))
+        results = search_papers(query, max_results)
+        return jsonify(json_safe({'success': True, 'results': results}))
+
+    @app.route('/api/study/import/full', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def study_import_full():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """One-click import: metadata + PDF into the library in one call.
+
+        JSON body: exactly one of {"arxiv_id": ...} or {"doi": ...}.
+        The PDF step is best-effort: a PDF failure never fails the
+        metadata import (doc is null + doc_error explains why).
+        """
+        payload = request.get_json(silent=True) or {}
+        arxiv_raw = (payload.get('arxiv_id') or '').strip()
+        doi_raw = (payload.get('doi') or '').strip()
+        if bool(arxiv_raw) == bool(doi_raw):
+            return jsonify({'error': 'Provide exactly one of arxiv_id or doi.'}), 400
+        if arxiv_raw:
+            arxiv_id = validate_arxiv_id(arxiv_raw)
+            if not arxiv_id:
+                return jsonify({'error': 'Invalid arXiv ID. Use formats like 1706.03762.'}), 400
+            meta = normalize_metadata(fetch_arxiv(arxiv_id))
+        else:
+            doi = validate_doi(doi_raw)
+            if not doi:
+                return jsonify({'error': 'Invalid DOI. Use formats like 10.1038/nature12373.'}), 400
+            meta = normalize_metadata(fetch_doi(doi))
+        if meta.get('error'):
+            return jsonify({'error': meta['error']}), 502
+        try:
+            paper, deduped = _store_paper_import(meta)
         except Exception:
-            log.exception("Study import-PDF failed")
+            log.exception("Full import store failed")
             db.session.rollback()
+            return jsonify({'error': 'Could not save this paper.'}), 500
+        paper_dict = {
+            'id': paper.id, 'title': paper.title,
+            'authors': paper.authors or [], 'year': paper.year,
+            'venue': paper.venue, 'doi': paper.doi,
+            'arxiv_id': paper.arxiv_id, 'pdf_url': paper.pdf_url,
+            'openalex_id': paper.openalex_id, 'source': paper.source,
+            'is_retracted': bool(paper.is_retracted),
+            'oa_version': paper.oa_version}
+        response = {'success': True, 'paper': paper_dict, 'doc': None,
+                    'deduped': deduped}
+        pdf_url = meta.get('pdf_url')
+        if not pdf_url:
+            response['doc_error'] = 'No PDF URL available for this paper.'
+        else:
+            doc, err = _fetch_pdf_into_library(
+                pdf_url, meta.get('title'), meta.get('arxiv_id'),
+                meta.get('doi'))
+            if err:
+                response['doc_error'] = _PDF_ERRORS[err][1]
+            else:
+                response['doc'] = doc
+        return jsonify(json_safe(response))
+
+    @app.route('/api/study/import/<int:paper_id>', methods=['DELETE'])
+    def study_import_delete(paper_id):
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Delete one of the user's imports (owner only; others get 404)."""
+        paper = PaperImport.query.filter_by(
+            id=paper_id, user_id=current_user.id).first()
+        if paper is None:
+            return jsonify({'error': 'Paper not found.'}), 404
+        db.session.delete(paper)
+        db.session.commit()
+        return jsonify({'success': True})
+
+    @app.route('/api/study/import/queue', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def study_import_queue():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Prioritized reading queue over the user's imports.
+
+        JSON body: {"minutes_per_paper"?: 45 (clamped 5..240),
+        "interests"?: "keyword string"}. Interests are split on
+        commas/whitespace into keywords for reading_queue.
+        """
+        payload = request.get_json(silent=True) or {}
+        try:
+            minutes = int(payload.get('minutes_per_paper') or 45)
+        except (TypeError, ValueError):
+            minutes = 45
+        minutes = max(5, min(240, minutes))
+        interests_raw = payload.get('interests') or ''
+        if isinstance(interests_raw, list):
+            interests = [str(i) for i in interests_raw]
+        else:
+            interests = [w for w in re.split(r"[,;\s]+", str(interests_raw)) if w]
+        imports = PaperImport.query.filter_by(
+            user_id=current_user.id).order_by(
+                PaperImport.created_at.desc()).all()
+        if not imports:
+            return jsonify({'error': 'No imported papers yet — import a paper first to build a reading queue.'}), 400
+        papers = [{'id': p.id, 'title': p.title, 'year': p.year,
+                   'abstract': p.abstract or ''} for p in imports]
+        result = reading_queue(papers, interests=interests,
+                               minutes_per_paper=minutes)
+        return jsonify(json_safe({'success': True, 'queue': result}))
+
+    @app.route('/api/study/import/citations')
+    @limiter.limit("30 per hour")
+    def study_import_citations():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """New citations to the user's imports + bridge papers.
+
+        Uses the user's up to 8 most recent imports that have an
+        OpenAlex record. A bridge is a paper citing >=2 of my imports.
+        """
+        imports = PaperImport.query.filter_by(
+            user_id=current_user.id).filter(
+                PaperImport.openalex_id.isnot(None)).order_by(
+                    PaperImport.created_at.desc()).limit(8).all()
+        if not imports:
+            return jsonify({'success': True, 'recent': [], 'bridges': [],
+                            'note': 'No imported papers with OpenAlex records yet — import a paper first to track new citations.'})
+        result = recent_citations(
+            [p.openalex_id for p in imports], per_paper=5, max_papers=8)
+        return jsonify(json_safe({'success': True,
+                                  'recent': result.get('recent', []),
+                                  'bridges': result.get('bridges', [])}))
+
+    def _collection_dict(collection):
+        return {
+            'id': collection.id, 'name': collection.name,
+            'token': collection.token,
+            'url': f"/research/collections/{collection.token}",
+            'paper_count': len(collection.paper_ids or [])}
+
+    def _validate_collection_paper_ids(raw_ids):
+        """Clean + ownership-check a paper_ids list. Returns (ids, error)."""
+        if not isinstance(raw_ids, list):
+            return None, 'paper_ids must be a list.'
+        clean = []
+        for raw in raw_ids:
             try:
-                os.remove(filepath)
-            except OSError:
-                pass
-            return jsonify({'error': 'Could not import this PDF into your library.'}), 500
-        return jsonify({'success': True, 'doc': {
-            'id': doc.id, 'title': doc.title, 'pages': doc.num_pages,
-            'chunks': doc.num_chunks}})
+                pid = int(raw)
+            except (TypeError, ValueError):
+                return None, 'paper_ids must be integers.'
+            if pid not in clean:
+                clean.append(pid)
+        if len(clean) > 100:
+            return None, 'A collection holds at most 100 papers.'
+        if clean:
+            owned = {p.id for p in PaperImport.query.filter_by(
+                user_id=current_user.id).filter(
+                    PaperImport.id.in_(clean)).all()}
+            if set(clean) - owned:
+                return None, 'Some papers do not belong to you.'
+        return clean, None
+
+    @app.route('/api/study/collections', methods=['POST'])
+    def study_collection_create():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Create a token-shared collection. JSON: {"name", "paper_ids"[]}.
+
+        Returns the public URL; anyone with the token can read it.
+        """
+        payload = request.get_json(silent=True) or {}
+        name = (payload.get('name') or '').strip()
+        if not name:
+            return jsonify({'error': 'Please provide a collection name.'}), 400
+        paper_ids, error = _validate_collection_paper_ids(
+            payload.get('paper_ids') or [])
+        if error:
+            return jsonify({'error': error}), 400
+        collection = Collection(
+            user_id=current_user.id, name=name[:120],
+            token=uuid.uuid4().hex, paper_ids=paper_ids)
+        db.session.add(collection)
+        db.session.commit()
+        return jsonify({'success': True,
+                        'collection': _collection_dict(collection)})
+
+    @app.route('/api/study/collections')
+    def study_collection_list():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """List the user's collections."""
+        collections = Collection.query.filter_by(
+            user_id=current_user.id).order_by(
+                Collection.created_at.desc()).all()
+        return jsonify({'collections': [_collection_dict(c) for c in collections]})
+
+    @app.route('/api/study/collections/<token>/papers', methods=['POST'])
+    def study_collection_set_papers(token):
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Replace a collection's paper list (owner only; others get 404)."""
+        collection = Collection.query.filter_by(
+            token=token, user_id=current_user.id).first()
+        if collection is None:
+            return jsonify({'error': 'Collection not found.'}), 404
+        payload = request.get_json(silent=True) or {}
+        paper_ids, error = _validate_collection_paper_ids(
+            payload.get('paper_ids') or [])
+        if error:
+            return jsonify({'error': error}), 400
+        collection.paper_ids = paper_ids
+        db.session.commit()
+        return jsonify({'success': True,
+                        'collection': _collection_dict(collection)})
+
+    @app.route('/research/collections/<token>')
+    def study_collection_public(token):
+        """Public read-only view of a token-shared collection.
+
+        Rendered inline (no template file) so the frontend owner can
+        replace it with a styled template later without a backend change.
+        """
+        collection = Collection.query.filter_by(token=token).first()
+        if collection is None:
+            abort(404)
+        wanted = collection.paper_ids or []
+        rows = PaperImport.query.filter(
+            PaperImport.id.in_(wanted)).all() if wanted else []
+        by_id = {p.id: p for p in rows}
+        papers = [by_id[pid] for pid in wanted if pid in by_id]
+        return render_template_string(
+            "<!doctype html><html><head><meta charset='utf-8'>"
+            "<title>{{ name|e }} — STUDY-BUDDY collection</title></head>"
+            "<body><h1>{{ name|e }}</h1>"
+            "{% if not papers %}<p>No papers in this collection yet.</p>{% endif %}"
+            "<ul>{% for p in papers %}<li><strong>{{ p.title|e }}</strong>"
+            "{% if p.authors %} — {{ p.authors|join(', ')|e }}{% endif %}"
+            "{% if p.year %} ({{ p.year }}){% endif %}"
+            "{% if p.venue %} — {{ p.venue|e }}{% endif %}"
+            "{% if p.doi %} — <a href='https://doi.org/{{ p.doi|e }}'>DOI</a>{% endif %}"
+            "{% if p.arxiv_id %} — <a href='https://arxiv.org/abs/{{ p.arxiv_id|e }}'>arXiv</a>{% endif %}"
+            "</li>{% endfor %}</ul></body></html>",
+            name=collection.name, papers=papers)
 
     # Feature #24: citation formatter (IEEE/APA/MLA/Vancouver/Chicago + BibTeX)
     @app.route('/research/cite')

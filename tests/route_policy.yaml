@@ -26,10 +26,17 @@
 "/api/interview/intel/<company>": public
 "/api/parse_preview": auth
 "/api/star/examples": public
+"/api/study/collections": auth
+"/api/study/collections/<token>/papers": auth
+"/api/study/import/<int:paper_id>": auth
 "/api/study/import/<path:openalex_id>/graph": auth
 "/api/study/import/arxiv": auth
+"/api/study/import/citations": auth
 "/api/study/import/doi": auth
+"/api/study/import/full": auth
 "/api/study/import/pdf": auth
+"/api/study/import/queue": auth
+"/api/study/import/search": auth
 "/api/topics": public
 "/api/ultimate/run/<path:tool_id>": auth
 "/api/ultimate/tools": auth
@@ -161,6 +168,7 @@
 "/research/api/review/<int:rid>": auth
 "/research/api/review/generate": auth
 "/research/cite": auth
+"/research/collections/<token>": public
 "/research/flashcards": auth
 "/research/flashcards/<int:sid>": auth
 "/research/gaps": auth

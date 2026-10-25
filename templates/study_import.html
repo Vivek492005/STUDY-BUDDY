@@ -35,6 +35,13 @@
   .si-status { display: none; margin: 14px 0; padding: 12px 14px; border-radius: 10px; font-size: .9rem;
     background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.4); color: #fca5a5; }
   .si-status.show { display: block; }
+  .si-status.ok { background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.35); color: #86efac; }
+  .si-pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: .75rem; margin-bottom: 8px; }
+  .si-pill.danger { background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.4); color: #fca5a5; }
+  .si-queue { margin: 14px 0 0; padding-left: 22px; }
+  .si-queue li { margin-bottom: 10px; font-size: .92rem; line-height: 1.5; }
+  .si-queue .si-meta { margin-bottom: 0; }
+  #graph-year { accent-color: var(--b-a1, #6366f1); }
   .si-node { cursor: pointer; }
   .si-node text { fill: #cbd5e1; font-size: 10px; pointer-events: none; }
   .si-node.center circle { stroke: #22d3ee; stroke-width: 3; }
@@ -77,11 +84,70 @@
 
 <section class="b-section">
   <div class="b-sec-head">
+    <h2>Search <span class="b-grad">papers</span></h2>
+    <p>Search by title, author or keyword — no exact ID needed. Results merge OpenAlex, arXiv and Semantic Scholar.</p>
+  </div>
+  <div class="b-card b-card--lite">
+    <div class="si-field" style="margin-top:0">
+      <input id="search-input" aria-label="Search papers" class="si-input" type="text" placeholder="e.g. attention is all you need, or graph neural networks" autocomplete="off" spellcheck="false">
+      <button id="search-btn" class="b-btn b-btn--primary" type="button">Search</button>
+    </div>
+    <div id="search-msg" class="si-msg"></div>
+    <div id="search-results"></div>
+  </div>
+</section>
+
+<section class="b-section">
+  <div class="b-sec-head">
     <h2>Imported <span class="b-grad">papers</span></h2>
-    <p>Papers you import in this session appear here.</p>
+    <p>Your imported papers (newest first).</p>
+  </div>
+  <div class="si-field" style="margin-top:0;margin-bottom:14px">
+    <input id="import-filter" aria-label="Filter imported papers" class="si-input" type="text" placeholder="Filter by title or author…" autocomplete="off" spellcheck="false">
   </div>
   <div id="results">
     <div class="b-card si-empty">No papers imported yet — try an arXiv ID or DOI above.</div>
+  </div>
+</section>
+
+<section class="b-section">
+  <div class="b-sec-head">
+    <h2>Reading <span class="b-grad">queue</span></h2>
+    <p>Your imports, ordered for the time you actually have.</p>
+  </div>
+  <div class="b-card b-card--lite">
+    <div class="si-field" style="margin-top:0">
+      <input id="queue-minutes" aria-label="Minutes per paper" class="si-input" type="number" min="5" max="480" value="45" style="flex:0 0 130px">
+      <input id="queue-interests" aria-label="Interests (optional)" class="si-input" type="text" placeholder="Interests, comma-separated (optional)" autocomplete="off" spellcheck="false">
+      <button id="queue-btn" class="b-btn b-btn--primary" type="button">Build queue</button>
+    </div>
+    <div id="queue-results"></div>
+  </div>
+</section>
+
+<section class="b-section">
+  <div class="b-sec-head">
+    <h2>New <span class="b-grad">citations</span></h2>
+    <p>What has cited your imported papers lately — and which papers bridge two or more of them.</p>
+  </div>
+  <div class="b-card b-card--lite">
+    <button id="citations-btn" class="b-btn b-btn--primary" type="button">Check new citations</button>
+    <div id="citations-msg" class="si-msg"></div>
+    <div id="citations-results"></div>
+  </div>
+</section>
+
+<section class="b-section">
+  <div class="b-sec-head">
+    <h2>Shared <span class="b-grad">collections</span></h2>
+    <p>Bundle your current imports into a shareable list — anyone with the link can view it.</p>
+  </div>
+  <div class="b-card b-card--lite">
+    <div class="si-field" style="margin-top:0">
+      <input id="collection-name" aria-label="Collection name" class="si-input" type="text" placeholder="Collection name, e.g. Thesis background reading" autocomplete="off" spellcheck="false">
+      <button id="collection-create-btn" class="b-btn b-btn--primary" type="button">Create from current imports</button>
+    </div>
+    <div id="collections-list"></div>
   </div>
 </section>
 
@@ -91,6 +157,11 @@
     <p>Click any node to inspect it. <span id="graph-hint" style="color:var(--b-muted)">Import a paper with an OpenAlex record, then press “View graph”.</span></p>
   </div>
   <div class="b-card b-card--lite" id="graph-wrap">
+    <div class="si-field" style="margin-top:0;margin-bottom:12px;align-items:center">
+      <label for="graph-year" style="font-size:.85rem;color:var(--b-muted)">Filter by year:</label>
+      <input id="graph-year" type="range" min="1900" max="2026" value="2026" disabled style="flex:1">
+      <span id="graph-year-label" style="font-size:.85rem;color:var(--b-muted)">≤ 2026</span>
+    </div>
     <div class="si-zoom" role="group" aria-label="Graph zoom">
       <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
       <button id="zoom-out" type="button" aria-label="Zoom out">&minus;</button>
@@ -103,5 +174,6 @@
 {% endblock %}
 
 {% block scripts %}
+<script id="import-initial" type="application/json">{{ (papers or [])|tojson }}</script>
 <script src="{{ url_for('static', filename='js/study_import.js') }}"></script>
 {% endblock %}

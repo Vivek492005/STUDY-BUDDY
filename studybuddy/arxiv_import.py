@@ -39,7 +39,9 @@ MAILTO = os.environ.get("RESEARCH_CONTACT_EMAIL", "research@student.local").stri
 USER_AGENT = (
     f"ACRA-ResearchAssistant/1.0 (mailto:{MAILTO}; educational research assistant)"
 )
-ARXIV_API = "http://export.arxiv.org/api/query"
+# NOTE: plain HTTP to export.arxiv.org fails from some networks (connection
+# reset); HTTPS works everywhere, so the API base is HTTPS-only.
+ARXIV_API = "https://export.arxiv.org/api/query"
 OPENALEX_API = "https://api.openalex.org"
 
 _ARXIV_NEW_RE = re.compile(r"^(\d{2})(\d{2})\.(\d{4,5})$")
@@ -152,6 +154,8 @@ _METADATA_KEYS = (
     "url",
     "source",
     "fetched_at",
+    "is_retracted",
+    "oa_version",
 )
 
 
@@ -178,6 +182,10 @@ def normalize_metadata(raw: dict | None) -> dict:
         out["year"] = None
     if out["source"] not in ("arxiv", "openalex"):
         out["source"] = raw.get("source") or None
+    # Retraction/version flags are additive provenance: coerce defensively
+    # (raw dicts from older callers may carry them as 0/1 or strings).
+    out["is_retracted"] = bool(raw.get("is_retracted"))
+    out["oa_version"] = raw.get("oa_version") or None
     out["fetched_at"] = raw.get("fetched_at") or datetime.now(UTC).isoformat()
     title = out.get("title")
     out["title"] = re.sub(r"\s+", " ", str(title)).strip() if title else None
@@ -281,27 +289,42 @@ def fetch_arxiv(arxiv_id: str) -> dict:
                     "vs OpenAlex title %r — keeping arXiv record, verify manually",
                     norm, oa_id, raw.get("title"), oa_title,
                 )
+            # Best-effort retraction + OA-version flags; a failure here must
+            # never fail the import — the arXiv record stands on its own.
+            flags = _openalex_flags(oa_id)
+            if flags:
+                raw["is_retracted"] = flags["is_retracted"]
+                raw["oa_version"] = flags["oa_version"]
     except Exception:
         pass
     return raw
 
 
 def _resolve_openalex_for_arxiv(arxiv_id: str) -> str | None:
-    resp = _get(
-        f"{OPENALEX_API}/works",
-        params={
-            "filter": f"arxiv:{arxiv_id}",
-            "per-page": 1,
-            "select": "id",
-            "mailto": MAILTO,
-        },
-    )
+    """Resolve an arXiv id to its OpenAlex id via the canonical URL form.
+
+    OpenAlex resolves external ids in the path
+    (GET /works/https://arxiv.org/abs/<id>); the filter=arxiv: form is not
+    a documented filter and silently returned nothing, which left arXiv
+    imports without openalex_id (breaking graph + citations for them).
+    Never raises; None on any failure.
+    """
+    try:
+        resp = _get(
+            f"{OPENALEX_API}/works/https://arxiv.org/abs/{arxiv_id}",
+            params={"mailto": MAILTO, "select": "id"},
+        )
+    except requests.RequestException:
+        return None
     if resp.status_code != 200:
         return None
-    results = (resp.json().get("results") or [])
-    if not results:
+    try:
+        work = resp.json()
+    except ValueError:
         return None
-    return _short_openalex_id(results[0].get("id"))
+    if not isinstance(work, dict):
+        return None
+    return _short_openalex_id(work.get("id"))
 
 
 def _titles_match(a: str | None, b: str | None) -> bool:
@@ -327,6 +350,34 @@ def _openalex_title(short_id: str) -> str | None:
     if resp.status_code != 200:
         return None
     return resp.json().get("title")
+
+
+def _openalex_flags(short_id: str) -> dict | None:
+    """Best-effort retraction + OA-version flags for an OpenAlex work.
+
+    Same fetch pattern as _openalex_title. Never raises; None on any
+    failure so callers can keep the arXiv record without these flags.
+    """
+    try:
+        resp = _get(
+            f"{OPENALEX_API}/works/{short_id}",
+            params={"mailto": MAILTO, "select": "id,is_retracted,best_oa_location"},
+        )
+    except requests.RequestException:
+        return None
+    if resp.status_code != 200:
+        return None
+    try:
+        work = resp.json()
+    except ValueError:
+        return None
+    if not isinstance(work, dict):
+        return None
+    best = work.get("best_oa_location") or {}
+    return {
+        "is_retracted": bool(work.get("is_retracted")),
+        "oa_version": best.get("version") or None,
+    }
 
 
 # --------------------------------------------------------------------------
@@ -392,6 +443,9 @@ def _openalex_work_to_raw(work: dict) -> dict:
         "openalex_id": _short_openalex_id(work.get("id")),
         "url": doi_url or (work.get("id")),
         "source": "openalex",
+        # Retraction + OA-version provenance (additive; None/False when absent).
+        "is_retracted": bool(work.get("is_retracted")),
+        "oa_version": (best.get("version") or None),
     }
 
 
@@ -840,5 +894,370 @@ def reading_queue(papers, interests=None, minutes_per_paper=45):
             "total_minutes": total,
             "total_hours": round(total / 60, 1),
             "guidance": f"~{round(total/60, 1)}h of reading. Do 1-2 papers per day."}
+
+
+# --------------------------------------------------------------------------
+# 8. Cross-source paper search (import page: search by keyword, not just ID)
+# --------------------------------------------------------------------------
+# Every search function never raises: any network/parse/status failure
+# returns [] so a merged search still works with the sources that did
+# answer. HTTP error statuses are NOT retried (_get only retries network
+# failures), so a Semantic Scholar 429 (shared-IP rate limit) returns []
+# immediately with no retry and no API key.
+
+S2_API = "https://api.semanticscholar.org/graph/v1/paper/search"
+_OA_SEARCH_SELECT = (
+    _SELECT
+    + ",primary_location,best_oa_location,abstract_inverted_index,ids,"
+    "is_retracted,type"
+)
+
+
+def _clamp_search_limit(n, default=10) -> int:
+    try:
+        n = int(n)
+    except (TypeError, ValueError):
+        n = default
+    return max(1, min(25, n))
+
+
+def _norm_title_key(title) -> str:
+    return re.sub(r"[^a-z0-9]", "", (title or "").lower())
+
+
+def _norm_doi_key(doi) -> str:
+    return (doi or "").strip().lower()
+
+
+def search_openalex(query, max_results=10) -> list:
+    """Search OpenAlex works by keyword. Never raises; [] on failure."""
+    q = (query or "").strip()
+    if not q:
+        return []
+    try:
+        resp = _get(
+            f"{OPENALEX_API}/works",
+            params={"search": q, "per-page": _clamp_search_limit(max_results),
+                    "select": _OA_SEARCH_SELECT, "mailto": MAILTO},
+        )
+    except requests.RequestException:
+        return []
+    if resp.status_code != 200:
+        return []
+    try:
+        results = resp.json().get("results") or []
+    except ValueError:
+        return []
+    out = []
+    for w in results:
+        if not isinstance(w, dict):
+            continue
+        raw = _openalex_work_to_raw(w)
+        raw["cited_by_count"] = w.get("cited_by_count")
+        out.append(raw)
+    return out
+
+
+def search_arxiv(query, max_results=10) -> list:
+    """Search arXiv by keyword (all fields). Never raises; [] on failure.
+
+    OpenAlex id resolution is deliberately skipped here for speed — the
+    merged result fills openalex_id from another source when available.
+    """
+    q = (query or "").strip()
+    if not q:
+        return []
+    safe = q.replace('"', " ").strip()
+    if not safe:
+        return []
+    try:
+        resp = _get(
+            ARXIV_API,
+            params={"search_query": f'all:"{safe}"',
+                    "max_results": _clamp_search_limit(max_results)},
+        )
+    except requests.RequestException:
+        return []
+    if resp.status_code != 200:
+        return []
+    try:
+        root = ET.fromstring(resp.content)
+    except ET.ParseError:
+        return []
+    out = []
+    for entry in root.findall("atom:entry", _ATOM_NS):
+        try:
+            raw = _arxiv_entry_to_raw(entry)
+        except Exception:
+            continue
+        raw["cited_by_count"] = None
+        out.append(raw)
+    return out
+
+
+def search_semanticscholar(query, max_results=10) -> list:
+    """Search Semantic Scholar by keyword. Never raises; [] on failure.
+
+    Unauthenticated S2 requests may 429 on shared IPs — that is treated
+    exactly like any other failure: silent [], no retry, no API key.
+    """
+    q = (query or "").strip()
+    if not q:
+        return []
+    try:
+        resp = _get(
+            S2_API,
+            params={"query": q,
+                    "fields": "title,authors,year,venue,externalIds,abstract,"
+                              "openAccessPdf,citationCount",
+                    "limit": _clamp_search_limit(max_results)},
+        )
+    except requests.RequestException:
+        return []
+    if resp.status_code != 200:
+        return []
+    try:
+        data = resp.json().get("data") or []
+    except ValueError:
+        return []
+    out = []
+    for p in data:
+        if not isinstance(p, dict):
+            continue
+        ext = p.get("externalIds") or {}
+        arxiv_id = None
+        if ext.get("ArXiv"):
+            arxiv_id = validate_arxiv_id(ext.get("ArXiv"))
+        doi = ext.get("DOI") or None
+        oa = p.get("openAccessPdf") or {}
+        pdf_url = oa.get("url") or (
+            f"https://arxiv.org/pdf/{arxiv_id}.pdf" if arxiv_id else None)
+        authors = [a.get("name") for a in (p.get("authors") or [])
+                   if isinstance(a, dict) and a.get("name")]
+        out.append({
+            "title": p.get("title"),
+            "authors": authors,
+            "abstract": p.get("abstract"),
+            "year": p.get("year"),
+            "venue": p.get("venue"),
+            "doi": doi,
+            "arxiv_id": arxiv_id,
+            "pdf_url": pdf_url,
+            "openalex_id": None,
+            "url": None,
+            "source": "semanticscholar",
+            "cited_by_count": p.get("citationCount"),
+        })
+    return out
+
+
+def _merge_key(raw: dict):
+    """Dedupe key: DOI, else arXiv ID, else normalized title."""
+    doi = _norm_doi_key(raw.get("doi"))
+    if doi:
+        return ("doi", doi)
+    arxiv_id = (raw.get("arxiv_id") or "").strip()
+    if arxiv_id:
+        return ("arxiv", arxiv_id)
+    title = _norm_title_key(raw.get("title"))
+    if title:
+        return ("title", title)
+    return None
+
+
+def search_papers(query, max_results=10) -> list:
+    """Merged keyword search across OpenAlex + arXiv + Semantic Scholar.
+
+    Dedupe by DOI, else arXiv ID, else normalized title. Merged entries
+    carry sources=[...] and source="merged" when >1 source matched, else
+    the single source. Preference: arXiv title/abstract when present,
+    OpenAlex venue/year/cited_by_count when present; other fields take
+    the first non-empty value. Never raises; [] on empty query or when
+    every source fails. Results capped at max_results (max 25).
+    """
+    q = (query or "").strip()
+    if not q:
+        return []
+    limit = _clamp_search_limit(max_results)
+    merged: list[dict] = []
+    by_key: dict = {}
+    for fn in (search_openalex, search_arxiv, search_semanticscholar):
+        try:
+            results = fn(q, limit)
+        except Exception:
+            results = []
+        for raw in results or []:
+            if not isinstance(raw, dict):
+                continue
+            key = _merge_key(raw)
+            if key is None:
+                continue
+            entry = by_key.get(key)
+            src = raw.get("source")
+            if entry is None:
+                entry = {
+                    "title": raw.get("title"),
+                    "authors": list(raw.get("authors") or []),
+                    "abstract": raw.get("abstract"),
+                    "year": raw.get("year"),
+                    "venue": raw.get("venue"),
+                    "doi": raw.get("doi"),
+                    "arxiv_id": raw.get("arxiv_id"),
+                    "pdf_url": raw.get("pdf_url"),
+                    "openalex_id": raw.get("openalex_id"),
+                    "cited_by_count": raw.get("cited_by_count"),
+                    "sources": [src] if src else [],
+                    "_by_source": {src: raw} if src else {},
+                }
+                by_key[key] = entry
+                merged.append(entry)
+            else:
+                if src and src not in entry["sources"]:
+                    entry["sources"].append(src)
+                if src:
+                    entry["_by_source"][src] = raw
+                for field in ("doi", "arxiv_id", "pdf_url", "openalex_id"):
+                    if not entry.get(field) and raw.get(field):
+                        entry[field] = raw.get(field)
+                if not entry.get("authors") and raw.get("authors"):
+                    entry["authors"] = list(raw.get("authors"))
+    out = []
+    for entry in merged[:limit]:
+        by_source = entry.pop("_by_source", {})
+        arxiv_raw = by_source.get("arxiv") or {}
+        if arxiv_raw.get("title"):
+            entry["title"] = arxiv_raw.get("title")
+        if arxiv_raw.get("abstract"):
+            entry["abstract"] = arxiv_raw.get("abstract")
+        oa_raw = by_source.get("openalex") or {}
+        for field in ("venue", "year", "cited_by_count"):
+            if oa_raw.get(field) is not None:
+                entry[field] = oa_raw.get(field)
+        sources = entry["sources"]
+        entry["source"] = "merged" if len(sources) > 1 else (
+            sources[0] if sources else None)
+        out.append(entry)
+    return out
+
+
+# --------------------------------------------------------------------------
+# 9. New citations + bridge papers for the user's imports
+# --------------------------------------------------------------------------
+
+def _recent_citations_uncached(ids: list, per_paper: int) -> dict:
+    """Fetch citing works per import id (no cache, no raise on per-id failure)."""
+    select = _SELECT + ",publication_date"
+    titles: dict[str, str | None] = {}
+    for sid in ids:
+        try:
+            titles[sid] = _openalex_title(sid)
+        except Exception:
+            titles[sid] = None
+    recent: list[dict] = []
+    by_citing: dict[str, dict] = {}
+    for sid in ids:
+        try:
+            resp = _get(
+                f"{OPENALEX_API}/works",
+                params={"filter": f"cites:{sid}",
+                        "sort": "publication_date:desc",
+                        "per-page": per_paper,
+                        "select": select,
+                        "mailto": MAILTO},
+            )
+        except requests.RequestException:
+            continue
+        if resp.status_code != 200:
+            continue
+        try:
+            works = resp.json().get("results") or []
+        except ValueError:
+            continue
+        for w in works:
+            if not isinstance(w, dict):
+                continue
+            cid = _short_openalex_id(w.get("id"))
+            if not cid:
+                continue
+            authors = [
+                (a.get("author") or {}).get("display_name")
+                for a in (w.get("authorships") or [])
+                if (a.get("author") or {}).get("display_name")
+            ]
+            doi_url = ((w.get("ids") or {}).get("doi")) or w.get("doi") or ""
+            doi = re.sub(r"^https?://(dx\.)?doi\.org/", "", doi_url,
+                         flags=re.IGNORECASE) if doi_url else None
+            recent.append({
+                "title": w.get("title"),
+                "authors": authors,
+                "year": w.get("publication_year"),
+                "doi": doi,
+                "openalex_id": cid,
+                "cited_paper_title": titles.get(sid),
+                "cited_paper_openalex_id": sid,
+            })
+            slot = by_citing.get(cid)
+            if slot is None:
+                slot = {
+                    "entry": {
+                        "title": w.get("title"),
+                        "authors": authors,
+                        "year": w.get("publication_year"),
+                        "doi": doi,
+                        "openalex_id": cid,
+                    },
+                    "cited": [],
+                }
+                by_citing[cid] = slot
+            if sid not in slot["cited"]:
+                slot["cited"].append(sid)
+    bridges = []
+    for slot in by_citing.values():
+        if len(slot["cited"]) >= 2:
+            bridges.append({
+                **slot["entry"],
+                "cites": [titles.get(s) or s for s in slot["cited"]],
+            })
+    return {"recent": recent, "bridges": bridges}
+
+
+def recent_citations(openalex_ids, per_paper=5, max_papers=8) -> dict:
+    """Recent citing works + bridge papers for the given OpenAlex ids.
+
+    A citing work that cites >=2 of MY imports is a bridge (it connects
+    two of my topics). Result cached 24h under a key hashing the sorted
+    id list. Never raises: on total failure returns empty lists.
+    """
+    ids: list[str] = []
+    for raw in (openalex_ids or []):
+        sid = _short_openalex_id(raw)
+        if sid and sid not in ids:
+            ids.append(sid)
+    try:
+        max_n = int(max_papers) if max_papers is not None else 8
+    except (TypeError, ValueError):
+        max_n = 8
+    ids = ids[:max(0, max_n)]
+    if not ids:
+        return {"recent": [], "bridges": []}
+    try:
+        per = int(per_paper) if per_paper is not None else 5
+    except (TypeError, ValueError):
+        per = 5
+    per = max(1, min(50, per))
+    cache_key = (
+        "recent_citations:"
+        + hashlib.sha256(",".join(sorted(ids)).encode("utf-8")).hexdigest()
+        + f":{per}"
+    )
+    cached = cache_get(cache_key)
+    if isinstance(cached, dict):
+        return cached
+    try:
+        result = _recent_citations_uncached(ids, per)
+    except Exception:
+        return {"recent": [], "bridges": []}
+    cache_set(cache_key, result)
+    return result
 
 
