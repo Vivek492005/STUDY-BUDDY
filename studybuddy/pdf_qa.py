@@ -978,6 +978,123 @@ def fluent_answer(extractive_answer: str, generate_fn,
     return {"answer": rewritten, "fluent": True, "reason": None}
 
 
+# --- Summary mode ------------------------------------------------------------
+# A "summarize this document" question has almost no keyword overlap with
+# any passage, so plain retrieval scores below threshold and the engine
+# abstains — even though the document is fully indexed. Summary intent is
+# therefore detected explicitly and answered with an extractive overview:
+# the doc's highest TF-IDF sentences, quoted with page citations. Nothing
+# is generated; every sentence comes from the document itself.
+_SUMMARY_PATTERNS = [
+    _re12.compile(r"\bsummar(y|ise|ize|ising|izing)\b", _re12.IGNORECASE),
+    _re12.compile(r"\boverview\b", _re12.IGNORECASE),
+    _re12.compile(r"\b(key|main)\s+points\b", _re12.IGNORECASE),
+    _re12.compile(r"\bwhat is this (document|paper|about)\b", _re12.IGNORECASE),
+    _re12.compile(r"\btell me about this\b", _re12.IGNORECASE),
+    _re12.compile(r"\bwhat(?:'s| is) (this|it) about\b", _re12.IGNORECASE),
+]
+
+
+def is_summary_question(question: str | None) -> bool:
+    """True when the question asks for a summary/overview, not a fact."""
+    if not question:
+        return False
+    return any(p.search(question) for p in _SUMMARY_PATTERNS)
+
+
+def _summary_sentences(chunks: list[dict], top_k: int) -> list[dict]:
+    """Top TF-IDF sentences of a chunk list, at most 2 per page.
+
+    Returns [{text, page, chunk}] in reading (page) order. Sentences
+    shorter than 40 chars (headings, fragments) or longer than 400 chars
+    are skipped; scoring is sum-of-IDF over content tokens, normalized
+    by sqrt length so long sentences don't win by bulk alone.
+    """
+    import math as _math
+
+    usable = [c for c in (chunks or []) if isinstance(c, dict)
+              and (c.get("text") or "").strip()]
+    if not usable:
+        return []
+    corpus = [[t for t in _tokenize(c.get("text", "")) if t not in _STOPWORDS]
+              for c in usable]
+    idf = _smooth_idf(corpus)
+    scored = []
+    for chunk in usable:
+        for sent in _SENTENCE_RE.findall(chunk.get("text", "")):
+            sent = _normalize_whitespace(sent.strip())
+            if not (40 <= len(sent) <= 400):
+                continue
+            toks = [t for t in _tokenize(sent) if t not in _STOPWORDS]
+            if len(toks) < 4:
+                continue
+            score = sum(idf.get(t, 0.0) for t in toks) / _math.sqrt(len(toks))
+            scored.append({"text": sent, "page": int(chunk.get("page", 0) or 0),
+                           "chunk": chunk, "score": score})
+    scored.sort(key=lambda s: -s["score"])
+    picked: list[dict] = []
+    per_page: dict[int, int] = {}
+    for sent in scored:
+        if len(picked) >= top_k:
+            break
+        if per_page.get(sent["page"], 0) >= 2:
+            continue
+        per_page[sent["page"]] = per_page.get(sent["page"], 0) + 1
+        picked.append(sent)
+    picked.sort(key=lambda s: (s["page"],))
+    return picked
+
+
+def summarize_doc(doc_title: str, chunks: list[dict], top_k: int = 5) -> dict:
+    """Extractive summary of one document, fully cited.
+
+    Returns the answer_question shape {answer, citations, passages}.
+    No chunks (e.g. scanned PDF) -> the honest abstention, unchanged.
+    """
+    picked = _summary_sentences(chunks, top_k)
+    if not picked:
+        return {"answer": NO_RESULT_ANSWER, "citations": [], "passages": []}
+    doc_label = doc_title if isinstance(doc_title, str) else ""
+    claims = ['"%s" [doc, p.%d]' % (s["text"], s["page"]) for s in picked]
+    citations = [_citation(s["chunk"], doc_label) for s in picked]
+    answer = "Summary of the document: " + " ".join(claims)
+    return {"answer": answer, "citations": citations, "passages": list(citations)}
+
+
+def summarize_across_docs(docs: list[dict[str, Any]], per_doc_k: int = 2,
+                          max_docs: int = 4) -> dict[str, Any]:
+    """Extractive summary across several documents, grouped per doc.
+
+    Returns the answer_across_docs shape {answer, per_doc, citations,
+    docs_consulted}. Each contributing doc gets its top sentences; docs
+    with no usable sentences are skipped, not invented.
+    """
+    per_doc = []
+    citations = []
+    for d in (docs or [])[:max_docs]:
+        if not isinstance(d, dict):
+            continue
+        title = d.get("title") or "Doc"
+        picked = _summary_sentences(d.get("chunks") or [], per_doc_k)
+        if not picked:
+            continue
+        entry = {"doc": title, "claims": [
+            {"text": s["text"], "page": s["page"]} for s in picked]}
+        per_doc.append(entry)
+        citations.extend(_citation(s["chunk"], title) for s in picked)
+    if not per_doc:
+        return {"answer": NO_RESULT_ANSWER, "per_doc": [], "citations": [],
+                "docs_consulted": 0}
+    parts = []
+    for e in per_doc:
+        claims = " ".join('"%s" [p.%d]' % (c["text"], c["page"])
+                          for c in e["claims"])
+        parts.append("[%s] %s" % (e["doc"], claims))
+    answer = "Summary across %d documents: " % len(per_doc) + " ".join(parts)
+    return {"answer": answer, "per_doc": per_doc, "citations": citations,
+            "docs_consulted": len(per_doc)}
+
+
 def qa_to_notes(
     qa_pairs: list[dict[str, Any]],
     title: str = "Study Notes",

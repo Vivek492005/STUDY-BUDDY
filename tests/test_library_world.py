@@ -351,6 +351,91 @@ def test_exam_generate_thin_doc_400_and_auth(client):
     assert resp.status_code == 400
 
 
+# ---------- summary mode ----------
+
+import re as _re
+
+from studybuddy.pdf_qa import (  # noqa: E402
+    is_summary_question,
+    summarize_across_docs,
+    summarize_doc,
+)
+
+
+def test_summary_detection_covers_typo_and_variants():
+    assert is_summary_question("what is summary of this dcoument") is True
+    assert is_summary_question("Give me an overview of this paper") is True
+    assert is_summary_question("What are the key points?") is True
+    assert is_summary_question("What grade did it receive?") is False
+    assert is_summary_question("What is the powerhouse of the cell?") is False
+
+
+def test_summarize_doc_quotes_only_real_sentences_in_order():
+    chunks = _rich_chunks()
+    result = summarize_doc("Bio notes", chunks, top_k=5)
+    assert result["answer"].startswith("Summary of the document:")
+    assert len(result["citations"]) >= 1
+    source = " ".join(c["text"] for c in chunks)
+    quotes = _re.findall(r'"([^"]{10,})"', result["answer"])
+    assert len(quotes) >= 1
+    for q in quotes:
+        assert q in source, "summary invented a sentence"
+    pages = [c["page"] for c in result["citations"]]
+    assert pages == sorted(pages), "summary not in reading order"
+
+
+def test_summarize_doc_empty_abstains():
+    result = summarize_doc("Empty", [])
+    assert result["answer"].startswith("I couldn't find")
+    assert result["citations"] == []
+
+
+def test_summarize_across_docs_groups_per_doc():
+    docs = [
+        {"title": "A", "chunks": _rich_chunks()},
+        {"title": "B", "chunks": _rich_chunks()},
+    ]
+    result = summarize_across_docs(docs)
+    assert result["docs_consulted"] == 2
+    assert len(result["per_doc"]) == 2
+    assert result["answer"].startswith("Summary across 2 documents:")
+
+
+def test_ask_summary_question_returns_cited_summary_not_abstention(client):
+    _authed(client)
+    doc_id = _upload(client, _RICH_LINES, "bio.pdf").get_json()["doc"]["id"]
+    resp = client.post("/study/api/ask", json={
+        "doc_id": doc_id, "question": "what is summary of this dcoument"})
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["summary"] is True
+    assert body["citations"], "summary must carry citations"
+    assert "Summary of the document" in body["answer"]
+    assert body["grounding"]["score"] == 1.0
+
+
+def test_ask_library_wide_summary_and_history_roundtrip(client):
+    _authed(client)
+    doc_id = _upload(client, _RICH_LINES, "bio.pdf").get_json()["doc"]["id"]
+    resp = client.post("/study/api/ask", json={
+        "doc_id": None, "question": "summarize my library"})
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["summary"] is True
+    assert body["per_doc"], "library summary must group per doc"
+    # Single-doc asks attach to the doc, so per-doc history shows them.
+    client.post("/study/api/ask", json={
+        "doc_id": doc_id, "question": "summarize this document"})
+    hist = client.get(f"/study/api/documents/{doc_id}/history")
+    assert hist.status_code == 200
+    assert len(hist.get_json()["questions"]) == 1
+    # Regression guard for the browser bug: the JS must read the key the
+    # endpoint actually returns ("questions"), not "history".
+    import pathlib
+    js = pathlib.Path("static/js/pdf_qa.js").read_text()
+    assert "data.questions" in js
+
+
 def test_library_page_renders_lib_ask_and_dna_buttons(client):
     _authed(client)
     _upload(client, ["The mitochondria is the powerhouse of the cell."])

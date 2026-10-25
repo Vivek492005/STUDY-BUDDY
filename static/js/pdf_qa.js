@@ -76,7 +76,7 @@
         fetch(API.history(state.docId), { headers: csrfHeaders() })
             .then(function (res) { return res.ok ? res.json() : { history: [] }; })
             .then(function (data) {
-                var items = (data && data.history) || [];
+                var items = (data && (data.questions || data.history)) || [];
                 if (!items.length) {
                     var row = el('div', 'b-kv-row');
                     var label = el('span', 'b-kv-label', 'No questions asked about this document yet.');
@@ -106,7 +106,7 @@
     }
 
     // Render answer text, turning [doc, p.X] / [p.X] markers into citation chips.
-    function renderAnswer(text, citations, grounding) {
+    function renderAnswer(text, citations, grounding, summary) {
         var wrap = document.getElementById('qa-answer');
         wrap.textContent = '';
         var parts = String(text).split(/(\[doc, p\.\d+\]|\[p\.\d+\])/g);
@@ -126,6 +126,7 @@
         });
         var gl = groundingLabel(grounding);
         if (gl) chips.appendChild(el('span', 'b-pill', gl));
+        if (summary) chips.appendChild(el('span', 'b-pill', 'Summary'));
 
         var plist = document.getElementById('qa-passages-list');
         plist.textContent = '';
@@ -172,7 +173,7 @@
                 }
                 state.lastQ = q;
                 state.lastScope = 'doc';
-                renderAnswer(result.data.answer, result.data.citations, result.data.grounding);
+                renderAnswer(result.data.answer, result.data.citations, result.data.grounding, result.data.summary);
                 var fbtn = document.getElementById('qa-fluent-btn');
                 if (fbtn) {
                     fbtn.style.display =
@@ -280,6 +281,7 @@
             chips.appendChild(el('span', 'b-pill', d.docs_consulted + ' document(s) consulted'));
         }
         if (d.fluent) chips.appendChild(el('span', 'b-pill', 'Fluent rewrite · citations kept'));
+        if (d.summary) chips.appendChild(el('span', 'b-pill', 'Summary'));
         renderPerDoc(document.getElementById('qa-lib-per-doc'), d.per_doc);
         renderContrasts(document.getElementById('qa-lib-contrasts'), d.contrasts);
         document.getElementById('qa-lib-answer-wrap').style.display = '';
@@ -324,7 +326,7 @@
                 if (isLib) {
                     renderLibAnswer(d);
                 } else {
-                    renderAnswer(d.answer, d.citations, d.grounding);
+                    renderAnswer(d.answer, d.citations, d.grounding, d.summary);
                     if (d.fluent) {
                         var chips = document.getElementById('qa-citations');
                         chips.appendChild(el('span', 'b-pill', 'Fluent rewrite · citations kept'));

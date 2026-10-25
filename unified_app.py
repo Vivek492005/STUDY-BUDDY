@@ -452,6 +452,9 @@ from studybuddy.pdf_qa import answer_across_docs as pdfqa_across
 from studybuddy.pdf_qa import answer_question as pdfqa_answer
 from studybuddy.pdf_qa import detect_contrasts as pdfqa_contrasts
 from studybuddy.pdf_qa import fluent_answer as pdfqa_fluent
+from studybuddy.pdf_qa import is_summary_question as pdfqa_is_summary
+from studybuddy.pdf_qa import summarize_across_docs as pdfqa_summarize_across
+from studybuddy.pdf_qa import summarize_doc as pdfqa_summarize
 from studybuddy.pdf_qa import grounding_report as pdfqa_grounding
 from studybuddy.pdf_qa import verify_citations as pdfqa_verify
 from studybuddy.paper_dna import extract_dna as paper_dna_extract
@@ -6624,6 +6627,9 @@ def register_routes(app):
         asks (doc_id null) run true cross-document synthesis: evidence is
         retrieved from the merged pool and grouped per document, with
         heuristic contrast flags when docs point in opposite directions.
+        Summary/overview questions bypass keyword retrieval (which has
+        nothing to match) and get an extractive summary instead: the
+        doc's top TF-IDF sentences, quoted with page citations.
         Every response carries a faithfulness badge: verification (every
         quoted claim's citation marker) + grounding (share of claims
         cited; abstentions score 1.0 — claiming nothing is grounded).
@@ -6644,11 +6650,16 @@ def register_routes(app):
                 chunks = (doc.data or {}).get('chunks') or []
                 if not chunks:
                     return jsonify({'error': 'No indexed passages found in your library.'}), 400
-                result = pdfqa_answer(question, doc.title, chunks, top_k=5)
+                is_summary = pdfqa_is_summary(question)
+                if is_summary:
+                    result = pdfqa_summarize(doc.title, chunks, top_k=5)
+                else:
+                    result = pdfqa_answer(question, doc.title, chunks, top_k=5)
                 response = {'success': True, 'doc_id': doc.id,
                             'doc_title': doc.title,
                             'answer': result.get('answer'),
-                            'citations': result.get('citations') or []}
+                            'citations': result.get('citations') or [],
+                            'summary': is_summary}
                 stored_doc_id = doc.id
             else:
                 candidates = StudyDoc.query.filter_by(
@@ -6662,7 +6673,11 @@ def register_routes(app):
                 docs_with_chunks = [d for d in docs_with_chunks if d['chunks']]
                 if not docs_with_chunks:
                     return jsonify({'error': 'No indexed passages found in your library.'}), 400
-                result = pdfqa_across(question, docs_with_chunks, top_k=3)
+                is_summary = pdfqa_is_summary(question)
+                if is_summary:
+                    result = pdfqa_summarize_across(docs_with_chunks)
+                else:
+                    result = pdfqa_across(question, docs_with_chunks, top_k=3)
                 per_doc = result.get('per_doc') or []
                 response = {'success': True, 'doc_id': None,
                             'doc_title': None,
@@ -6670,7 +6685,8 @@ def register_routes(app):
                             'citations': result.get('citations') or [],
                             'per_doc': per_doc,
                             'docs_consulted': result.get('docs_consulted', 0),
-                            'contrasts': pdfqa_contrasts(per_doc)}
+                            'contrasts': [] if is_summary else pdfqa_contrasts(per_doc),
+                            'summary': is_summary}
                 stored_doc_id = None
             response['verification'] = pdfqa_verify(
                 {'answer': response['answer']})
