@@ -40,6 +40,16 @@ Built as a Flask monolith, it pairs **Google Gemini** (with automatic fallback t
 - **Evidence over hype** — research answers carry citations, rejection advice is labeled as hypothesis, health scores show their data
 - **Humane by design** — streaks with forgiveness shields, opt-out gamification, no pay-to-win, no dark patterns
 - **Free & student-first** — every core feature works without payment
+- **Honest by default** — scores show the evidence behind them, synthetic benchmarks are labeled synthetic, and no fake users, resumes, or traction are ever presented as real
+
+### 🆕 What's new (October 2026)
+
+- **v1.0.0 released** (19 October 2026) — the platform is publicly launched; the sections below describe what is live today.
+- **Resume scorer rebuilt** (25 October 2026) — the old bucketed score saturated, so different strong resumes landed on identical totals. Scoring is now evidence-based and continuous: section completeness, skill coverage, distinct action verbs, quantified achievements (percentages, money, scale — actually detected now), bullet strength, contact completeness, experience years with **education dates excluded**, and formatting consistency. Every component names its evidence in the breakdown. It remains a **heuristic estimate, not a real ATS prediction** — real applicant-tracking systems do not publish 0–100 scores.
+- **Content banks grown** — interviews **1,455 questions / 46 companies**, quizzes **660 / 22 skills**, aptitude **815**, Striver A2Z **495 problems**, certifications **110**, roadmaps **30 skills / 20 roles / 439 resources**.
+- **Landing numbers can't go stale** — homepage stats are now computed live from the content banks instead of hard-coded.
+- **Security hardened** — Content-Security-Policy is enforced (nonce-based scripts, no third-party script CDNs), and all 91 Ultimate Lab tools ship guided forms instead of raw-JSON-only input.
+- **Research SRS** — flashcards use SM-2-lite spaced repetition with a due queue; the PDF Study Library listing bug is fixed.
 
 ---
 
@@ -47,7 +57,7 @@ Built as a Flask monolith, it pairs **Google Gemini** (with automatic fallback t
 
 👉 **https://study-buddy-3m16.onrender.com**
 
-> Hosted on Render's free tier — the first load may take ~30 seconds while the service wakes up.
+> Hosted on Render's free tier — the first load may take ~50 seconds while the service wakes up (cold start). Open the link once a minute before sharing it.
 
 **No signup?** Try the instant resume demo: **[study-buddy-3m16.onrender.com/try](https://study-buddy-3m16.onrender.com/try)** — upload a PDF/DOCX resume, get a full readiness report, nothing stored.
 
@@ -90,7 +100,7 @@ Core features work with no API keys. Full configuration (env vars, production, d
 
 | Feature | What it does |
 |---|---|
-| AI Resume Analysis | Upload your resume for ATS scoring with section-by-section feedback and improvement suggestions |
+| AI Resume Analysis | Upload your resume for evidence-based ATS-style scoring (heuristic, not a real ATS prediction) with section-by-section feedback, bullet-level evidence, and a fix checklist with a live projected score |
 | JD-Matched ATS Scoring | Paste a job description to see exactly how well your resume matches it, with gap analysis |
 | Bullet Impact Rewriter | Rewrite weak resume bullets into quantified, impact-driven statements (AI-polished alternatives) |
 | Cover Letter Generator | Generate tailored cover letters from your resume + the target job posting |
@@ -104,19 +114,19 @@ Core features work with no API keys. Full configuration (env vars, production, d
 
 | Feature | What it does |
 |---|---|
-| Mock Interviews | **339-question** bank of role-specific mock interviews with rubric-scored AI feedback and weak-area re-drills |
-| Communication Coach | **104-entry** coach for delivery: pace, filler words, clarity, structure, and confidence signals |
-| DSA Practice | **132 DSA problems** with a hint ladder, worked reflections, and a mastery map |
-| Aptitude Tests | **338 questions** in timed test mode — quantitative, logical, and verbal reasoning |
+| Mock Interviews | **1,455-question** bank across **46 companies** — role- and company-specific mocks with rubric-scored feedback, weak-area re-drills, search, and filters |
+| Communication Coach | Delivery coaching: pace, filler words (104-entry filler library), clarity, structure, and confidence signals |
+| DSA Practice | **495 Striver A2Z problems** with a progress tracker, 64 in-app lessons, a hint ladder, worked reflections, and a mastery map |
+| Aptitude Tests | **815 questions** in timed test mode — quantitative, logical, and verbal reasoning — plus Learn mode, company mocks, and a Mistake Book |
 | STAR Story Builder | Build behavioral interview stories with **44 examples** across **11 competencies** |
 
 ### 📚 Learning Hub
 
 | Feature | What it does |
 |---|---|
-| Skill Roadmaps | **24 skills × 3 stages** (beginner → advanced) with **349 free resources** — courses, docs, and practice |
-| Skill Quizzes | **320 quiz questions** across **16 skills** to test and certify your knowledge |
-| Certification Guides | **44 certifications** with guidance on what to take, when, and how to prepare |
+| Skill Roadmaps | **30 skills and 20 roles** with **439 free resources** — courses, docs, and practice — plus a skill-gap form and a stage-jump rail |
+| Skill Quizzes | **660 quiz questions** across **22 skills** to test and certify your knowledge |
+| Certification Guides | **110 certifications** with guidance on what to take, when, and how to prepare (including free options, marked Free) |
 
 ### 🔬 Research Intelligence
 
@@ -127,7 +137,7 @@ Core features work with no API keys. Full configuration (env vars, production, d
 | Citation Formatter | One-click citations in **IEEE, APA 7th, MLA 9th, Vancouver, Chicago**, and **BibTeX** export |
 | Literature Review Generator | Synthesize multiple papers into a structured, evidence-linked literature review |
 | Research-Gap Finder | Surface recurring limitations, conflicts, under-studied populations, and method gaps — labeled as hypotheses until reviewed |
-| Flashcards & Paper Quizzes | Auto-generated from your documents: TF-IDF key terms, definition cards, cloze deletions, and MCQs with server-side grading |
+| Flashcards & Paper Quizzes | Auto-generated from your documents: TF-IDF key terms, definition cards, cloze deletions, and MCQs with server-side grading — plus SM-2-lite spaced repetition with a due queue |
 
 ### 🔥 Engagement
 
@@ -143,7 +153,7 @@ Core features work with no API keys. Full configuration (env vars, production, d
 
 | Feature | What it does |
 |---|---|
-| Peer Mock Interviews | Create a room, share the link, and practice with a friend — question cards from the 339-question bank, timers, role swap, and reciprocal 5-dimension rubric feedback |
+| Peer Mock Interviews | Create a room, share the link, and practice with a friend — question cards from the 1,455-question bank, timers, role swap, and reciprocal 5-dimension rubric feedback |
 | Mentor & Alumni Office Hours | Book group sessions with mentors across domains — sample profiles ship with the app; real mentors apply and are marked verified only after review. Structured question templates keep conversations useful, with post-session action notes |
 
 ### 📊 Review & Analytics
@@ -157,7 +167,7 @@ Core features work with no API keys. Full configuration (env vars, production, d
 
 | Feature | What it does |
 |---|---|
-| Auto-Refreshing Board | **80 opportunities** refreshed automatically **every 2 days** — hackathons from the Devpost API, internships from SimplifyJobs — with a freshness indicator |
+| Auto-Refreshing Board | **83 open opportunities** at the October 2026 refresh — hackathons from the Devpost API, internships from SimplifyJobs — with a freshness indicator; expired auto-entries are pruned, duplicates removed |
 | Smart Merging | Curated entries are never touched; expired auto-entries are pruned, duplicates removed |
 | Filters & Bookmarks | Filter by type (hackathon / internship / competition), bookmark what matters |
 
@@ -165,7 +175,7 @@ Core features work with no API keys. Full configuration (env vars, production, d
 
 | Feature | What it does |
 |---|---|
-| 91 Power Tools | Every feature's deep "ultimate" enhancements (streak freeze, squad challenges, peer mocks, rejection-pattern alerts, mentor prep packets, monthly health review…) runnable from one dashboard at `/ultimate/lab` |
+| 91 Power Tools | Every feature's deep "ultimate" enhancements (streak freeze, squad challenges, peer mocks, rejection-pattern alerts, mentor prep packets, monthly health review…) runnable from one dashboard at `/ultimate/lab` — with guided forms, so 38 tools need no hand-written JSON at all |
 | Tool API | `GET /api/ultimate/tools` lists all tools; `POST /api/ultimate/run/<tool_id>` runs one with a JSON body |
 
 ### 🔑 Sign-in & Extras
@@ -174,6 +184,7 @@ Core features work with no API keys. Full configuration (env vars, production, d
 |---|---|
 | Google Sign-in | One-click OAuth login alongside email/password (email verified via Google) |
 | India Salary Explorer | Explore salary ranges by role, experience, and city, grounded in the curated salary dataset |
+| Security | Content-Security-Policy enforced (nonce-based scripts, no third-party script CDNs); secrets only via environment variables, never in the repo; uploads are parsed in a sandboxed subprocess and deleted after parsing |
 
 ---
 
@@ -194,9 +205,9 @@ Core features work with no API keys. Full configuration (env vars, production, d
 | Backend | Python 3.12, Flask 3.x, Flask-SQLAlchemy, Flask-Login |
 | Database | SQLite (dev) / PostgreSQL (prod via `DATABASE_URL`) |
 | AI | Google Gemini API with Groq/OpenRouter fallback; TF-IDF/BM25 retrieval (sentence-transformers optional — keyword fallback in production) |
-| Frontend | Jinja2 templates, custom Bento CSS design system, vanilla JS |
+| Frontend | Jinja2 templates, kinetic editorial + Bento CSS design systems, vanilla JS |
 | Server | Gunicorn |
-| Testing | pytest (~2,900 tests) |
+| Testing | pytest (~9,600 collected cases, measured October 2026) |
 | Deployment | Render (free tier) |
 
 ---
@@ -205,7 +216,7 @@ Core features work with no API keys. Full configuration (env vars, production, d
 
 ```
 acra/
-├── unified_app.py          # Flask app: models, routes, app factory (8,000+ lines)
+├── unified_app.py          # Flask app: models, routes, app factory (9,000+ lines)
 ├── studybuddy/             # Feature modules (pure-logic, no Flask/network/LLM)
 │   ├── momentum.py         # XP / streaks / leagues / quests engine
 │   ├── community.py        # Peer mocks + mentor office hours
@@ -224,12 +235,14 @@ acra/
 │   ├── ai_gateway.py       # Gemini → Groq → OpenRouter fallback chain
 │   ├── ultimate_reg_*.py   # Ultimate Lab tool registry (91 tools)
 │   ├── ultimate_routes.py  # /ultimate/lab dashboard + /api/ultimate API
+│   ├── resume_insights.py  # Bullet evidence + fix checklist for resume results
+│   ├── parsing.py          # Sandboxed upload parsing (subprocess + timeouts)
 │   └── ...                 # 15+ more feature modules
-├── templates/              # Jinja2 templates (Bento UI)
+├── templates/              # Jinja2 templates (kinetic editorial + Bento UI)
 ├── static/
 │   ├── css/bento.css       # Design system
 │   └── img/                # STUDY-BUDDY owl logo + favicons
-├── tests/                  # pytest suite (~2,900 tests)
+├── tests/                  # pytest suite (~9,600 collected cases)
 └── data/                   # JSON content banks (questions, resources)
 ```
 
@@ -310,7 +323,7 @@ Open **http://localhost:5000** and create an account to get started.
 pytest tests/ -q
 ```
 
-- **8720 tests**, covering every feature module: happy paths, validation, auth isolation, CSRF, rate limits, and error/edge cases
+- **~9,600 collected test cases** (measured October 2026; parametrized cases counted individually), covering every feature module: happy paths, validation, auth isolation, CSRF, rate limits, and error/edge cases
 - Run the suite twice before any release; the project standard is **100% green, 0 failures**
 
 ---
@@ -329,6 +342,7 @@ The live site runs on **Render's free tier**:
 
 ## 🗺 Roadmap
 
+- [x] v1.0.0 — publicly launched (October 2026)
 - [x] Career core (resume, JD match, tracker)
 - [x] Placement prep (interviews, DSA, aptitude, STAR)
 - [x] Learning hub (roadmaps, quizzes, certifications)
@@ -338,7 +352,8 @@ The live site runs on **Render's free tier**:
 - [x] Review & analytics (retrospectives, health review)
 - [x] Opportunity radar auto-refresh
 - [ ] Mobile PWA polish & offline packs
-- [ ] Vernacular (Hindi + regional) language support
+- [ ] Vernacular (Hindi + regional) language support — the i18n scaffolding exists, but real translations are still needed; no switcher is wired until they exist
+- [ ] Real-resume benchmark gold set — collected opt-in only, never fabricated
 
 ---
 
@@ -360,11 +375,16 @@ We measure, we don't guess. See [docs/benchmarks.md](docs/benchmarks.md):
 |-----------|--------|-------|
 | Resume parsing | Field accuracy (name/email/phone) | 1.00* |
 | Resume parsing | Skill F1 | 1.00* |
-| RAG retrieval | Recall@1 / MRR | 1.00* |
-| RAG answers | Citation validity / Abstention | 1.00* |
+| RAG retrieval | Recall@1 / MRR | 1.00* (8-question gold set) |
+| RAG answers | Answer accuracy / Citation validity / Abstention | 0.96 / 0.96 / 0.80† |
 
 \* *On synthetic gold sets. Real-world documents score lower — help us expand
 the gold sets with challenging examples!*
+† *On the larger 50-question + 5 abstention-case synthetic set (October 2026,
+`scripts/benchmark_rag.py`). Misses are kept as findings — e.g. a stopword
+weakness in the tokenizer — rather than tuned away. The 1.00 RAG rows above
+come from the small 8-question gold set and are the less honest headline,
+which is why this row exists.*
 
 Run them yourself:
 ```bash
