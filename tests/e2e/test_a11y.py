@@ -16,8 +16,10 @@ stays green. Fixing the pinned gaps = delete the entry.
 
 Baseline measured 2026-10-19 (local, Chromium headless):
   * contrast 15.7-19.3 on all checked pages (excellent)
-  * single known gap: /resume file input has no programmatic label
-    (templates/resume_index.html #fileInput)
+  * known gaps (both fixed 2026-10-25, entries deleted): /resume file
+    input had no programmatic label (templates/resume_index.html
+    #fileInput); dashboard goal title input was placeholder-only
+    (templates/history.html)
 axe-core via npx is documented as a follow-up in docs/testing/a11y.md.
 """
 import re
@@ -29,13 +31,13 @@ pytest.importorskip("playwright")
 
 # (page path, control identifier) pairs with a documented a11y gap.
 # Format: (path, kind, identifier)
-KNOWN_GAPS = {
-    # templates/resume_index.html #fileInput: no <label>/aria-label.
-    ("/resume", "input", "resume"),
-    # Goal title field (markup in templates/history.html, rendered on the
-    # dashboard): placeholder-only, no programmatic label.
-    ("/dashboard", "input", "title"),
-}
+# Empty since the 2026-10-25 a11y sweep (commit 4b8ea3d): both pinned gaps
+# were fixed there — /resume #fileInput gained aria-label="Upload your
+# resume", and the dashboard goal title field gained a programmatic label.
+# Per this file's contract, fixing a gap = delete its entry; an empty set
+# keeps test_known_gaps_still_documented green and the suite still fails
+# on any NEW unlabeled control.
+KNOWN_GAPS = set()
 
 PAGES_PUBLIC = ["/", "/login", "/register", "/resume"]
 PAGES_AUTH = ["/dashboard", "/tracker"]
