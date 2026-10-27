@@ -20,9 +20,18 @@ with consent, or --cases with a JSON list of
 {"id", "label", "text", "expected_band"} objects. Real cases are scored
 exactly the same way; band checks only apply when expected_band is set.
 
+AGGREGATE-ONLY RULE FOR --real-dir (GFI #5): real resumes belong to
+real contributors, so a --real-dir run NEVER prints per-case rows,
+filenames, ids, labels, skill lists, or individual scores — only
+aggregate statistics (counts, means, score-band distribution). Below 5
+contributions even the aggregates are suppressed, because a mean over
+1-4 cases would effectively reveal an individual. The synthetic set and
+--cases keep per-case reporting: those cases are invented or
+maintainer-supplied, not contributor data.
+
 Usage:
     python scripts/benchmark_resume.py                 # synthetic set
-    python scripts/benchmark_resume.py --real-dir DIR  # score real files
+    python scripts/benchmark_resume.py --real-dir DIR  # aggregate only
     python scripts/benchmark_resume.py --cases FILE.json
 """
 
@@ -149,6 +158,81 @@ def print_report(results: list[dict], title: str) -> dict:
         print(f"  words={r['word_count']} skills={r['num_skills']} "
               f"exp_years={r['experience_years']} sections={','.join(r['sections'])}")
         print(f"  {comp}")
+    return summary
+
+
+# Minimum contributions before aggregate statistics are reported for a
+# --real-dir run. Below this, even means would identify individuals.
+MIN_AGGREGATE_N = 5
+
+# Score-band ranges used ONLY for the aggregate distribution of real
+# runs (counts per range). These are not quality judgments about any
+# individual resume.
+AGGREGATE_BANDS = ((0.0, 40.0, "0-40"), (40.0, 70.0, "40-70"),
+                   (70.0, 100.0001, "70-100"))
+
+
+def aggregate_summary(results: list[dict]) -> dict:
+    """Aggregate-only statistics over scored results.
+
+    Contains NO per-case data: no ids, labels, filenames, skill names,
+    or individual scores. Below MIN_AGGREGATE_N the statistics are
+    suppressed (only n is reported) so a small set cannot leak an
+    individual's score through a mean.
+    """
+    n = len(results)
+    if n < MIN_AGGREGATE_N:
+        return {"n": n, "suppressed": True,
+                "reason": f"aggregates suppressed below {MIN_AGGREGATE_N} "
+                          "contributions (a mean over fewer cases could "
+                          "identify an individual)"}
+    totals = [r["total"] for r in results]
+    distribution = {}
+    for lo, hi, name in AGGREGATE_BANDS:
+        distribution[name] = sum(1 for t in totals if lo <= t < hi)
+    components: dict[str, list[float]] = {}
+    for r in results:
+        for key, val in r["components"].items():
+            components.setdefault(key, []).append(float(val))
+    return {
+        "n": n,
+        "suppressed": False,
+        "mean": round(sum(totals) / len(totals), 1),
+        "min": min(totals),
+        "max": max(totals),
+        "score_distribution": distribution,
+        "mean_components": {k: round(sum(v) / len(v), 1)
+                            for k, v in components.items()},
+        "mean_word_count": round(
+            sum(r["word_count"] for r in results) / n, 1),
+        "mean_num_skills": round(
+            sum(r["num_skills"] for r in results) / n, 1),
+        "mean_experience_years": round(
+            sum(r["experience_years"] for r in results) / n, 1),
+        "gaming_detected_count": sum(
+            1 for r in results if r.get("gaming_detected")),
+    }
+
+
+def print_aggregate_report(results: list[dict], title: str) -> dict:
+    """Print an aggregate-only report; return the aggregate summary."""
+    summary = aggregate_summary(results)
+    print(f"\n=== {title} ===")
+    print(f"contributions: {summary['n']}")
+    if summary["suppressed"]:
+        print(summary["reason"])
+        return summary
+    print(f"mean: {summary['mean']}  min: {summary['min']}  "
+          f"max: {summary['max']}")
+    print("score distribution: " + ", ".join(
+        f"{b}={c}" for b, c in summary["score_distribution"].items()))
+    if summary["mean_components"]:
+        print("mean components: " + ", ".join(
+            f"{k}={v}" for k, v in summary["mean_components"].items()))
+    print(f"mean words: {summary['mean_word_count']}  "
+          f"mean skills: {summary['mean_num_skills']}  "
+          f"mean exp years: {summary['mean_experience_years']}  "
+          f"gaming flagged: {summary['gaming_detected_count']}")
     return summary
 
 
@@ -563,6 +647,15 @@ def main(argv: list[str] | None = None) -> int:
         title = ("SYNTHETIC regression set — invented resumes, NOT real data")
 
     results = run_cases(cases)
+    if args.real_dir:
+        # Aggregate-only: never per-case rows, filenames, or scores.
+        if args.json:
+            print(json.dumps({"title": title,
+                              "aggregate": aggregate_summary(results)},
+                             indent=2))
+        else:
+            print_aggregate_report(results, title)
+        return 0
     if args.json:
         print(json.dumps({"title": title, "summary": summarize(results),
                           "results": results}, indent=2))

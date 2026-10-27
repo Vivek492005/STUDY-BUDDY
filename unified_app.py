@@ -1667,6 +1667,31 @@ class LabPathProgress(db.Model):
                                           name="uq_lab_path_user_step"),)
 
 
+class BenchmarkContribution(db.Model):
+    """An opt-in real resume contributed for benchmark calibration (GFI #5).
+
+    ONLY redacted text is ever stored here, and only with explicit
+    consent: `consent` must be True (see
+    studybuddy/benchmark_collection.store_contribution, which refuses
+    otherwise). The raw pasted text is never persisted, never logged,
+    and never leaves the preview request. Deletion is a hard delete —
+    the row is gone, so future aggregate reports cannot include it.
+    Rows carry no user-identifying content: the export script names
+    files by contribution id only.
+    """
+    __tablename__ = "benchmark_contribution"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    redacted_text = db.Column(db.Text, nullable=False)
+    consent = db.Column(db.Boolean, nullable=False, default=False)
+    consent_version = db.Column(db.String(20), nullable=False, default="v1")
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+
+    user = db.relationship("User", backref=db.backref("benchmark_contributions",
+                                                      lazy="dynamic",
+                                                      cascade="all, delete-orphan"))
+
+
 class StreakState(db.Model):
     """Per-user streak with monthly forgiveness shields (Wave 5 #27).
 
@@ -7998,6 +8023,10 @@ border-bottom:1px solid #ccc;padding-bottom:4px}}a{{color:#2447ff}}
     # study_library.* — template url_for call sites updated at move time).
     from studybuddy.study_library import study_library_bp
     app.register_blueprint(study_library_bp)
+
+    # GFI #5: opt-in benchmark resume collection (all routes auth-gated).
+    from studybuddy.benchmark_collection import benchmark_bp
+    app.register_blueprint(benchmark_bp)
 
 
     # Feature #25: arXiv/DOI import + citation graph

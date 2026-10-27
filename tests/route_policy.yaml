@@ -57,6 +57,10 @@
 "/api/topics": public
 "/api/ultimate/run/<path:tool_id>": auth
 "/api/ultimate/tools": auth
+"/benchmark/contribute": auth
+"/benchmark/contribute/preview": auth
+"/benchmark/contribute/confirm": auth
+"/benchmark/contribute/<int:contrib_id>/delete": auth
 "/api/ultimate/favorites": auth
 "/api/ultimate/favorites/<path:tool_id>": auth
 "/api/ultimate/history": auth

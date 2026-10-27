@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block theme %}hub{% endblock %}
+{% block title %}Contribute a resume to the benchmark | STUDY-BUDDY{% endblock %}
+{% block content %}
+<section style="padding-top:2.5rem;">
+    <h1>Help calibrate the resume benchmark</h1>
+    <p class="b-lede">The resume scorer is tested today on invented sample resumes. Real,
+    consented resumes would show whether its scores hold up on real
+    applications. That is the only reason this page exists.</p>
+
+    <div class="b-card" style="margin-top:1.5rem;">
+        <h2>What happens to your resume — in plain language</h2>
+        <ul>
+            <li><strong>Only the redacted version is ever stored.</strong> Names,
+            emails, phone numbers, addresses, dates of birth, and ID numbers are
+            stripped before anything is saved. Your original pasted text is never
+            stored, never logged, and never shown to anyone.</li>
+            <li><strong>You see exactly what will be stored first.</strong> Step 1
+            shows you the redacted text. It is editable — if the automatic
+            redaction missed anything (for example a name mentioned in the
+            middle of the text), delete it yourself before confirming.</li>
+            <li><strong>Nothing is stored without your explicit consent.</strong>
+            Until you tick the consent box and confirm, nothing is saved.</li>
+            <li><strong>Reports are aggregate only.</strong> The benchmark reports
+            averages and score distributions across all contributions. Your
+            individual resume, your individual score, and your identity never
+            appear in any report.</li>
+            <li><strong>Delete any time.</strong> Every contribution below has a
+            delete button. Deleting removes it permanently, so future reports
+            cannot include it.</li>
+        </ul>
+        <p style="font-size:.9rem;">One honest limit: automatic name detection
+        covers the header line of your resume and "Name:" lines. A name that
+        appears elsewhere in the text is not auto-detected — that is why the
+        preview is editable. Please check it before confirming.</p>
+    </div>
+
+    {% if preview_text is not none %}
+    <div class="b-card" style="margin-top:1.5rem;">
+        <h2>Step 2 — Check the redacted version</h2>
+        <p>This is exactly what would be stored (after one final automatic
+        redaction pass on confirm). Edit it freely — anything you leave in
+        here is what gets saved.</p>
+        {% if preview_report and preview_report.counts %}
+        <p style="font-size:.9rem;">Automatically removed:
+            {% for kind, n in preview_report.counts.items() %}{{ n }} {{ kind }}{{ ", " if not loop.last }}{% endfor %}.
+        </p>
+        {% else %}
+        <p style="font-size:.9rem;">No personal details were detected in this
+        text — please still check it once before confirming.</p>
+        {% endif %}
+        <form method="POST" action="{{ url_for('benchmark_collection.contribute_confirm') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <textarea name="resume_text" rows="16" style="width:100%;font-family:monospace;">{{ preview_text }}</textarea>
+            <label style="display:block;margin:1rem 0;">
+                <input type="checkbox" name="consent" value="on" required>
+                I consent to storing this redacted resume for benchmark
+                calibration, as described above. I understand I can delete it
+                any time.
+            </label>
+            <button type="submit" class="b-btn b-btn--primary">Confirm and contribute</button>
+            <a class="b-btn" href="{{ url_for('benchmark_collection.contribute_page') }}">Start over</a>
+        </form>
+    </div>
+    {% else %}
+    <div class="b-card" style="margin-top:1.5rem;">
+        <h2>Step 1 — Paste your resume text</h2>
+        <form method="POST" action="{{ url_for('benchmark_collection.contribute_preview') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <textarea name="resume_text" rows="16" style="width:100%;font-family:monospace;" placeholder="Paste your resume text here…"></textarea>
+            <button type="submit" class="b-btn b-btn--primary" style="margin-top:1rem;">Preview redaction</button>
+        </form>
+        <p style="font-size:.9rem;">Nothing is stored when you preview. Storage
+        happens only after you check the preview and tick consent.</p>
+    </div>
+    {% endif %}
+
+    <div class="b-card" style="margin-top:1.5rem;">
+        <h2>Your contributions</h2>
+        {% if contributions %}
+        <ul>
+            {% for c in contributions %}
+            <li style="margin-bottom:1rem;">
+                <p style="font-size:.9rem;margin:0;">Contributed {{ c.created_at }} · {{ c.word_count }} words</p>
+                <p style="font-family:monospace;font-size:.85rem;white-space:pre-wrap;">{{ c.snippet }}{% if c.snippet|length == 200 %}…{% endif %}</p>
+                <form method="POST" action="{{ url_for('benchmark_collection.contribute_delete', contrib_id=c.id) }}" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="b-btn b-btn--ghost">Delete this contribution</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>You have not contributed anything yet.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
