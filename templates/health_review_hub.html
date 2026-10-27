@@ -4,6 +4,7 @@
 {% block title %}Career Health Review — {{ month_key }} | STUDY-BUDDY{% endblock %}
 {% block head %}
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
     <style>
         .hr-bar { height: 12px; border-radius: 999px; background: rgba(255,255,255,.07); overflow: hidden; margin-top: .7rem; }
         .hr-bar > span { display: block; height: 100%; border-radius: 999px;
@@ -106,7 +107,8 @@
 <section class="b-section" aria-label="History">
     <div class="b-card b-reveal">
         <div class="b-sec-head" style="margin-top:0;"><h2>Past <span class="b-grad">months</span></h2><p>Your review archive — watch the trends move over time.</p></div>
-        <table class="hr-hist">
+        <div class="cp-table-scroll">
+            <table class="hr-hist">
             <tbody>
             {% for h in history %}
                 <tr>
@@ -116,9 +118,121 @@
             {% endfor %}
             </tbody>
         </table>
+            </div>
     </div>
 </section>
 {% endif %}
+
+{# ---------- Phase 5: weekly pulse ---------- #}
+<section class="b-section" aria-label="Weekly pulse">
+    <div class="b-card b-reveal">
+        <div class="b-sec-head" style="margin-top:0;"><h2>Weekly <span class="b-grad">pulse</span></h2><p>Five quick scores, once a week — direction, proof, opportunity, preparation, wellbeing.</p></div>
+        <p id="hr-pulse-saved" style="color:var(--b-muted);font-size:.9rem;">No pulse recorded this week yet.</p>
+        <form id="hr-pulse-form" style="margin-top:1rem;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;">
+                {% for dim in [('direction', 'Direction'), ('proof', 'Proof'), ('opportunity', 'Opportunity'), ('preparation', 'Preparation'), ('wellbeing', 'Wellbeing')] %}
+                <div>
+                    <label class="b-label" for="hr-pulse-{{ dim[0] }}">{{ dim[1] }}</label>
+                    <select id="hr-pulse-{{ dim[0] }}" class="b-input" style="width:100%;">
+                        <option value="">—</option>
+                        <option value="1">1 — Struggling</option>
+                        <option value="2">2 — Shaky</option>
+                        <option value="3">3 — OK</option>
+                        <option value="4">4 — Strong</option>
+                        <option value="5">5 — Great</option>
+                    </select>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="b-cta-row" style="margin-top:1rem;">
+                <button class="b-btn b-btn--primary b-btn--sm" type="submit">Save this week's pulse</button>
+            </div>
+            <p class="hr-err" id="hr-pulse-msg" role="alert"></p>
+        </form>
+        <div style="margin-top:1rem;">
+            <h3 style="font-size:1rem;">Past 8 weeks</h3>
+            <div id="hr-pulse-history"></div>
+        </div>
+    </div>
+</section>
+
+{# ---------- Phase 5: action plans ---------- #}
+<section class="b-section" aria-label="Action plans">
+    <div class="b-sec-head"><h2>Your <span class="b-grad">action plans</span></h2><p>One next move per dimension, linked to the feature that does it.</p></div>
+    <div class="b-bento" id="hr-plans"></div>
+</section>
+
+{# ---------- Phase 5: trends ---------- #}
+<section class="b-section" aria-label="Trends">
+    <div class="b-card b-reveal">
+        <div class="b-sec-head" style="margin-top:0;"><h2>Trends over <span class="b-grad">time</span></h2><p>Monthly scores (— means no data that month, never zero) and weekly pulses.</p></div>
+        <div class="cp-table-scroll">
+            <table class="hr-hist">
+            <tbody id="hr-trends-table"></tbody>
+        </table>
+            </div>
+        <div id="hr-trends-pulses" style="margin-top:1rem;"></div>
+    </div>
+</section>
+
+{# ---------- Phase 5: peer benchmarks ---------- #}
+<section class="b-section" aria-label="Peer benchmarks">
+    <div class="b-sec-head"><h2>Peer <span class="b-grad">benchmarks</span></h2><p>Anonymous medians — never anyone's individual score.</p></div>
+    <div class="b-bento" id="hr-benchmarks"></div>
+</section>
+
+{# ---------- Phase 5: goals ---------- #}
+<section class="b-section" aria-label="Goals">
+    <div class="b-card b-reveal">
+        <div class="b-sec-head" style="margin-top:0;"><h2>Your <span class="b-grad">goals</span></h2><p>Small, dated, linked to your dimensions.</p></div>
+        <form id="hr-goal-form">
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:1rem;">
+                <div>
+                    <label class="b-label" for="hr-goal-title">Goal</label>
+                    <input id="hr-goal-title" class="b-input" type="text" maxlength="200" style="width:100%;" placeholder="e.g. Apply to 10 SDE roles">
+                </div>
+                <div>
+                    <label class="b-label" for="hr-goal-dimension">Dimension</label>
+                    <select id="hr-goal-dimension" class="b-input" style="width:100%;">
+                        <option value="">Any</option>
+                        <option value="direction">Direction</option>
+                        <option value="proof">Proof</option>
+                        <option value="opportunity">Opportunity</option>
+                        <option value="preparation">Preparation</option>
+                        <option value="wellbeing">Wellbeing</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="b-label" for="hr-goal-date">Target date</label>
+                    <input id="hr-goal-date" class="b-input" type="date" style="width:100%;">
+                </div>
+            </div>
+            <div class="b-cta-row" style="margin-top:1rem;">
+                <button class="b-btn b-btn--sm" type="submit">Add goal</button>
+            </div>
+            <p class="hr-err" id="hr-goal-msg" role="alert"></p>
+        </form>
+        <div id="hr-goal-list" style="margin-top:1rem;display:grid;gap:.5rem;"></div>
+    </div>
+</section>
+
+{# ---------- Phase 5: share with a mentor ---------- #}
+<section class="b-section" aria-label="Share with a mentor">
+    <div class="b-card b-reveal">
+        <div class="b-sec-head" style="margin-top:0;"><h2>Share with a <span class="b-grad">mentor</span></h2><p>Only real, verified mentors — illustrative profiles cannot receive your review.</p></div>
+        <form id="hr-share-form">
+            <label class="b-label" for="hr-share-mentor">Mentor ID</label>
+            <input id="hr-share-mentor" class="b-input" type="text" inputmode="numeric" style="width:100%;max-width:12rem;" placeholder="e.g. 42">
+            <div class="b-cta-row" style="margin-top:.8rem;">
+                <button class="b-btn b-btn--sm" type="submit">Share my review</button>
+            </div>
+            <p class="hr-err" id="hr-share-msg" role="alert"></p>
+        </form>
+        <div id="hr-shared-list" style="margin-top:1rem;display:grid;gap:.5rem;"></div>
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/health_review.js') }}"></script>
 
 {% if is_current %}
 <script nonce="{{ csp_nonce() }}">

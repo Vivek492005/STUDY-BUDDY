@@ -4,6 +4,7 @@
 {% block title %}{{ mentor.name }} | Mentors | STUDY-BUDDY{% endblock %}
 {% block head %}
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -14,8 +15,8 @@
             <div style="display:flex;align-items:center;gap:1rem;margin-top:1rem;">
                 <div class="b-avatar" style="width:3.5rem;height:3.5rem;font-size:1.4rem;" aria-hidden="true">{{ mentor.name[0] }}</div>
                 <div>
-                    <h1 style="margin:0;">{{ mentor.name }} {% if mentor.is_seed %}<span class="b-pill" title="Example profile that shows how mentoring works — real mentors join via application and are verified by the team">Example profile</span>{% elif mentor.verified %}<span class="b-pill" title="Verified by the STUDY-BUDDY team">✓ Verified</span>{% endif %}</h1>
-                    {% if mentor.is_seed %}<p style="color:var(--b-warn,#fbbf24);margin:.6rem 0 0;font-size:.9rem;">This is an example profile demonstrating the mentoring flow. Bookings here are practice requests — they don't reach a real mentor yet. Real mentors join through applications and are verified by the team.</p>{% endif %}
+                    <h1 style="margin:0;">{{ mentor.name }} {% if mentor.is_seed %}<span class="b-pill" title="Illustrative profile — an example, not a real mentor. Real mentors join via application and are verified by the team">Illustrative profile</span>{% elif mentor.verified %}<span class="b-pill" title="Verified by the STUDY-BUDDY team">✓ Verified</span>{% endif %}</h1>
+                    {% if mentor.is_seed %}<p style="color:var(--b-warn,#fbbf24);margin:.6rem 0 0;font-size:.9rem;">This is an illustrative profile — an example only, not a real mentor. It cannot be booked. Real mentors join through applications and are verified by the team.</p>{% endif %}
                     <p class="b-lede" style="margin:.3rem 0 0;">{{ mentor.headline }}{% if mentor.company %} · {{ mentor.company }}{% endif %}{% if mentor.college %} · {{ mentor.college }}{% endif %}</p>
                 </div>
             </div>
@@ -78,6 +79,33 @@
     </div>
 </section>
 
+{# ---------- Phase 5: reviews ---------- #}
+<section class="b-section" aria-label="Reviews" id="mp-reviews" data-mentor="{{ mentor.id }}" data-seed="{{ '1' if mentor.is_seed else '0' }}">
+    <div class="b-sec-head"><h2>Reviews for <span class="b-grad">{{ mentor.name }}</span></h2><p id="mp-rev-summary" style="color:var(--b-muted);">No reviews yet</p></div>
+    <div id="mp-rev-list"></div>
+    {% if mentor.is_seed %}
+    <p style="color:var(--b-muted);font-size:.9rem;">Reviews open after a real session. This is an illustrative profile — it cannot be booked or reviewed yet.</p>
+    {% else %}
+    <form id="mp-rev-form" style="margin-top:1rem;">
+        <label class="b-label" for="mp-rev-rating">Your rating</label>
+        <select id="mp-rev-rating" class="b-input" style="width:100%;max-width:12rem;">
+            <option value="">— Pick a rating —</option>
+            <option value="5">5 — Excellent</option>
+            <option value="4">4 — Good</option>
+            <option value="3">3 — OK</option>
+            <option value="2">2 — Poor</option>
+            <option value="1">1 — Bad</option>
+        </select>
+        <label class="b-label" for="mp-rev-text" style="margin-top:.6rem;">What helped? (optional)</label>
+        <textarea id="mp-rev-text" class="b-input" rows="2" style="width:100%;" placeholder="Keep it specific and kind."></textarea>
+        <div class="b-cta-row" style="margin-top:.8rem;">
+            <button class="b-btn b-btn--sm" type="submit">Submit review</button>
+        </div>
+        <p class="b-form-error" id="mp-rev-msg" style="display:none;" role="alert"></p>
+    </form>
+    {% endif %}
+</section>
+
 {# ---------- Past sessions ---------- #}
 {% if past %}
 <section class="b-section" aria-label="Past sessions">
@@ -128,6 +156,7 @@
 (function () {
     'use strict';
     var MENTOR_ID = {{ mentor.id }};
+    var IS_SEED = {{ 'true' if mentor.is_seed else 'false' }};
     var TEMPLATES = {{ templates|tojson }};
 
     function csrfHeaders(extra) {
@@ -154,7 +183,8 @@
         });
     });
 
-    // Booking.
+    // Booking. Phase 5: illustrative (seed) profiles never open a real
+    // booking flow — the guard message replaces the POST entirely.
     document.querySelectorAll('.mentor-book-form').forEach(function (form) {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -162,6 +192,11 @@
             var err = document.getElementById('err-' + ohId);
             var ok = document.getElementById('ok-' + ohId);
             err.style.display = 'none'; ok.style.display = 'none';
+            if (IS_SEED) {
+                err.textContent = 'This is an illustrative profile — bookings open when real mentors join.';
+                err.style.display = 'block';
+                return;
+            }
             var tmpl = document.getElementById('tmpl-' + ohId).value;
             var question = document.getElementById('q-' + ohId).value;
             api('/mentors/api/office-hours/' + ohId + '/book',
@@ -312,6 +347,72 @@
             }
         });
     });
+
+    // Phase 5: reviews (public read; authed write for real mentors only).
+    var revSection = document.getElementById('mp-reviews');
+    if (revSection) {
+        var revSummary = document.getElementById('mp-rev-summary');
+        var revList = document.getElementById('mp-rev-list');
+        function loadReviews() {
+            fetch('/api/mentors/' + MENTOR_ID + '/reviews', {headers: csrfHeaders()})
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var reviews = (data && data.reviews) || [];
+                    var count = (data && data.count != null) ? data.count : reviews.length;
+                    if (revSummary) {
+                        revSummary.textContent = (count && data.average != null)
+                            ? ('Average rating: ' + data.average + ' (' + count + ' review' + (count === 1 ? '' : 's') + ')')
+                            : 'No reviews yet';
+                    }
+                    if (!revList) return;
+                    revList.textContent = '';
+                    if (!reviews.length) {
+                        var none = document.createElement('p');
+                        none.style.color = 'var(--b-muted)';
+                        none.textContent = 'No reviews yet — the first real session earns the first review.';
+                        revList.appendChild(none);
+                        return;
+                    }
+                    reviews.forEach(function (r) {
+                        var row = document.createElement('p');
+                        row.style.fontSize = '.9rem';
+                        row.textContent = (r.rating != null ? (r.rating + '/5 — ') : '') + (r.text || r.review_text || '');
+                        revList.appendChild(row);
+                    });
+                })
+                .catch(function () {});
+        }
+        var revForm = document.getElementById('mp-rev-form');
+        if (revForm) {
+            revForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var msg = document.getElementById('mp-rev-msg');
+                var rating = parseInt(document.getElementById('mp-rev-rating').value, 10);
+                if (!rating || rating < 1 || rating > 5) {
+                    msg.textContent = 'Pick a rating from 1 to 5 first.';
+                    msg.style.display = 'block';
+                    return;
+                }
+                msg.style.display = 'none';
+                api('/api/mentors/' + MENTOR_ID + '/reviews', {
+                    rating: rating,
+                    text: document.getElementById('mp-rev-text').value
+                }).then(function (res) {
+                    if ((res.status === 200 || res.status === 201) && res.body.success) {
+                        document.getElementById('mp-rev-text').value = '';
+                        loadReviews();
+                    } else {
+                        msg.textContent = (res.body && res.body.error) || 'Could not submit the review.';
+                        msg.style.display = 'block';
+                    }
+                }).catch(function () {
+                    msg.textContent = 'Network error. Please try again.';
+                    msg.style.display = 'block';
+                });
+            });
+        }
+        loadReviews();
+    }
 
     loadBookings();
 })();

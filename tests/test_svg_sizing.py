@@ -25,6 +25,8 @@ SIZED_WRAPPERS = {
     "career-icon",    # .career-icon svg { width:1.4em }
     "feedback-icon",  # .feedback-icon svg { width:1.4em }
     "step-icon",      # .step-icon svg { width:1.4em }
+    "sb-side-nav",    # .sb-side-nav a svg { width:19px; height:19px }
+    "sb-side-foot",   # .sb-side-foot a svg { width:19px; height:19px }
     "file-icon",      # .file-icon svg
     "brand-icon",     # .brand-icon svg (resume_style)
     "score-ring",     # .score-ring svg { width:200px; height:200px }

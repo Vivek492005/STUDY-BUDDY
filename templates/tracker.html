@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bento.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/resume_style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/kinetic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2310b981'/><path d='M30 52l12 12 28-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     <style>
         .tk-wrap { max-width: 1400px; margin: 0 auto; padding: 6.5rem 1.2rem 4rem; }
@@ -66,6 +67,33 @@
         @media (prefers-reduced-motion: reduce) {
             .tk-card { transition: none; }
         }
+        /* Phase 1 additions: borderless sections that melt into the page. */
+        .tk-digest { color: var(--text-muted, #94a3b8); margin-bottom: 1.2rem; }
+        .tk-digest strong { color: var(--text-main, #f8fafc); }
+        .tk-digest ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+        .tk-dl-row { display: flex; gap: 0.35rem; flex-wrap: wrap; margin: 0.45rem 0 0.2rem; }
+        .tk-dl-row input[type="date"] { background: rgba(255,255,255,0.06); color: var(--text-main, #f8fafc); border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; padding: 0.3rem 0.4rem; font-size: 0.78rem; }
+        .tk-dl-line { font-size: 0.75rem; color: var(--text-muted, #94a3b8); margin-bottom: 0.3rem; }
+        .tk-timeline { margin-top: 0.5rem; font-size: 0.8rem; color: #cbd5e1; }
+        .tk-timeline ul { margin: 0.3rem 0 0; padding-left: 1.1rem; }
+        .tk-timeline li { margin-bottom: 0.3rem; }
+        .tk-timeline .tk-tl-date { color: var(--text-muted, #94a3b8); font-size: 0.75rem; }
+        .tk-section { margin-top: 2.2rem; }
+        .tk-section h2 { font-size: 1.25rem; margin-bottom: 0.4rem; }
+        .tk-section .tk-meta { font-size: 0.85rem; color: var(--text-muted, #94a3b8); margin-bottom: 0.8rem; }
+        .tk-form-row { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: end; margin-bottom: 0.7rem; }
+        .tk-form-row label { font-size: 0.82rem; font-weight: 600; }
+        .tk-form-row input, .tk-form-row select, .tk-form-row textarea { display: block; margin-top: 0.25rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; color: var(--text-main, #f8fafc); padding: 0.55rem 0.65rem; font-size: 0.9rem; }
+        .tk-form-row select option { color: #0f172a; }
+        .tk-offer { margin-bottom: 1rem; }
+        .tk-offer h3 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+        .tk-offer-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 0.8rem 0; }
+        .tk-offer-table th, .tk-offer-table td { text-align: left; padding: 0.45rem 0.6rem; }
+        .tk-offer-table tr.tk-rank-1 td { color: var(--accent-primary); font-weight: 700; }
+        .tk-ref-row { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; padding: 0.5rem 0; }
+        .tk-pill { border-radius: 999px; padding: 0.1rem 0.6rem; font-size: 0.76rem; font-weight: 700; background: rgba(46,230,168,0.15); color: var(--accent-primary); }
+        .tk-kit-list { margin: 0.4rem 0 0.9rem; padding-left: 1.2rem; }
+        .tk-kit-list li { margin-bottom: 0.35rem; }
     </style>
     <style>
     /* a11y: skip link (same rules as base.html) */
@@ -99,6 +127,11 @@
             </div>
         </div>
 
+        <section id="tkDigest" class="tk-digest" hidden aria-live="polite">
+            <div id="tkDigestSummary"></div>
+            <ul id="tkDigestActions"></ul>
+        </section>
+
         <div class="tk-stats" id="tkStats" aria-live="polite">
             <div class="tk-stat b-card--stat"><strong>{{ stats.total }}</strong><span>Total tracked</span></div>
             <div class="tk-stat b-card--stat"><strong>{{ stats.response_rate }}%</strong><span>Response rate</span></div>
@@ -121,6 +154,22 @@
 
         <div class="tk-error" id="tkError" hidden></div>
 
+        {% if deadlines is defined %}
+        <section class="tk-deadlines" aria-label="Upcoming deadlines">
+            <h2>Upcoming deadlines</h2>
+            {% if deadlines %}
+            <ul>
+                {% for d in deadlines %}
+                {% set dl = d.days_left|default(0, true) %}
+                <li><strong>{{ d.title|e }}</strong> <span class="tk-dl-meta">· {{ d.date|e }} · {{ d.kind|e }} · {% if dl == 0 %}today{% elif dl > 0 %}in {{ dl }} days{% else %}{{ -dl }} days ago{% endif %}</span></li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No upcoming deadlines.</p>
+            {% endif %}
+        </section>
+        {% endif %}
+
         <div class="tk-board" id="tkBoard">
             {% for sid, label in stages %}
             <div class="tk-col b-kcol" data-stage="{{ sid }}">
@@ -132,6 +181,17 @@
                         <div class="tk-role">{{ a.role }}</div>
                         {% if a.applied_date %}<div class="tk-meta">Applied {{ a.applied_date.strftime('%d %b %Y') }}</div>{% endif %}
                         {% if a.notes %}<div class="tk-notes">{{ a.notes }}</div>{% endif %}
+                        <div class="tk-dl-line" {% if not a.deadline %}hidden{% endif %}>{% if a.deadline %}📅 Deadline {{ a.deadline.strftime('%d %b %Y') }}{% if a.deadline_kind %} · {{ a.deadline_kind|title }}{% endif %}{% endif %}</div>
+                        <div class="tk-dl-row">
+                            <input type="date" class="tk-dl-date" aria-label="Deadline date" {% if a.deadline %}value="{{ a.deadline.isoformat() }}"{% endif %}>
+                            <select class="tk-dl-kind" aria-label="Deadline kind">
+                                {% for kval, klabel in [('oa', 'OA'), ('interview', 'Interview'), ('followup', 'Follow-up'), ('offer', 'Offer'), ('other', 'Other')] %}
+                                <option value="{{ kval }}" {% if a.deadline_kind == kval %}selected{% endif %}>{{ klabel }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="tk-mini tk-dl-save" type="button">Save deadline</button>
+                        </div>
+                        <div class="tk-dl-error tk-error" hidden></div>
                         <div class="tk-actions">
                             {% if a.jd_url %}<a class="tk-mini" href="{{ a.jd_url }}" target="_blank" rel="noopener" style="text-decoration:none;">JD link</a>{% endif %}
                             <select class="tk-move" aria-label="Move to stage">
@@ -141,8 +201,11 @@
                             </select>
                             <button class="tk-mini tk-edit" type="button">Edit</button>
                             <button class="tk-mini danger tk-del" type="button">Delete</button>
+                            <button class="tk-mini tk-kit-btn" type="button">Interview kit</button>
+                            <button class="tk-mini tk-timeline-btn" type="button" aria-expanded="false">Timeline</button>
                             {% if a.stage == 'rejected' %}<a class="tk-mini" href="{{ url_for('retro_wizard', application_id=a.id) }}" style="text-decoration:none;">Reflect</a>{% endif %}
                         </div>
+                        <div class="tk-timeline" hidden></div>
                     </div>
                     {% else %}
                     <div class="tk-empty">No applications here yet.</div>
@@ -151,6 +214,115 @@
             </div>
             {% endfor %}
         </div>
+
+        <section id="tkKitPanel" class="tk-section" hidden aria-live="polite">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+                <h2 id="tkKitTitle">Interview kit</h2>
+                <button class="tk-mini" id="tkKitClose" type="button">Close</button>
+            </div>
+            <p id="tkKitSub" class="tk-meta"></p>
+            <div id="tkKitBody"></div>
+        </section>
+
+        <section id="tkCompare" class="tk-section" aria-label="Offer comparison">
+            <h2>Compare offers</h2>
+            <p class="tk-meta">Compare 2–3 offers against the salary band for a role. Totals include base + bonus + ESOP.</p>
+            <div class="tk-form-row">
+                <label>Role
+                    <select id="tkCmpRole">
+                        <option value="">Any role</option>
+                    </select>
+                </label>
+                <label id="tkCmpRoleOtherWrap" hidden>Other role
+                    <input id="tkCmpRoleOther" maxlength="200" placeholder="e.g. Backend Engineer">
+                </label>
+                <label>Tier
+                    <select id="tkCmpTier">
+                        <option value="">Any tier</option>
+                        <option value="tier1">Tier 1</option>
+                        <option value="tier2">Tier 2</option>
+                        <option value="tier3">Tier 3</option>
+                    </select>
+                </label>
+            </div>
+            <div class="tk-offer" id="tkCmpOffer1">
+                <h3>Offer 1</h3>
+                <div class="tk-form-row">
+                    <label>Title *<input id="tkCmp1Title" maxlength="200" placeholder="e.g. Acme — SDE"></label>
+                    <label>Base (LPA) *<input id="tkCmp1Base" type="number" min="0" step="0.01" placeholder="12"></label>
+                    <label>Bonus (LPA)<input id="tkCmp1Bonus" type="number" min="0" step="0.01"></label>
+                    <label>ESOP (LPA)<input id="tkCmp1Esop" type="number" min="0" step="0.01"></label>
+                    <label>Location<input id="tkCmp1Loc" maxlength="120" placeholder="Bengaluru"></label>
+                </div>
+            </div>
+            <div class="tk-offer" id="tkCmpOffer2">
+                <h3>Offer 2</h3>
+                <div class="tk-form-row">
+                    <label>Title *<input id="tkCmp2Title" maxlength="200" placeholder="e.g. Globex — SDE"></label>
+                    <label>Base (LPA) *<input id="tkCmp2Base" type="number" min="0" step="0.01" placeholder="14"></label>
+                    <label>Bonus (LPA)<input id="tkCmp2Bonus" type="number" min="0" step="0.01"></label>
+                    <label>ESOP (LPA)<input id="tkCmp2Esop" type="number" min="0" step="0.01"></label>
+                    <label>Location<input id="tkCmp2Loc" maxlength="120" placeholder="Hyderabad"></label>
+                </div>
+            </div>
+            <div class="tk-offer" id="tkCmpOffer3" hidden>
+                <h3>Offer 3</h3>
+                <div class="tk-form-row">
+                    <label>Title<input id="tkCmp3Title" maxlength="200"></label>
+                    <label>Base (LPA)<input id="tkCmp3Base" type="number" min="0" step="0.01"></label>
+                    <label>Bonus (LPA)<input id="tkCmp3Bonus" type="number" min="0" step="0.01"></label>
+                    <label>ESOP (LPA)<input id="tkCmp3Esop" type="number" min="0" step="0.01"></label>
+                    <label>Location<input id="tkCmp3Loc" maxlength="120"></label>
+                </div>
+            </div>
+            <div class="tk-form-row">
+                <button class="tk-btn-ghost" id="tkCmpAddThird" type="button">+ Add third offer</button>
+                <button class="tk-btn" id="tkCmpBtn" type="button">Compare</button>
+            </div>
+            <div class="tk-error" id="tkCmpError" hidden></div>
+            <div id="tkCmpResults"></div>
+        </section>
+
+        <section id="tkReferrals" class="tk-section" aria-label="Referrals">
+            <h2>Referrals</h2>
+            <p class="tk-meta">People who can refer you — track who you asked and where it stands.</p>
+            <div id="tkRefList"></div>
+            <form id="tkRefForm" novalidate>
+                <div class="tk-form-row">
+                    <label>Contact name *<input id="tkRefName" maxlength="200" required placeholder="e.g. Priya Sharma"></label>
+                    <label>Application
+                        <select id="tkRefApp">
+                            <option value="">No specific application</option>
+                        </select>
+                    </label>
+                    <label>Channel
+                        <select id="tkRefChannel">
+                            <option value="">Any channel</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="email">Email</option>
+                            <option value="portal">Referral portal</option>
+                            <option value="friend">Friend</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="tk-form-row">
+                    <label>Notes<input id="tkRefNotes" maxlength="1000" placeholder="Where they work, what you asked…"></label>
+                    <button type="submit" class="tk-btn">Add referral</button>
+                </div>
+            </form>
+            <div class="tk-error" id="tkRefError" hidden></div>
+        </section>
+
+        <section id="tkImport" class="tk-section" aria-label="Import applications from CSV">
+            <h2>Import from CSV</h2>
+            <p class="tk-meta">Upload a CSV of applications (header row with company, role, stage). Rows that fail are listed, not silently dropped.</p>
+            <div class="tk-form-row">
+                <label>CSV file<input type="file" id="tkCsvFile" accept=".csv,text/csv"></label>
+                <button class="tk-btn" id="tkCsvBtn" type="button">Import</button>
+            </div>
+            <div id="tkCsvResult"></div>
+        </section>
     </div>
 
     <div class="tk-modal-back" id="tkModalBack" hidden>

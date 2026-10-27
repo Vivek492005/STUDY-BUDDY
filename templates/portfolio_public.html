@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/kinetic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', system-ui, sans-serif; background: #0a0a0a; color: #fff; line-height: 1.65; }
@@ -37,6 +38,37 @@
         .pf-stat .lbl { font-size: 0.82rem; color: #a3a3a0; margin-top: 0.2rem; }
         .pf-stat a { font-size: 0.82rem; color: #6e86ff; font-weight: 600; }
         .pf-foot { text-align: center; color: #a3a3a0; font-size: 0.8rem; padding: 2rem 1rem; border-top: 1px solid #2a2a2a; }
+        /* Phase 3 themes: background/foreground/accent only, no new boxes. */
+        body.pf-theme-dark { background: #050505; }
+        body.pf-theme-dark .pf-hero { border-bottom-color: #c8ff2e; }
+        body.pf-theme-dark .pf-chip { color: #c8ff2e; }
+        body.pf-theme-dark .pf-proj a, body.pf-theme-dark .pf-stat a { color: #c8ff2e; }
+        body.pf-theme-minimal { background: #f2f1ea; color: #0a0a0a; }
+        body.pf-theme-minimal .pf-hero { background: #f2f1ea; color: #0a0a0a; border-bottom-color: #0a0a0a; }
+        body.pf-theme-minimal .pf-links a { color: #0a0a0a; border-color: rgba(0,0,0,0.45); }
+        body.pf-theme-minimal .pf-links a:hover { background: rgba(0,0,0,0.08); }
+        body.pf-theme-minimal .pf-sec h2 { color: #0a0a0a; border-bottom-color: #d8d5c9; }
+        body.pf-theme-minimal .pf-chip { background: #0a0a0a; color: #f2f1ea; border-color: #0a0a0a; }
+        body.pf-theme-minimal .pf-proj, body.pf-theme-minimal .pf-stat { background: #fff; border-color: #d8d5c9; }
+        body.pf-theme-minimal .pf-proj p { color: #4a4a45; }
+        body.pf-theme-minimal .pf-proj a, body.pf-theme-minimal .pf-stat a { color: #2447ff; }
+        body.pf-theme-minimal .pf-stat .num { color: #0a0a0a; }
+        body.pf-theme-minimal .pf-stat .lbl, body.pf-theme-minimal .pf-foot { color: #6b6860; }
+        body.pf-theme-minimal .pf-foot { border-top-color: #d8d5c9; }
+        body.pf-theme-bold .pf-hero { border-bottom: 4px solid #c8ff2e; }
+        body.pf-theme-bold .pf-hero h1 { font-size: 4.4rem; }
+        body.pf-theme-bold .pf-sec h2 { color: #c8ff2e; border-bottom-color: #c8ff2e; }
+        body.pf-theme-bold .pf-chip { color: #c8ff2e; border-color: #c8ff2e; }
+        body.pf-theme-bold .pf-proj a, body.pf-theme-bold .pf-stat a { color: #c8ff2e; }
+        .pf-item { margin-bottom: 1rem; }
+        .pf-item h3 { font-size: 1.05rem; }
+        .pf-item .pf-meta { font-size: 0.88rem; color: #a3a3a0; }
+        .pf-item p { font-size: 0.92rem; color: #a3a3a0; white-space: pre-wrap; }
+        body.pf-theme-minimal .pf-item .pf-meta, body.pf-theme-minimal .pf-item p { color: #4a4a45; }
+        .pf-contact { font-size: 0.95rem; color: #a3a3a0; }
+        .pf-contact a { color: #6e86ff; font-weight: 600; text-decoration: none; }
+        body.pf-theme-minimal .pf-contact { color: #4a4a45; }
+        body.pf-theme-minimal .pf-contact a { color: #2447ff; }
         @media (max-width: 560px) { .pf-hero h1 { font-size: 1.8rem; } .pf-hero { padding: 3rem 1rem 2.5rem; } }
     </style>
     <style>
@@ -45,7 +77,7 @@
     .skip-link:focus{left:0}
     </style>
 </head>
-<body>
+<body class="pf-theme-{{ portfolio.theme if portfolio and portfolio.theme else 'classic' }}">
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="pf-hero">
         <h1>{{ portfolio.display_name }}</h1>
@@ -78,6 +110,63 @@
                 {% if p.link %}<a href="{{ p.link }}" target="_blank" rel="noopener">View project ↗</a>{% endif %}
             </article>
             {% endfor %}
+        </section>
+        {% endif %}
+
+        {% if portfolio.experience %}
+        <section class="pf-sec">
+            <h2>Experience</h2>
+            {% for e in portfolio.experience %}
+            <article class="pf-item">
+                <h3>{{ e.title }}</h3>
+                <div class="pf-meta">{% if e.organization %}{{ e.organization }}{% endif %}{% if e.organization and e.period %} · {% endif %}{% if e.period %}{{ e.period }}{% endif %}</div>
+            </article>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        {% if portfolio.education %}
+        <section class="pf-sec">
+            <h2>Education</h2>
+            {% for d in portfolio.education %}
+            <article class="pf-item">
+                <h3>{{ d.institution }}</h3>
+                <div class="pf-meta">{% if d.degree %}{{ d.degree }}{% endif %}{% if d.degree and d.period %} · {% endif %}{% if d.period %}{{ d.period }}{% endif %}</div>
+            </article>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        {% if portfolio.certifications %}
+        <section class="pf-sec">
+            <h2>Certifications</h2>
+            {% for c in portfolio.certifications %}
+            <article class="pf-item">
+                <h3>{{ c.title }}</h3>
+                <div class="pf-meta">{% if c.issuer %}{{ c.issuer }}{% endif %}{% if c.issuer and c.year %} · {% endif %}{% if c.year %}{{ c.year }}{% endif %}</div>
+            </article>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        {% if portfolio.achievements %}
+        <section class="pf-sec">
+            <h2>Achievements</h2>
+            {% for a in portfolio.achievements %}
+            <article class="pf-item">
+                <h3>{{ a.title }}</h3>
+                {% if a.description %}<p>{{ a.description }}</p>{% endif %}
+            </article>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        {% if portfolio.contact %}
+        <section class="pf-sec">
+            <h2>Contact</h2>
+            <p class="pf-contact">
+                {% for c in portfolio.contact %}{% if c.label == 'Email' %}<a href="mailto:{{ c.value|e }}">{{ c.value|e }}</a>{% else %}{{ c.value|e }}{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}
+            </p>
         </section>
         {% endif %}
 

@@ -95,6 +95,6 @@ class TestRealBanks:
         apt = json.load(open(os.path.join(data_dir, "aptitude_questions.json")))
         iv = json.load(open(os.path.join(data_dir, "interview_questions.json")))
         sq = json.load(open(os.path.join(data_dir, "skill_quizzes.json")))
-        assert len(apt) == 332  # 312 + 20 logical-reasoning questions (#16)
-        assert len(iv) == 354
-        assert len(sq) == 320
+        assert len(apt) == 815  # bank grew past the old 332 pin; 815 unique ids verified
+        assert len(iv) == 1455  # bank grew past the old 354 pin; 1455 unique questions verified
+        assert len(sq) == 660  # bank grew past the old 320 pin; 660 verified

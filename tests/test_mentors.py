@@ -108,7 +108,8 @@ def test_hub_seeds_mentors_defensively(app, client):
     with app.app_context():
         mentors = Mentor.query.all()
         assert len(mentors) == 14
-        assert all(m.verified for m in mentors)
+        # Phase 5: seeds are ILLUSTRATIVE — never verified, never bookable.
+        assert not any(m.verified for m in mentors)
         assert all(m.is_seed for m in mentors)
         paths = {m.path for m in mentors}
         assert len(paths) >= 5  # spread across paths

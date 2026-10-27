@@ -12,11 +12,25 @@ MAX_HEADLINE = 140
 MAX_BIO = 600
 MAX_SKILLS = 30
 MAX_SKILL_LEN = 40
-MAX_PROJECTS = 12
+# Raised 12 -> 50 in Phase 3 so the GitHub import can fill a portfolio
+# without the editor refusing to save it back.
+MAX_PROJECTS = 50
 MAX_PROJECT_TITLE = 80
 MAX_PROJECT_DESC = 400
 MAX_LINKS = 8
 MAX_LINK_LABEL = 40
+# Phase 3 sections (all plain text, HTML stripped, 50 items each).
+MAX_SECTION_ITEMS = 50
+MAX_CERT_TITLE = 80
+MAX_CERT_ISSUER = 80
+MAX_CERT_YEAR = 20
+MAX_EXP_FIELD = 80
+MAX_EXP_PERIOD = 40
+MAX_ACH_TITLE = 120
+MAX_ACH_DESC = 400
+MAX_CONTACT_LABEL = 40
+MAX_CONTACT_VALUE = 200
+PORTFOLIO_THEMES = ("classic", "dark", "minimal", "bold")
 
 
 def slugify(text):
@@ -36,6 +50,76 @@ def _clean_url(url):
     if len(url) > 500 or any(c.isspace() for c in url):
         return None
     return url
+
+
+def _strip_text(value):
+    """Plain-text only: strip HTML tags and surrounding whitespace."""
+    if not isinstance(value, str):
+        return ""
+    return re.sub(r"<[^>]*>", "", value).strip()
+
+
+def _clean_section_rows(raw, section):
+    """Validate one Phase 3 list section. Returns (rows, error)."""
+    if not isinstance(raw, list):
+        return None, f"{section} must be a list."
+    if len(raw) > MAX_SECTION_ITEMS:
+        return None, f"At most {MAX_SECTION_ITEMS} {section} allowed."
+    rows = []
+    for item in raw:
+        if isinstance(item, str):
+            item = {"title": item}
+        if not isinstance(item, dict):
+            return None, f"Each {section} item must be an object."
+        if section == "certifications":
+            title = _strip_text(item.get("title"))[:MAX_CERT_TITLE]
+            issuer = _strip_text(item.get("issuer"))[:MAX_CERT_ISSUER]
+            year = _strip_text(item.get("year"))[:MAX_CERT_YEAR]
+            if not title and not issuer and not year:
+                continue
+            if not title:
+                return None, "Each certification needs a title."
+            rows.append({"title": title, "issuer": issuer, "year": year})
+        elif section == "experience":
+            role = _strip_text(item.get("role") or item.get("title"))
+            role = role[:MAX_EXP_FIELD]
+            org = _strip_text(item.get("organization"))[:MAX_EXP_FIELD]
+            period = _strip_text(item.get("period"))[:MAX_EXP_PERIOD]
+            desc = _strip_text(item.get("description"))[:MAX_PROJECT_DESC]
+            if not role and not org and not period and not desc:
+                continue
+            if not role and not org:
+                return None, "Each experience item needs a role or organization."
+            rows.append({"role": role, "organization": org,
+                         "period": period, "description": desc})
+        elif section == "education":
+            inst = _strip_text(item.get("institution"))[:MAX_EXP_FIELD]
+            degree = _strip_text(item.get("degree") or item.get("title"))
+            degree = degree[:MAX_EXP_FIELD]
+            period = _strip_text(item.get("period"))[:MAX_EXP_PERIOD]
+            if not inst and not degree and not period:
+                continue
+            if not inst and not degree:
+                return None, "Each education item needs an institution or degree."
+            rows.append({"institution": inst, "degree": degree,
+                         "period": period})
+        elif section == "achievements":
+            title = _strip_text(item.get("title"))[:MAX_ACH_TITLE]
+            desc = _strip_text(item.get("description"))[:MAX_ACH_DESC]
+            if not title and not desc:
+                continue
+            if not title:
+                return None, "Each achievement needs a title."
+            rows.append({"title": title, "description": desc})
+        elif section == "contact":
+            label = _strip_text(item.get("label"))[:MAX_CONTACT_LABEL]
+            value = _strip_text(item.get("value"))[:MAX_CONTACT_VALUE]
+            if not label and not value:
+                continue
+            if not label or not value:
+                return None, "Each contact item needs both a label and a value."
+            rows.append({"label": label, "value": value})
+    return rows, None
 
 
 def validate_portfolio_payload(payload):
@@ -114,6 +198,19 @@ def validate_portfolio_payload(payload):
             return None, f"Link labels must be {MAX_LINK_LABEL} characters or fewer."
         links.append({"label": label, "url": url})
 
+    # Phase 3 sections + theme (additive: absent keys default to empty).
+    sections = {}
+    for section in ("certifications", "experience", "education",
+                    "achievements", "contact"):
+        rows, error = _clean_section_rows(payload.get(section) or [], section)
+        if error:
+            return None, error
+        sections[section] = rows
+    theme = (payload.get("theme") or "classic")
+    if not isinstance(theme, str) or theme not in PORTFOLIO_THEMES:
+        return None, ("Theme must be one of: " +
+                      ", ".join(PORTFOLIO_THEMES) + ".")
+
     return {
         "display_name": display_name,
         "headline": headline,
@@ -124,6 +221,8 @@ def validate_portfolio_payload(payload):
         "show_github": bool(payload.get("show_github")),
         "show_leetcode": bool(payload.get("show_leetcode")),
         "is_published": bool(payload.get("is_published")),
+        "theme": theme,
+        **sections,
     }, None
 
 

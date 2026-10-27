@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bento.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/resume_style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/kinetic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2310b981'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'>₹</text></svg>">
     <style>
         .sal-wrap { max-width: 1100px; margin: 0 auto; padding: 6.5rem 1.2rem 4rem; }
@@ -49,6 +50,27 @@
         .sal-login-cta { font-size: 0.85rem; color: var(--text-muted, #94a3b8); margin-bottom: 1.4rem; }
         .sal-login-cta a { color: var(--accent-primary); font-weight: 700; }
         .sal-count { font-size: 0.82rem; color: var(--text-muted, #94a3b8); margin-bottom: 0.8rem; }
+        /* Phase 2 sections: headings + spacing only, no boxes (BLEND rule). */
+        .sal-section { margin: 2.2rem 0 0; }
+        .sal-section h2 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+        .sal-sec-sub { color: var(--text-muted, #94a3b8); font-size: 0.88rem; margin-bottom: 1rem; max-width: 640px; }
+        .sal-inline-form { display: flex; gap: 0.7rem; align-items: end; flex-wrap: wrap; margin-bottom: 0.8rem; }
+        .sal-inline-form .fld { min-width: 180px; }
+        .sal-inline-form label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.35rem; color: var(--text-muted, #94a3b8); }
+        .sal-inline-form select, .sal-inline-form input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; color: var(--text-main, #f8fafc); padding: 0.6rem 0.7rem; font-size: 0.9rem; }
+        .sal-inline-form select option { color: #0f172a; }
+        .sal-status { font-size: 0.85rem; color: var(--text-muted, #94a3b8); margin-bottom: 0.8rem; }
+        .sal-status.err { color: #fda4af; }
+        .sal-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-bottom: 0.8rem; }
+        .sal-table th { text-align: left; font-size: 0.78rem; color: var(--text-muted, #94a3b8); padding: 0.45rem 0.6rem 0.45rem 0; }
+        .sal-table td { padding: 0.45rem 0.6rem 0.45rem 0; border-top: 1px solid rgba(255,255,255,0.08); }
+        .sal-table .num { font-variant-numeric: tabular-nums; }
+        .sal-script-card { margin-bottom: 0.8rem; }
+        .sal-script-card p { font-size: 0.9rem; line-height: 1.55; margin-top: 0.4rem; }
+        .sal-script-tip { font-size: 0.82rem; color: var(--text-muted, #94a3b8); }
+        .sal-eval-line { font-size: 0.92rem; margin-bottom: 0.4rem; }
+        .sal-script-btn { background: transparent; border: none; color: var(--accent-secondary); font-weight: 700; font-size: 0.9rem; cursor: pointer; padding: 0; text-align: left; }
+        .sal-script-btn:hover { text-decoration: underline; }
         @media (prefers-reduced-motion: reduce) { .sal-btn:hover { filter: none; } }
     </style>
     <style>
@@ -74,7 +96,7 @@
         <div class="sal-head b-reveal">
             <h1>India <span class="b-grad">Salary Explorer</span></h1>
             <p>What do roles like yours pay across Indian cities? Explore indicative salary ranges by role, city tier and experience.</p>
-            {% if freshness %}<span class="b-pill b-pill--sm" title="{{ freshness.label }}"><span class="b-pulse"></span>{{ freshness.label }}</span>{% endif %}
+            {% if freshness_status is not defined and freshness is defined and freshness.label is defined and freshness.label %}<span class="b-pill b-pill--sm" title="{{ freshness.label }}"><span class="b-pulse"></span>{{ freshness.label }}</span>{% endif %}
         </div>
 
         <div class="sal-filters b-card b-reveal">
@@ -105,8 +127,117 @@
         <p class="sal-login-cta"><a href="{{ url_for('auth.login', next='/salary') }}">Log in</a> to compare your expected salary against these ranges.</p>
         {% endif %}
 
+        {% if freshness_status is defined and freshness_status %}
+        <p class="fresh-line">
+            <span class="{{ 'pill-indicative' if freshness_status.stale else 'pill-verified' }}">{{ 'Stale' if freshness_status.stale else 'Fresh' }}</span>
+            <span>Salary data{% if freshness_status.last_updated is defined and freshness_status.last_updated %} updated {{ freshness_status.last_updated|e }}{% endif %}</span>
+            {% if freshness_status.stale and freshness_status.message is defined and freshness_status.message %}<span class="fresh-msg">{{ freshness_status.message|e }}</span>{% endif %}
+        </p>
+        {% endif %}
         <p class="sal-count" id="salCount"></p>
         <div class="sal-grid" id="salGrid"></div>
+
+        <section class="sal-section" aria-labelledby="salCurveH">
+            <h2 id="salCurveH">Growth curve</h2>
+            <p class="sal-sec-sub">How the indicative range for one role grows with experience. Figures are indicative, not live market data.</p>
+            <div class="sal-inline-form">
+                <div class="fld">
+                    <label for="salCurveRole">Role</label>
+                    <select id="salCurveRole"></select>
+                </div>
+                <div class="fld">
+                    <label for="salCurveTier">City tier</label>
+                    <select id="salCurveTier"></select>
+                </div>
+                <button class="sal-btn" id="salCurveBtn" type="button">Show curve</button>
+            </div>
+            <p id="salCurveStatus" class="sal-status" aria-live="polite"></p>
+            <div id="salCurveResults"></div>
+        </section>
+
+        {% if is_authed %}
+        <section class="sal-section" aria-labelledby="salEvalH">
+            <h2 id="salEvalH">Offer evaluator</h2>
+            <p class="sal-sec-sub">Compare an offer against the indicative band for its role, tier and experience. The verdict is a reading of indicative ranges, not a market average or a guarantee.</p>
+            <form id="salEvalForm" class="sal-inline-form">
+                <div class="fld">
+                    <label for="salEvalRole">Role</label>
+                    <select id="salEvalRole" required></select>
+                </div>
+                <div class="fld">
+                    <label for="salEvalTier">City tier</label>
+                    <select id="salEvalTier" required></select>
+                </div>
+                <div class="fld">
+                    <label for="salEvalBand">Experience</label>
+                    <select id="salEvalBand" required></select>
+                </div>
+                <div class="fld">
+                    <label for="salEvalOffer">Your offer (LPA)</label>
+                    <input id="salEvalOffer" type="number" min="0" max="500" step="0.1" placeholder="e.g. 12.5" required>
+                </div>
+                <div class="fld">
+                    <label for="salEvalCity">City (optional)</label>
+                    <select id="salEvalCity"></select>
+                </div>
+                <button class="sal-btn" type="submit">Evaluate</button>
+            </form>
+            <p id="salEvalStatus" class="sal-status" aria-live="polite"></p>
+            <div id="salEvalResults"></div>
+        </section>
+        {% else %}
+        <p class="sal-login-cta"><a href="{{ url_for('auth.login', next='/salary') }}">Log in</a> to evaluate an offer against these ranges.</p>
+        {% endif %}
+
+        <section class="sal-section" aria-labelledby="salScriptH">
+            <h2 id="salScriptH">Negotiation scripts</h2>
+            <p class="sal-sec-sub">Short, honest scripts for common offer situations. Adapt the words to your own offer — never quote a figure you cannot back up.</p>
+            <div class="sal-inline-form">
+                <div class="fld">
+                    <label for="salScriptSituation">Situation</label>
+                    <select id="salScriptSituation"></select>
+                </div>
+            </div>
+            <p id="salScriptStatus" class="sal-status" aria-live="polite"></p>
+            <div id="salScriptList"></div>
+        </section>
+
+        {% set sal_cities = options.city_entries if options.city_entries is defined else (city_entries if city_entries is defined else []) %}
+        {% if sal_cities %}
+        {% set ns = namespace(mult=false, note=false) %}
+        {% for e in sal_cities %}
+            {% if e.multiplier is defined or e.col_multiplier is defined %}{% set ns.mult = true %}{% endif %}
+            {% if e.note is defined or e.notes is defined %}{% set ns.note = true %}{% endif %}
+        {% endfor %}
+        <section class="sal-section" aria-labelledby="salCityH">
+            <h2 id="salCityH">City comparison</h2>
+            <p class="sal-sec-sub">Indicative city-level ranges — not live market data; actual offers vary by company, skills, and negotiation.</p>
+            <div class="cp-table-scroll">
+            <table class="sal-table" id="salCityTable">
+                <thead>
+                    <tr><th>City</th><th>Role</th><th>Experience</th><th>Min</th><th>Median</th><th>Max</th>{% if ns.mult %}<th>Multiplier</th>{% endif %}{% if ns.note %}<th>Note</th>{% endif %}</tr>
+                </thead>
+                <tbody>
+                {% for e in sal_cities %}
+                    <tr{% if loop.index > 15 %} class="sal-city-extra" hidden{% endif %}>
+                        <td>{{ e.city|e }}</td>
+                        <td>{{ e.role|e }}</td>
+                        <td>{{ e.experience_band|e }}</td>
+                        <td class="num">₹{{ e.min_lpa }} LPA</td>
+                        <td class="num">₹{{ e.median_lpa }} LPA</td>
+                        <td class="num">₹{{ e.max_lpa }} LPA</td>
+                        {% if ns.mult %}<td class="num">{% if e.multiplier is defined %}{{ e.multiplier }}{% elif e.col_multiplier is defined %}{{ e.col_multiplier }}{% endif %}&times;</td>{% endif %}
+                        {% if ns.note %}<td>{{ (e.note if e.note is defined else e.notes)|e }}</td>{% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            {% if sal_cities|length > 15 %}
+            <button class="sal-btn" id="salCityToggle" type="button">Show all cities ({{ sal_cities|length }})</button>
+            {% endif %}
+        </section>
+        {% endif %}
 
         <div class="sal-note">Indicative market ranges — curated for student guidance, last updated {{ options.meta.last_updated }}. These are not live-scraped figures; actual offers vary by company, skills, and negotiation.</div>
     </main>

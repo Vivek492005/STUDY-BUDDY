@@ -8,7 +8,9 @@ Phase 1 (Foundation): Flask-SQLAlchemy + Flask-Login persistence.
 - /dashboard (login required) shows analysis history + career goals.
 - Research chat sessions are saved per-user when logged in.
 """
+import csv
 import hashlib
+import io
 import json
 import logging
 import os
@@ -289,6 +291,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 # Import logic from Resume Analyzer components
 import studybuddy.community as community_mod
+import studybuddy.mentor_health as mentor_health_mod
 import studybuddy.momentum as momentum_mod
 import studybuddy.retrospective_data as retro_data
 from models.ats_scorer import calculate_ats_score
@@ -469,8 +472,17 @@ from studybuddy.pdf_qa import chunk_pages as pdfqa_chunk_pages
 from studybuddy.pdf_qa import parse_pdf_pages as pdfqa_parse_pages
 from studybuddy.pdf_qa import validate_upload as pdfqa_validate_upload
 from studybuddy.portfolio import unique_slug, validate_portfolio_payload
+from studybuddy.role_cards import enrich_clusters
 from studybuddy.salary_data import SalaryDataError
+from studybuddy.salary_data import city_adjusted_median as salary_city_adjusted
+from studybuddy.salary_data import disclaimer as salary_disclaimer
 from studybuddy.salary_data import get_freshness as salary_freshness
+from studybuddy.salary_data import lookup as salary_lookup
+from studybuddy.salary_data import scripts_for_situation as salary_scripts_for
+from studybuddy.career_graph import career_snapshot
+from studybuddy.deadlines import DEADLINE_KINDS, upcoming_deadlines
+from studybuddy.interview_kit import build_kit
+from studybuddy.freshness import freshness_status
 from studybuddy.salary_data import get_options as salary_options
 from studybuddy.salary_data import query as salary_query
 from studybuddy.skill_quizzes import best_scores as quiz_best_scores
@@ -655,6 +667,13 @@ class JobApplication(db.Model):
     jd_url = db.Column(db.String(500))
     notes = db.Column(db.Text)
     applied_date = db.Column(db.Date)
+    # Phase 0: deadline engine — nullable so the additive prod schema
+    # self-heal covers existing rows.
+    deadline = db.Column(db.Date, nullable=True)
+    deadline_kind = db.Column(db.String(32), nullable=True)  # oa|interview|followup|offer|other
+    # Phase 4: when the current deadline was set (drives the deadlines-2
+    # quest; cleared together with the deadline itself).
+    deadline_set_at = db.Column(db.DateTime, nullable=True)
     resume_version_id = db.Column(db.Integer, db.ForeignKey("resume_version.id"),
                                  nullable=True, index=True)  # which version was sent
     stage_updated_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
@@ -665,6 +684,30 @@ class JobApplication(db.Model):
 
     user = db.relationship("User", backref=db.backref("job_applications", lazy="dynamic",
                                                       cascade="all, delete-orphan"))
+
+
+class Referral(db.Model):
+    """A referral ask tracked by a user (Career plan Phase 1).
+
+    application_id is nullable: a referral can exist before (or without)
+    a tracker card, and deleting an application NULLs the link instead of
+    deleting the referral history.
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    application_id = db.Column(db.Integer, db.ForeignKey("job_application.id"),
+                               nullable=True, index=True)
+    contact_name = db.Column(db.String(120), nullable=False)
+    channel = db.Column(db.String(20), nullable=False, default="other")  # linkedin|email|other
+    status = db.Column(db.String(20), nullable=False, default="asked")  # asked|replied|referred|declined
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           onupdate=lambda: datetime.now(UTC), nullable=True)
+
+    user = db.relationship("User", backref=db.backref("referrals", lazy="dynamic",
+                                                      cascade="all, delete-orphan"))
+    application = db.relationship("JobApplication", backref=db.backref("referrals", lazy="dynamic"))
 
 
 class Retrospective(db.Model):
@@ -690,6 +733,11 @@ class Retrospective(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
                            onupdate=lambda: datetime.now(UTC), nullable=False)
+    # Phase 4: reason taxonomy id OR user free text (never forced into the
+    # taxonomy); interview feedback entries; opt-in anonymous sharing.
+    reason = db.Column(db.String(200))
+    interview_feedback = db.Column(db.JSON)  # list of feedback dicts, cap 20
+    anonymous_share = db.Column(db.Boolean, nullable=False, default=False)
 
     application = db.relationship("JobApplication",
                                   backref=db.backref("retrospective", uselist=False,
@@ -714,6 +762,9 @@ class Experiment(db.Model):
     duration = db.Column(db.String(50))               # e.g. "3 weeks"
     result = db.Column(db.Text)                       # logged when done
     status = db.Column(db.String(20), nullable=False, default="planned", index=True)
+    # Phase 4 outcome tracking: helped|no-change|hurt|pending + free note.
+    outcome = db.Column(db.String(20))
+    outcome_note = db.Column(db.Text)
     linked_application_id = db.Column(db.Integer, db.ForeignKey("job_application.id"))
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
@@ -1066,6 +1117,14 @@ class Portfolio(db.Model):
     skills = db.Column(db.JSON)
     projects = db.Column(db.JSON)
     links = db.Column(db.JSON)
+    # Phase 3 sections (plain-text JSON lists, validated in portfolio.py).
+    certifications = db.Column(db.JSON)
+    experience = db.Column(db.JSON)
+    education = db.Column(db.JSON)
+    achievements = db.Column(db.JSON)
+    contact = db.Column(db.JSON)
+    # Phase 3 theme: classic|dark|minimal|bold (None on old rows = classic).
+    theme = db.Column(db.String(32), default="classic")
     show_github = db.Column(db.Boolean, default=False, nullable=False)
     show_leetcode = db.Column(db.Boolean, default=False, nullable=False)
     is_published = db.Column(db.Boolean, default=False, nullable=False)
@@ -1075,6 +1134,20 @@ class Portfolio(db.Model):
 
     user = db.relationship("User", backref=db.backref("portfolio", uselist=False,
                                                       cascade="all, delete-orphan"))
+
+
+class PortfolioView(db.Model):
+    """One row per public portfolio page load (Phase 3 analytics).
+
+    Privacy: counts only — NO IP, NO user-agent, NO referrer is stored.
+    """
+    __tablename__ = "portfolio_view"
+    id = db.Column(db.Integer, primary_key=True)
+    portfolio_id = db.Column(db.Integer, db.ForeignKey("portfolio.id"),
+                             nullable=False, index=True)
+    viewed_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                          nullable=False)
+    path = db.Column(db.String(120))
 
 
 class PeerRoom(db.Model):
@@ -1194,10 +1267,12 @@ class PeerBlock(db.Model):
 class Mentor(db.Model):
     """A mentor profile for Wave 6 #27 office hours.
 
-    Seed profiles (is_seed=True) ship with the app and are marked verified;
-    real mentors join via MentorApplication and get verified=True only after
-    an admin approves them. user_id links the profile to the mentor's own
-    STUDY-BUDDY account when one exists (null for seed rows).
+    Seed profiles (is_seed=True) ship with the app as ILLUSTRATIVE
+    profiles: they are never verified and never bookable (Phase 5
+    honesty rule). Real mentors join via MentorApplication and get
+    verified=True only after an admin approves them. user_id links the
+    profile to the mentor's own STUDY-BUDDY account when one exists
+    (null for seed rows).
     """
     __tablename__ = "mentor"
 
@@ -1345,6 +1420,71 @@ class OHReport(db.Model):
     reason = db.Column(db.String(40), nullable=False)
     details = db.Column(db.Text)
     status = db.Column(db.String(20), nullable=False, default="open", index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False)
+
+
+class MentorQA(db.Model):
+    """One curated Q&A library entry (Phase 5).
+
+    Library entries are general career knowledge attributed to the
+    community knowledge base (mentor_id NULL, attribution set). A real
+    mentor's own answer links mentor_id to a NON-seed mentor row; seeds
+    never author library entries.
+    """
+    __tablename__ = "mentor_qa"
+
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.Text, nullable=False)
+    answer = db.Column(db.Text, nullable=False)
+    topic = db.Column(db.String(64), nullable=False, default="general",
+                      index=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey("mentor.id"),
+                          nullable=True, index=True)
+    attribution = db.Column(db.String(120), nullable=False,
+                            default="Community knowledge base")
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False)
+
+
+class MentorQuestion(db.Model):
+    """A student's question in a real mentor's inbox (Phase 5).
+
+    This is an inbox, not an answered Q&A: status stays 'open' until a
+    real mentor answers elsewhere. No answer is ever auto-generated.
+    topic is a mentor path key when the asker picked one, else NULL
+    (general questions are visible to every mentor's dashboard).
+    """
+    __tablename__ = "mentor_question"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False,
+                        index=True)
+    question = db.Column(db.Text, nullable=False)
+    topic = db.Column(db.String(64), nullable=True, index=True)
+    status = db.Column(db.String(20), nullable=False, default="open",
+                       index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False)
+
+
+class MentorReview(db.Model):
+    """One review of a mentor by a student who actually interacted with
+    them (Phase 5). One review per (user, mentor); rating 1-5. Averages
+    are computed only from these rows — never a default or fake value.
+    """
+    __tablename__ = "mentor_review"
+
+    __table_args__ = (db.UniqueConstraint("user_id", "mentor_id",
+                                         name="uq_mentor_review_user_mentor"),)
+
+    id = db.Column(db.Integer, primary_key=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey("mentor.id"),
+                          nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False,
+                        index=True)
+    rating = db.Column(db.Integer, nullable=False)
+    text = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
                            nullable=False)
 
@@ -1582,9 +1722,67 @@ class MomentumSettings(db.Model):
     momentum_opt_out = db.Column(db.Boolean, default=False, nullable=False)
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
                            onupdate=lambda: datetime.now(UTC), nullable=False)
+    # Phase 4: last manual streak repair (one repair per rolling 30 days).
+    last_streak_repair_at = db.Column(db.DateTime, nullable=True)
 
     user = db.relationship("User", backref=db.backref("momentum_settings", uselist=False,
                                                       cascade="all, delete-orphan"))
+
+
+class TeamLeague(db.Model):
+    """A named, invite-code team league (Phase 4).
+
+    Distinct from the weekly ISO-week cohorts (LeagueMember): teams are
+    persistent and joined via an unguessable code. Boards expose only
+    the requesting user's rank + member count + own XP.
+    """
+    __tablename__ = "team_league"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    invite_code = db.Column(db.String(32), nullable=False, unique=True,
+                            index=True)
+    created_by = db.Column(db.Integer, db.ForeignKey("user.id"),
+                           nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False)
+
+
+class TeamLeagueMember(db.Model):
+    """Membership in a team league (one row per user per league)."""
+    __tablename__ = "team_league_member"
+
+    id = db.Column(db.Integer, primary_key=True)
+    league_id = db.Column(db.Integer, db.ForeignKey("team_league.id"),
+                          nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"),
+                        nullable=False, index=True)
+    joined_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                          nullable=False)
+
+    __table_args__ = (db.UniqueConstraint("league_id", "user_id",
+                                         name="uq_team_league_member"),)
+
+
+class SalaryEvaluation(db.Model):
+    """A user's own offer evaluation (Phase 4).
+
+    Logged so the salary-evaluated badge and salary quests are verifiable
+    from data instead of stateless calls. Stores only what the user
+    entered plus the band that was shown — never anyone else's offer.
+    """
+    __tablename__ = "salary_evaluation"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"),
+                        nullable=False, index=True)
+    role = db.Column(db.String(200))
+    tier = db.Column(db.String(32))
+    band = db.Column(db.String(32))
+    offer_lpa = db.Column(db.Float)
+    city = db.Column(db.String(120))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False)
 
 
 class HealthReview(db.Model):
@@ -1613,6 +1811,62 @@ class HealthReview(db.Model):
 
     user = db.relationship("User", backref=db.backref("health_reviews", lazy="dynamic",
                                                       cascade="all, delete-orphan"))
+
+
+class HealthPulse(db.Model):
+    """A weekly 1-5 self-check (Phase 5). One row per (user, ISO week);
+    scores is {dimension: 1-5} over the five health dimensions. A pulse
+    is the user's own rating, never an inferred or opaque score.
+    """
+    __tablename__ = "health_pulse"
+
+    __table_args__ = (db.UniqueConstraint("user_id", "week_key",
+                                         name="uq_health_pulse_user_week"),)
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False,
+                        index=True)
+    week_key = db.Column(db.String(7), nullable=False, index=True)  # "YYYY-Www"
+    scores = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False)
+
+
+class HealthGoal(db.Model):
+    """A health-linked goal (Phase 5). Separate from the generic Goal
+    model because health goals carry a dimension so action plans can
+    list them per dimension. done toggles via PATCH; nothing auto-done.
+    """
+    __tablename__ = "health_goal"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False,
+                        index=True)
+    title = db.Column(db.String(255), nullable=False)
+    dimension = db.Column(db.String(32), nullable=True, index=True)
+    target_date = db.Column(db.Date, nullable=True)
+    done = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False)
+
+
+class HealthShare(db.Model):
+    """A user's grant of health-summary access to one REAL mentor
+    (Phase 5). Seeds can never be share targets. Only the grant is
+    stored here; dashboards see counts, never another user's summary.
+    """
+    __tablename__ = "health_share"
+
+    __table_args__ = (db.UniqueConstraint("user_id", "mentor_id",
+                                         name="uq_health_share_user_mentor"),)
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False,
+                        index=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey("mentor.id"),
+                          nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False)
 
 
 def _utcnow_naive():
@@ -1665,7 +1919,7 @@ def json_safe(obj):
 
 RETRO_PIPELINE = ("wishlist", "applied", "oa", "interview", "offer")
 RETRO_PIPELINE_LABELS = {sid: label for sid, label in TRACKER_STAGES}
-RETRO_WIZARD_STEPS = ("facts", "patterns", "hypotheses", "experiment")
+RETRO_WIZARD_STEPS = ("facts", "patterns", "hypotheses", "experiment", "reason")
 RETRO_EXPERIMENT_STATUSES = ("planned", "running", "done")
 RETRO_SMALL_SAMPLE_N = 5
 RETRO_MAX_TEXT = 5000
@@ -1925,6 +2179,8 @@ def _retro_experiment_to_dict(exp):
         "duration": exp.duration,
         "result": exp.result,
         "status": exp.status,
+        "outcome": exp.outcome,
+        "outcome_note": exp.outcome_note,
         "linked_application_id": exp.linked_application_id,
         "linked_company": linked.company if linked else None,
         "linked_role": linked.role if linked else None,
@@ -1946,6 +2202,16 @@ def _momentum_hook(user_id, event_type):
     except Exception:
         log.exception("Momentum hook failed for event %s (non-fatal)",
                       event_type)
+
+
+def _career_hook(user_id, action, ref_id):
+    """Phase 4 per-ref career XP hook (same never-raises contract as
+    _momentum_hook). Called AFTER the handler's own commit succeeds."""
+    try:
+        momentum_mod.career_xp_hook(user_id, action, ref_id)
+    except Exception:
+        log.exception("Career XP hook failed for action %s (non-fatal)",
+                      action)
 
 
 # ---------------------------------------------------------------------------
@@ -4478,21 +4744,30 @@ def register_routes(app):
             'id': a.id, 'company': a.company, 'role': a.role, 'stage': a.stage,
             'jd_url': a.jd_url, 'notes': a.notes,
             'applied_date': a.applied_date.isoformat() if a.applied_date else None,
+            'deadline': a.deadline.isoformat() if a.deadline else None,
+            'deadline_kind': a.deadline_kind,
             'stage_updated_at': a.stage_updated_at.isoformat() if a.stage_updated_at else None,
             'created_at': a.created_at.isoformat() if a.created_at else None,
             'resume_version_id': a.resume_version_id,
         }
 
-    def _validate_tracker_payload(payload, require_company_role=True):
-        """Validate tracker add/edit fields. Returns (data, error)."""
+    def _validate_tracker_payload(payload, require_company_role=True,
+                                  require_company=None):
+        """Validate tracker add/edit fields. Returns (data, error).
+
+        require_company defaults to require_company_role; callers may relax
+        the company check alone (wishlist target roles have no company yet)
+        while keeping the role required.
+        """
+        if require_company is None:
+            require_company = require_company_role
         data = {}
         company = (payload.get('company') or '').strip()
         role = (payload.get('role') or '').strip()
-        if require_company_role:
-            if not company:
-                return None, 'Company name is required.'
-            if not role:
-                return None, 'Role / position is required.'
+        if require_company and not company:
+            return None, 'Company name is required.'
+        if require_company_role and not role:
+            return None, 'Role / position is required.'
         if company and len(company) > 200:
             return None, 'Company name is too long (max 200 characters).'
         if role and len(role) > 200:
@@ -4574,8 +4849,13 @@ def register_routes(app):
         by_stage = {sid: [] for sid, _ in TRACKER_STAGES}
         for a in apps:
             by_stage.setdefault(a.stage, []).append(a)
+        try:
+            deadlines = upcoming_deadlines(current_user.id)
+        except Exception:
+            deadlines = []
         return render_template('tracker.html', stages=TRACKER_STAGES,
-                               by_stage=by_stage, stats=_tracker_stats(current_user.id))
+                               by_stage=by_stage, stats=_tracker_stats(current_user.id),
+                               deadlines=deadlines)
 
     @app.route('/tracker/add', methods=['POST'])
     @limiter.limit("60 per hour")
@@ -4588,12 +4868,21 @@ def register_routes(app):
         stage = (payload.get('stage') or 'wishlist').strip()
         if stage not in TRACKER_STAGE_IDS:
             return jsonify({'error': 'Invalid stage.'}), 400
-        data, error = _validate_tracker_payload(payload)
+        # Phase 2: a wishlist target role may not have a company yet, so the
+        # "Add to tracker" handoff from discovery can pass company blank —
+        # but ONLY when stage is explicitly 'wishlist' in the payload. A bare
+        # add (stage omitted, defaulting to wishlist) still requires a
+        # company, preserving the existing validation contract.
+        # Role stays required in all cases.
+        explicit_wishlist = (payload.get('stage') or '').strip() == 'wishlist'
+        data, error = _validate_tracker_payload(
+            payload, require_company=not explicit_wishlist)
         if error:
             return jsonify({'error': error}), 400
         app_row = JobApplication(user_id=current_user.id, stage=stage, **data)
         db.session.add(app_row)
         db.session.commit()
+        _career_hook(current_user.id, 'tracker_add', app_row.id)
         return jsonify({'success': True, 'application': _tracker_app_to_dict(app_row)}), 201
 
     @app.route('/tracker/<int:app_id>/move', methods=['POST'])
@@ -4609,10 +4898,12 @@ def register_routes(app):
         stage = ((payload or {}).get('stage') or '').strip()
         if stage not in TRACKER_STAGE_IDS:
             return jsonify({'error': 'Invalid stage.'}), 400
-        if app_row.stage != stage:
+        changed = app_row.stage != stage
+        if changed:
             app_row.stage = stage
             app_row.stage_updated_at = datetime.now(UTC)
             db.session.commit()
+            _career_hook(current_user.id, 'tracker_move', app_row.id)
         return jsonify({'success': True, 'application': _tracker_app_to_dict(app_row)})
 
     @app.route('/tracker/<int:app_id>/edit', methods=['POST'])
@@ -4647,6 +4938,9 @@ def register_routes(app):
                                                  user_id=current_user.id).first()
         if not app_row:
             return jsonify({'error': 'Application not found.'}), 404
+        # Phase 1: keep referral history; only unlink it from this application.
+        for ref in Referral.query.filter_by(application_id=app_id).all():
+            ref.application_id = None
         db.session.delete(app_row)
         db.session.commit()
         return jsonify({'success': True})
@@ -4656,6 +4950,418 @@ def register_routes(app):
     def tracker_stats():
         """JSON stats for the user's tracker."""
         return jsonify({'success': True, 'stats': _tracker_stats(current_user.id)})
+
+    # ---------- CAREER PLAN PHASE 1: tracker spine ----------
+    _REFERRAL_CHANNELS = ('linkedin', 'email', 'other')
+    _REFERRAL_STATUSES = ('asked', 'replied', 'referred', 'declined')
+
+    def _referral_to_dict(r, app_map=None):
+        app_row = None
+        if r.application_id:
+            if app_map is not None:
+                app_row = app_map.get(r.application_id)
+            else:
+                app_row = db.session.get(JobApplication, r.application_id)
+        return {'id': r.id, 'application_id': r.application_id,
+                'company': app_row.company if app_row else None,
+                'role': app_row.role if app_row else None,
+                'contact_name': r.contact_name, 'channel': r.channel,
+                'status': r.status, 'notes': r.notes,
+                'created_at': r.created_at.isoformat() if r.created_at else None,
+                'updated_at': r.updated_at.isoformat() if r.updated_at else None}
+
+    @app.route('/api/tracker/<int:app_id>/kit')
+    @limiter.limit("30 per hour")
+    def tracker_kit(app_id):
+        """Interview kit for one application (matched bank questions +
+        roadmap link + checklist). CSRF via X-CSRFToken header."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        app_row = JobApplication.query.filter_by(id=app_id,
+                                                 user_id=current_user.id).first()
+        if not app_row:
+            return jsonify({'error': 'Application not found.'}), 404
+        return jsonify(json_safe({'success': True,
+                                  'kit': build_kit(app_row.company, app_row.role)}))
+
+    @app.route('/api/tracker/offers/compare', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def tracker_offers_compare():
+        """Stateless offer comparison. No DB writes.
+
+        Body: {role?, tier?, offers: [{title, base_lpa, bonus_lpa?,
+        esop_lpa?, location?}]} — exactly 2 or 3 offers. The band, when
+        role+tier match salary data, aggregates across experience bands
+        (min of mins, median of medians, max of maxs) and is indicative.
+        """
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        payload = request.get_json(silent=True) or {}
+        offers_raw = payload.get('offers')
+        if not isinstance(offers_raw, list) or not (2 <= len(offers_raw) <= 3):
+            return jsonify({'error': 'Provide 2 or 3 offers to compare.'}), 400
+
+        def _num(v):
+            if isinstance(v, bool) or not isinstance(v, (int, float)):
+                return None
+            f = float(v)
+            if f != f or f in (float('inf'), float('-inf')):
+                return None
+            return f
+
+        offers = []
+        for i, o in enumerate(offers_raw):
+            if not isinstance(o, dict):
+                return jsonify({'error': f'Offer {i + 1} is invalid.'}), 400
+            base = _num(o.get('base_lpa'))
+            if base is None or base < 0:
+                return jsonify({'error': f'Offer {i + 1} needs a base_lpa >= 0.'}), 400
+            bonus = _num(o.get('bonus_lpa')) if o.get('bonus_lpa') is not None else 0.0
+            esop = _num(o.get('esop_lpa')) if o.get('esop_lpa') is not None else 0.0
+            if bonus is None or bonus < 0 or esop is None or esop < 0:
+                return jsonify({'error': f'Offer {i + 1} has an invalid bonus/esop value.'}), 400
+            title = (str(o.get('title') or f'Offer {i + 1}')).strip()[:200] or f'Offer {i + 1}'
+            offers.append({'title': title, 'base_lpa': round(base, 2),
+                           'bonus_lpa': round(bonus, 2), 'esop_lpa': round(esop, 2),
+                           'total_lpa': round(base + bonus + esop, 2),
+                           'location': (str(o.get('location') or '').strip()[:200] or None)})
+        ranked = sorted(offers, key=lambda x: -x['total_lpa'])
+        for rank, o in enumerate(ranked, start=1):
+            o['rank'] = rank
+        band = None
+        role = (payload.get('role') or '').strip()
+        tier = (payload.get('tier') or '').strip()
+        if role and tier:
+            try:
+                entries = salary_query(role=role, tier=tier)
+            except Exception:
+                entries = []
+            if entries:
+                meds = sorted(e['median_lpa'] for e in entries)
+                mid = (meds[len(meds) // 2] if len(meds) % 2
+                       else (meds[len(meds) // 2 - 1] + meds[len(meds) // 2]) / 2)
+                band = {'min_lpa': min(e['min_lpa'] for e in entries),
+                        'median_lpa': round(mid, 2),
+                        'max_lpa': max(e['max_lpa'] for e in entries)}
+        top = ranked[0]
+        verdict = f"{top['title']} has the highest total at {top['total_lpa']} LPA."
+        if band:
+            if top['total_lpa'] < band['min_lpa']:
+                verdict += " That sits below the indicative band for this role and tier."
+            elif top['total_lpa'] > band['max_lpa']:
+                verdict += " That sits above the indicative band for this role and tier."
+            else:
+                verdict += " That sits within the indicative band for this role and tier."
+        return jsonify(json_safe({'success': True, 'offers': ranked,
+                                  'band': band, 'verdict': verdict}))
+
+    @app.route('/api/tracker/referrals')
+    def tracker_referrals_list():
+        """List the user's referrals, with company/role joined when linked."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        rows = (Referral.query.filter_by(user_id=current_user.id)
+                .order_by(Referral.created_at.desc()).all())
+        ids = [r.application_id for r in rows if r.application_id]
+        apps = JobApplication.query.filter(JobApplication.id.in_(ids)).all() if ids else []
+        app_map = {a.id: a for a in apps}
+        return jsonify(json_safe({'success': True,
+                                  'referrals': [_referral_to_dict(r, app_map) for r in rows]}))
+
+    @app.route('/api/tracker/referrals', methods=['POST'])
+    @limiter.limit("60 per hour")
+    def tracker_referrals_add():
+        """Add a referral ask. CSRF via X-CSRFToken header."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        payload = request.get_json(silent=True) or {}
+        name = (payload.get('contact_name') or '').strip()
+        if not name:
+            return jsonify({'error': 'Contact name is required.'}), 400
+        channel = (payload.get('channel') or 'other').strip()
+        if channel not in _REFERRAL_CHANNELS:
+            return jsonify({'error': 'Invalid channel.'}), 400
+        notes = (payload.get('notes') or '').strip()
+        if len(notes) > 5000:
+            return jsonify({'error': 'Notes are too long (max 5,000 characters).'}), 400
+        app_id = payload.get('application_id')
+        app_row = None
+        if app_id not in (None, ''):
+            try:
+                app_id = int(app_id)
+            except (TypeError, ValueError):
+                return jsonify({'error': 'Invalid application_id.'}), 400
+            app_row = JobApplication.query.filter_by(id=app_id,
+                                                     user_id=current_user.id).first()
+            if not app_row:
+                return jsonify({'error': 'Application not found.'}), 400
+        row = Referral(user_id=current_user.id,
+                       application_id=app_row.id if app_row else None,
+                       contact_name=name[:120], channel=channel, status='asked',
+                       notes=notes or None)
+        db.session.add(row)
+        db.session.commit()
+        _career_hook(current_user.id, 'referral_ask', row.id)
+        return jsonify(json_safe({'success': True, 'referral': _referral_to_dict(row)})), 201
+
+    @app.route('/api/tracker/referrals/<int:ref_id>', methods=['PATCH'])
+    def tracker_referrals_patch(ref_id):
+        """Update a referral's status and/or notes. CSRF via X-CSRFToken header."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        row = Referral.query.filter_by(id=ref_id, user_id=current_user.id).first()
+        if not row:
+            return jsonify({'error': 'Referral not found.'}), 404
+        payload = request.get_json(silent=True) or {}
+        if 'status' in payload:
+            status = (payload.get('status') or '').strip()
+            if status not in _REFERRAL_STATUSES:
+                return jsonify({'error': 'Invalid status.'}), 400
+            row.status = status
+        if 'notes' in payload:
+            notes = (payload.get('notes') or '').strip()
+            if len(notes) > 5000:
+                return jsonify({'error': 'Notes are too long (max 5,000 characters).'}), 400
+            row.notes = notes or None
+        db.session.commit()
+        return jsonify(json_safe({'success': True, 'referral': _referral_to_dict(row)}))
+
+    @app.route('/api/tracker/referrals/<int:ref_id>', methods=['DELETE'])
+    def tracker_referrals_delete(ref_id):
+        """Delete a referral. CSRF via X-CSRFToken header."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        row = Referral.query.filter_by(id=ref_id, user_id=current_user.id).first()
+        if not row:
+            return jsonify({'error': 'Referral not found.'}), 404
+        db.session.delete(row)
+        db.session.commit()
+        return jsonify({'success': True})
+
+    @app.route('/api/tracker/<int:app_id>/timeline')
+    def tracker_timeline(app_id):
+        """Timeline for one application, derived honestly from current fields.
+
+        No history table exists yet, so events come from what the row already
+        stores: creation, the current stage (only when stage_updated_at is
+        more than 60s after created_at — creation sets both within the same
+        second, so a larger gap marks a real move), a deadline if set, and
+        one event per linked retrospective. Sorted by date ascending.
+        """
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        app_row = JobApplication.query.filter_by(id=app_id,
+                                                 user_id=current_user.id).first()
+        if not app_row:
+            return jsonify({'error': 'Application not found.'}), 404
+
+        def _aware(v):
+            if v is None:
+                return None
+            return v if getattr(v, 'tzinfo', None) is not None else v.replace(tzinfo=UTC)
+
+        events = []
+        created = _aware(app_row.created_at)
+        if created:
+            events.append({'date': created.isoformat(), 'event': 'Added to tracker',
+                           'detail': f"{app_row.company} — {app_row.role}"})
+        updated = _aware(app_row.stage_updated_at)
+        if created and updated and (updated - created).total_seconds() > 60:
+            label = dict(TRACKER_STAGES).get(app_row.stage, app_row.stage)
+            events.append({'date': updated.isoformat(), 'event': f'Moved to {label}',
+                           'detail': f"Stage is now {label}."})
+        if app_row.deadline:
+            events.append({'date': app_row.deadline.isoformat(),
+                           'event': f"Deadline: {app_row.deadline_kind or 'other'}",
+                           'detail': f"{app_row.company} — {app_row.role}"})
+        retro = Retrospective.query.filter_by(application_id=app_id,
+                                              user_id=current_user.id).first()
+        if retro:
+            when = _aware(retro.completed_at) or _aware(retro.created_at)
+            if when:
+                events.append({'date': when.isoformat(), 'event': 'Retrospective written',
+                               'detail': 'Completed.' if retro.completed else 'In progress.'})
+        events.sort(key=lambda e: e['date'])
+        return jsonify(json_safe({'success': True, 'timeline': events}))
+
+    @app.route('/api/tracker/digest')
+    def tracker_digest():
+        """Weekly digest: stale items, 7-day deadlines, stats, suggested actions.
+
+        API-only for now — no mail infrastructure exists, so nothing is emailed.
+        """
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        stats = _tracker_stats(current_user.id)
+        try:
+            upcoming = upcoming_deadlines(current_user.id, days=7)
+        except Exception:
+            upcoming = []
+        actions = []
+        if upcoming:
+            actions.append(f"{len(upcoming)} deadline(s) in the next 7 days — check dates and prep.")
+        stale = stats.get('stale') or []
+        if stale:
+            actions.append(f"{len(stale)} application(s) stale 14+ days — consider a follow-up.")
+        counts = stats.get('counts') or {}
+        if stats.get('total') and not counts.get('interview'):
+            actions.append("No applications in interview stage — add target companies.")
+        if not stats.get('total'):
+            actions.append("No applications yet — add your first target company.")
+        digest = {'stale': stale, 'upcoming_7d': upcoming, 'counts': counts,
+                  'total': stats.get('total', 0),
+                  'response_rate': stats.get('response_rate', 0.0),
+                  'suggested_actions': actions[:4]}
+        return jsonify(json_safe({'success': True, 'digest': digest}))
+
+    @app.route('/api/tracker/import', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def tracker_import():
+        """Import applications from CSV text. One bad row never fails the import.
+
+        Body: {csv: str}. Header row (case-insensitive, extra columns ignored)
+        must include company, role, stage, applied_date. Per row: company+role
+        required; unknown stage imports as wishlist (recorded in notes); bad
+        applied_date skips the row (recorded in errors). Row numbers in
+        errors/notes are file line numbers (header is line 1). Cap: 200 rows.
+        """
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        payload = request.get_json(silent=True) or {}
+        raw = payload.get('csv') or ''
+        if not isinstance(raw, str) or not raw.strip():
+            return jsonify({'error': 'Provide CSV text in the "csv" field.'}), 400
+        try:
+            reader = csv.DictReader(io.StringIO(raw.lstrip('\ufeff')))
+            fieldnames = [(f or '').strip().lower() for f in (reader.fieldnames or [])]
+        except Exception:
+            return jsonify({'error': 'Could not parse the CSV.'}), 400
+        required = ('company', 'role', 'stage', 'applied_date')
+        missing = [c for c in required if c not in fieldnames]
+        if missing:
+            return jsonify({'error': f"CSV header must include: {', '.join(missing)}."}), 400
+        key_map = {}
+        for orig in (reader.fieldnames or []):
+            key_map[(orig or '').strip().lower()] = orig
+        rows = []
+        for row in reader:
+            if row is None:
+                continue
+            vals = {}
+            for k, v in row.items():
+                if k is None:
+                    continue
+                vals[k] = v.strip() if isinstance(v, str) else v
+            if not any(vals.values()):
+                continue
+            rows.append(vals)
+        if len(rows) > 200:
+            return jsonify({'error': 'CSV import is capped at 200 rows.'}), 400
+        imported = 0
+        skipped = 0
+        errors = []
+        notes = []
+        for idx, vals in enumerate(rows, start=2):
+            company = (vals.get(key_map['company']) or '').strip()
+            role = (vals.get(key_map['role']) or '').strip()
+            if not company or not role:
+                skipped += 1
+                errors.append({'row': idx, 'error': 'Company and role are required.'})
+                continue
+            stage = (vals.get(key_map['stage']) or 'wishlist').strip().lower()
+            if stage not in TRACKER_STAGE_IDS:
+                notes.append({'row': idx,
+                              'note': f"Unknown stage '{stage}' — imported as wishlist."})
+                stage = 'wishlist'
+            applied = None
+            raw_date = (vals.get(key_map['applied_date']) or '').strip()
+            if raw_date:
+                try:
+                    applied = datetime.strptime(raw_date, '%Y-%m-%d').date()
+                except ValueError:
+                    skipped += 1
+                    errors.append({'row': idx,
+                                   'error': f"Bad applied_date '{raw_date}' (use YYYY-MM-DD)."})
+                    continue
+            jd_url = ''
+            if 'jd_url' in key_map:
+                jd_url = (vals.get(key_map['jd_url']) or '').strip()
+                if jd_url and not re.match(r'^https?://', jd_url, re.I):
+                    jd_url = ''
+            note_text = ''
+            if 'notes' in key_map:
+                note_text = (vals.get(key_map['notes']) or '').strip()
+            db.session.add(JobApplication(
+                user_id=current_user.id, company=company[:200], role=role[:200],
+                stage=stage, jd_url=(jd_url[:500] or None) if jd_url else None,
+                notes=(note_text[:5000] or None) if note_text else None,
+                applied_date=applied))
+            imported += 1
+        db.session.commit()
+        return jsonify(json_safe({'success': True, 'imported': imported,
+                                  'skipped': skipped, 'errors': errors, 'notes': notes}))
+
+    # ---------- CAREER FOUNDATIONS (Phase 0): snapshot, freshness, deadlines ----------
+    @app.route('/api/career/snapshot')
+    @limiter.limit("30 per hour")
+    def career_snapshot_api():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Read-only career graph snapshot for the current user."""
+        snapshot, warnings = career_snapshot(current_user.id)
+        return jsonify(json_safe({'success': True, 'snapshot': snapshot,
+                                  'warnings': warnings}))
+
+    @app.route('/api/career/freshness')
+    @limiter.limit("60 per hour")
+    def career_freshness_api():
+        """Public: freshness of the curated career datasets (no user data)."""
+        from studybuddy.freshness import all_freshness
+        return jsonify(json_safe({'success': True,
+                                  'datasets': all_freshness()}))
+
+    @app.route('/api/career/deadlines')
+    @limiter.limit("30 per hour")
+    def career_deadlines_api():
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in to continue.'}), 401
+        """Upcoming tracker + bookmarked-opportunity deadlines (30 days)."""
+        return jsonify(json_safe({'success': True, 'deadlines':
+                                  upcoming_deadlines(current_user.id)}))
+
+    @app.route('/tracker/<int:app_id>/deadline', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def tracker_set_deadline(app_id):
+        """Set or clear a deadline on one application. CSRF via X-CSRFToken header."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        app_row = JobApplication.query.filter_by(id=app_id,
+                                                 user_id=current_user.id).first()
+        if not app_row:
+            return jsonify({'error': 'Application not found.'}), 404
+        payload = request.get_json(silent=True) if request.is_json else request.form.to_dict()
+        raw = ((payload or {}).get('deadline') or '').strip()
+        kind = ((payload or {}).get('deadline_kind') or '').strip()
+        if kind and kind not in DEADLINE_KINDS:
+            return jsonify({'error': 'Invalid deadline_kind. Use one of: '
+                                     + ', '.join(DEADLINE_KINDS) + '.'}), 400
+        if not raw:
+            app_row.deadline = None
+            app_row.deadline_kind = None
+            app_row.deadline_set_at = None
+        else:
+            try:
+                parsed = date.fromisoformat(raw[:10])
+            except ValueError:
+                return jsonify({'error': 'Invalid deadline date. Use YYYY-MM-DD.'}), 400
+            app_row.deadline = parsed
+            app_row.deadline_kind = kind or 'other'
+            app_row.deadline_set_at = datetime.now(UTC)
+        db.session.commit()
+        if raw:
+            _career_hook(current_user.id, 'deadline_set', app_row.id)
+        return jsonify({'success': True,
+                        'application': _tracker_app_to_dict(app_row)})
 
     # ---------- CAREER-DISCOVERY ASSESSMENT (Wave 1 #7) ----------
     @app.route('/assessment')
@@ -4682,6 +5388,8 @@ def register_routes(app):
         # --- Deterministic server-side scoring ---
         clusters = score_assessment(answers)
         clusters, ai_powered = _assessment_explanations(clusters)
+        # Phase 2 handoffs: roadmap/quiz links + role cards per top cluster.
+        clusters = enrich_clusters(clusters)
         for c in clusters:
             c["ai_powered"] = ai_powered
         result = {
@@ -4703,6 +5411,7 @@ def register_routes(app):
             log.exception("Assessment persistence failed")
             db.session.rollback()
             return jsonify({'error': 'Could not save your result. Please try again.'}), 500
+        _career_hook(current_user.id, 'assessment_complete', row.id)
 
         return jsonify({
             'success': True,
@@ -4717,9 +5426,49 @@ def register_routes(app):
         """Render a saved assessment result (owner only)."""
         row = CareerAssessment.query.filter_by(id=assessment_id,
                                                user_id=current_user.id).first_or_404()
+        # Phase 2: enrich at render time so pre-Phase-2 rows get handoffs too.
+        clusters = enrich_clusters(row.top_clusters)
         return render_template('assessment_result.html',
-                               clusters=row.top_clusters,
+                               clusters=clusters,
                                assessment_id=row.id, created_at=row.created_at)
+
+    @app.route('/api/career/assessment/history')
+    @limiter.limit("60 per hour")
+    def assessment_history():
+        """Re-take tracking: the user's past assessment results, newest first.
+
+        Read-only over existing CareerAssessment rows. Each attempt carries
+        the completed timestamp, top cluster ids, and top cluster names.
+        """
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        from studybuddy.career_assessment import CLUSTERS as _CA_CLUSTERS
+        rows = (CareerAssessment.query
+                .filter_by(user_id=current_user.id)
+                .order_by(CareerAssessment.created_at.desc(),
+                          CareerAssessment.id.desc()).all())
+        attempts = []
+        for row in rows:
+            top = row.top_clusters or []
+            ids, names = [], []
+            for item in top:
+                if isinstance(item, dict):
+                    cid = str(item.get("id") or "")
+                    ids.append(cid)
+                    names.append(str(item.get("name")
+                                     or _CA_CLUSTERS.get(cid, {}).get("name", cid)))
+                elif isinstance(item, str):
+                    ids.append(item)
+                    names.append(_CA_CLUSTERS.get(item, {}).get("name", item))
+            created = row.created_at
+            attempts.append({
+                "completed_at": (created.isoformat() if hasattr(created, "isoformat")
+                                 else str(created)),
+                "top_clusters": ids,
+                "top_cluster_names": names,
+            })
+        return jsonify(json_safe({"success": True, "attempts": attempts,
+                                  "count": len(attempts)}))
 
     # ---------- COMPANY-SPECIFIC MOCK INTERVIEWS (Wave 2 #13) ----------
     @app.route('/interview')
@@ -6243,8 +6992,13 @@ def register_routes(app):
         except SalaryDataError:
             return render_template('error.html',
                                    message="Salary data is temporarily unavailable. Please try again later."), 503
+        # Phase 2: city comparison table — the full city_entries set
+        # (60 rows) feeds the template's 15 + toggle rendering.
+        from studybuddy.salary_data import city_query as _city_query
         return render_template('salary.html', options=options,
+                               city_entries=_city_query(),
                                freshness=salary_freshness(),
+                               freshness_status=freshness_status('salary'),
                                is_authed=current_user.is_authenticated)
 
     @app.route('/salary/data')
@@ -6259,6 +7013,116 @@ def register_routes(app):
             return jsonify({'success': False,
                             'error': 'Salary data is temporarily unavailable.'}), 503
         return jsonify({'success': True, 'entries': entries})
+
+    @app.route('/api/salary/curve')
+    @limiter.limit("60 per hour")
+    def salary_curve_api():
+        """Growth curve: one role x tier across all 4 experience bands.
+
+        Public. 400 on unknown role/tier. Ranges are indicative, never live.
+        """
+        role = (request.args.get('role') or '').strip()
+        tier = (request.args.get('tier') or '').strip()
+        try:
+            options = salary_options()
+        except SalaryDataError:
+            return jsonify({'success': False,
+                            'error': 'Salary data is temporarily unavailable.'}), 503
+        if role not in options["roles"] or tier not in options["tiers"]:
+            return jsonify({'success': False,
+                            'error': 'Unknown role or tier.'}), 400
+        try:
+            rows = salary_query(role=role, tier=tier)
+        except SalaryDataError:
+            return jsonify({'success': False,
+                            'error': 'Salary data is temporarily unavailable.'}), 503
+        order = {b: i for i, b in enumerate(options["experience_bands"])}
+        rows.sort(key=lambda r: order.get(r["experience_band"], 99))
+        curve = [{"band": r["experience_band"], "min_lpa": r["min_lpa"],
+                  "median_lpa": r["median_lpa"], "max_lpa": r["max_lpa"]}
+                 for r in rows]
+        return jsonify({'success': True, 'role': role, 'tier': tier,
+                        'curve': curve, 'disclaimer': salary_disclaimer()})
+
+    @app.route('/api/salary/evaluate', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def salary_evaluate_api():
+        """Evaluate one offer against its indicative band + city adjustment.
+
+        Login required. Body {role, tier, band, offer_lpa, city?}.
+        400 on bad numbers or unknown role/tier/band. Unknown city yields a
+        null city adjustment (never a guessed multiplier).
+        """
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        payload = request.get_json(silent=True) if request.is_json else {}
+        payload = payload or {}
+        role = (payload.get('role') or '').strip()
+        tier = (payload.get('tier') or '').strip()
+        band = (payload.get('band') or '').strip()
+        raw_offer = payload.get('offer_lpa')
+        try:
+            offer = float(raw_offer)
+        except (TypeError, ValueError):
+            return jsonify({'error': 'Offer must be a number in LPA.'}), 400
+        if isinstance(raw_offer, bool) or offer != offer or offer in (float('inf'), float('-inf')):
+            return jsonify({'error': 'Offer must be a number in LPA.'}), 400
+        if offer < 0 or offer > 1000:
+            return jsonify({'error': 'Offer looks unrealistic (0-1000 LPA expected).'}), 400
+        try:
+            entry = salary_lookup(role, tier, band)
+        except SalaryDataError:
+            return jsonify({'success': False,
+                            'error': 'Salary data is temporarily unavailable.'}), 503
+        if not entry:
+            return jsonify({'error': 'No market data for that role/tier/band.'}), 400
+        lo, med, hi = entry["min_lpa"], entry["median_lpa"], entry["max_lpa"]
+        if offer < lo:
+            situation, note = "below-band", "below the indicative band"
+        elif offer <= hi:
+            situation, note = "at-band", "within the indicative band"
+        else:
+            situation, note = "above-band", "above the indicative band"
+        city = (payload.get('city') or '').strip()
+        city_adjusted = salary_city_adjusted(med, city) if city else None
+        scripts = [s["id"] for s in salary_scripts_for(situation)][:3]
+        evaluation = {
+            "offer_lpa": round(offer, 1),
+            "band": {"min_lpa": lo, "median_lpa": med, "max_lpa": hi},
+            "percentile_note": f"₹{offer:.1f} LPA is {note} "
+                               f"(₹{lo:.1f}–₹{hi:.1f} LPA, median ₹{med:.1f} LPA).",
+            "city_adjusted": city_adjusted,
+            "suggested_scripts": scripts,
+        }
+        # Phase 4: log the user's own evaluation (verifiable history for
+        # the salary badge/quests). Logging never breaks the response.
+        eval_id = None
+        try:
+            eval_row = SalaryEvaluation(
+                user_id=current_user.id, role=role, tier=tier, band=band,
+                offer_lpa=round(offer, 1), city=city or None)
+            db.session.add(eval_row)
+            db.session.commit()
+            eval_id = eval_row.id
+        except Exception:
+            log.exception("Salary evaluation logging failed (non-fatal)")
+            db.session.rollback()
+        if eval_id is not None:
+            _career_hook(current_user.id, 'salary_evaluate', eval_id)
+        return jsonify({'success': True, 'evaluation': evaluation,
+                        'disclaimer': salary_disclaimer()})
+
+    @app.route('/api/salary/scripts')
+    @limiter.limit("60 per hour")
+    def salary_scripts_api():
+        """Negotiation scripts. No filter -> all 15; unknown situation -> [].
+
+        Public. Never 404s on a filter value.
+        """
+        situation = (request.args.get('situation') or '').strip() or None
+        scripts = salary_scripts_for(situation)
+        return jsonify({'success': True, 'scripts': scripts,
+                        'disclaimer': salary_disclaimer()})
 
     # ---------- OPPORTUNITY RADAR (Wave 1 #9) ----------
     def _opp_labels(o):
@@ -6318,7 +7182,8 @@ def register_routes(app):
                                closing_mine=closing_mine,
                                show_closed=show_closed, closed=closed,
                                is_authed=current_user.is_authenticated,
-                               freshness=_freshness_label(meta))
+                               freshness=_freshness_label(meta),
+                               freshness_status=freshness_status('opportunities'))
 
     @app.route('/opportunities/bookmark', methods=['POST'])
     @limiter.limit("60 per hour")
@@ -6335,6 +7200,7 @@ def register_routes(app):
         if not existing:
             db.session.add(OpportunityBookmark(user_id=current_user.id, opp_id=opp_id))
             db.session.commit()
+            _career_hook(current_user.id, 'opportunity_bookmark', opp_id)
         return jsonify({'success': True, 'opp_id': opp_id}), 201
 
     @app.route('/opportunities/bookmark/remove', methods=['POST'])
@@ -6352,6 +7218,123 @@ def register_routes(app):
         db.session.delete(row)
         db.session.commit()
         return jsonify({'success': True, 'opp_id': opp_id})
+
+    # ---------- RADAR PHASE 3 APIs ----------
+    @app.route('/api/opportunities/refresh-status')
+    @limiter.limit("60 per hour")
+    def api_opp_refresh_status():
+        """Public freshness + open/closed counts for the radar dataset."""
+        try:
+            from studybuddy.opportunities import load_dataset
+            data = load_dataset()
+            meta = data.get("meta") or {}
+            opps = data.get("opportunities") or []
+        except Exception:
+            return jsonify({'error': 'Opportunity data unavailable.'}), 503
+        from studybuddy.opportunity_extras import is_open
+        open_count = sum(1 for o in opps if is_open(o))
+        return jsonify(json_safe({
+            'success': True,
+            'last_updated': meta.get("last_updated"),
+            'last_refresh': meta.get("last_refresh"),
+            'total': len(opps),
+            'open': open_count,
+            'closed': len(opps) - open_count,
+        }))
+
+    @app.route('/api/opportunities/matches')
+    @limiter.limit("30 per hour")
+    def api_opp_matches():
+        """Top 20 open opportunities scored against the user's cluster+skills."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        from studybuddy.opportunity_extras import match_opportunities
+        matches, note = match_opportunities(current_user.id)
+        body = {'success': True, 'matches': matches}
+        if note:
+            body['note'] = note
+        return jsonify(json_safe(body))
+
+    @app.route('/api/opportunities/alerts')
+    @limiter.limit("30 per hour")
+    def api_opp_alerts():
+        """Cumulative 1/3/7-day deadline alerts over bookmarked open opps."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        bookmarked = {b.opp_id for b in OpportunityBookmark.query.filter_by(
+            user_id=current_user.id).all()}
+        from studybuddy.opportunity_extras import bookmark_alerts
+        return jsonify(json_safe({
+            'success': True,
+            'alerts': bookmark_alerts(current_user.id, bookmarked),
+        }))
+
+    @app.route('/api/opportunities/<opp_id>')
+    @limiter.limit("30 per hour")
+    def api_opp_detail(opp_id):
+        """Full entry incl. eligibility checklist + bookmarked flag."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        from studybuddy.opportunity_extras import (eligibility_list,
+                                                  raw_opportunity)
+        opp = raw_opportunity(opp_id)
+        if not opp:
+            return jsonify({'error': 'Opportunity not found.'}), 404
+        bookmarked = OpportunityBookmark.query.filter_by(
+            user_id=current_user.id, opp_id=opp_id).first() is not None
+        entry = dict(opp)
+        entry['eligibility_list'] = eligibility_list(opp)
+        return jsonify(json_safe({
+            'success': True, 'opportunity': entry, 'bookmarked': bookmarked,
+        }))
+
+    @app.route('/api/opportunities/<opp_id>/apply-to-tracker',
+               methods=['POST'])
+    @limiter.limit("30 per hour")
+    def api_opp_apply_to_tracker(opp_id):
+        """Create a wishlist tracker application from an opportunity.
+
+        Idempotent: an existing wishlist row with the same role + notes
+        returns its id (200) instead of duplicating.
+        """
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        from studybuddy.opportunity_extras import raw_opportunity
+        opp = raw_opportunity(opp_id)
+        if not opp:
+            return jsonify({'error': 'Opportunity not found.'}), 404
+        company = (opp.get("organization") or "Opportunity")[:200]
+        role = (opp.get("title") or "Opportunity")[:200]
+        notes = f"From Opportunity Radar: {opp.get('link') or ''}"
+        existing = JobApplication.query.filter_by(
+            user_id=current_user.id, stage="wishlist", role=role,
+            notes=notes).first()
+        if existing:
+            return jsonify({'success': True,
+                            'application_id': existing.id})
+        row = JobApplication(user_id=current_user.id, company=company,
+                             role=role, stage="wishlist", notes=notes)
+        db.session.add(row)
+        db.session.commit()
+        return jsonify({'success': True, 'application_id': row.id}), 201
+
+    @app.route('/api/opportunities/<opp_id>/ics')
+    @limiter.limit("30 per hour")
+    def api_opp_ics(opp_id):
+        """Download a calendar file with one all-day event on the deadline."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        from studybuddy.opportunity_extras import build_ics, raw_opportunity
+        opp = raw_opportunity(opp_id)
+        if not opp:
+            return jsonify({'error': 'Opportunity not found.'}), 404
+        ics = build_ics(opp)
+        if not ics:
+            return jsonify({'error': 'This opportunity has no deadline to '
+                                     'export (rolling deadline).'}), 400
+        return Response(ics, mimetype='text/calendar', headers={
+            'Content-Disposition':
+                f'attachment; filename="{opp_id}.ics"'})
 
     # ---------- PORTFOLIO BUILDER (Wave 1 #12) ----------
     def _portfolio_prefill(user):
@@ -6385,6 +7368,12 @@ def register_routes(app):
             "display_name": row.display_name, "headline": row.headline or "",
             "bio": row.bio or "", "skills": row.skills or [],
             "projects": row.projects or [], "links": row.links or [],
+            "certifications": row.certifications or [],
+            "experience": row.experience or [],
+            "education": row.education or [],
+            "achievements": row.achievements or [],
+            "contact": row.contact or [],
+            "theme": row.theme or "classic",
             "show_github": row.show_github, "show_leetcode": row.show_leetcode,
             "is_published": row.is_published, "slug": row.slug,
         }
@@ -6443,17 +7432,41 @@ def register_routes(app):
             row = Portfolio(user_id=current_user.id,
                             slug=unique_slug(data["display_name"], taken))
             db.session.add(row)
+        # Phase 4: career XP only for sections that were empty before this
+        # save and are non-empty after it (compare before/after).
+        def _sec_filled(r, section):
+            value = getattr(r, section, None)
+            if value is None:
+                return False
+            if isinstance(value, str):
+                return bool(value.strip())
+            if isinstance(value, (list, tuple, dict)):
+                return len(value) > 0
+            return bool(value)
+
+        before_filled = {s: _sec_filled(row, s)
+                         for s in momentum_mod.PORTFOLIO_SECTIONS}
         row.display_name = data["display_name"]
         row.headline = data["headline"]
         row.bio = data["bio"]
         row.skills = data["skills"]
         row.projects = data["projects"]
         row.links = data["links"]
+        row.certifications = data["certifications"]
+        row.experience = data["experience"]
+        row.education = data["education"]
+        row.achievements = data["achievements"]
+        row.contact = data["contact"]
+        row.theme = data["theme"]
         row.show_github = data["show_github"]
         row.show_leetcode = data["show_leetcode"]
         row.is_published = data["is_published"]
         row.updated_at = datetime.now(UTC)
         db.session.commit()
+        for section in momentum_mod.PORTFOLIO_SECTIONS:
+            if not before_filled[section] and _sec_filled(row, section):
+                _career_hook(current_user.id, 'portfolio_section',
+                             'section:%s' % section)
         return jsonify({'success': True, 'slug': row.slug,
                         'is_published': row.is_published,
                         'public_url': url_for('public_portfolio', slug=row.slug,
@@ -6465,6 +7478,13 @@ def register_routes(app):
         row = Portfolio.query.filter_by(slug=slug).first()
         if not row or not row.is_published:
             abort(404)
+        # Phase 3 analytics: count the load, never break the page.
+        try:
+            db.session.add(PortfolioView(portfolio_id=row.id,
+                                         path=f"/p/{slug}"))
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
         return render_template('portfolio_public.html',
                                **_portfolio_public_context(row))
 
@@ -6478,6 +7498,320 @@ def register_routes(app):
         return Response(html, mimetype='text/html', headers={
             'Content-Disposition':
                 f'attachment; filename="portfolio-{row.slug}.html"'})
+
+    # ---------- PORTFOLIO PHASE 3 APIs ----------
+    @app.route('/api/portfolio/theme', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def api_portfolio_theme():
+        """Quick theme switch for the user's portfolio."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        from studybuddy.portfolio import PORTFOLIO_THEMES
+        payload = request.get_json(silent=True) or {}
+        theme = (payload.get("theme") or "").strip()
+        if theme not in PORTFOLIO_THEMES:
+            return jsonify({'error': 'Theme must be one of: ' +
+                                     ", ".join(PORTFOLIO_THEMES) + "."}), 400
+        row = Portfolio.query.filter_by(user_id=current_user.id).first()
+        if not row:
+            return jsonify({'error': 'No portfolio yet.'}), 404
+        row.theme = theme
+        db.session.commit()
+        return jsonify({'success': True, 'theme': theme})
+
+    @app.route('/api/portfolio/github-import', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def api_portfolio_github_import():
+        """Preview a GitHub user's public repos. NEVER writes anything.
+
+        Unauthenticated GitHub API, 10s timeout. Any failure is a 502 with
+        a clear message — repos are never faked.
+        """
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        payload = request.get_json(silent=True) or {}
+        username = (payload.get("username") or "").strip()
+        if not re.fullmatch(r"[A-Za-z0-9]([A-Za-z0-9-]{0,38})", username):
+            return jsonify({'error': 'Provide a valid GitHub username.'}), 400
+        try:
+            resp = requests.get(
+                f"https://api.github.com/users/{username}/repos",
+                params={"per_page": 100, "sort": "updated"},
+                headers={"Accept": "application/vnd.github+json",
+                         "User-Agent": "STUDY-BUDDY"},
+                timeout=10)
+            if resp.status_code != 200:
+                return jsonify({'error': 'GitHub could not be reached '
+                                         f'(HTTP {resp.status_code}). '
+                                         'Check the username and try again.'}), 502
+            repos = resp.json()
+            if not isinstance(repos, list):
+                raise ValueError("Unexpected GitHub response.")
+        except Exception:
+            return jsonify({'error': 'GitHub could not be reached. '
+                                     'Check the username and try again.'}), 502
+        preview = []
+        for r in repos:
+            if not isinstance(r, dict):
+                continue
+            preview.append({
+                "name": (r.get("name") or "")[:80],
+                "description": (r.get("description") or "")[:400],
+                "url": r.get("html_url") or "",
+                "stars": r.get("stargazers_count") or 0,
+                "language": r.get("language") or "",
+            })
+        preview.sort(key=lambda p: p["stars"], reverse=True)
+        return jsonify(json_safe({'success': True,
+                                  'preview': preview[:20]}))
+
+    @app.route('/api/portfolio/github-import/save', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def api_portfolio_github_import_save():
+        """Append chosen repos to the user's portfolio projects.
+
+        Only this explicit call writes. Dedupe by URL, cap 50 projects.
+        """
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        payload = request.get_json(silent=True) or {}
+        repos = payload.get("repos")
+        if not isinstance(repos, list):
+            return jsonify({'error': 'Provide a repos list.'}), 400
+        row = Portfolio.query.filter_by(user_id=current_user.id).first()
+        if not row:
+            return jsonify({'error': 'Create your portfolio first.'}), 404
+        projects = [p for p in (row.projects or []) if isinstance(p, dict)]
+        seen_urls = {p.get("link") for p in projects if p.get("link")}
+        added = 0
+        for repo in repos:
+            if len(projects) >= 50:
+                break
+            if not isinstance(repo, dict):
+                continue
+            url = (repo.get("url") or "").strip()
+            if (not re.match(r"^https?://", url, re.IGNORECASE)
+                    or len(url) > 500 or any(c.isspace() for c in url)):
+                continue
+            if url in seen_urls:
+                continue
+            projects.append({
+                "title": (repo.get("name") or "Untitled")[:80],
+                "description": (repo.get("description") or "")[:400],
+                "link": url,
+            })
+            seen_urls.add(url)
+            added += 1
+        row.projects = projects
+        db.session.commit()
+        return jsonify({'success': True, 'added': added,
+                        'total': len(projects)})
+
+    @app.route('/api/portfolio/analytics')
+    @limiter.limit("30 per hour")
+    def api_portfolio_analytics():
+        """View counts for the owner's portfolio (counts only, no tracking)."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        row = Portfolio.query.filter_by(user_id=current_user.id).first()
+        if not row:
+            return jsonify({'error': 'No portfolio yet.'}), 404
+        views = PortfolioView.query.filter_by(
+            portfolio_id=row.id).all()
+        today = date.today()
+        days = [(today - timedelta(days=i)).isoformat()
+                for i in range(29, -1, -1)]
+        by_day = {d: 0 for d in days}
+        for v in views:
+            try:
+                key = v.viewed_at.date().isoformat()
+            except Exception:
+                continue
+            if key in by_day:
+                by_day[key] += 1
+        return jsonify(json_safe({
+            'success': True,
+            'total_views': len(views),
+            'views_last_30d': sum(by_day.values()),
+            'by_day': [{'date': d, 'views': by_day[d]} for d in days],
+        }))
+
+    @app.route('/api/portfolio/review')
+    @limiter.limit("30 per hour")
+    def api_portfolio_review():
+        """25-point portfolio review: score + per-check pass/fail + hints."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        row = Portfolio.query.filter_by(user_id=current_user.id).first()
+        if not row:
+            return jsonify({'error': 'No portfolio yet.'}), 404
+        p = _portfolio_to_dict(row)
+        skills = p["skills"]
+        projects = p["projects"]
+        links = p["links"]
+        bio = p["bio"]
+        checks = []
+
+        def check(cid, label, passed, hint):
+            checks.append({"id": cid, "label": label,
+                           "passed": bool(passed), "hint": hint})
+
+        sections = [("bio", "Bio", bio.strip() != ""),
+                    ("skills", "Skills", len(skills) > 0),
+                    ("projects", "Projects", len(projects) > 0),
+                    ("links", "Links", len(links) > 0),
+                    ("certifications", "Certifications",
+                     len(p["certifications"]) > 0),
+                    ("experience", "Experience", len(p["experience"]) > 0),
+                    ("education", "Education", len(p["education"]) > 0),
+                    ("achievements", "Achievements",
+                     len(p["achievements"]) > 0),
+                    ("contact", "Contact", len(p["contact"]) > 0)]
+        for sid, label, ok in sections:
+            check(f"section-{sid}", f"{label} section filled", ok,
+                  f"Add at least one item to the {label} section.")
+        check("display-name", "Display name present",
+              bool(p["display_name"].strip()),
+              "Add a display name in the portfolio builder.")
+        check("headline", "Headline present", bool(p["headline"].strip()),
+              "Add a one-line headline describing what you do.")
+        check("bio-present", "Bio present", bool(bio.strip()),
+              "Write a short bio about yourself.")
+        check("skills-3", "At least 3 skills", len(skills) >= 3,
+              "List at least 3 skills.")
+        check("projects-2", "At least 2 projects", len(projects) >= 2,
+              "Add a second project.")
+        check("links-1", "At least 1 link", len(links) >= 1,
+              "Add at least one link (GitHub, LinkedIn, or website).")
+        check("certifications-present", "Certifications present",
+              len(p["certifications"]) > 0,
+              "Add a certification, course, or licence.")
+        check("public-page", "Public page reachable",
+              bool(p["slug"]) and bool(p["is_published"]),
+              "Publish your portfolio so the public page is reachable.")
+        check("contact-present", "Contact present", len(p["contact"]) > 0,
+              "Add a contact item (email or profile).")
+        check("project-descriptions", "Projects have descriptions",
+              len(projects) > 0 and all(
+                  isinstance(pr, dict) and bool((pr.get("description") or "")
+                                                .strip())
+                  for pr in projects),
+              "Write a one-line description for every project.")
+        check("project-urls", "Projects have URLs",
+              len(projects) > 0 and all(
+                  isinstance(pr, dict) and (pr.get("link") or "")
+                  .startswith("http") for pr in projects),
+              "Add a valid http(s) link to every project.")
+        check("skills-not-bloated", "Skills list not bloated (<= 30)",
+              len(skills) <= 30,
+              "Trim the skills list to 30 or fewer.")
+        check("bio-length", "Bio at least 100 characters",
+              len(bio.strip()) >= 100,
+              "Expand the bio to at least 100 characters.")
+        check("achievements-present", "Achievements present",
+              len(p["achievements"]) > 0,
+              "Add an achievement, award, or recognition.")
+        check("experience-or-education", "Experience or education present",
+              len(p["experience"]) > 0 or len(p["education"]) > 0,
+              "Add experience or education history.")
+        # No empty-string items anywhere in the list sections.
+        def _has_empty(items, keys):
+            for item in items:
+                if isinstance(item, str):
+                    if not item.strip():
+                        return True
+                elif isinstance(item, dict):
+                    for key in keys:
+                        if not (item.get(key) or "").strip():
+                            return True
+            return False
+        empty_found = (
+            _has_empty(skills, []) or
+            _has_empty(projects, ["title"]) or
+            _has_empty(links, ["label"]) or
+            _has_empty(p["certifications"], ["title"]) or
+            _has_empty(p["experience"], ["role", "organization"]) or
+            _has_empty(p["education"], ["institution", "degree"]) or
+            _has_empty(p["achievements"], ["title"]) or
+            _has_empty(p["contact"], ["label"]))
+        check("no-empty-items", "No empty items in any section",
+              not empty_found,
+              "Remove blank items from the sections.")
+        score = sum(1 for c in checks if c["passed"])
+        return jsonify(json_safe({
+            'success': True, 'score': score, 'max': 25, 'checks': checks,
+        }))
+
+    @app.route('/portfolio/<slug>/print')
+    @limiter.limit("30 per hour")
+    def portfolio_print(slug):
+        """Print-friendly HTML view of a published portfolio.
+
+        No PDF library exists in this environment, so this print view (use
+        the browser's Print -> Save as PDF) is the export target instead
+        of a faked PDF.
+        """
+        from html import escape as _esc
+        row = Portfolio.query.filter_by(slug=slug).first()
+        if not row or not row.is_published:
+            abort(404)
+        p = _portfolio_to_dict(row)
+
+        def _list(title, items, fmt):
+            if not items:
+                return ""
+            body = "".join(f"<li>{fmt(i)}</li>" for i in items)
+            return f"<h2>{_esc(title)}</h2><ul>{body}</ul>"
+
+        def _txt(item):
+            return _esc(item) if isinstance(item, str) else ""
+        sections = ""
+        sections += _list("Skills", p["skills"], _txt)
+        sections += _list("Projects", p["projects"], lambda pr: (
+            f"<strong>{_esc(pr.get('title') or '')}</strong>"
+            + (f" — {_esc(pr.get('description') or '')}"
+               if pr.get("description") else "")
+            + (f" (<a href=\"{_esc(pr.get('link') or '')}\">link</a>)"
+               if pr.get("link") else "")))
+        sections += _list("Links", p["links"], lambda ln: (
+            f"<a href=\"{_esc(ln.get('url') or '')}\">"
+            f"{_esc(ln.get('label') or '')}</a>"))
+        sections += _list("Certifications", p["certifications"], lambda c: (
+            _esc(c.get("title") or "") +
+            (f" — {_esc(c.get('issuer') or '')}" if c.get("issuer") else "") +
+            (f" ({_esc(c.get('year') or '')})" if c.get("year") else "")))
+        sections += _list("Experience", p["experience"], lambda e: (
+            f"<strong>{_esc(e.get('role') or '')}</strong>"
+            + (f" at {_esc(e.get('organization') or '')}"
+               if e.get("organization") else "")
+            + (f" ({_esc(e.get('period') or '')})"
+               if e.get("period") else "")
+            + (f" — {_esc(e.get('description') or '')}"
+               if e.get("description") else "")))
+        sections += _list("Education", p["education"], lambda e: (
+            f"<strong>{_esc(e.get('institution') or '')}</strong>"
+            + (f" — {_esc(e.get('degree') or '')}" if e.get("degree") else "")
+            + (f" ({_esc(e.get('period') or '')})"
+               if e.get("period") else "")))
+        sections += _list("Achievements", p["achievements"], lambda a: (
+            f"<strong>{_esc(a.get('title') or '')}</strong>"
+            + (f" — {_esc(a.get('description') or '')}"
+               if a.get("description") else "")))
+        sections += _list("Contact", p["contact"], lambda c: (
+            f"{_esc(c.get('label') or '')}: {_esc(c.get('value') or '')}"))
+        html = f"""<!doctype html><html><head><meta charset="utf-8">
+<title>{_esc(p['display_name'])} — Portfolio</title>
+<style>body{{font-family:Georgia,serif;max-width:720px;margin:40px auto;
+padding:0 20px;color:#111}}h1{{font-size:28px}}h2{{font-size:18px;
+border-bottom:1px solid #ccc;padding-bottom:4px}}a{{color:#2447ff}}
+@media print{{body{{margin:0}}}}</style></head><body>
+<h1>{_esc(p['display_name'])}</h1>
+<p><em>{_esc(p['headline'])}</em></p>
+<p>{_esc(p['bio'])}</p>
+{sections}
+<p><small>Printed from STUDY-BUDDY portfolio.</small></p>
+</body></html>"""
+        return Response(html, mimetype='text/html')
 
     # ---------- GOALS ----------
     @app.route('/goals/add', methods=['POST'])
@@ -7864,6 +9198,84 @@ def register_routes(app):
         return jsonify({'success': True,
                         'opted_out': result.get('opted_out')})
 
+    # ---------- PHASE 4: team leagues, badges, recap, streak repair ----------
+    @app.route('/api/momentum/leagues', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def momentum_team_league_create():
+        """Create a named team league (creator auto-joins, invite code
+        returned once). CSRF via X-CSRFToken header (not exempt)."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        payload = request.get_json(silent=True) or {}
+        result = momentum_mod.create_team_league(current_user.id,
+                                                 payload.get('name') or '')
+        if not result.get('ok'):
+            return jsonify({'error': 'A league name is required.'}), 400
+        return jsonify({'success': True, 'league': result['league']}), 201
+
+    @app.route('/api/momentum/leagues/join', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def momentum_team_league_join():
+        """Join a team league via its invite code. Unknown code -> 404;
+        already a member -> 200 with already_member. CSRF via
+        X-CSRFToken header (not exempt)."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        payload = request.get_json(silent=True) or {}
+        result = momentum_mod.join_team_league_by_code(
+            current_user.id, payload.get('invite_code') or '')
+        if not result.get('ok'):
+            return jsonify({'error': 'Unknown invite code.'}), 404
+        return jsonify({'success': True, 'league_id': result['league_id'],
+                        'already_member': bool(result.get('duplicate'))})
+
+    @app.route('/api/momentum/leagues')
+    @login_required
+    def momentum_team_leagues():
+        """The user's team leagues. Privacy: only the requesting user's
+        rank + member count + own XP — never other members' identities
+        or scores."""
+        boards = momentum_mod.team_league_boards(current_user.id)
+        return jsonify({'success': True, 'leagues': boards})
+
+    @app.route('/api/momentum/badges')
+    @login_required
+    def momentum_badges_api():
+        """All 20 badges, computed live from the user's rows."""
+        badges = momentum_mod.compute_badges(current_user.id)
+        return jsonify(json_safe({'success': True, 'badges': badges}))
+
+    @app.route('/api/momentum/recap')
+    @login_required
+    def momentum_recap_api():
+        """This week's recap. Pure read, never writes."""
+        recap = momentum_mod.weekly_recap(current_user.id)
+        return jsonify({'success': True, 'recap': recap})
+
+    @app.route('/api/momentum/streak/repair', methods=['POST'])
+    @limiter.limit("30 per hour")
+    def momentum_streak_repair():
+        """Manually repair a streak broken by exactly one missed day
+        (last active 2 days ago), at most once per 30 days. Repair fills
+        the missed day; it is not itself activity. CSRF via X-CSRFToken
+        header (not exempt)."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        result = momentum_mod.repair_streak(current_user.id)
+        if not result.get('ok'):
+            reason = result.get('reason') or 'repair failed'
+            messages = {
+                'no streak': 'No active streak to repair.',
+                'no break to repair': 'Your streak is still alive — '
+                                      'no repair needed.',
+                'gap too long': 'The gap is longer than one missed day; '
+                                'a repair cannot restore it.',
+                'repair already used': 'A streak repair was already used '
+                                       'in the last 30 days.',
+            }
+            return jsonify({'error': messages.get(reason, reason)}), 400
+        return jsonify({'success': True, 'streak': result['streak']})
+
     # ================= Wave 5 #29: rejection retrospectives =================
     def _retro_get_app_or_json404(application_id):
         """The user's own application, or None (caller returns a graceful
@@ -7901,6 +9313,7 @@ def register_routes(app):
                     "role": a.role if a else "—",
                     "stage_reached": r.stage_reached,
                     "completed": r.completed,
+                    "shared": bool(r.anonymous_share),
                     "updated_at": r.updated_at,
                     "wizard_url": (url_for('retro_wizard', application_id=r.application_id)
                                    if a else None),
@@ -7969,11 +9382,14 @@ def register_routes(app):
     def retro_save():
         """Save one wizard step (upsert the per-application Retrospective).
 
-        JSON: {"application_id": int, "step": "facts"|"patterns"|"hypotheses"|"experiment",
+        JSON: {"application_id": int, "step": "facts"|"patterns"|"hypotheses"|"experiment"|"reason",
                "facts": str, "stage_reached": str, "timeline": str,
                "observed_patterns": str, "hypotheses": str,
-               "experiment": {"hypothesis":..,"change":..,"target":..,"duration":..,"experiment_id":..}}
-        CSRF via X-CSRFToken header (not exempt)."""
+               "experiment": {"hypothesis":..,"change":..,"target":..,"duration":..,"experiment_id":..},
+               "reason": str}
+        The "reason" step accepts a taxonomy id from RETRO_REASONS or free
+        text alongside it — free text is stored as written, never forced
+        into the taxonomy. CSRF via X-CSRFToken header (not exempt)."""
         payload = request.get_json(silent=True) or {}
         step = (payload.get('step') or '').strip()
         if step not in RETRO_WIZARD_STEPS:
@@ -8010,10 +9426,21 @@ def register_routes(app):
                 if timeline and not facts.startswith('Timeline:'):
                     facts = 'Timeline: ' + timeline + ('\n\n' + facts if facts else '')
                 retro.facts = facts or None
+                # Phase 4: the wizard's step-1 reason radios also land
+                # here (free text wins over a radio pick); the dedicated
+                # reason step remains the place that can clear a reason.
+                _reason = ((payload.get('reason_other') or
+                            payload.get('reason') or '').strip()[:200])
+                if _reason:
+                    retro.reason = _reason
             elif step == 'patterns':
                 retro.observed_patterns = _text(payload.get('observed_patterns')) or None
             elif step == 'hypotheses':
                 retro.hypotheses = _text(payload.get('hypotheses')) or None
+            elif step == 'reason':
+                # Taxonomy id or free text — both stored as written.
+                # Empty clears the reason.
+                retro.reason = (payload.get('reason') or '').strip()[:200] or None
             elif step == 'experiment':
                 exp_payload = payload.get('experiment') or {}
                 hypothesis = _text(exp_payload.get('hypothesis'), 2000)
@@ -8084,6 +9511,7 @@ def register_routes(app):
         if first:
             # Worker 1's helper: calls momentum.record_event (never raises).
             _momentum_hook(current_user.id, 'retrospective_logged')
+            _career_hook(current_user.id, 'retrospective_complete', retro.id)
         return jsonify({'success': True, 'first_completion': first,
                         'xp': 15 if first else 0})
 
@@ -8186,6 +9614,240 @@ def register_routes(app):
             log.exception("Experiment list failed")
             items = []
         return jsonify({'success': True, 'experiments': items})
+
+    # ---------- PHASE 4: reasons, trends, outcomes, feedback, learnings ----
+    def _retro_to_dict(retro):
+        """Owner-only JSON view of one retrospective, including the
+        Phase 4 fields (reason, interview feedback, anonymous flag)."""
+        app_row = db.session.get(JobApplication, retro.application_id)
+        feedback = retro.interview_feedback or []
+        if not isinstance(feedback, list):
+            feedback = []
+        return {
+            'id': retro.id,
+            'application_id': retro.application_id,
+            'company': app_row.company if app_row else None,
+            'role': app_row.role if app_row else None,
+            'facts': retro.facts,
+            'observed_patterns': retro.observed_patterns,
+            'hypotheses': retro.hypotheses,
+            'stage_reached': retro.stage_reached,
+            'reason': retro.reason,
+            'reason_label': retro_data.reason_label(retro.reason)
+            if retro.reason else None,
+            'completed': retro.completed,
+            'completed_at': retro.completed_at.isoformat()
+            if retro.completed_at else None,
+            'created_at': retro.created_at.isoformat()
+            if retro.created_at else None,
+            'interview_feedback': feedback,
+            'anonymous_share': bool(retro.anonymous_share),
+        }
+
+    def _retro_owned_or_404(retro_id):
+        retro = Retrospective.query.filter_by(
+            id=retro_id, user_id=current_user.id).first()
+        return retro
+
+    @app.route('/api/retrospectives/reasons')
+    @login_required
+    def retro_reasons_api():
+        """The 15-entry reason taxonomy for the wizard."""
+        reasons = [{'id': r[0], 'label': r[1], 'stage_hint': r[2]}
+                   for r in retro_data.RETRO_REASONS]
+        return jsonify({'success': True, 'reasons': reasons})
+
+    @app.route('/api/retrospectives/trends')
+    @login_required
+    def retro_trends_api():
+        """90-day trends over the user's COMPLETED retrospectives only.
+        Counts come from rows, never invented."""
+        cutoff = datetime.now(UTC) - timedelta(days=90)
+        retros = Retrospective.query.filter_by(
+            user_id=current_user.id, completed=True).all()
+
+        def _when(r):
+            when = r.completed_at or r.created_at
+            if when is not None and getattr(when, 'tzinfo', None) is None:
+                when = when.replace(tzinfo=UTC)
+            return when
+
+        window = [r for r in retros if _when(r) and _when(r) >= cutoff]
+        by_reason: dict[str, dict] = {}
+        by_stage: dict[str, int] = {}
+        by_week: dict[str, int] = {}
+        for r in window:
+            if r.reason and r.reason in retro_data.RETRO_REASON_IDS:
+                key, label = r.reason, retro_data.REASON_LABELS[r.reason]
+            elif r.reason:
+                key, label = 'custom', 'Custom (free text)'
+            else:
+                key, label = 'unspecified', 'Not recorded'
+            entry = by_reason.setdefault(key, {'reason': key, 'label': label,
+                                               'count': 0})
+            entry['count'] += 1
+            stage = r.stage_reached or 'unspecified'
+            by_stage[stage] = by_stage.get(stage, 0) + 1
+            iso = _when(r).isocalendar()
+            week = '%d-W%02d' % (iso[0], iso[1])
+            by_week[week] = by_week.get(week, 0) + 1
+        trends = {
+            'by_reason': sorted(by_reason.values(),
+                                key=lambda e: (-e['count'], e['reason'])),
+            'by_stage': [{'stage': k, 'count': v}
+                         for k, v in sorted(by_stage.items(),
+                                            key=lambda kv: (-kv[1], kv[0]))],
+            'by_week': [{'week': k, 'count': v}
+                        for k, v in sorted(by_week.items())],
+            'total': len(window),
+        }
+        return jsonify({'success': True, 'trends': trends})
+
+    @app.route('/api/retrospectives/experiments/<int:exp_id>',
+               methods=['PATCH'])
+    @limiter.limit("60 per hour")
+    def retro_experiment_outcome(exp_id):
+        """Record an experiment's outcome. Owner only (else 404).
+        CSRF via X-CSRFToken header (not exempt)."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        exp = Experiment.query.filter_by(
+            id=exp_id, user_id=current_user.id).first()
+        if exp is None:
+            return jsonify({'error': 'Experiment not found.'}), 404
+        payload = request.get_json(silent=True) or {}
+        outcome = (payload.get('outcome') or '').strip()
+        if outcome not in ('helped', 'no-change', 'hurt', 'pending'):
+            return jsonify({'error': 'Invalid outcome. Use one of: helped, '
+                                     'no-change, hurt, pending.'}), 400
+        note = (payload.get('outcome_note') or '').strip()
+        if len(note) > 2000:
+            return jsonify({'error': 'Outcome note is too long '
+                                     '(max 2,000 characters).'}), 400
+        exp.outcome = outcome
+        exp.outcome_note = note or None
+        db.session.commit()
+        return jsonify({'success': True,
+                        'experiment': _retro_experiment_to_dict(exp)})
+
+    @app.route('/api/retrospectives/experiments')
+    @login_required
+    def retro_experiments_api():
+        """The user's experiments with outcome fields (Phase 4 view)."""
+        exps = (Experiment.query.filter_by(user_id=current_user.id)
+                .order_by(Experiment.created_at.desc()).all())
+        return jsonify({'success': True,
+                        'experiments': [_retro_experiment_to_dict(e)
+                                        for e in exps]})
+
+    @app.route('/api/retrospectives/<int:retro_id>')
+    @login_required
+    def retro_detail_api(retro_id):
+        """One retrospective, owner only — includes interview feedback."""
+        retro = _retro_owned_or_404(retro_id)
+        if retro is None:
+            return jsonify({'error': 'Retrospective not found.'}), 404
+        return jsonify({'success': True,
+                        'retrospective': _retro_to_dict(retro)})
+
+    @app.route('/api/retrospectives/<int:retro_id>/feedback',
+               methods=['POST'])
+    @limiter.limit("60 per hour")
+    def retro_feedback_api(retro_id):
+        """Append one interview-feedback entry to a retrospective.
+        Owner only (else 404). Feedback list caps at 20 entries;
+        older entries drop off. CSRF via X-CSRFToken header."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        retro = _retro_owned_or_404(retro_id)
+        if retro is None:
+            return jsonify({'error': 'Retrospective not found.'}), 404
+        payload = request.get_json(silent=True) or {}
+        round_name = (payload.get('round') or '').strip()
+        if not round_name or len(round_name) > 100:
+            return jsonify({'error': 'A round name (max 100 characters) '
+                                     'is required.'}), 400
+        questions = payload.get('questions_asked')
+        if questions is None:
+            questions = []
+        if not isinstance(questions, list) or len(questions) > 50:
+            return jsonify({'error': 'questions_asked must be a list of '
+                                     'at most 50 questions.'}), 400
+        cleaned_qs = []
+        for q in questions:
+            if not isinstance(q, str):
+                return jsonify({'error': 'Every question must be text.'}), 400
+            cleaned_qs.append(q.strip()[:500])
+        rating = payload.get('self_rating')
+        if isinstance(rating, bool) or not isinstance(rating, int):
+            try:
+                rating = int(rating)
+            except (TypeError, ValueError):
+                return jsonify({'error': 'self_rating must be an integer '
+                                         'from 1 to 5.'}), 400
+        if rating < 1 or rating > 5:
+            return jsonify({'error': 'self_rating must be from 1 to 5.'}), 400
+        notes = (payload.get('notes') or '').strip()
+        if len(notes) > 2000:
+            return jsonify({'error': 'Notes are too long '
+                                     '(max 2,000 characters).'}), 400
+        feedback = retro.interview_feedback or []
+        if not isinstance(feedback, list):
+            feedback = []
+        feedback.append({
+            'round': round_name,
+            'questions_asked': cleaned_qs,
+            'self_rating': rating,
+            'notes': notes or None,
+            'created_at': datetime.now(UTC).isoformat(),
+        })
+        retro.interview_feedback = feedback[-20:]
+        db.session.commit()
+        return jsonify({'success': True,
+                        'feedback': retro.interview_feedback})
+
+    @app.route('/api/retrospectives/<int:retro_id>/share-anonymous',
+               methods=['POST'])
+    @limiter.limit("60 per hour")
+    def retro_share_anonymous_api(retro_id):
+        """Opt a retrospective into (or out of) the anonymous learnings
+        pool. Default is NOT shared. Owner only (else 404). CSRF via
+        X-CSRFToken header."""
+        if not current_user.is_authenticated:
+            return jsonify({'error': 'Please log in.'}), 401
+        retro = _retro_owned_or_404(retro_id)
+        if retro is None:
+            return jsonify({'error': 'Retrospective not found.'}), 404
+        payload = request.get_json(silent=True) or {}
+        share = payload.get('share')
+        if not isinstance(share, bool):
+            return jsonify({'error': 'share must be true or false.'}), 400
+        retro.anonymous_share = share
+        db.session.commit()
+        return jsonify({'success': True, 'shared': share})
+
+    @app.route('/api/retrospectives/learnings')
+    @limiter.limit("60 per hour")
+    def retro_learnings_api():
+        """Public anonymous learnings: (reason, stage) counts ONLY over
+        retrospectives the owner opted into sharing, taxonomy reasons
+        only (free text never leaves the account), and cells with fewer
+        than 3 contributors are suppressed to avoid identification."""
+        shared = Retrospective.query.filter_by(
+            anonymous_share=True).all()
+        cells: dict[tuple, int] = {}
+        for r in shared:
+            if not r.reason or r.reason not in retro_data.RETRO_REASON_IDS:
+                continue
+            stage = r.stage_reached or 'unspecified'
+            key = (r.reason, stage)
+            cells[key] = cells.get(key, 0) + 1
+        learnings = [{'reason': reason,
+                      'label': retro_data.REASON_LABELS[reason],
+                      'stage': stage, 'count': count}
+                     for (reason, stage), count in sorted(cells.items())
+                     if count >= 3]
+        return jsonify({'success': True, 'learnings': learnings})
 
     # ---------- PEER MOCK INTERVIEWS (Wave 5 #28) ----------
     # Structured practice: share-token rooms, question cards from the shared
@@ -9168,6 +10830,407 @@ def register_routes(app):
             return jsonify({"error": "Could not regenerate the review. "
                                      "Please try again."}), 500
 
+    # ================= Phase 5: health pulse, action plans, benchmarks ======
+    # Scale rule: monthly-review scores are 0-100; pulses are 1-5. Every
+    # Phase 5 surface reports the 1-5 scale (reviews converted via
+    # review_score_to_1to5) and names its source. Missing data is null,
+    # never 0, and peer benchmarks never include the requesting user.
+
+    def _health_series(user_id):
+        """Per-dimension time series [(sort_date, value_1to5, source)].
+
+        Reviews contribute one point per month (converted 0-100 -> 1-5);
+        pulses one point per ISO week. Points without a score are skipped
+        (locked/unknown is not a zero).
+        """
+        series = {d["id"]: [] for d in HR_DIMENSIONS}
+        try:
+            reviews = (HealthReview.query
+                       .filter_by(user_id=user_id)
+                       .order_by(HealthReview.month_key.asc()).all())
+            for r in reviews:
+                try:
+                    y, m = int(r.month_key[:4]), int(r.month_key[5:7])
+                    when = date(y, m, 1)
+                except (ValueError, TypeError):
+                    continue
+                dims = r.dimensions_json or {}
+                for dim in series:
+                    entry = dims.get(dim) or {}
+                    v = mentor_health_mod.review_score_to_1to5(
+                        entry.get("score"))
+                    if v is not None:
+                        series[dim].append((when, v, "review"))
+            pulses = (HealthPulse.query
+                      .filter_by(user_id=user_id)
+                      .order_by(HealthPulse.week_key.asc()).all())
+            for p in pulses:
+                try:
+                    when = datetime.strptime(
+                        p.week_key + "-1", "%G-W%V-%u").date()
+                except (ValueError, TypeError):
+                    continue
+                scores = p.scores or {}
+                for dim in series:
+                    v = scores.get(dim)
+                    if isinstance(v, int) and not isinstance(v, bool) \
+                            and 1 <= v <= 5:
+                        series[dim].append((when, v, "pulse"))
+        except Exception:
+            log.exception("Health series build failed")
+            db.session.rollback()
+        for dim in series:
+            series[dim].sort(key=lambda t: t[0])
+        return series
+
+    def _health_latest(series):
+        """{dim: (current_score, score_source, trend)} from a series.
+
+        Trend compares the last two points (up/down/flat); null when
+        fewer than two points exist."""
+        out = {}
+        for dim, points in series.items():
+            if not points:
+                out[dim] = (None, None, None)
+                continue
+            current, source = points[-1][1], points[-1][2]
+            if len(points) >= 2:
+                prev = points[-2][1]
+                trend = ("up" if current > prev else
+                         "down" if current < prev else "flat")
+            else:
+                trend = None
+            out[dim] = (current, source, trend)
+        return out
+
+    @app.route('/api/health/pulse', methods=['POST'])
+    @login_required
+    @limiter.limit("30 per hour")
+    def health_pulse_submit_api():
+        """Save this ISO week's pulse. {scores: {dimension: 1-5}}; partial
+        scores allowed, but every key must be a real dimension and every
+        value an int 1-5 (400 otherwise). Upserts the current week's row.
+        """
+        payload = request.get_json(silent=True) or {}
+        scores = payload.get('scores')
+        dim_ids = {d["id"] for d in HR_DIMENSIONS}
+        if not isinstance(scores, dict) or not scores:
+            return jsonify({'error': 'scores must be a non-empty object.'}), 400
+        clean = {}
+        for dim, value in scores.items():
+            if dim not in dim_ids:
+                return jsonify({'error': 'Unknown dimension: %s.' % dim}), 400
+            if isinstance(value, bool) or not isinstance(value, int) \
+                    or not 1 <= value <= 5:
+                return jsonify({'error': 'Scores must be integers 1-5.'}), 400
+            clean[dim] = value
+        week_key = mentor_health_mod.iso_week_key(date.today())
+        try:
+            row = HealthPulse.query.filter_by(
+                user_id=current_user.id, week_key=week_key).first()
+            if row is None:
+                row = HealthPulse(user_id=current_user.id, week_key=week_key,
+                                  scores=clean)
+                db.session.add(row)
+            else:
+                row.scores = clean
+            db.session.commit()
+        except Exception:
+            log.exception("Health pulse save failed")
+            db.session.rollback()
+            return jsonify({'error': 'Could not save your pulse. '
+                                     'Please try again.'}), 500
+        return jsonify({'success': True, 'pulse': {
+            'week_key': row.week_key, 'scores': row.scores}})
+
+    @app.route('/api/health/pulse')
+    @login_required
+    def health_pulse_get_api():
+        """Current week's pulse (or null) + history, last 8 weeks newest
+        first. Pure read."""
+        try:
+            rows = (HealthPulse.query.filter_by(user_id=current_user.id)
+                    .order_by(HealthPulse.week_key.desc()).limit(8).all())
+        except Exception:
+            log.exception("Health pulse read failed")
+            db.session.rollback()
+            rows = []
+        week_key = mentor_health_mod.iso_week_key(date.today())
+        current = next(({'week_key': r.week_key, 'scores': r.scores}
+                        for r in rows if r.week_key == week_key), None)
+        return jsonify({'success': True, 'pulse': current, 'history': [
+            {'week_key': r.week_key, 'scores': r.scores} for r in rows]})
+
+    @app.route('/api/health/action-plans')
+    @login_required
+    def health_action_plans_api():
+        """Per-dimension action plans. current_score is 1-5 (review scores
+        converted) with score_source 'review'|'pulse'|null; trend from the
+        last two data points. Actions link only to real routes; goals
+        lists the titles of the user's open health goals for the dimension.
+        """
+        series = _health_series(current_user.id)
+        latest = _health_latest(series)
+        try:
+            goals = HealthGoal.query.filter_by(
+                user_id=current_user.id, done=False).all()
+        except Exception:
+            log.exception("Health goals read failed")
+            db.session.rollback()
+            goals = []
+        plans = []
+        for d in HR_DIMENSIONS:
+            dim = d["id"]
+            current, source, trend = latest[dim]
+            plans.append({
+                'dimension': dim,
+                'label': mentor_health_mod.DIMENSION_LABELS.get(dim, dim),
+                'current_score': current,
+                'score_source': source,
+                'trend': trend,
+                'actions': mentor_health_mod.ACTION_PLAN_ACTIONS.get(dim, []),
+                'goals': [g.title for g in goals if g.dimension == dim]})
+        return jsonify({'success': True, 'plans': plans})
+
+    @app.route('/api/health/trends')
+    @login_required
+    def health_trends_api():
+        """Trend-chart data (pure read). months: last 6 month keys with
+        per-dimension scores (null when no review that month — never 0).
+        pulses: last 8 weeks, newest first."""
+        months = mentor_health_mod.last_n_month_keys(6)
+        try:
+            reviews = (HealthReview.query
+                       .filter_by(user_id=current_user.id)
+                       .filter(HealthReview.month_key.in_(months)).all())
+            pulses = (HealthPulse.query.filter_by(user_id=current_user.id)
+                      .order_by(HealthPulse.week_key.desc()).limit(8).all())
+        except Exception:
+            log.exception("Health trends read failed")
+            db.session.rollback()
+            reviews, pulses = [], []
+        by_month = {}
+        for r in reviews:
+            dims = r.dimensions_json or {}
+            by_month[r.month_key] = {
+                dim: mentor_health_mod.review_score_to_1to5(
+                    (dims.get(dim) or {}).get("score"))
+                for dim in mentor_health_mod.DIMENSION_LABELS}
+        return jsonify({'success': True, 'trends': {
+            'months': [{'month_key': mk, 'dimensions': by_month.get(
+                mk, {dim: None
+                     for dim in mentor_health_mod.DIMENSION_LABELS})}
+                for mk in months],
+            'pulses': [{'week_key': p.week_key, 'scores': p.scores}
+                       for p in pulses]}})
+
+    @app.route('/api/health/benchmarks')
+    @login_required
+    def health_benchmarks_api():
+        """Anonymous peer benchmarks (median, never mean, never any
+        individual's score; the requester is excluded). Per dimension and
+        per other user: latest monthly review score (converted 1-5) if
+        one exists, else latest pulse score. Dimensions with fewer than
+        5 peers report peer_median null with the sample size shown; a
+        top-level note explains the threshold when any dimension is
+        suppressed."""
+        dim_ids = list(mentor_health_mod.DIMENSION_LABELS)
+        try:
+            others = db.session.query(User.id).filter(
+                User.id != current_user.id).all()
+            other_ids = [u[0] for u in others]
+            samples = {dim: [] for dim in dim_ids}
+            for uid in other_ids:
+                review = (HealthReview.query.filter_by(user_id=uid)
+                          .order_by(HealthReview.month_key.desc()).first())
+                pulse = (HealthPulse.query.filter_by(user_id=uid)
+                         .order_by(HealthPulse.week_key.desc()).first())
+                dims = (review.dimensions_json or {}) if review else {}
+                for dim in dim_ids:
+                    v = None
+                    if review is not None:
+                        v = mentor_health_mod.review_score_to_1to5(
+                            (dims.get(dim) or {}).get("score"))
+                    if v is None and pulse is not None:
+                        pv = (pulse.scores or {}).get(dim)
+                        if isinstance(pv, int) and not isinstance(pv, bool) \
+                                and 1 <= pv <= 5:
+                            v = pv
+                    if v is not None:
+                        samples[dim].append(v)
+        except Exception:
+            log.exception("Health benchmarks failed")
+            db.session.rollback()
+            samples = {dim: [] for dim in dim_ids}
+        benchmarks = []
+        suppressed = False
+        for dim in dim_ids:
+            vals = samples[dim]
+            if len(vals) >= 5:
+                median = mentor_health_mod.median(vals)
+            else:
+                median = None
+                suppressed = True
+            benchmarks.append({'dimension': dim, 'peer_median': median,
+                               'sample_size': len(vals)})
+        body = {'success': True, 'benchmarks': benchmarks}
+        if suppressed:
+            body['note'] = ('Peer medians need at least 5 other students; '
+                            'smaller samples show null so no one can be '
+                            'identified.')
+        return jsonify(body)
+
+    @app.route('/api/health/goals', methods=['POST'])
+    @login_required
+    @limiter.limit("30 per hour")
+    def health_goal_create_api():
+        """Create a health-linked goal. {title, dimension?, target_date?}.
+        dimension, when given, must be a real dimension; target_date, when
+        given, must be YYYY-MM-DD (400 otherwise)."""
+        payload = request.get_json(silent=True) or {}
+        title = (payload.get('title') or '').strip()
+        if not title or len(title) > 255:
+            return jsonify({'error': 'Title is required (max 255 '
+                                     'characters).'}), 400
+        dimension = (payload.get('dimension') or '').strip().lower() or None
+        if dimension is not None and dimension not in \
+                mentor_health_mod.DIMENSION_LABELS:
+            return jsonify({'error': 'Unknown dimension: %s.' % dimension}), 400
+        target_date = None
+        raw_date = (payload.get('target_date') or '').strip()
+        if raw_date:
+            try:
+                target_date = datetime.strptime(raw_date, "%Y-%m-%d").date()
+            except ValueError:
+                return jsonify({'error': 'target_date must be YYYY-MM-DD.'}), 400
+        try:
+            goal = HealthGoal(user_id=current_user.id, title=title,
+                              dimension=dimension, target_date=target_date,
+                              done=False)
+            db.session.add(goal)
+            db.session.commit()
+        except Exception:
+            log.exception("Health goal create failed")
+            db.session.rollback()
+            return jsonify({'error': 'Could not save your goal. '
+                                     'Please try again.'}), 500
+        return jsonify({'success': True, 'goal': {
+            'id': goal.id, 'title': goal.title, 'dimension': goal.dimension,
+            'target_date': goal.target_date.isoformat()
+            if goal.target_date else None, 'done': goal.done}}), 201
+
+    @app.route('/api/health/goals')
+    @login_required
+    def health_goal_list_api():
+        """The caller's health goals, newest first."""
+        try:
+            rows = (HealthGoal.query.filter_by(user_id=current_user.id)
+                    .order_by(HealthGoal.created_at.desc()).all())
+        except Exception:
+            log.exception("Health goal list failed")
+            db.session.rollback()
+            rows = []
+        return jsonify({'success': True, 'goals': [{
+            'id': g.id, 'title': g.title, 'dimension': g.dimension,
+            'target_date': g.target_date.isoformat()
+            if g.target_date else None, 'done': g.done,
+            'created_at': g.created_at.isoformat()
+            if g.created_at else None} for g in rows]})
+
+    @app.route('/api/health/goals/<int:goal_id>', methods=['PATCH'])
+    @login_required
+    def health_goal_patch_api(goal_id):
+        """Toggle a health goal's done flag (owner only, else 404)."""
+        goal = HealthGoal.query.filter_by(
+            id=goal_id, user_id=current_user.id).first()
+        if goal is None:
+            return jsonify({'error': 'Goal not found.'}), 404
+        payload = request.get_json(silent=True) or {}
+        if 'done' not in payload or not isinstance(payload['done'], bool):
+            return jsonify({'error': 'done must be a boolean.'}), 400
+        try:
+            goal.done = payload['done']
+            db.session.commit()
+        except Exception:
+            log.exception("Health goal patch failed")
+            db.session.rollback()
+            return jsonify({'error': 'Could not update your goal. '
+                                     'Please try again.'}), 500
+        return jsonify({'success': True, 'goal': {
+            'id': goal.id, 'title': goal.title, 'dimension': goal.dimension,
+            'done': goal.done}})
+
+    @app.route('/api/health/share-with-mentor', methods=['POST'])
+    @login_required
+    @limiter.limit("30 per hour")
+    def health_share_create_api():
+        """Grant one REAL mentor access to your health summary. Seeds are
+        rejected (400). Re-sharing returns the existing grant (200 with
+        already_shared) instead of an error."""
+        payload = request.get_json(silent=True) or {}
+        try:
+            mentor_id = int(payload.get('mentor_id'))
+        except (TypeError, ValueError):
+            return jsonify({'error': 'mentor_id must be an integer.'}), 400
+        mentor = db.session.get(Mentor, mentor_id)
+        if mentor is None:
+            return jsonify({'error': 'Mentor not found.'}), 404
+        if mentor.is_seed:
+            return jsonify({'error': 'Illustrative profiles cannot receive '
+                                     'health shares.'}), 400
+        try:
+            existing = HealthShare.query.filter_by(
+                user_id=current_user.id, mentor_id=mentor.id).first()
+            if existing is not None:
+                return jsonify({'success': True, 'shared': True,
+                                'already_shared': True})
+            db.session.add(HealthShare(user_id=current_user.id,
+                                       mentor_id=mentor.id))
+            db.session.commit()
+        except Exception:
+            log.exception("Health share create failed")
+            db.session.rollback()
+            return jsonify({'error': 'Could not share. '
+                                     'Please try again.'}), 500
+        return jsonify({'success': True, 'shared': True,
+                        'already_shared': False}), 201
+
+    @app.route('/api/health/shared-with')
+    @login_required
+    def health_shared_with_api():
+        """Mentors this user has shared their health summary with."""
+        try:
+            rows = (db.session.query(HealthShare, Mentor)
+                    .join(Mentor, HealthShare.mentor_id == Mentor.id)
+                    .filter(HealthShare.user_id == current_user.id)
+                    .order_by(HealthShare.created_at.desc()).all())
+        except Exception:
+            log.exception("Health shared-with read failed")
+            db.session.rollback()
+            rows = []
+        return jsonify({'success': True, 'shared_with': [{
+            'mentor_id': m.id, 'name': m.name,
+            'shared_at': s.created_at.isoformat()
+            if s.created_at else None} for s, m in rows]})
+
+    @app.route('/api/health/shared-with/<int:mentor_id>', methods=['DELETE'])
+    @login_required
+    def health_share_delete_api(mentor_id):
+        """Revoke a health share (404 when nothing was shared)."""
+        share = HealthShare.query.filter_by(
+            user_id=current_user.id, mentor_id=mentor_id).first()
+        if share is None:
+            return jsonify({'error': 'No share found for this mentor.'}), 404
+        try:
+            db.session.delete(share)
+            db.session.commit()
+        except Exception:
+            log.exception("Health share delete failed")
+            db.session.rollback()
+            return jsonify({'error': 'Could not revoke the share. '
+                                     'Please try again.'}), 500
+        return jsonify({'success': True})
+
     # ================= Wave 6 #27: mentor & alumni office hours =================
     # Connect students to lived experience through structured, bounded
     # conversations: mentor directory (path-filtered), bookable office-hour
@@ -9318,6 +11381,14 @@ def register_routes(app):
         oh = _oh_session_or_404(oh_id)
         if oh is None:
             return _mentor_api_error('Office hour not found.', 404)
+        # Phase 5 honesty guard: seed office hours are illustrative only.
+        # Booking a seed would fabricate a real interaction (and unlock
+        # reviews), so it is rejected with a clear message. Real-mentor
+        # bookings are unaffected.
+        if oh.mentor is not None and oh.mentor.is_seed:
+            return _mentor_api_error(
+                'This is an illustrative profile — bookings open when real '
+                'mentors join.', 400)
         payload = request.get_json(silent=True) or {}
         question_text = (payload.get('question_text') or '').strip()
         template_id = (payload.get('template_id') or '').strip()
@@ -9349,6 +11420,7 @@ def register_routes(app):
             db.session.rollback()
             return _mentor_api_error('Could not complete the booking. '
                                      'Please try again.', 500)
+        _career_hook(current_user.id, 'mentor_book', booking.id)
         return jsonify({'success': True, 'booking_id': booking.id,
                         'session_status': oh.status}), 201
 
@@ -9647,6 +11719,9 @@ def register_routes(app):
         mentor = db.session.get(Mentor, mentor_id)
         if mentor is None:
             return _mentor_api_error('Mentor not found.', 404)
+        if mentor.is_seed:
+            return _mentor_api_error(
+                'Illustrative profiles cannot be verified.', 400)
         try:
             mentor.verified = True
             db.session.commit()
@@ -9716,6 +11791,304 @@ def register_routes(app):
             db.session.rollback()
             return _mentor_api_error('Could not schedule the session.', 500)
         return jsonify({'success': True, 'office_hour': _oh_to_dict(oh)}), 201
+
+    # ================= Phase 5: mentor matching, Q&A, reviews, dashboard ====
+    # Honesty first: seed mentors are ILLUSTRATIVE profiles (never verified,
+    # never bookable, never reviewed). Every serialization carries the
+    # illustrative/verified labels from mentor_health_mod.mentor_to_dict.
+
+    @app.route('/mentors/api/admin/applications/<int:application_id>/approve',
+                methods=['POST'])
+    @login_required
+    @limiter.limit("30 per hour")
+    def mentor_admin_approve(application_id):
+        """Approve a mentor application (admin only): status -> approved
+        and create the REAL Mentor row (verified=True, is_seed=False,
+        user_id linked). Idempotent: re-approving returns the existing row.
+        This is the real-supply pipeline — no mentor is ever invented."""
+        forbidden = _mentor_admin_required()
+        if forbidden is not None:
+            return forbidden
+        app_row = db.session.get(MentorApplication, application_id)
+        if app_row is None:
+            return _mentor_api_error('Application not found.', 404)
+        try:
+            mentor = (Mentor.query.filter_by(user_id=app_row.user_id,
+                                             is_seed=False).first())
+            if mentor is None:
+                mentor = Mentor(name=app_row.name, headline=app_row.headline,
+                                path=app_row.path, company=app_row.company,
+                                college=app_row.college, bio=app_row.bio,
+                                linkedin_url=app_row.linkedin_url,
+                                verified=True, is_seed=False,
+                                user_id=app_row.user_id)
+                db.session.add(mentor)
+            app_row.status = 'approved'
+            db.session.commit()
+            log.warning("ADMIN_ACTION action=mentor_approve admin_id=%s "
+                        "application_id=%s mentor_id=%s",
+                        current_user.id, application_id, mentor.id)
+        except Exception:
+            log.exception("Mentor approve failed")
+            db.session.rollback()
+            return _mentor_api_error('Could not approve the application.',
+                                     500)
+        return jsonify({'success': True,
+                        'mentor': mentor_health_mod.mentor_to_dict(mentor)})
+
+    @app.route('/api/mentors/matches')
+    @login_required
+    @limiter.limit("30 per hour")
+    def mentors_matches_api():
+        """Transparent mentor matches (never raises).
+
+        Scoring (fixed weights, see mentor_health.mentor_match_scores):
+        path/cluster overlap +40, skill overlap +10 each (cap +40),
+        verified real mentor +20, cap 100. Seeds are included but always
+        flagged illustrative. No cluster and no portfolio skills ->
+        empty matches + a note (generic verified rows are not matches).
+        """
+        try:
+            from studybuddy.career_graph import career_snapshot
+            snapshot, _warnings = career_snapshot(current_user.id)
+            cluster_id = (snapshot.get("cluster") or {}).get("id")
+            portfolio = Portfolio.query.filter_by(
+                user_id=current_user.id).first()
+            skills = []
+            if portfolio is not None and isinstance(portfolio.skills, list):
+                skills = [str(s) for s in portfolio.skills]
+            if not cluster_id and not skills:
+                return jsonify({
+                    'success': True, 'matches': [],
+                    'note': 'Complete the career discovery assessment or '
+                            'add portfolio skills for personalized matches.'})
+            mentors = Mentor.query.order_by(Mentor.name.asc()).all()
+            matches = mentor_health_mod.mentor_match_scores(
+                cluster_id, skills, mentors)
+            return jsonify({'success': True, 'matches': matches})
+        except Exception:
+            log.exception("Mentor matches failed")
+            return jsonify({'success': True, 'matches': [],
+                            'note': 'Matches are unavailable right now.'})
+
+    def _ensure_mentor_qa_seeded():
+        """Backfill the MentorQA table from data/mentor_qa.json once.
+
+        Library entries are community knowledge (mentor_id NULL,
+        attribution 'Community knowledge base') — never attributed to a
+        named mentor who did not write them.
+        """
+        try:
+            if MentorQA.query.first() is None:
+                for row in mentor_health_mod.load_mentor_qa():
+                    db.session.add(MentorQA(
+                        question=row["question"], answer=row["answer"],
+                        topic=row["topic"], mentor_id=None,
+                        attribution=mentor_health_mod.QA_ATTRIBUTION))
+                db.session.commit()
+        except Exception:
+            log.exception("Mentor QA seeding failed")
+            db.session.rollback()
+
+    @app.route('/api/mentors/qa')
+    @limiter.limit("60 per hour")
+    def mentors_qa_api():
+        """Public Q&A library. ?topic= filters (unknown topic -> [] + 200).
+        Every entry carries its attribution; library answers are community
+        knowledge, not any named mentor's words."""
+        _ensure_mentor_qa_seeded()
+        topic = (request.args.get('topic') or '').strip()
+        try:
+            q = MentorQA.query.order_by(MentorQA.id.asc())
+            if topic:
+                q = q.filter_by(topic=topic)
+            rows = q.limit(200).all()
+        except Exception:
+            log.exception("Mentor QA list failed")
+            db.session.rollback()
+            rows = []
+        return jsonify({'success': True, 'qa': [{
+            'id': r.id, 'question': r.question, 'answer': r.answer,
+            'topic': r.topic, 'attribution': r.attribution} for r in rows]})
+
+    @app.route('/api/mentors/qa/ask', methods=['POST'])
+    @login_required
+    @limiter.limit("30 per hour")
+    def mentors_qa_ask_api():
+        """Ask a question into the real-mentor inbox. This stores the
+        question as 'open' — it never auto-generates an answer. topic,
+        when given, must be a mentor path key (else it is stored as
+        general/NULL so every mentor's dashboard can see it)."""
+        payload = request.get_json(silent=True) or {}
+        question = (payload.get('question') or '').strip()
+        if len(question) < 20:
+            return jsonify({'error': 'Question needs at least 20 characters '
+                                     '— give context.'}), 400
+        if len(question) > 2000:
+            return jsonify({'error': 'Question is too long (max 2000 '
+                                     'characters).'}), 400
+        topic = (payload.get('topic') or '').strip().lower() or None
+        if topic is not None and topic not in community_mod.PATH_KEYS:
+            topic = None
+        try:
+            row = MentorQuestion(user_id=current_user.id, question=question,
+                                 topic=topic, status='open')
+            db.session.add(row)
+            db.session.commit()
+        except Exception:
+            log.exception("Mentor QA ask failed")
+            db.session.rollback()
+            return jsonify({'error': 'Could not save your question. '
+                                     'Please try again.'}), 500
+        return jsonify({'success': True, 'question_id': row.id}), 201
+
+    @app.route('/api/mentors/qa/mine')
+    @login_required
+    def mentors_qa_mine_api():
+        """The caller's own inbox questions only (never anyone else's)."""
+        try:
+            rows = (MentorQuestion.query
+                    .filter_by(user_id=current_user.id)
+                    .order_by(MentorQuestion.created_at.desc()).all())
+        except Exception:
+            log.exception("Mentor QA mine failed")
+            db.session.rollback()
+            rows = []
+        return jsonify({'success': True, 'questions': [{
+            'id': r.id, 'question': r.question, 'topic': r.topic,
+            'status': r.status,
+            'created_at': r.created_at.isoformat()
+            if r.created_at else None} for r in rows]})
+
+    @app.route('/api/mentors/<int:mentor_id>/reviews', methods=['POST'])
+    @login_required
+    @limiter.limit("30 per hour")
+    def mentors_review_create_api(mentor_id):
+        """Review a mentor (201). Requires a real interaction: a booking
+        with this mentor in any non-cancelled state. Rating must be an
+        int 1-5; one review per (user, mentor). Seeds can never be
+        reviewed because seed bookings are rejected (see book guard)."""
+        mentor = db.session.get(Mentor, mentor_id)
+        if mentor is None:
+            return jsonify({'error': 'Mentor not found.'}), 404
+        payload = request.get_json(silent=True) or {}
+        rating = payload.get('rating')
+        if isinstance(rating, bool) or not isinstance(rating, int) \
+                or not 1 <= rating <= 5:
+            return jsonify({'error': 'Rating must be an integer 1-5.'}), 400
+        text = (payload.get('text') or '').strip() or None
+        if text is not None and len(text) > 2000:
+            return jsonify({'error': 'Review is too long (max 2000 '
+                                     'characters).'}), 400
+        try:
+            interacted = (db.session.query(OHBooking.id)
+                          .join(OfficeHour,
+                                OHBooking.office_hour_id == OfficeHour.id)
+                          .filter(OHBooking.user_id == current_user.id,
+                                  OfficeHour.mentor_id == mentor.id,
+                                  OHBooking.status != 'cancelled')
+                          .first() is not None)
+            if not interacted:
+                return jsonify({'error': 'Reviews require a booking with '
+                                         'this mentor first.'}), 400
+            existing = MentorReview.query.filter_by(
+                user_id=current_user.id, mentor_id=mentor.id).first()
+            if existing is not None:
+                return jsonify({'error': 'You have already reviewed this '
+                                         'mentor.'}), 400
+            review = MentorReview(mentor_id=mentor.id,
+                                  user_id=current_user.id, rating=rating,
+                                  text=text)
+            db.session.add(review)
+            db.session.commit()
+        except Exception:
+            log.exception("Mentor review create failed")
+            db.session.rollback()
+            return jsonify({'error': 'Could not save your review. '
+                                     'Please try again.'}), 500
+        return jsonify({'success': True, 'review': {
+            'id': review.id, 'rating': review.rating, 'text': review.text,
+            'created_at': review.created_at.isoformat()
+            if review.created_at else None}}), 201
+
+    @app.route('/api/mentors/<int:mentor_id>/reviews')
+    @limiter.limit("60 per hour")
+    def mentors_review_list_api(mentor_id):
+        """Public review list + average. Average is null and count 0 when
+        there are no reviews — never a default 5.0 or fake value."""
+        mentor = db.session.get(Mentor, mentor_id)
+        if mentor is None:
+            return jsonify({'error': 'Mentor not found.'}), 404
+        try:
+            rows = (MentorReview.query.filter_by(mentor_id=mentor.id)
+                    .order_by(MentorReview.created_at.desc()).all())
+        except Exception:
+            log.exception("Mentor review list failed")
+            db.session.rollback()
+            rows = []
+        ratings = [r.rating for r in rows]
+        average = round(sum(ratings) / len(ratings), 1) if ratings else None
+        return jsonify({'success': True, 'reviews': [{
+            'rating': r.rating, 'text': r.text,
+            'created_at': r.created_at.isoformat()
+            if r.created_at else None} for r in rows],
+            'average': average, 'count': len(rows)})
+
+    @app.route('/api/mentors/dashboard')
+    @login_required
+    @limiter.limit("30 per hour")
+    def mentors_dashboard_api():
+        """Dashboard for approved REAL mentors only (linked via
+        Mentor.user_id, is_seed=False). Anyone else gets a 404 with a
+        clear message — never an empty dashboard pretending otherwise.
+        qa_questions = open inbox questions in the mentor's path, plus
+        general (topic NULL) questions, capped at 20. Health summaries
+        are counts only, never content."""
+        try:
+            mentor = (Mentor.query.filter_by(user_id=current_user.id,
+                                             is_seed=False).first())
+            if mentor is None:
+                return jsonify({'error': 'You are not an approved mentor '
+                                         'yet. Apply via the mentor '
+                                         'application form.'}), 404
+            bookings = (db.session.query(OHBooking, OfficeHour, User)
+                        .join(OfficeHour,
+                              OHBooking.office_hour_id == OfficeHour.id)
+                        .join(User, OHBooking.user_id == User.id)
+                        .filter(OfficeHour.mentor_id == mentor.id)
+                        .order_by(OHBooking.created_at.desc())
+                        .limit(50).all())
+            reviews = (MentorReview.query.filter_by(mentor_id=mentor.id)
+                       .order_by(MentorReview.created_at.desc()).all())
+            ratings = [r.rating for r in reviews]
+            questions = (MentorQuestion.query
+                         .filter(MentorQuestion.status == 'open',
+                                 db.or_(MentorQuestion.topic.is_(None),
+                                        MentorQuestion.topic == mentor.path))
+                         .order_by(MentorQuestion.created_at.asc())
+                         .limit(20).all())
+            shares = HealthShare.query.filter_by(
+                mentor_id=mentor.id).count()
+        except Exception:
+            log.exception("Mentor dashboard failed")
+            db.session.rollback()
+            return jsonify({'error': 'Could not load the dashboard. '
+                                     'Please try again.'}), 500
+        return jsonify({'success': True, 'dashboard': {
+            'mentor': mentor_health_mod.mentor_to_dict(mentor),
+            'bookings': [{
+                'id': b.id, 'user_display': (u.name or 'Student'),
+                'status': b.status,
+                'scheduled_at': oh.scheduled_at.isoformat()
+                if oh.scheduled_at else None} for b, oh, u in bookings],
+            'bookings_count': len(bookings),
+            'reviews': [{'rating': r.rating, 'text': r.text}
+                        for r in reviews],
+            'average_rating': (round(sum(ratings) / len(ratings), 1)
+                               if ratings else None),
+            'qa_questions': [{'id': q.id, 'question': q.question,
+                              'status': q.status} for q in questions],
+            'shared_health_summaries': shares}})
 
 
 def _save_research_exchange(user_id, client_session_id, user_msg, ai_response, doc_text):

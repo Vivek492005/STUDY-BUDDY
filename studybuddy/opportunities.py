@@ -37,7 +37,11 @@ OPPORTUNITY JSON SCHEMA (for extending data/opportunities.json):
             "eligibility": "string",     # required, <= 300 chars
             "link": "https://...",       # required, http(s) URL
             "curated": true|false,       # optional; missing = curated (legacy)
-            "source": "string"           # optional; e.g. "devpost"
+            "source": "string",          # optional; e.g. "devpost"
+            "tags": ["string"],          # optional; honest topic tags
+            "status": "open|closed",    # optional; stamped by
+                                          # scripts/refresh_opportunities.py
+            "description": "string"       # optional; 1-2 factual sentences
         }
     ]
 }
@@ -402,6 +406,9 @@ def _enrich(o: dict[str, Any], today: date) -> dict[str, Any]:
         "eligibility": o["eligibility"],
         "link": o["link"],
         "posted_days_ago": o.get("posted_days_ago"),
+        "tags": o.get("tags") or [],
+        "status": o.get("status"),
+        "description": o.get("description"),
     }
 
 

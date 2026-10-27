@@ -1861,3 +1861,40 @@ body.sb-dsa .dsa-tracker-embed h2, body.sb-dsa .dsa-tracker-embed h3 { color: #f
 .sb-iv .iv-recent-row a { color: var(--accent-primary); font-weight: 700; margin-left: auto; }
 .sb-iv .iv-recent-row time { color: #8f8f8a; font-family: var(--sb-mono); font-size: 0.72rem; }
 @media (max-width: 700px) { .sb-iv .iv-modes { grid-template-columns: 1fr; } }
+
+/* ---- Phase 0 foundations: honesty-label pills ----
+   BLEND rule: borderless, transparent, no boxes/borders/shadows — a
+   colored dot + small uppercase letter-spaced text that melts into dark
+   surfaces. The dot carries the meaning; the text stays quiet. */
+.pill-indicative, .pill-hypothesis, .pill-illustrative, .pill-verified {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: transparent; border: 0; box-shadow: none; border-radius: 0;
+  font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+  line-height: 1; padding: 0; vertical-align: middle;
+}
+.pill-indicative::before, .pill-hypothesis::before,
+.pill-illustrative::before, .pill-verified::before {
+  content: ""; width: 0.45rem; height: 0.45rem; border-radius: 50%; flex: none;
+}
+.pill-indicative { color: #fcd34d; }
+.pill-indicative::before { background: #f59e0b; }
+.pill-hypothesis { color: #c4b5fd; }
+.pill-hypothesis::before { background: #8b5cf6; }
+.pill-illustrative { color: #93c5fd; }
+.pill-illustrative::before { background: #64748b; }
+.pill-verified { color: #6ee7b7; }
+.pill-verified::before { background: #10b981; }
+
+/* Phase 0 freshness line (salary + opportunity pages): unboxed, muted. */
+.fresh-line {
+  display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;
+  margin: 0 0 1rem; font-size: 0.85rem; color: var(--text-muted, #94a3b8);
+}
+.fresh-line .fresh-msg { color: var(--text-muted, #94a3b8); }
+
+/* Phase 0 tracker deadlines: plain unboxed list above the board. */
+.tk-deadlines { margin: 0 0 1.4rem; }
+.tk-deadlines h2 { font-size: 1.05rem; margin: 0 0 0.5rem; }
+.tk-deadlines ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+.tk-deadlines li { font-size: 0.9rem; }
+.tk-deadlines .tk-dl-meta { color: var(--text-muted, #94a3b8); }

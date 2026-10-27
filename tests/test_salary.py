@@ -7,9 +7,9 @@ from tests.conftest import login, register
 
 def test_dataset_loads_and_valid():
     data = load_dataset()
-    assert len(data["entries"]) == 144
-    assert len(data["roles"]) == 12
-    assert data["meta"]["last_updated"] == "2026-10-01"
+    assert len(data["entries"]) == 408
+    assert len(data["roles"]) == 34
+    assert data["meta"]["last_updated"] == "2026-10-26"
 
 
 def test_query_filters():
@@ -55,7 +55,7 @@ def test_data_api_all(client):
     assert r.status_code == 200
     body = r.get_json()
     assert body["success"] is True
-    assert len(body["entries"]) == 144
+    assert len(body["entries"]) == 408
 
 
 def test_data_api_filtered(client):
@@ -87,13 +87,21 @@ def test_options_embedded_in_page(client):
 def test_city_entries_five_metros_with_provenance():
     from studybuddy.salary_data import city_query
     rows = city_query(role="Software Development Engineer", band="0-1")
-    assert {r["city"] for r in rows} == {
-        "Mumbai", "Delhi NCR", "Bengaluru", "Hyderabad", "Chennai"}
+    # Phase 2: 20 cities (the original 5 metros must still be present).
+    cities = {r["city"] for r in rows}
+    assert {"Mumbai", "Delhi NCR", "Bengaluru", "Hyderabad",
+            "Chennai"} <= cities
     for r in rows:
-        # DATA-01 provenance fields on every city record
-        for field in ("id", "source_url", "retrieved_at", "license",
-                      "last_verified", "confidence"):
-            assert r[field], (r["city"], field)
+        if r["source_url"]:
+            # DATA-01 provenance fields on sourced city records
+            for field in ("id", "source_url", "retrieved_at", "license",
+                          "last_verified", "confidence"):
+                assert r[field], (r["city"], field)
+        else:
+            # Derived rows honestly carry no source: low confidence +
+            # an indicative license, never a fabricated provenance.
+            assert r["confidence"] == "low"
+            assert "Indicative" in r["license"]
         assert r["confidence"] in ("high", "medium", "low")
         assert 0 < r["min_lpa"] <= r["median_lpa"] <= r["max_lpa"]
 

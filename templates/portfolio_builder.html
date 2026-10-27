@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bento.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/resume_style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/kinetic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2314b8a6'/><path d='M28 72V44l22-14 22 14v28' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     <style>
         .pb-wrap { max-width: 1280px; margin: 0 auto; padding: 6.5rem 1.2rem 4rem; }
@@ -26,7 +27,19 @@
         .pb-card { background: var(--bg-card); border: 1px solid rgba(46,230,168,0.22); border-radius: 16px; padding: 1.4rem; }
         .pb-card h2 { font-size: 1.1rem; margin-bottom: 1rem; }
         .pb-card label { display: block; font-size: 0.82rem; font-weight: 700; margin: 0.9rem 0 0.35rem; color: var(--text-muted, #94a3b8); }
-        .pb-card input[type=text], .pb-card input[type=url], .pb-card textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; color: var(--text-main, #f8fafc); padding: 0.6rem 0.7rem; font-size: 0.9rem; font-family: inherit; }
+        .pb-card input[type=text], .pb-card input[type=url], .pb-card input[type=email], .pb-card input[type=tel], .pb-card textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; color: var(--text-main, #f8fafc); padding: 0.6rem 0.7rem; font-size: 0.9rem; font-family: inherit; }
+        /* Phase 3: borderless additions — spacing + typography only, no boxes. */
+        .pb-theme { display: flex; gap: 1rem; flex-wrap: wrap; margin: 0.4rem 0 0.2rem; }
+        .pb-theme label { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--text-main, #f8fafc); cursor: pointer; }
+        .pb-gh-row { display: flex; gap: 0.6rem; margin-top: 0.4rem; }
+        .pb-gh-row input { flex: 1; }
+        .pb-gh-item { display: flex; gap: 0.55rem; align-items: start; margin: 0.6rem 0; font-size: 0.88rem; }
+        .pb-gh-item small { color: var(--text-muted, #94a3b8); }
+        .pb-stat-line { font-size: 0.88rem; color: var(--text-muted, #94a3b8); margin: 0.3rem 0; }
+        .pb-stat-line strong { color: var(--text-main, #f8fafc); }
+        .pb-review-check { font-size: 0.88rem; margin: 0.35rem 0; }
+        .pb-review-check.passed { color: var(--text-muted, #94a3b8); }
+        .pb-review-check small { color: var(--text-muted, #94a3b8); }
         .pb-card input:focus, .pb-card textarea:focus { outline: none; border-color: var(--accent-primary); }
         .pb-card textarea { min-height: 90px; resize: vertical; }
         .pb-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.6rem; margin-bottom: 0.6rem; align-items: end; }
@@ -110,6 +123,49 @@
                 <div id="linkRows"></div>
                 <button class="pb-mini pb-add" type="button" id="addLink">+ Add link</button>
 
+                <h2 style="margin-top:1.4rem;">GitHub import</h2>
+                <p class="pb-pub">Pull public repos into your projects list. Only repos you check are imported.</p>
+                <div class="pb-gh-row">
+                    <input type="text" id="ghUser" maxlength="80" placeholder="GitHub username">
+                    <button class="pb-mini" type="button" id="ghFetchBtn">Fetch repos</button>
+                </div>
+                <div id="ghResults"></div>
+                <button class="pb-mini pb-add" type="button" id="ghImportBtn" hidden>Import selected</button>
+                <div class="pb-msg" id="ghMsg" role="status"></div>
+
+                <h2 style="margin-top:1.4rem;">Certifications</h2>
+                <div id="certRows"></div>
+                <button class="pb-mini pb-add" type="button" id="addCert">+ Add certification</button>
+
+                <h2 style="margin-top:1.4rem;">Experience</h2>
+                <div id="expRows"></div>
+                <button class="pb-mini pb-add" type="button" id="addExp">+ Add experience</button>
+
+                <h2 style="margin-top:1.4rem;">Education</h2>
+                <div id="eduRows"></div>
+                <button class="pb-mini pb-add" type="button" id="addEdu">+ Add education</button>
+
+                <h2 style="margin-top:1.4rem;">Achievements</h2>
+                <div id="achRows"></div>
+                <button class="pb-mini pb-add" type="button" id="addAch">+ Add achievement</button>
+
+                <h2 style="margin-top:1.4rem;">Contact</h2>
+                <label for="fContactEmail">Email</label>
+                <input type="email" id="fContactEmail" maxlength="120" placeholder="you@example.com">
+                <label for="fContactPhone">Phone</label>
+                <input type="tel" id="fContactPhone" maxlength="40" placeholder="+91 …">
+                <label for="fContactLocation">Location</label>
+                <input type="text" id="fContactLocation" maxlength="120" placeholder="City, Country">
+
+                <h2 style="margin-top:1.4rem;">Theme</h2>
+                <div class="pb-theme" role="radiogroup" aria-label="Portfolio theme">
+                    <label><input type="radio" name="pfTheme" value="classic" {% if not portfolio or not portfolio.theme or portfolio.theme == 'classic' %}checked{% endif %}> Classic</label>
+                    <label><input type="radio" name="pfTheme" value="dark" {% if portfolio and portfolio.theme == 'dark' %}checked{% endif %}> Dark</label>
+                    <label><input type="radio" name="pfTheme" value="minimal" {% if portfolio and portfolio.theme == 'minimal' %}checked{% endif %}> Minimal</label>
+                    <label><input type="radio" name="pfTheme" value="bold" {% if portfolio and portfolio.theme == 'bold' %}checked{% endif %}> Bold</label>
+                </div>
+                <div class="pb-msg" id="themeMsg" role="status"></div>
+
                 <h2 style="margin-top:1.4rem;">Coding profiles</h2>
                 {% if prefill.github.linked %}
                 <label class="pb-check"><input type="checkbox" id="fGithub" {% if portfolio and portfolio.show_github %}checked{% endif %}> Show GitHub stats <small>(score {{ prefill.github.score }}/100 · @{{ prefill.github.username }})</small></label>
@@ -128,6 +184,7 @@
                     <button class="pb-btn" type="button" id="saveBtn">Save portfolio</button>
                     {% if portfolio and portfolio.slug %}
                     <a class="pb-btn-ghost" href="{{ url_for('portfolio_download') }}">Download HTML</a>
+                    <a class="pb-btn-ghost" id="exportPdfBtn" href="/portfolio/{{ portfolio.slug }}/print">Print / Save as PDF</a>
                     {% endif %}
                 </div>
                 <div class="pb-msg" id="pbMsg" role="status"></div>
@@ -135,6 +192,20 @@
                 <p class="pb-pub">Shareable link: <a id="pubLink" href="{{ url_for('public_portfolio', slug=portfolio.slug, _external=True) }}">{{ url_for('public_portfolio', slug=portfolio.slug, _external=True) }}</a></p>
                 {% else %}
                 <p class="pb-pub" id="pubLinkWrap" style="display:none;">Shareable link: <a id="pubLink" href="#"></a></p>
+                {% endif %}
+
+                {% if portfolio and portfolio.slug %}
+                <div id="pfAnalytics" hidden>
+                    <h2 style="margin-top:1.4rem;">Views</h2>
+                    <p class="pb-stat-line"><strong id="pfViewsTotal">–</strong> total views · <strong id="pfViews30d">–</strong> in the last 30 days</p>
+                    <div id="pfViewsByDay"></div>
+                </div>
+
+                <div id="pfReview" hidden>
+                    <h2 style="margin-top:1.4rem;">Portfolio review</h2>
+                    <p class="pb-stat-line" id="pfReviewScore"></p>
+                    <div id="pfReviewChecks"></div>
+                </div>
                 {% endif %}
             </div>
 

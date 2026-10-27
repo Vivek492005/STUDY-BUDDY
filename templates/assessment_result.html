@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Career Assessment Result | AI Resume Analyzer</title>
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}">
@@ -14,6 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bento.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/resume_style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/kinetic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2310b981'/><path d='M30 52l12 12 28-30' stroke='white' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     <style>
         .as-wrap { max-width: 760px; margin: 0 auto; padding: 6.5rem 1.2rem 4rem; }
@@ -30,6 +32,18 @@
         .as-tools { font-size: 0.88rem; }
         .as-tools a { color: var(--accent-secondary); margin-right: 0.9rem; }
         .as-ai-badge { display: inline-block; font-size: 0.75rem; background: rgba(56,189,248,0.14); color: var(--accent-info); border-radius: 999px; padding: 0.2rem 0.7rem; margin-bottom: 1rem; font-weight: 600; }
+        /* Phase 2: role cards + handoffs (borderless, spacing + type only; cards reuse the site sweep). */
+        .as-role-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.8rem; margin-bottom: 0.6rem; }
+        .as-role-card { padding: 1rem 1.1rem; }
+        .as-role-card h4 { font-size: 1rem; margin-bottom: 0.3rem; }
+        .as-role-card p { font-size: 0.88rem; color: var(--text-muted, #94a3b8); margin-bottom: 0.6rem; }
+        .as-role-link { color: var(--accent-secondary); font-size: 0.88rem; font-weight: 600; }
+        .as-handoffs { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; margin-top: 1rem; }
+        .as-track-btn { background: var(--gradient-primary); color: #fff; border: none; border-radius: 10px; padding: 0.55rem 1.1rem; font-weight: 700; cursor: pointer; font-size: 0.88rem; }
+        .as-track-btn:disabled { opacity: 0.7; cursor: default; }
+        .as-track-msg { font-size: 0.85rem; color: var(--text-muted, #94a3b8); }
+        .as-handoff-link { color: var(--accent-secondary); font-size: 0.88rem; font-weight: 600; }
+        .as-history-row { font-size: 0.92rem; padding: 0.45rem 0; color: #cbd5e1; }
         @media (max-width: 700px) { .as-wrap { padding-top: 5.5rem; } }
     </style>
     <style>
@@ -55,6 +69,11 @@
     <div class="as-wrap">
         <p style="margin-bottom:1rem;color:var(--text-muted,#94a3b8);">Saved {{ created_at.strftime('%d %b %Y, %I:%M %p') if created_at else '' }} &middot; only visible to you.</p>
         <div id="asSavedResult" aria-live="polite"></div>
+        <section id="asHistory" hidden aria-labelledby="asHistoryH" style="margin-top:2rem;">
+            <h2 id="asHistoryH" style="font-size:1.2rem;margin-bottom:0.2rem;">Your past attempts</h2>
+            <p id="asHistoryCount" style="color:var(--text-muted,#94a3b8);font-size:0.88rem;margin-bottom:0.6rem;"></p>
+            <div id="asHistoryList"></div>
+        </section>
     </div>
 
     </main>

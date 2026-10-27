@@ -8,7 +8,8 @@ registration; it defines:
 - QUESTION_TEMPLATES: structured question prompts the booking flow offers
   so students arrive with a real question instead of a blank box.
 - seed_mentors(): idempotent seeder for 14 realistic Indian-context seed
-  mentors (is_seed=True, verified=True).
+  mentors (is_seed=True, verified=False). Seeds are ILLUSTRATIVE profiles
+  (Phase 5 honesty rule): never verified, never bookable.
 - Small rule helpers: booking eligibility, capacity refresh, admin check.
 
 Anything that touches the database imports unified_app's models lazily
@@ -216,7 +217,10 @@ def seed_mentors():
     """Idempotent seeder: insert 14 Indian-context seed mentors once.
 
     Returns the number of rows inserted (0 when the table already has
-    rows). Rows are created with is_seed=True and verified=True.
+    rows). Rows are created with is_seed=True and verified=False:
+    seeds are ILLUSTRATIVE profiles (Phase 5), never verified and never
+    bookable. Serializers additionally force verified=False for seeds,
+    so old rows stored with verified=True still never present as such.
     """
     from unified_app import Mentor, db
 
@@ -389,7 +393,7 @@ def seed_mentors():
             bio=s["bio"],
             linkedin_url=s["linkedin_url"],
             avatar_url=None,
-            verified=True,
+            verified=False,
             is_seed=True,
         ))
     db.session.commit()

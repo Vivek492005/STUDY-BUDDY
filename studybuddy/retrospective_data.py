@@ -28,6 +28,37 @@ RETRO_CATEGORIES = (
 
 CATEGORY_LABELS = dict(RETRO_CATEGORIES)
 
+# Phase 4 reason taxonomy: 15 common rejection causes. Each entry is
+# (reason_id, human label, stage_hint) where stage_hint is the pipeline
+# stage where this cause most often shows up (or None when it spans all
+# stages). The wizard's reason field accepts one of these ids OR free text
+# alongside — free text is never replaced by the taxonomy.
+RETRO_REASONS = (
+    ("skill-gap-dsa", "DSA / coding gap", "oa"),
+    ("skill-gap-system-design", "System design gap", "interview"),
+    ("resume-weak", "Resume did not show fit", "applied"),
+    ("jd-mismatch", "Role / JD mismatch", "applied"),
+    ("oa-timeout", "Online assessment ran out of time", "oa"),
+    ("interview-communication", "Communication in interviews", "interview"),
+    ("interview-depth", "Answers lacked depth", "interview"),
+    ("behavioral-fit", "Behavioral / culture fit", "interview"),
+    ("salary-mismatch", "Salary expectations mismatch", "offer"),
+    ("location", "Location constraints", "offer"),
+    ("experience-shortfall", "Experience shortfall", "applied"),
+    ("referral-absent", "No referral / weak outreach", "applied"),
+    ("preparation-time", "Not enough preparation time", None),
+    ("company-freeze", "Hiring freeze / role closed", None),
+    ("unknown", "Unknown / no feedback given", None),
+)
+
+RETRO_REASON_IDS = frozenset(r[0] for r in RETRO_REASONS)
+REASON_LABELS = {r[0]: r[1] for r in RETRO_REASONS}
+
+
+def reason_label(reason):
+    """Human label for a stored reason id; free text passes through."""
+    return REASON_LABELS.get(reason or "", reason or "unspecified")
+
 # Each entry: {"id": str, "category": str, "text": str}.
 # "id" is stable (h1..h40) so templates/wizard can reference starters.
 HYPOTHESIS_STARTERS = [

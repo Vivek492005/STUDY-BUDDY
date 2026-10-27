@@ -57,6 +57,11 @@ XP_RULES = {
     "health_review_completed": 20,
     "quest_completed": 50,  # awarded only via claim_quest(), never directly
 }
+# NOTE (Phase 4): career XP values live in CAREER_XP_ACTIONS below, NOT
+# in XP_RULES. XP_RULES is pinned by existing tests (16 entries) and
+# drives record_event()'s daily dedupe; career actions flow ONLY through
+# career_xp_hook() with per-ref idempotency, so they must not enter the
+# daily-dedupe set — two tracker adds on the same day both pay.
 
 #: Event types that record_event() accepts directly. quest_completed is
 #: bonus-only: it must flow through claim_quest() so the bonus stays tied to
@@ -98,6 +103,91 @@ QUEST_TEMPLATES = [
      "title": "Look back",
      "description": "Log your weekly reflection",
      "event_type": "retrospective_logged", "target": 1},
+    # ---- Phase 4 career quests (18) ----
+    # Quests with a "source" count verifiable source rows in the current
+    # ISO week (see _count_source_in_week) instead of ledger dedupe keys,
+    # because career actions are per-ref, not per-day: two tracker adds on
+    # the same day must both count. The original 6 templates are untouched.
+    {"id": "apply-2",
+     "title": "Apply twice",
+     "description": "Add 2 applications to the tracker this week",
+     "event_type": "tracker_added", "target": 2, "source": "tracker_added"},
+    {"id": "apply-5",
+     "title": "Pipeline builder",
+     "description": "Add 5 applications to the tracker this week",
+     "event_type": "tracker_added", "target": 5, "source": "tracker_added"},
+    {"id": "move-2",
+     "title": "Keep it moving",
+     "description": "Move 2 applications to a new stage this week",
+     "event_type": "tracker_moved", "target": 2, "source": "tracker_moved"},
+    {"id": "deadlines-2",
+     "title": "Deadline keeper",
+     "description": "Set deadlines on 2 applications this week",
+     "event_type": "deadline_set", "target": 2, "source": "deadline_set"},
+    {"id": "refer-1",
+     "title": "Ask once",
+     "description": "Ask 1 person for a referral this week",
+     "event_type": "referral_asked", "target": 1, "source": "referral_asked"},
+    {"id": "refer-3",
+     "title": "Network week",
+     "description": "Ask 3 people for referrals this week",
+     "event_type": "referral_asked", "target": 3, "source": "referral_asked"},
+    {"id": "retro-1",
+     "title": "Learn from a no",
+     "description": "Complete 1 rejection retrospective this week",
+     "event_type": "retrospective_completed", "target": 1,
+     "source": "retrospective_completed"},
+    {"id": "portfolio-1",
+     "title": "Portfolio polish",
+     "description": "Update your portfolio this week",
+     "event_type": "portfolio_updated", "target": 1,
+     "source": "portfolio_updated"},
+    {"id": "bookmark-3",
+     "title": "Scout three",
+     "description": "Bookmark 3 opportunities this week",
+     "event_type": "opportunity_bookmarked", "target": 3,
+     "source": "opportunity_bookmarked"},
+    {"id": "bookmark-5",
+     "title": "Opportunity radar",
+     "description": "Bookmark 5 opportunities this week",
+     "event_type": "opportunity_bookmarked", "target": 5,
+     "source": "opportunity_bookmarked"},
+    {"id": "assess-1",
+     "title": "Know yourself",
+     "description": "Complete a career-discovery assessment this week",
+     "event_type": "assessment_completed", "target": 1,
+     "source": "assessment_completed"},
+    {"id": "salary-1",
+     "title": "Know your worth",
+     "description": "Evaluate 1 offer against salary bands this week",
+     "event_type": "salary_evaluated", "target": 1,
+     "source": "salary_evaluated"},
+    {"id": "salary-2",
+     "title": "Compare two",
+     "description": "Evaluate 2 offers this week",
+     "event_type": "salary_evaluated", "target": 2,
+     "source": "salary_evaluated"},
+    {"id": "mentor-1",
+     "title": "Book a mentor",
+     "description": "Book 1 mentor office-hour session this week",
+     "event_type": "mentor_booked", "target": 1, "source": "mentor_booked"},
+    # Ledger-event career quests (daily-deduped like the original 6).
+    {"id": "resume-1",
+     "title": "Resume refresh",
+     "description": "Analyze a resume this week",
+     "event_type": "resume_analyzed", "target": 1},
+    {"id": "star-1",
+     "title": "Story bank",
+     "description": "Save 1 STAR interview story this week",
+     "event_type": "star_saved", "target": 1},
+    {"id": "peer-1",
+     "title": "Practice with a peer",
+     "description": "Complete 1 peer mock session this week",
+     "event_type": "peer_session_completed", "target": 1},
+    {"id": "coach-1",
+     "title": "Coach check-in",
+     "description": "Run 1 communication-coach analysis this week",
+     "event_type": "coach_analyzed", "target": 1},
 ]
 
 QUEST_IDS = frozenset(q["id"] for q in QUEST_TEMPLATES)
@@ -332,6 +422,105 @@ def _count_events_in_week(
         return 0
 
 
+def _in_week(dt: Any, wk_start: date) -> bool:
+    """True when a (naive=UTC-assumed or aware) datetime falls in the week
+    starting ``wk_start`` (Mon-Sun). Never raises."""
+    try:
+        if dt is None:
+            return False
+        d = dt.date() if isinstance(dt, datetime) else dt
+        return wk_start <= d < wk_start + timedelta(days=7)
+    except Exception:
+        return False
+
+
+def _as_utc(dt: Any) -> Any:
+    try:
+        if isinstance(dt, datetime) and dt.tzinfo is None:
+            return dt.replace(tzinfo=UTC)
+        return dt
+    except Exception:
+        return dt
+
+
+def _count_source_in_week(user_id: int, source: str, wk_start: date) -> int:
+    """Count verifiable source rows for a career quest in one ISO week.
+
+    Source rows are the ground truth (not ledger keys) because career
+    actions are per-ref: two tracker adds on the same day are two rows.
+    Timestamps are compared in Python so SQLite/Postgres storage
+    differences cannot skew the count. Never raises.
+    """
+    try:
+        from unified_app import (CareerAssessment, JobApplication, OHBooking,
+                                 OpportunityBookmark, Portfolio, Referral,
+                                 Retrospective, SalaryEvaluation, db)
+    except Exception:
+        return 0
+    try:
+        uid = int(user_id)
+    except (TypeError, ValueError):
+        return 0
+    try:
+        if source == "tracker_added":
+            rows = (JobApplication.query.filter_by(user_id=uid).all())
+            return sum(1 for r in rows if _in_week(r.created_at, wk_start))
+        if source == "tracker_moved":
+            rows = (JobApplication.query.filter_by(user_id=uid).all())
+            return sum(1 for r in rows
+                       if r.stage_updated_at and r.created_at
+                       and _as_utc(r.stage_updated_at) > _as_utc(r.created_at)
+                       and _in_week(r.stage_updated_at, wk_start))
+        if source == "deadline_set":
+            rows = (JobApplication.query.filter_by(user_id=uid).all())
+            return sum(1 for r in rows
+                       if r.deadline_set_at
+                       and _in_week(r.deadline_set_at, wk_start))
+        if source == "referral_asked":
+            rows = (Referral.query.filter_by(user_id=uid).all())
+            return sum(1 for r in rows if _in_week(r.created_at, wk_start))
+        if source == "retrospective_completed":
+            rows = (Retrospective.query.filter_by(user_id=uid,
+                                                  completed=True).all())
+            return sum(1 for r in rows
+                       if _in_week(r.completed_at or r.created_at, wk_start))
+        if source == "portfolio_updated":
+            row = Portfolio.query.filter_by(user_id=uid).first()
+            return 1 if row and _in_week(row.updated_at, wk_start) else 0
+        if source == "opportunity_bookmarked":
+            rows = (OpportunityBookmark.query.filter_by(user_id=uid).all())
+            return sum(1 for r in rows if _in_week(r.created_at, wk_start))
+        if source == "assessment_completed":
+            rows = (CareerAssessment.query.filter_by(user_id=uid).all())
+            return sum(1 for r in rows if _in_week(r.created_at, wk_start))
+        if source == "salary_evaluated":
+            rows = (SalaryEvaluation.query.filter_by(user_id=uid).all())
+            return sum(1 for r in rows if _in_week(r.created_at, wk_start))
+        if source == "mentor_booked":
+            rows = (OHBooking.query.filter_by(user_id=uid).all())
+            return sum(1 for r in rows
+                       if r.status != "cancelled"
+                       and _in_week(r.created_at, wk_start))
+    except Exception:
+        log.exception("source count failed for %s", source)
+        try:
+            db.session.rollback()
+        except Exception:
+            pass
+    return 0
+
+
+def _quest_count(XPLedger: Any, user_id: int, template: dict,
+                 wk_start: date) -> int:
+    """Quest progress for one template: source rows when the template has
+    a ``source``, otherwise the legacy ledger-dedupe-key count."""
+    source = template.get("source")
+    if source:
+        return _count_source_in_week(user_id, source, wk_start)
+    return _count_events_in_week(XPLedger, user_id,
+                                 template["event_type"], wk_start)
+
+
 def _weekly_stats(
     db: Any,
     XPLedger: Any,
@@ -485,8 +674,7 @@ def _record_event(
             # Count AFTER this row was added (it is in the session; flush
             # first so the count query sees it).
             db.session.flush()
-            count = _count_events_in_week(XPLedger, user_id, event_type,
-                                          wk_start)
+            count = _quest_count(XPLedger, user_id, q, wk_start)
             qp = (QuestProgress.query
                   .filter_by(user_id=user_id, week_start=wk_start,
                              quest_id=q["id"]).first())
@@ -559,9 +747,8 @@ def _claim_quest(
               .filter_by(user_id=user_id, week_start=wk_start,
                          quest_id=quest_id).first())
         # Recompute in case the row is missing/stale: progress is derived
-        # from the ledger, the source of truth.
-        count = _count_events_in_week(XPLedger, user_id,
-                                      template["event_type"], wk_start)
+        # from the ledger / source rows, the source of truth.
+        count = _quest_count(XPLedger, user_id, template, wk_start)
         if qp is None:
             qp = QuestProgress(user_id=user_id, week_start=wk_start,
                                quest_id=quest_id, count=count,
@@ -909,8 +1096,8 @@ def _build_summary(user_id: int, now: datetime | None) -> dict[str, Any]:
         qp = (QuestProgress.query
               .filter_by(user_id=user_id, week_start=wk_start,
                          quest_id=q["id"]).first())
-        count = int(qp.count) if qp else _count_events_in_week(
-            XPLedger, user_id, q["event_type"], wk_start)
+        count = int(qp.count) if qp else _quest_count(
+            XPLedger, user_id, q, wk_start)
         completed = bool(qp.completed) if qp else count >= int(q["target"])
         claimed = bool(qp.claimed) if qp else False
         target = int(q["target"])
@@ -1124,3 +1311,544 @@ def reward_tiers(
             "progress": f"{len(unlocked)}/{len(_REWARD_TIERS)} rewards unlocked",
             "motivation": (f"Next: {next_up['name']} → {next_up['perk']}"
                            if next_up else "All rewards unlocked — legend status.")}
+
+
+# ================= Phase 4: career XP, badges, recap, repair, teams =====
+# Career XP flows through the SAME XPLedger and level curve as learning
+# XP, but with per-ref idempotency: dedupe_key "<user>:<event>:ref:<ref>"
+# pays exactly once per (user, action, ref). Daily-deduped record_event()
+# cannot do this — two tracker adds on the same day would collide.
+
+#: action -> (ledger event_type, xp, quest source). Every career hook
+#: call passes a ref (application id, referral id, opp id, section name,
+#: ...) so the same action on the same object never pays twice.
+CAREER_XP_ACTIONS = {
+    "tracker_add": ("tracker_added", 10, "tracker_added"),
+    "tracker_move": ("tracker_moved", 5, "tracker_moved"),
+    "deadline_set": ("deadline_set", 5, "deadline_set"),
+    "referral_ask": ("referral_asked", 15, "referral_asked"),
+    "retrospective_complete": ("retrospective_completed", 20,
+                               "retrospective_completed"),
+    "portfolio_section": ("portfolio_updated", 15, "portfolio_updated"),
+    "opportunity_bookmark": ("opportunity_bookmarked", 5,
+                             "opportunity_bookmarked"),
+    "assessment_complete": ("assessment_completed", 15,
+                            "assessment_completed"),
+    "salary_evaluate": ("salary_evaluated", 10, "salary_evaluated"),
+    "mentor_book": ("mentor_booked", 20, "mentor_booked"),
+}
+
+
+def _career_ref_key(ref_id: Any) -> str:
+    try:
+        return str(ref_id or "").strip()[:60]
+    except Exception:
+        return ""
+
+
+def career_xp_hook(user_id: int, action: str, ref_id: Any = None,
+                   now: datetime | None = None) -> dict[str, Any]:
+    """Award career XP for one verified action, once per ref.
+
+    Idempotent: the same (user, action, ref) pays exactly once, however
+    often the hook fires. Updates the streak and refreshes the matching
+    career quests. Never raises — callers invoke it after their own
+    commit, and an XP failure must never break the primary action.
+    """
+    try:
+        return _career_xp_hook(user_id, action, ref_id, now)
+    except Exception:
+        log.exception("career_xp_hook failed")
+        try:
+            from unified_app import db
+            db.session.rollback()
+        except Exception:
+            pass
+        return {"ok": False}
+
+
+def _career_xp_hook(user_id: int, action: str, ref_id: Any,
+                    now: datetime | None) -> dict[str, Any]:
+    (db, XPLedger, StreakState, _LM, _LR, QuestProgress,
+     _WR, MomentumSettings, _User) = _models()
+    try:
+        user_id = int(user_id)
+    except (TypeError, ValueError):
+        return {"ok": False, "reason": "bad user"}
+    if user_id <= 0:
+        return {"ok": False, "reason": "bad user"}
+    spec = CAREER_XP_ACTIONS.get(str(action or ""))
+    if spec is None:
+        return {"ok": False, "reason": "unknown action"}
+    event_type, xp, source = spec
+    ref = _career_ref_key(ref_id)
+    if not ref:
+        return {"ok": False, "reason": "ref required"}
+    if _is_opted_out(MomentumSettings, user_id):
+        return {"ok": True, "skipped": True, "reason": "opted out"}
+    now = _coerce_now(now)
+    today = now.date()
+    key = "%d:%s:ref:%s" % (user_id, event_type, ref)
+    try:
+        if XPLedger.query.filter_by(dedupe_key=key).first():
+            return {"ok": True, "duplicate": True}
+        is_first = XPLedger.query.filter_by(user_id=user_id).count() == 0
+    except Exception:
+        log.exception("career_xp_hook pre-check failed")
+        db.session.rollback()
+        return {"ok": False}
+    try:
+        db.session.add(XPLedger(user_id=user_id, event_type=event_type,
+                                xp=int(xp), dedupe_key=key))
+        day_one = False
+        if is_first:
+            day_one = True
+            db.session.add(XPLedger(
+                user_id=user_id, event_type=DAY_ONE_EVENT,
+                xp=DAY_ONE_BONUS_XP,
+                dedupe_key="%d:%s:once" % (user_id, DAY_ONE_EVENT)))
+        st = StreakState.query.filter_by(user_id=user_id).first()
+        if st is None:
+            st = StreakState(user_id=user_id, current=0, longest=0,
+                             last_active_date=None, shields_used_month=0,
+                             shields_month=None)
+            db.session.add(st)
+            db.session.flush()
+        t = apply_streak(st.current, st.longest, st.last_active_date,
+                         st.shields_used_month, st.shields_month, today)
+        st.current = t["current"]
+        st.longest = t["longest"]
+        st.last_active_date = t["last_active"]
+        st.shields_used_month = t["shields_used_month"]
+        st.shields_month = t["shields_month"]
+        # Refresh only the quests fed by this action's source.
+        wk_start = week_start_date(now)
+        db.session.flush()
+        for q in QUEST_TEMPLATES:
+            if q.get("source") != source:
+                continue
+            count = _count_source_in_week(user_id, source, wk_start)
+            qp = (QuestProgress.query
+                  .filter_by(user_id=user_id, week_start=wk_start,
+                             quest_id=q["id"]).first())
+            if qp is None:
+                qp = QuestProgress(user_id=user_id, week_start=wk_start,
+                                   quest_id=q["id"], count=0,
+                                   completed=False, claimed=False)
+                db.session.add(qp)
+            qp.count = count
+            if count >= int(q["target"]):
+                qp.completed = True
+        db.session.commit()
+    except Exception:
+        log.exception("career_xp_hook commit failed")
+        db.session.rollback()
+        return {"ok": False}
+    return {"ok": True, "xp": int(xp), "day_one": day_one,
+            "bonus": DAY_ONE_BONUS_XP if day_one else 0,
+            "shield_used": t["shield_used"], "streak_reset": t["reset"],
+            "streak": t["current"]}
+
+
+#: Badge definitions: (id, title, description, rule key). Every rule is
+#: checkable from existing rows at award time — no award table, no
+#: backfilled history. earned_at is set only where the exact moment is
+#: provable (the Nth row's timestamp); state-based badges report None.
+BADGES = [
+    ("first-tracker-add", "First application",
+     "Added your first application to the tracker", "first_tracker_add"),
+    ("ten-applications", "Pipeline of ten",
+     "Tracked 10 applications", "ten_applications"),
+    ("first-referral", "First ask",
+     "Asked someone for a referral", "first_referral"),
+    ("three-referrals", "Network builder",
+     "Asked 3 people for referrals", "three_referrals"),
+    ("first-retrospective", "Learned from a no",
+     "Completed a rejection retrospective", "first_retrospective"),
+    ("portfolio-complete", "Portfolio complete",
+     "Filled all 9 portfolio sections", "portfolio_complete"),
+    ("streak-7", "Week of momentum",
+     "Reached a 7-day streak", "streak_7"),
+    ("streak-30", "Month of momentum",
+     "Reached a 30-day streak", "streak_30"),
+    ("level-5", "Level 5",
+     "Reached momentum level 5", "level_5"),
+    ("level-10", "Level 10",
+     "Reached momentum level 10", "level_10"),
+    ("first-interview", "Interview stage",
+     "An application reached the interview stage", "first_interview"),
+    ("first-offer", "Offer stage",
+     "An application reached the offer stage", "first_offer"),
+    ("five-bookmarks", "Opportunity scout",
+     "Bookmarked 5 opportunities", "five_bookmarks"),
+    ("assessment-complete", "Self-aware",
+     "Completed a career-discovery assessment", "assessment_complete"),
+    ("salary-evaluated", "Know your worth",
+     "Evaluated an offer against salary bands", "salary_evaluated"),
+    ("five-quests", "Quest finisher",
+     "Completed 5 weekly quests", "five_quests"),
+    ("league-join", "Team player",
+     "Joined a league", "league_join"),
+    ("ten-deadlines", "Deadline keeper",
+     "Set deadlines on 10 applications", "ten_deadlines"),
+    ("portfolio-published", "Published",
+     "Published your portfolio page", "portfolio_published"),
+    ("comeback", "Comeback",
+     "Repaired a broken streak", "comeback"),
+]
+
+#: Portfolio sections counted for the portfolio-complete badge.
+PORTFOLIO_SECTIONS = ("bio", "skills", "projects", "links", "certifications",
+                       "experience", "education", "achievements", "contact")
+
+
+def _section_filled(portfolio: Any, section: str) -> bool:
+    try:
+        value = getattr(portfolio, section, None)
+    except Exception:
+        return False
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (list, tuple, dict)):
+        return len(value) > 0
+    return bool(value)
+
+
+def compute_badges(user_id: int) -> list[dict[str, Any]]:
+    """Evaluate all 20 badges live from the user's rows. Never raises;
+    on any failure returns unearned badges (safe fallback)."""
+    try:
+        return _compute_badges(user_id)
+    except Exception:
+        log.exception("compute_badges failed")
+        try:
+            from unified_app import db
+            db.session.rollback()
+        except Exception:
+            pass
+        return [{"id": b[0], "title": b[1], "description": b[2],
+                 "earned": False, "earned_at": None} for b in BADGES]
+
+
+def _nth_timestamp(rows: list, n: int, field: str) -> Any:
+    """Timestamp of the Nth row (1-based) ordered by the field ascending,
+    or None when fewer than N rows exist."""
+    try:
+        ordered = sorted((r for r in rows if getattr(r, field, None)),
+                         key=lambda r: _as_utc(getattr(r, field)))
+        if len(ordered) >= n:
+            return _as_utc(getattr(ordered[n - 1], field)).isoformat()
+    except Exception:
+        pass
+    return None
+
+
+def _compute_badges(user_id: int) -> list[dict[str, Any]]:
+    (db, XPLedger, StreakState, LeagueMember, _LR, QuestProgress,
+     _WR, MomentumSettings, _User) = _models()
+    from unified_app import (CareerAssessment, JobApplication,
+                             OpportunityBookmark, Portfolio, Referral,
+                             Retrospective, SalaryEvaluation,
+                             TeamLeagueMember)
+    user_id = int(user_id)
+    apps = JobApplication.query.filter_by(user_id=user_id).all()
+    refs = Referral.query.filter_by(user_id=user_id).all()
+    retros = Retrospective.query.filter_by(user_id=user_id,
+                                           completed=True).all()
+    bookmarks = OpportunityBookmark.query.filter_by(user_id=user_id).all()
+    assessments = CareerAssessment.query.filter_by(user_id=user_id).all()
+    evals = SalaryEvaluation.query.filter_by(user_id=user_id).all()
+    portfolio = Portfolio.query.filter_by(user_id=user_id).first()
+    st = StreakState.query.filter_by(user_id=user_id).first()
+    total_xp = _total_xp(db, XPLedger, user_id)
+    level = level_for_xp(total_xp)
+    quests_done = (QuestProgress.query.filter_by(user_id=user_id,
+                                                completed=True).count())
+    in_league = (TeamLeagueMember.query.filter_by(user_id=user_id).first()
+                 is not None)
+    if not in_league:
+        lm = LeagueMember.query.filter_by(user_id=user_id).first()
+        in_league = bool(lm and not lm.opted_out)
+    settings = MomentumSettings.query.filter_by(user_id=user_id).first()
+    deadline_rows = [a for a in apps if a.deadline_set_at]
+    stages = {a.stage for a in apps}
+    earned: dict[str, Any] = {
+        "first_tracker_add": (len(apps) >= 1,
+                              _nth_timestamp(apps, 1, "created_at")),
+        "ten_applications": (len(apps) >= 10,
+                             _nth_timestamp(apps, 10, "created_at")),
+        "first_referral": (len(refs) >= 1,
+                           _nth_timestamp(refs, 1, "created_at")),
+        "three_referrals": (len(refs) >= 3,
+                            _nth_timestamp(refs, 3, "created_at")),
+        "first_retrospective": (len(retros) >= 1,
+                                _nth_timestamp(retros, 1, "completed_at")),
+        "portfolio_complete": (
+            bool(portfolio) and all(_section_filled(portfolio, s)
+                                    for s in PORTFOLIO_SECTIONS), None),
+        "streak_7": (bool(st and (st.longest or 0) >= 7), None),
+        "streak_30": (bool(st and (st.longest or 0) >= 30), None),
+        "level_5": (level >= 5, None),
+        "level_10": (level >= 10, None),
+        "first_interview": ("interview" in stages, None),
+        "first_offer": ("offer" in stages, None),
+        "five_bookmarks": (len(bookmarks) >= 5,
+                           _nth_timestamp(bookmarks, 5, "created_at")),
+        "assessment_complete": (len(assessments) >= 1,
+                                _nth_timestamp(assessments, 1, "created_at")),
+        "salary_evaluated": (len(evals) >= 1,
+                             _nth_timestamp(evals, 1, "created_at")),
+        "five_quests": (quests_done >= 5, None),
+        "league_join": (in_league, None),
+        "ten_deadlines": (len(deadline_rows) >= 10,
+                          _nth_timestamp(deadline_rows, 10,
+                                         "deadline_set_at")),
+        "portfolio_published": (bool(portfolio and portfolio.is_published),
+                                None),
+        "comeback": (bool(settings and settings.last_streak_repair_at),
+                      settings.last_streak_repair_at.isoformat()
+                      if settings and settings.last_streak_repair_at
+                      else None),
+    }
+    out = []
+    for bid, title, desc, rule in BADGES:
+        got, when = earned.get(rule, (False, None))
+        out.append({"id": bid, "title": title, "description": desc,
+                    "earned": bool(got), "earned_at": when if got else None})
+    return out
+
+
+def weekly_recap(user_id: int, now: datetime | None = None) -> dict[str, Any]:
+    """Last-7-days recap from ledger + source rows. Pure read, never
+    writes. Never raises (falls back to an empty recap)."""
+    try:
+        return _weekly_recap(user_id, now)
+    except Exception:
+        log.exception("weekly_recap failed")
+        try:
+            from unified_app import db
+            db.session.rollback()
+        except Exception:
+            pass
+        return {"week_start": week_start_date(now).isoformat(),
+                "xp_earned": 0, "quests_completed": [], "streak_days": 0,
+                "applications_added": 0, "applications_moved": 0,
+                "referrals_asked": 0, "top_action": None}
+
+
+def _weekly_recap(user_id: int, now: datetime | None) -> dict[str, Any]:
+    (db, XPLedger, StreakState, _LM, _LR, QuestProgress,
+     _WR, _MS, _User) = _models()
+    from unified_app import JobApplication, Referral
+    user_id = int(user_id)
+    now = _coerce_now(now)
+    wk_start = week_start_date(now)
+    ledger = XPLedger.query.filter_by(user_id=user_id).all()
+    week_rows = [r for r in ledger if _in_week(r.created_at, wk_start)]
+    xp_earned = sum(int(r.xp or 0) for r in week_rows)
+    counts: dict[str, int] = {}
+    for r in week_rows:
+        counts[r.event_type] = counts.get(r.event_type, 0) + 1
+    top_action = None
+    if counts:
+        top_action = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
+    title_by_id = {q["id"]: q["title"] for q in QUEST_TEMPLATES}
+    done = (QuestProgress.query.filter_by(user_id=user_id,
+                                         week_start=wk_start,
+                                         completed=True).all())
+    quests = [title_by_id.get(q.quest_id, q.quest_id) for q in done]
+    st = StreakState.query.filter_by(user_id=user_id).first()
+    apps = JobApplication.query.filter_by(user_id=user_id).all()
+    added = sum(1 for a in apps if _in_week(a.created_at, wk_start))
+    moved = sum(1 for a in apps
+                if a.stage_updated_at and a.created_at
+                and _as_utc(a.stage_updated_at) > _as_utc(a.created_at)
+                and _in_week(a.stage_updated_at, wk_start))
+    refs = Referral.query.filter_by(user_id=user_id).all()
+    asked = sum(1 for r in refs if _in_week(r.created_at, wk_start))
+    return {"week_start": wk_start.isoformat(), "xp_earned": xp_earned,
+            "quests_completed": quests,
+            "streak_days": int(st.current or 0) if st else 0,
+            "applications_added": added, "applications_moved": moved,
+            "referrals_asked": asked, "top_action": top_action}
+
+
+#: Manual streak repair: at most one repair per rolling 30 days.
+REPAIR_COOLDOWN_DAYS = 30
+
+
+def repair_streak(user_id: int, now: datetime | None = None) -> dict[str, Any]:
+    """Manually repair a streak broken by exactly one missed day.
+
+    Rule: the streak's last active day must be exactly 2 days ago
+    (yesterday was missed, today not yet active). Repair fills the missed
+    day — last_active_date becomes yesterday — so today's activity
+    continues the streak instead of resetting it. It does NOT itself
+    count as activity: the user must still act today.
+
+    Rejections: no streak row / no activity yet -> "no streak";
+    last active yesterday or today -> "no break to repair" (streak alive);
+    last active 3+ days ago -> "gap too long"; a repair inside the last
+    30 days -> "repair already used". Never raises.
+    """
+    try:
+        return _repair_streak(user_id, now)
+    except Exception:
+        log.exception("repair_streak failed")
+        try:
+            from unified_app import db
+            db.session.rollback()
+        except Exception:
+            pass
+        return {"ok": False, "reason": "repair failed"}
+
+
+def _repair_streak(user_id: int, now: datetime | None) -> dict[str, Any]:
+    (db, _XL, StreakState, _LM, _LR, _QP,
+     _WR, MomentumSettings, _User) = _models()
+    try:
+        user_id = int(user_id)
+    except (TypeError, ValueError):
+        return {"ok": False, "reason": "bad user"}
+    if user_id <= 0:
+        return {"ok": False, "reason": "bad user"}
+    now = _coerce_now(now)
+    today = now.date()
+    st = StreakState.query.filter_by(user_id=user_id).first()
+    if st is None or not st.last_active_date or not (st.current or 0):
+        return {"ok": False, "reason": "no streak"}
+    last = st.last_active_date
+    if last >= today - timedelta(days=1):
+        return {"ok": False, "reason": "no break to repair"}
+    if last <= today - timedelta(days=3):
+        return {"ok": False, "reason": "gap too long"}
+    # last == today - 2: exactly one missed day (yesterday).
+    settings = MomentumSettings.query.filter_by(user_id=user_id).first()
+    if settings is None:
+        settings = MomentumSettings(user_id=user_id, momentum_opt_out=False)
+        db.session.add(settings)
+        db.session.flush()
+    if settings.last_streak_repair_at:
+        last_repair = _as_utc(settings.last_streak_repair_at)
+        if (now - last_repair).days < REPAIR_COOLDOWN_DAYS:
+            return {"ok": False, "reason": "repair already used"}
+    st.last_active_date = today - timedelta(days=1)
+    settings.last_streak_repair_at = now
+    try:
+        db.session.commit()
+    except Exception:
+        log.exception("repair_streak commit failed")
+        db.session.rollback()
+        return {"ok": False, "reason": "repair failed"}
+    return {"ok": True, "streak": {
+        "current": int(st.current or 0), "longest": int(st.longest or 0),
+        "last_active": st.last_active_date.isoformat()}}
+
+
+# ---- Team leagues (Phase 4) ----
+# Distinct from the weekly ISO-week cohorts (LeagueMember): a team league
+# is a named, invite-code group. Privacy rule: the board endpoint returns
+# ONLY the requesting user's rank + total members + own XP — never other
+# members' identities or scores. (The pre-existing weekly cohort board
+# already exposes member names; that behavior is left untouched, not
+# expanded to team leagues.)
+
+def create_team_league(user_id: int, name: str) -> dict[str, Any]:
+    """Create a named team league; the creator auto-joins. Never raises."""
+    try:
+        from unified_app import TeamLeague, TeamLeagueMember, db
+        import secrets
+        user_id = int(user_id)
+        clean = (name or "").strip()[:120]
+        if not clean:
+            return {"ok": False, "reason": "name required"}
+        code = secrets.token_hex(8)
+        league = TeamLeague(name=clean, invite_code=code,
+                            created_by=user_id)
+        db.session.add(league)
+        db.session.flush()
+        db.session.add(TeamLeagueMember(league_id=league.id,
+                                        user_id=user_id))
+        db.session.commit()
+        return {"ok": True, "league": {"id": league.id, "name": clean,
+                                       "invite_code": code}}
+    except Exception:
+        log.exception("create_team_league failed")
+        try:
+            from unified_app import db
+            db.session.rollback()
+        except Exception:
+            pass
+        return {"ok": False}
+
+
+def join_team_league_by_code(user_id: int, code: str) -> dict[str, Any]:
+    """Join a team league via its invite code. Never raises."""
+    try:
+        from unified_app import TeamLeague, TeamLeagueMember, db
+        user_id = int(user_id)
+        clean = (code or "").strip()
+        if not clean:
+            return {"ok": False, "reason": "bad code"}
+        league = TeamLeague.query.filter_by(invite_code=clean).first()
+        if league is None:
+            return {"ok": False, "reason": "bad code"}
+        existing = (TeamLeagueMember.query
+                    .filter_by(league_id=league.id, user_id=user_id).first())
+        if existing is not None:
+            return {"ok": True, "duplicate": True, "league_id": league.id}
+        db.session.add(TeamLeagueMember(league_id=league.id,
+                                        user_id=user_id))
+        db.session.commit()
+        return {"ok": True, "league_id": league.id}
+    except Exception:
+        log.exception("join_team_league_by_code failed")
+        try:
+            from unified_app import db
+            db.session.rollback()
+        except Exception:
+            pass
+        return {"ok": False}
+
+
+def team_league_boards(user_id: int) -> list[dict[str, Any]]:
+    """The user's team leagues: own rank + member count + own XP only.
+    Rank = 1 + members with strictly greater lifetime XP. Never raises."""
+    try:
+        from unified_app import TeamLeague, TeamLeagueMember, XPLedger, db
+        user_id = int(user_id)
+        memberships = (TeamLeagueMember.query
+                       .filter_by(user_id=user_id).all())
+        league_ids = [m.league_id for m in memberships]
+        if not league_ids:
+            return []
+        leagues = (TeamLeague.query.filter(
+            TeamLeague.id.in_(league_ids)).order_by(TeamLeague.name).all())
+        totals = dict(db.session.query(XPLedger.user_id,
+                                       db.func.sum(XPLedger.xp))
+                      .filter(XPLedger.user_id.in_(
+                          [m.user_id for m in
+                           TeamLeagueMember.query.filter(
+                               TeamLeagueMember.league_id.in_(league_ids)).all()]))
+                      .group_by(XPLedger.user_id).all())
+        out = []
+        for league in leagues:
+            members = (TeamLeagueMember.query
+                       .filter_by(league_id=league.id).all())
+            my_xp = int(totals.get(user_id, 0) or 0)
+            rank = 1 + sum(1 for m in members
+                           if int(totals.get(m.user_id, 0) or 0) > my_xp)
+            out.append({"id": league.id, "name": league.name,
+                        "members_count": len(members),
+                        "my_rank": rank, "my_xp": my_xp})
+        return out
+    except Exception:
+        log.exception("team_league_boards failed")
+        try:
+            from unified_app import db
+            db.session.rollback()
+        except Exception:
+            pass
+        return []

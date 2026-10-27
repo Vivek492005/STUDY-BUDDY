@@ -29,6 +29,38 @@
 
     function $(id) { return document.getElementById(id); }
 
+    // Phase 2 handoff helpers: the backend may expose role cards and
+    // handoff links under several field names; resolve tolerantly and
+    // never render a dead link or an empty tracker button.
+    function pick(obj) {
+        for (var i = 1; i < arguments.length; i++) {
+            var v = obj ? obj[arguments[i]] : undefined;
+            if (v !== undefined && v !== null && v !== '') return v;
+        }
+        return undefined;
+    }
+
+    function safeUrl(u) {
+        if (typeof u !== 'string' || !u) return null;
+        if (u.charAt(0) === '/' || /^https?:\/\//i.test(u)) return u;
+        return null;
+    }
+
+    function linkFrom(raw) {
+        if (typeof raw === 'string') return { url: safeUrl(raw), title: null };
+        if (raw && typeof raw === 'object') {
+            return { url: safeUrl(raw.url || raw.link || null), title: raw.title || null };
+        }
+        return { url: null, title: null };
+    }
+
+    function csrfHeaders(extra) {
+        var headers = extra || {};
+        var tokenMeta = document.querySelector('meta[name="csrf-token"]');
+        if (tokenMeta) headers['X-CSRFToken'] = tokenMeta.getAttribute('content');
+        return headers;
+    }
+
     function render() {
         var q = questions[current];
         if (!q) return;
@@ -148,11 +180,157 @@
                 var link = (c.tool_links || [])[ti] || '/resume';
                 html += '<a href="' + esc(link) + '">' + esc(t) + '</a>';
             });
-            html += '</div></div>';
+            html += '</div>';
+            // Phase 2: role cards + handoffs (render only what the backend sent).
+            var roleCards = pick(c, 'role_cards', 'roles', 'career_roles', 'cards');
+            if (Array.isArray(roleCards) && roleCards.length) {
+                html += '<div style="font-size:0.85rem;font-weight:700;margin:1rem 0 0.4rem;">Roles to explore</div>';
+                html += '<div class="as-role-grid">';
+                roleCards.forEach(function (r) {
+                    var title = (r && (r.title || r.name)) || '';
+                    var desc = (r && (r.description || r.blurb || r.summary)) || '';
+                    var url = safeUrl(r && (r.url || r.link));
+                    html += '<div class="b-card b-card--lite as-role-card"><h4>' + esc(title) + '</h4>';
+                    if (desc) html += '<p>' + esc(desc) + '</p>';
+                    if (Array.isArray(r.skills) && r.skills.length) {
+                        html += '<div class="as-skills">' + r.skills.map(function (s) {
+                            return '<span class="as-chip">' + esc(s) + '</span>';
+                        }).join('') + '</div>';
+                    }
+                    if (url) html += '<a class="as-role-link" href="' + esc(url) + '">Explore role &rarr;</a>';
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            var trackerPayload = pick(c, 'tracker_payload');
+            var primaryRole = pick(c, 'tracker_role', 'primary_role', 'tracker_role_title');
+            if (!primaryRole && Array.isArray(roleCards) && roleCards.length) {
+                primaryRole = roleCards[0].title || roleCards[0].name || null;
+            }
+            var roadmap = linkFrom(pick(c, 'roadmap_url', 'roadmap_link', 'roadmap'));
+            if (!roadmap.url) {
+                // Backend handoffs may carry a roadmap skill id instead of a URL.
+                var roadmapSkill = pick(c, 'roadmap_skill');
+                if (roadmapSkill) roadmap = { url: '/learn/roadmaps/' + encodeURIComponent(roadmapSkill), title: null };
+            }
+            var quiz = linkFrom(pick(c, 'quiz_url', 'quiz_link', 'quiz'));
+            if (!quiz.url && pick(c, 'quiz_skill')) {
+                // No quiz deep-link param exists; the picker page is the honest target.
+                quiz = { url: '/learn/quizzes', title: null };
+            }
+            var showTrack = !!(trackerPayload || primaryRole);
+            if (showTrack || roadmap.url || quiz.url) {
+                var tp = (trackerPayload && typeof trackerPayload === 'object') ? trackerPayload : null;
+                var tCompany = tp ? (tp.company || '') : (pick(c, 'tracker_company') || c.name || '');
+                var tRole = tp ? (tp.role || '') : (primaryRole || '');
+                html += '<div class="as-handoffs">';
+                if (showTrack) {
+                    html += '<button type="button" class="as-track-btn" data-company="' + esc(tCompany) + '" data-role="' + esc(tRole) + '" data-cluster="' + esc(c.name || '') + '">Add to tracker</button>';
+                    html += '<span class="as-track-msg" aria-live="polite"></span>';
+                }
+                if (roadmap.url) html += '<a class="as-handoff-link" href="' + esc(roadmap.url) + '">' + esc(roadmap.title || 'View roadmap') + '</a>';
+                if (quiz.url) html += '<a class="as-handoff-link" href="' + esc(quiz.url) + '">' + esc(quiz.title || 'Practice quiz') + '</a>';
+                html += '</div>';
+            }
+            html += '</div>';
         });
         box.innerHTML = html;
+        // Wire "Add to tracker" buttons (delegated per rendered button).
+        Array.prototype.forEach.call(box.querySelectorAll('.as-track-btn'), function (btn) {
+            btn.addEventListener('click', function () {
+                var msg = btn.nextElementSibling;
+                var company = btn.getAttribute('data-company') || '';
+                var role = btn.getAttribute('data-role') || '';
+                var cluster = btn.getAttribute('data-cluster') || '';
+                if (!company || !role) {
+                    if (msg) msg.textContent = 'This path has no role to track yet.';
+                    return;
+                }
+                btn.disabled = true;
+                btn.textContent = 'Adding…';
+                fetch('/tracker/add', {
+                    method: 'POST',
+                    headers: csrfHeaders({ 'Content-Type': 'application/json' }),
+                    body: JSON.stringify({
+                        company: company, role: role, stage: 'wishlist',
+                        notes: cluster ? ('From career discovery: ' + cluster) : 'From career discovery'
+                    })
+                })
+                    .then(function (resp) {
+                        return resp.json().then(function (data) {
+                            return { status: resp.status, data: data };
+                        });
+                    })
+                    .then(function (out) {
+                        if (out.status === 201 || (out.data && out.data.success)) {
+                            btn.textContent = 'Added to tracker';
+                            if (msg) msg.textContent = '';
+                            var link = document.createElement('a');
+                            link.href = '/tracker';
+                            link.className = 'as-handoff-link';
+                            link.textContent = 'Open tracker';
+                            if (msg) msg.appendChild(link);
+                        } else if (out.status === 401) {
+                            btn.disabled = false;
+                            btn.textContent = 'Add to tracker';
+                            if (msg) msg.textContent = 'Log in to track this path.';
+                        } else {
+                            btn.disabled = false;
+                            btn.textContent = 'Add to tracker';
+                            if (msg) msg.textContent = (out.data && out.data.error) || 'Could not add to tracker.';
+                        }
+                    })
+                    .catch(function () {
+                        btn.disabled = false;
+                        btn.textContent = 'Add to tracker';
+                        if (msg) msg.textContent = 'Could not add to tracker. Check your connection.';
+                    });
+            });
+        });
         window.scrollTo({ top: 0, behavior: 'smooth' });
         window.renderAssessmentResults = renderResults;
+    }
+
+    // Phase 2: past attempts on the saved-result page. Silent on failure.
+    function initHistory() {
+        var sec = document.getElementById('asHistory');
+        if (!sec) return;
+        fetch('/api/career/assessment/history', { headers: { 'Accept': 'application/json' } })
+            .then(function (resp) {
+                if (!resp.ok) throw new Error('history unavailable');
+                return resp.json();
+            })
+            .then(function (body) {
+                if (!body || !body.success) throw new Error('history unavailable');
+                var list = document.getElementById('asHistoryList');
+                var countEl = document.getElementById('asHistoryCount');
+                if (!list) return;
+                var attempts = body.attempts || [];
+                var count = (body.count != null ? body.count : attempts.length);
+                if (countEl) countEl.textContent = count + ' past attempt' + (count === 1 ? '' : 's');
+                list.textContent = '';
+                if (!attempts.length) {
+                    list.textContent = 'No past attempts yet — your first result is above.';
+                } else {
+                    attempts.forEach(function (a) {
+                        var row = document.createElement('div');
+                        row.className = 'as-history-row';
+                        var d = a.completed_at ? new Date(a.completed_at) : null;
+                        var dateStr = (d && !isNaN(d.getTime()))
+                            ? d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+                            : (a.completed_at || '');
+                        var namesRaw = a.top_cluster_names || a.top_clusters || [];
+                        var names = namesRaw.map(function (n) {
+                            return (n && typeof n === 'object') ? (n.name || n.id || '') : String(n);
+                        }).filter(function (n) { return !!n; });
+                        row.appendChild(document.createTextNode(
+                            (dateStr ? dateStr + ' — ' : '') + (names.length ? names.join(', ') : 'Assessment')));
+                        list.appendChild(row);
+                    });
+                }
+                sec.hidden = false;
+            })
+            .catch(function () { sec.hidden = true; });
     }
 
     // Saved-result page: server embeds clusters JSON; render on load.
@@ -163,6 +341,7 @@
         renderResults({ clusters: data.clusters || [], ai_powered: !!data.ai_powered }, null, mount);
         var head = mount.querySelector('.as-head p');
         if (head) head.innerHTML = '<a href="/dashboard" style="color:var(--accent-secondary);">&larr; Back to dashboard</a> · <a href="/assessment" style="color:var(--accent-secondary);">Retake quiz</a>';
+        initHistory();
     }
 
     document.addEventListener('DOMContentLoaded', function () {

@@ -137,6 +137,111 @@ def lookup_city(role: str, city: str, band: str) -> dict[str, Any] | None:
     return rows[0] if rows else None
 
 
+# ---- Phase 2: company-type split + city cost-of-living adjustments ----
+# Both are INDICATIVE multipliers on the curated base ranges — they never
+# replace the base entries, and unknown inputs yield None (never a guess).
+
+def company_type_adjusted(entry: dict[str, Any],
+                          company_type: str) -> dict[str, Any] | None:
+    """Scale one range dict by company type (product/startup/mnc/service).
+
+    Returns a new dict with adjusted min/median/max + the multiplier, or
+    None for an unknown type / malformed entry. Never raises."""
+    try:
+        data = load_dataset()
+        mods = (data.get("company_type_modifiers") or {}).get("modifiers") or {}
+        key = (company_type or "").strip().lower()
+        if key not in mods:
+            return None
+        mult = float(mods[key])
+        out = {
+            "role": entry["role"],
+            "tier": entry["tier"],
+            "experience_band": entry["experience_band"],
+            "min_lpa": round(float(entry["min_lpa"]) * mult, 1),
+            "median_lpa": round(float(entry["median_lpa"]) * mult, 1),
+            "max_lpa": round(float(entry["max_lpa"]) * mult, 1),
+            "company_type": key,
+            "multiplier": mult,
+        }
+        return out
+    except (SalaryDataError, KeyError, TypeError, ValueError):
+        return None
+
+
+def city_multiplier(city: str) -> float | None:
+    """Indicative cost-of-living multiplier vs the baseline city (Bengaluru
+    = 1.00), or None for an unknown city. Never raises."""
+    try:
+        data = load_dataset()
+        mults = (data.get("city_multipliers") or {}).get("multipliers") or {}
+        for name, val in mults.items():
+            if name.lower() == (city or "").strip().lower():
+                return float(val)
+        return None
+    except (SalaryDataError, TypeError, ValueError):
+        return None
+
+
+def city_adjusted_median(median_lpa: float, city: str) -> dict[str, Any] | None:
+    """Adjust one median by a city's multiplier. None for unknown city."""
+    mult = city_multiplier(city)
+    if mult is None:
+        return None
+    try:
+        return {"city": city.strip(), "multiplier": mult,
+                "adjusted_median": round(float(median_lpa) * mult, 1)}
+    except (TypeError, ValueError):
+        return None
+
+
+# ---- Phase 2: negotiation scripts (honest, no deception tactics) ----
+
+SCRIPTS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                            "data", "negotiation_scripts.json")
+
+
+@lru_cache(maxsize=1)
+def load_negotiation_scripts() -> list[dict[str, Any]]:
+    """Load the negotiation script bank (cached). [] if unreadable."""
+    try:
+        with open(SCRIPTS_PATH, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return []
+    scripts = data.get("scripts") if isinstance(data, dict) else None
+    if not isinstance(scripts, list):
+        return []
+    out = []
+    for s in scripts:
+        if not isinstance(s, dict) or not s.get("id") or not s.get("script"):
+            continue
+        out.append({"id": str(s["id"]), "title": str(s.get("title") or ""),
+                    "situation": str(s.get("situation") or ""),
+                    "script": str(s["script"]),
+                    "tip": str(s.get("tip") or "")})
+    return out
+
+
+def scripts_for_situation(situation: str | None) -> list[dict[str, Any]]:
+    """All scripts, or those matching one situation (unknown -> [])."""
+    scripts = load_negotiation_scripts()
+    if not situation:
+        return list(scripts)
+    want = situation.strip().lower()
+    return [s for s in scripts if s["situation"] == want]
+
+
+def disclaimer() -> str:
+    """The honesty label every salary API response must carry."""
+    try:
+        return load_dataset()["meta"]["disclaimer"]
+    except (SalaryDataError, KeyError):
+        return ("Indicative market ranges curated for student guidance. "
+                "Not live-scraped; actual offers vary by company, skills, "
+                "and negotiation.")
+
+
 # ---- Live Data Engine: freshness ----
 SALARY_STALE_AFTER_DAYS = 90  # curated indicative ranges; review quarterly
 

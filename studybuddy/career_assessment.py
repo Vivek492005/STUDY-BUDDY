@@ -1,6 +1,6 @@
 """Career-discovery assessment (Wave 1 feature #7).
 
-A guided 16-question quiz (interests / strengths / work-style / subjects).
+A guided 28-question quiz (interests / strengths / work-style / subjects).
 Deterministic, server-side scoring: every answer option carries transparent
 weights per career cluster; cluster match % = earned / max-possible.
 
@@ -66,6 +66,69 @@ CLUSTERS = {
         "tools": ["JD-matched ATS scoring", "LinkedIn grader"],
         "tool_links": ["/resume#jd-match", "/resume#linkedin-grader"],
     },
+    # ---- Phase 2 clusters (no overlap with the original eight) ----
+    "devops": {
+        "name": "DevOps & Platform Engineering",
+        "tagline": "Automate releases and keep services running.",
+        "skills": ["Linux", "Docker & Kubernetes", "CI/CD pipelines", "Infrastructure as code"],
+        "tools": ["GitHub analyzer", "Application tracker"],
+        "tool_links": ["/profile", "/tracker"],
+    },
+    "mobile": {
+        "name": "Mobile Development",
+        "tagline": "Build the apps people carry everywhere.",
+        "skills": ["Kotlin or Swift", "Flutter or React Native", "Mobile UI patterns", "App store releases"],
+        "tools": ["GitHub analyzer", "Application tracker"],
+        "tool_links": ["/profile", "/tracker"],
+    },
+    "qa_testing": {
+        "name": "QA & Test Engineering",
+        "tagline": "Break software on purpose so users never have to.",
+        "skills": ["Test planning", "Automation (Selenium/Playwright)", "API testing", "Bug reporting"],
+        "tools": ["GitHub analyzer", "Application tracker"],
+        "tool_links": ["/profile", "/tracker"],
+    },
+    "embedded": {
+        "name": "Embedded Systems & IoT",
+        "tagline": "Write software that lives inside hardware.",
+        "skills": ["C/C++", "Microcontrollers", "Operating systems basics", "Sensors & protocols"],
+        "tools": ["GitHub analyzer", "Application tracker"],
+        "tool_links": ["/profile", "/tracker"],
+    },
+    "game_dev": {
+        "name": "Game Development",
+        "tagline": "Build worlds, mechanics, and play.",
+        "skills": ["C++/C#", "Unity or Unreal", "Game mechanics", "Computer graphics basics"],
+        "tools": ["GitHub analyzer", "Application tracker"],
+        "tool_links": ["/profile", "/tracker"],
+    },
+    "data_engineering": {
+        "name": "Data Engineering",
+        "tagline": "Build the pipelines data science runs on.",
+        "skills": ["SQL", "Python", "ETL pipelines", "Data warehousing basics"],
+        "tools": ["JD-matched ATS scoring", "Application tracker"],
+        "tool_links": ["/resume#jd-match", "/tracker"],
+    },
+}
+
+# Per-cluster handoffs for the result page. roadmap_skill / quiz_skill refer
+# to real roadmap skill ids and quiz slugs; None means no matching page
+# exists, so the frontend must render no link (never a dead link).
+CLUSTER_HANDOFFS = {
+    "swe": {"roadmap_skill": "python", "quiz_skill": "dsa"},
+    "data_ai": {"roadmap_skill": "machine-learning", "quiz_skill": "machine-learning"},
+    "design": {"roadmap_skill": None, "quiz_skill": None},
+    "security": {"roadmap_skill": "cybersecurity-basics", "quiz_skill": "linux"},
+    "cloud": {"roadmap_skill": "cloud-aws", "quiz_skill": "linux"},
+    "pm": {"roadmap_skill": None, "quiz_skill": None},
+    "marketing": {"roadmap_skill": None, "quiz_skill": None},
+    "analytics": {"roadmap_skill": "data-analysis", "quiz_skill": "data-analysis"},
+    "devops": {"roadmap_skill": "devops-cicd", "quiz_skill": "linux"},
+    "mobile": {"roadmap_skill": None, "quiz_skill": None},
+    "qa_testing": {"roadmap_skill": None, "quiz_skill": None},
+    "embedded": {"roadmap_skill": "cpp", "quiz_skill": "cpp"},
+    "game_dev": {"roadmap_skill": "cpp", "quiz_skill": "cpp"},
+    "data_engineering": {"roadmap_skill": "sql", "quiz_skill": "sql"},
 }
 
 # Each option maps to {cluster_id: points (0-2)}.
@@ -185,6 +248,91 @@ QUESTIONS = [
          {"text": "\u201cStorytelling with Data\u201d", "weights": {"analytics": 2, "data_ai": 1, "marketing": 1}},
          {"text": "\u201cDon't Make Me Think\u201d", "weights": {"design": 2, "pm": 1}},
          {"text": "\u201cThe Phoenix Project\u201d", "weights": {"cloud": 2, "pm": 1}},
+     ]},
+    # ---- Phase 2: specialist paths (every cluster keeps >= 2 questions) ----
+    {"id": "q17", "dimension": "interests", "text": "Which side project would you start this month?",
+     "options": [
+         {"text": "A mobile app for your campus", "weights": {"mobile": 2, "swe": 1}},
+         {"text": "A CI/CD pipeline for a class project", "weights": {"devops": 2, "cloud": 1}},
+         {"text": "Breaking a demo app on purpose to find bugs", "weights": {"qa_testing": 2, "security": 1}},
+         {"text": "A tiny game prototype", "weights": {"game_dev": 2, "design": 1}},
+     ]},
+    {"id": "q18", "dimension": "interests", "text": "Which system would you love to build?",
+     "options": [
+         {"text": "A data pipeline that cleans and moves data daily", "weights": {"data_engineering": 2, "data_ai": 1}},
+         {"text": "Firmware for a small robot or sensor", "weights": {"embedded": 2, "swe": 1}},
+         {"text": "A one-click deploy system for a team", "weights": {"devops": 2, "cloud": 1}},
+         {"text": "An automated test suite for an app", "weights": {"qa_testing": 2, "mobile": 1}},
+     ]},
+    {"id": "q19", "dimension": "strengths", "text": "What kind of detail work do you enjoy?",
+     "options": [
+         {"text": "Debugging hardware that refuses to boot", "weights": {"embedded": 2}},
+         {"text": "Finding edge cases nobody thought of", "weights": {"qa_testing": 2, "security": 1}},
+         {"text": "Making builds and releases boringly reliable", "weights": {"devops": 2, "cloud": 1}},
+         {"text": "Tuning game mechanics until they feel right", "weights": {"game_dev": 2, "design": 1}},
+     ]},
+    {"id": "q20", "dimension": "strengths", "text": "Which skill would you happily practise for a month?",
+     "options": [
+         {"text": "SQL and building data pipelines", "weights": {"data_engineering": 2, "analytics": 1}},
+         {"text": "Polishing a mobile app's screens and flow", "weights": {"mobile": 2, "design": 1}},
+         {"text": "Infrastructure as code and containers", "weights": {"devops": 2}},
+         {"text": "Low-level C/C++ programming", "weights": {"embedded": 2, "swe": 1}},
+     ]},
+    {"id": "q21", "dimension": "workstyle", "text": "Pick a team ritual you'd look forward to:",
+     "options": [
+         {"text": "Release-train reviews and incident post-mortems", "weights": {"devops": 2}},
+         {"text": "Testing the app on ten different phones", "weights": {"mobile": 2, "qa_testing": 1}},
+         {"text": "Hardware lab days with boards and sensors", "weights": {"embedded": 2}},
+         {"text": "Playtesting sessions with real players", "weights": {"game_dev": 2, "design": 1}},
+     ]},
+    {"id": "q22", "dimension": "workstyle", "text": "Your idea of a satisfying workday:",
+     "options": [
+         {"text": "Writing test plans and watching them go green", "weights": {"qa_testing": 2}},
+         {"text": "A pipeline that ran clean overnight", "weights": {"data_engineering": 2}},
+         {"text": "Shipping an app update users notice", "weights": {"mobile": 2}},
+         {"text": "A game level that finally plays well", "weights": {"game_dev": 2, "swe": 1}},
+     ]},
+    {"id": "q23", "dimension": "subjects", "text": "Which elective would you pick next semester?",
+     "options": [
+         {"text": "Operating systems", "weights": {"embedded": 2, "devops": 1}},
+         {"text": "Databases and data engineering", "weights": {"data_engineering": 2, "analytics": 1}},
+         {"text": "Mobile application development", "weights": {"mobile": 2}},
+         {"text": "Game design and development", "weights": {"game_dev": 2}},
+     ]},
+    {"id": "q24", "dimension": "subjects", "text": "A workshop you'd sign up for this weekend:",
+     "options": [
+         {"text": "Robotics and IoT with microcontrollers", "weights": {"embedded": 2}},
+         {"text": "Software testing and automation", "weights": {"qa_testing": 2}},
+         {"text": "Cloud infrastructure and deployment", "weights": {"devops": 2, "cloud": 1}},
+         {"text": "Computer graphics and game engines", "weights": {"game_dev": 2, "design": 1}},
+     ]},
+    {"id": "q25", "dimension": "interests", "text": "Which rabbit hole would you fall into?",
+     "options": [
+         {"text": "Game devlogs and how games are made", "weights": {"game_dev": 2}},
+         {"text": "Homelab and self-hosting projects", "weights": {"devops": 2, "cloud": 1}},
+         {"text": "App teardowns: why great apps feel great", "weights": {"mobile": 2, "design": 1}},
+         {"text": "Data engineering blogs and pipeline design", "weights": {"data_engineering": 2}},
+     ]},
+    {"id": "q26", "dimension": "strengths", "text": "What patience do you have that others don't?",
+     "options": [
+         {"text": "Re-running the same checks until everything passes", "weights": {"qa_testing": 2}},
+         {"text": "Thinking across hardware and software together", "weights": {"embedded": 2}},
+         {"text": "Keeping services up while everyone else sleeps", "weights": {"devops": 2}},
+         {"text": "Telling a story through play, not words", "weights": {"game_dev": 2, "marketing": 1}},
+     ]},
+    {"id": "q27", "dimension": "workstyle", "text": "Which launch day excites you most?",
+     "options": [
+         {"text": "Your app hitting the Play Store / App Store", "weights": {"mobile": 2}},
+         {"text": "A deploy pipeline going green on the first try", "weights": {"devops": 2, "cloud": 1}},
+         {"text": "A device you programmed booting up perfectly", "weights": {"embedded": 2}},
+         {"text": "Players loving a level you designed", "weights": {"game_dev": 2}},
+     ]},
+    {"id": "q28", "dimension": "subjects", "text": "Your dream internship team:",
+     "options": [
+         {"text": "A mobile product team", "weights": {"mobile": 2}},
+         {"text": "A platform / infrastructure team", "weights": {"devops": 2}},
+         {"text": "A data platform team", "weights": {"data_engineering": 2, "data_ai": 1}},
+         {"text": "A QA and automation team", "weights": {"qa_testing": 2}},
      ]},
 ]
 

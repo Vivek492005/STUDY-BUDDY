@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bento.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/resume_style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/kinetic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2314b8a6'/><circle cx='50' cy='50' r='18' fill='none' stroke='white' stroke-width='8'/><path d='M50 32v-12M50 80v-12M32 50H20M80 50H68' stroke='white' stroke-width='8' stroke-linecap='round'/></svg>">
     <style>
         .opp-wrap { max-width: 1100px; margin: 0 auto; padding: 6.5rem 1.2rem 4rem; }
@@ -60,6 +61,28 @@
         .opp-count { font-size: 0.82rem; color: var(--text-muted, #94a3b8); margin-bottom: 0.8rem; }
         .opp-schema { margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted, #94a3b8); }
         .opp-schema code { background: rgba(255,255,255,0.06); padding: 0.1rem 0.4rem; border-radius: 6px; font-size: 0.78rem; }
+        /* Phase 3: borderless (BLEND) additions — spacing + typography only, no boxes. */
+        .opp-refresh { font-size: 0.8rem; color: var(--text-muted, #94a3b8); margin: -0.6rem 0 1.2rem; }
+        .opp-alerts { margin: 0 0 1.2rem; font-size: 0.88rem; }
+        .opp-alerts h2 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+        .opp-alerts ul { list-style: none; margin: 0 0 0.7rem; padding: 0; }
+        .opp-alerts li { margin-bottom: 0.3rem; }
+        .opp-alerts .due-label { font-weight: 700; color: var(--accent-warning); margin-right: 0.4rem; }
+        .opp-alerts a { color: var(--text-main, #f8fafc); font-weight: 600; }
+        .opp-matches { margin: 0 0 1.6rem; }
+        .opp-matches h2 { font-size: 1.1rem; margin-bottom: 0.7rem; }
+        .opp-match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.8rem 1.4rem; }
+        .opp-match { padding-bottom: 0.6rem; }
+        .opp-match a { font-weight: 700; color: var(--text-main, #f8fafc); text-decoration: none; }
+        .opp-match a:hover { text-decoration: underline; }
+        .opp-score { font-size: 0.78rem; font-weight: 800; color: var(--accent-primary); margin-left: 0.4rem; white-space: nowrap; }
+        .opp-reason { font-size: 0.82rem; color: var(--text-muted, #94a3b8); margin-top: 0.15rem; }
+        .opp-inline-msg { font-size: 0.82rem; color: var(--text-muted, #94a3b8); margin-top: 0.3rem; }
+        .opp-inline-msg.err { color: var(--accent-danger); }
+        .opp-elig-detail { font-size: 0.85rem; color: #cbd5e1; margin-top: 0.3rem; }
+        .opp-elig-detail ul { margin: 0.3rem 0 0 1.1rem; padding: 0; }
+        .opp-elig-detail li { margin-bottom: 0.2rem; }
+        .opp-track.done { opacity: 0.65; }
         @media (prefers-reduced-motion: reduce) { .opp-btn:hover, .opp-link:hover { filter: none; } }
     </style>
     <style>
@@ -88,7 +111,30 @@
         </div>
 
         <div class="opp-notice">{{ meta.notice }} <strong>Last updated: {{ meta.last_updated }}.</strong></div>
-        <p class="opp-fresh"><span class="b-pulse"></span>{{ freshness }}</p>
+        {% if freshness_status is defined and freshness_status %}
+        <p class="fresh-line">
+            <span class="{{ 'pill-indicative' if freshness_status.stale else 'pill-verified' }}">{{ 'Stale' if freshness_status.stale else 'Fresh' }}</span>
+            <span>Opportunity data{% if freshness_status.last_updated is defined and freshness_status.last_updated %} updated {{ freshness_status.last_updated|e }}{% endif %}</span>
+            {% if freshness_status.stale and freshness_status.message is defined and freshness_status.message %}<span class="fresh-msg">{{ freshness_status.message|e }}</span>{% endif %}
+        </p>
+        {% elif freshness is defined and freshness %}
+        <p class="opp-fresh"><span class="b-pulse"></span>{{ freshness|e }}</p>
+        {% endif %}
+
+        <p class="opp-refresh" id="oppRefreshLine" hidden></p>
+
+        {% if is_authed %}
+        <div class="opp-alerts" id="oppAlerts" hidden>
+            <h2>Deadlines on your saved list</h2>
+            <div id="oppAlertBuckets"></div>
+        </div>
+
+        <section class="opp-matches" id="oppMatches" hidden aria-label="Matched for you">
+            <h2>Matched for you</h2>
+            <div class="opp-match-grid" id="oppMatchList"></div>
+            <p class="opp-inline-msg" id="oppMatchEmpty" hidden>No strong matches yet — complete your career discovery to improve matches.</p>
+        </section>
+        {% endif %}
 
         <form class="opp-filters b-card b-reveal" method="get" action="{{ url_for('opportunity_board') }}">
             <div>
@@ -140,13 +186,22 @@
                         <span class="left">Rolling — check the official site</span>
                     {% endif %}
                 </div>
-                <p class="opp-elig">{{ o.eligibility }}</p>
+                <p class="opp-elig">{% if o.eligibility is string %}{{ o.eligibility }}{% else %}{{ o.eligibility|join('; ') }}{% endif %}</p>
                 <div class="opp-actions">
                     <a class="opp-link" href="{{ o.link }}" target="_blank" rel="noopener">Official site ↗</a>
                     {% if is_authed %}
                     <button class="opp-bm {% if o.id in bookmarked %}saved{% endif %}" type="button" data-bookmarked="{{ '1' if o.id in bookmarked else '0' }}">{{ '★ Saved' if o.id in bookmarked else '☆ Save' }}</button>
+                    <button class="opp-bm opp-track" type="button" data-track-state="idle">Add to tracker</button>
+                    {% if o.deadline %}
+                    <button class="opp-bm opp-ics" type="button">Add to calendar (.ics)</button>
+                    {% endif %}
+                    <button class="opp-bm opp-elig-btn" type="button" aria-expanded="false">Eligibility</button>
                     {% endif %}
                 </div>
+                {% if is_authed %}
+                <div class="opp-elig-detail" id="elig-{{ o.id }}" hidden></div>
+                <p class="opp-inline-msg" id="msg-{{ o.id }}" hidden></p>
+                {% endif %}
             </article>
             {% else %}
             <div class="opp-empty">No opportunities match these filters.</div>

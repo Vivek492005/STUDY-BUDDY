@@ -1,0 +1,74 @@
+/* ==========================================================================
+   career-polish.css — UI polish pass over the 9 career pages (Phase 5+).
+   Loaded AFTER kinetic.css on career pages only. Rules here are additive:
+   no existing component is restyled on desktop, no honesty copy is touched,
+   and nothing here changes behavior — only rhythm, contrast, tap targets,
+   table overflow, and focus visibility.
+   ========================================================================== */
+
+/* ---------- 1. Tables: scroll inside their card, never push the page ---- */
+.cp-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cp-table-scroll > table { min-width: 0; }
+
+/* ---------- 2. Opportunity match cards read as cards, like the grid below */
+.opp-match {
+  background: var(--b-card);
+  border: 1px solid var(--b-border);
+  border-radius: var(--b-radius-sm);
+  padding: 1rem 1.2rem;
+}
+.opp-match a { display: inline-block; margin-bottom: 0.15rem; }
+
+/* ---------- 3. Builder preview is LIGHT — kinetic's white headings leak in
+   (body.sb-app h2/h3 { color:#fff } beats .pv-body h2 on specificity).
+   These two-class selectors win it back without touching kinetic.css. ----- */
+.pb-preview .pv-body h2,
+.pb-preview .pv-proj h3 { color: #0f172a; }
+.pb-preview .pv-empty { color: #64748b; } /* was #94a3b8: ~2.5:1 on paper */
+
+/* ---------- 4. Empty states: visible, calm, consistent ------------------- */
+#oppMatchEmpty,
+#mn-match-empty,
+#rt-learnings-empty,
+#mn-qa-mine > p,
+#hr-goal-list > p,
+#hr-shared-list > p {
+  color: var(--b-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0;
+  padding: 0.6rem 0;
+}
+
+/* ---------- 5. Focus visibility for Phase 3-5 custom controls ----------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #c8ff2e;
+  outline-offset: 2px;
+}
+
+/* ---------- 6. Small buttons reach a 44px tap target on mobile ---------- */
+@media (max-width: 560px) {
+  .b-btn--sm { min-height: 44px; padding: 11px 16px; }
+
+  /* Tables: compact cells so the in-card scroll stays short. */
+  .sal-table th, .sal-table td,
+  .hr-hist td,
+  .rt-table th, .rt-table td { padding: 0.4rem 0.35rem; }
+  .sal-table, .hr-hist, .rt-table { font-size: 0.82rem; }
+
+  /* Funnel rows: label + count on row 1, bar full-width on row 2. */
+  .rt-fstage { grid-template-columns: 1fr auto; gap: 0.4rem 0.8rem; }
+  .rt-fstage .rt-bar { grid-column: 1 / -1; }
+  .rt-fstage .rt-label { font-size: 0.85rem; }
+  .rt-fstage .rt-count { font-size: 0.78rem; }
+
+  /* Portfolio editor rows: stack inputs; remove button right-aligned. */
+  .pb-row, .pb-row3 { grid-template-columns: 1fr; }
+  .pb-row > :last-child,
+  .pb-row3 > :last-child { justify-self: end; }
+  .pb-gh-row > input { min-width: 0; flex: 1; }
+}

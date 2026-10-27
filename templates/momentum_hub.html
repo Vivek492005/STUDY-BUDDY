@@ -4,6 +4,7 @@
 {% block title %}Momentum | AI Career &amp; Research Assistant{% endblock %}
 {% block head %}
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -47,14 +48,19 @@
     <div class="b-bento">
         <div class="b-card b-card--feature b-reveal">
             <div style="display:flex;gap:1.2rem;align-items:center;">
-                <div class="b-score-ring" style="--b-score:{{ (m.streak.current / (m.streak.longest if m.streak.longest > 0 else 1) * 100) | round(0) }};" role="img" aria-label="{{ m.streak.current }} day streak, longest {{ m.streak.longest }}"><span>{{ m.streak.current }}</span></div>
+                <div class="b-score-ring" style="--b-score:{{ (m.streak.current / (m.streak.longest if m.streak.longest > 0 else 1) * 100) | round(0) }};" role="img" aria-label="{{ m.streak.current }} day streak, longest {{ m.streak.longest }}"><span id="mm-streak-ring-num">{{ m.streak.current }}</span></div>
                 <div>
-                    <h3 style="margin:0;">{{ m.streak.current }}-day streak</h3>
+                    <h3 style="margin:0;" id="mm-streak-heading">{{ m.streak.current }}-day streak</h3>
                     <p style="color:var(--b-muted);font-size:.88rem;margin:.3rem 0 0;">Longest: {{ m.streak.longest }} days · {% if m.streak.last_active %}last active {{ m.streak.last_active }}{% else %}no activity yet{% endif %}</p>
                     <p style="color:var(--b-muted);font-size:.85rem;margin:.3rem 0 0;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.12em;"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>
                         {{ m.streak.shields_left }} of {{ m.streak.shields_total }} streak shields left this month — a missed day is auto-repaired, no guilt.
                     </p>
+                    <p style="margin:.6rem 0 0;">
+                        <button class="b-btn b-btn--ghost b-btn--sm" id="mm-streak-repair" type="button">Repair streak</button>
+                        <span class="b-pill" id="mm-streak-repair-status" style="display:none;"></span>
+                    </p>
+                    <p class="b-form-error" id="mm-streak-repair-error" style="display:none;" role="alert"></p>
                 </div>
             </div>
         </div>
@@ -76,7 +82,7 @@
     <div class="b-bento">
         {% for q in m.quests %}
         <article class="b-card b-card--feature b-reveal" id="quest-{{ q.id }}">
-            <span class="b-tag">+{{ q.bonus }} XP</span>
+            <span class="b-tag">+{{ q.bonus }} XP</span>{% if q.kind is defined and q.kind %} <span class="b-tag">{{ q.kind }}</span>{% endif %}
             <h3 style="margin:.5rem 0;">{{ q.title }}</h3>
             <p style="color:var(--b-muted);font-size:.88rem;margin:0 0 .8rem;">{{ q.description }}</p>
             <div class="b-bar" role="progressbar" aria-valuenow="{{ q.pct }}" aria-valuemin="0" aria-valuemax="100" aria-label="{{ q.title }} progress"><i style="width:{{ q.pct }}%;"></i></div>
@@ -94,6 +100,12 @@
         {% endfor %}
     </div>
     <p class="b-form-error" id="mm-quest-error" style="display:none;" role="alert"></p>
+</section>
+
+{# ---------- Badges (Phase 4: earned values only) ---------- #}
+<section class="b-section" aria-label="Badges" id="mm-badges">
+    <div class="b-sec-head"><h2>Badge <span class="b-grad">shelf</span></h2><p>Earned badges show when you earned them. Unearned ones stay muted — no progress bars faked from thin air.</p></div>
+    <div class="b-bento" id="mm-badges-list"></div>
 </section>
 
 {# ---------- League ---------- #}
@@ -150,6 +162,38 @@
         {% endif %}
         <p class="b-form-error" id="mm-league-error" style="display:none;" role="alert"></p>
     </div>
+</section>
+
+{# ---------- Team leagues (Phase 4: invite codes, own stats only) ---------- #}
+<section class="b-section" aria-label="Team leagues">
+    <div class="b-sec-head"><h2>Team <span class="b-grad">leagues</span></h2><p>Create a league and share its invite code, or join one with a code. Only your own rank and XP are shown — never other members' names or scores.</p></div>
+    <div class="b-card b-reveal">
+        <div id="mm-team-leagues-list"></div>
+        <div style="display:grid;gap:1rem;margin-top:1rem;">
+            <form id="mm-team-create">
+                <div class="b-field">
+                    <label class="b-label" for="mm-team-name">Create a team league</label>
+                    <input class="b-input" id="mm-team-name" type="text" maxlength="120" placeholder="e.g. Placement sprint crew">
+                </div>
+                <div class="b-cta-row"><button class="b-btn b-btn--primary" type="submit">Create league</button></div>
+            </form>
+            <p id="mm-team-created" style="display:none;color:var(--b-muted);font-size:.9rem;" role="status"></p>
+            <form id="mm-team-join">
+                <div class="b-field">
+                    <label class="b-label" for="mm-team-code">Join with an invite code</label>
+                    <input class="b-input" id="mm-team-code" type="text" maxlength="64" placeholder="Paste the invite code">
+                </div>
+                <div class="b-cta-row"><button class="b-btn b-btn--primary" type="submit">Join league</button></div>
+            </form>
+        </div>
+        <p class="b-form-error" id="mm-team-error" style="display:none;" role="alert"></p>
+    </div>
+</section>
+
+{# ---------- Weekly recap (Phase 4) ---------- #}
+<section class="b-section" aria-label="Weekly recap" id="mm-recap">
+    <div class="b-sec-head"><h2>Your <span class="b-grad">week</span></h2><p>What you actually did this week — XP, quests, and career moves, all from your own activity.</p></div>
+    <div class="b-card b-reveal" id="mm-recap-body"></div>
 </section>
 
 {# ---------- Weekly reflection ---------- #}

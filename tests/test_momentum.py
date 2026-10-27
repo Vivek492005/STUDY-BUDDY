@@ -12,6 +12,7 @@ import pytest
 from studybuddy import momentum
 from studybuddy.momentum import (
     ALL_EVENT_TYPES,
+    CAREER_XP_ACTIONS,
     DAY_ONE_BONUS_XP,
     DIRECT_EVENTS,
     QUEST_TEMPLATES,
@@ -141,9 +142,12 @@ def test_quest_templates_sane():
     assert len(QUEST_TEMPLATES) >= 5
     ids = [q["id"] for q in QUEST_TEMPLATES]
     assert len(ids) == len(set(ids))
+    # Phase 4: career quests count source rows (per-ref, not per-day),
+    # so their event types are career ledger events, not XP_RULES.
+    allowed = set(XP_RULES) | {v[0] for v in CAREER_XP_ACTIONS.values()}
     for q in QUEST_TEMPLATES:
-        assert q["event_type"] in XP_RULES
-        assert 1 <= int(q["target"]) <= 7  # daily-idempotent => max 7/week
+        assert q["event_type"] in allowed
+        assert 1 <= int(q["target"]) <= 7  # weekly-counted => max 7/week
         assert q["title"] and q["description"]
 
 

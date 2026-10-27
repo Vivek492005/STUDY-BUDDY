@@ -44,11 +44,11 @@ def _board_picks():
 def test_dataset_loads():
     data = load_dataset()
     curated = [o for o in data["opportunities"] if o.get("curated", True)]
-    # 27 after the 2026-10-24 refresh (20 - 2 removed + 9 added,
-    # including the first curated hackathons).
-    assert len(curated) == 27
+    # 68 after the Phase 3 refresh (27 + 41 verified additions,
+    # including the first curated competitions).
+    assert len(curated) == 68
     assert set(o["type"] for o in curated) == {
-        "internship", "scholarship", "exam", "hackathon"}
+        "internship", "scholarship", "exam", "hackathon", "competition"}
     # auto-refresh may have added hackathon/competition/internship entries;
     # every type in the file must still be a known type.
     from studybuddy.opportunities import TYPES
@@ -77,7 +77,9 @@ def test_sorted_by_deadline_nulls_not_present():
     curated_ids = {o["id"] for o in data["opportunities"] if o.get("curated", True)}
     opps = [o for o in list_opportunities(today=date(2026, 10, 14))
             if o["id"] in curated_ids]
-    deadlines = [o["deadline"] for o in opps]
+    # Rolling entries legitimately carry null deadlines; the sort
+    # contract covers dated entries only.
+    deadlines = [o["deadline"] for o in opps if o["deadline"] is not None]
     assert deadlines == sorted(deadlines)
 
 
@@ -87,14 +89,13 @@ def test_type_filter_and_invalid():
     counts = {}
     for o in curated:
         counts[o["type"]] = counts.get(o["type"], 0) + 1
-    # Curated counts after the 2026-10-24 refresh: 6 new exams
-    # (XAT/SNAP/UCEED/NID DAT/NIFT/MAT), 1 new scholarship (HDFC
-    # ECSS), 2 new hackathons (HackQuest/Homingo); 2 stale curated
-    # internships removed (Engage 2026, GRiD 6.0 — both unverifiable).
-    assert counts.get("exam") == 13
-    assert counts.get("scholarship") == 7
-    assert counts.get("internship") == 5
-    assert counts.get("hackathon") == 2
+    # Curated counts after the Phase 3 refresh (verified from the file):
+    # 41 real additions, including the first curated competitions.
+    assert counts.get("exam") == 25
+    assert counts.get("scholarship") == 20
+    assert counts.get("internship") == 13
+    assert counts.get("hackathon") == 4
+    assert counts.get("competition") == 6
     # filtered listing returns only that type (auto entries included)
     for o in list_opportunities(opp_type="hackathon"):
         assert o["type"] == "hackathon"

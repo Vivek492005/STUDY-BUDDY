@@ -4,6 +4,7 @@
 {% block title %}Rejection retrospective — {{ application.company }} | AI Career &amp; Research Assistant{% endblock %}
 {% block head %}
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
     <style>
         .rw-steps { display: flex; gap: .5rem; margin: 1.2rem 0 1.6rem; flex-wrap: wrap; }
         .rw-step { flex: 1; min-width: 140px; padding: .7rem .9rem; border-radius: 12px;
@@ -64,6 +65,13 @@
                     <option value="{{ sid }}" {% if retro and retro.stage_reached == sid %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
                 </select>
+            </div>
+            {# Phase 4: reason taxonomy — selectable reasons + free-text Other #}
+            <div class="rw-field">
+                <span style="font-size:.82rem;font-weight:700;color:var(--b-muted);">What do you think was the main reason? (a guess, not a fact)</span>
+                <div id="rw-reasons" style="display:flex;flex-direction:column;gap:.4rem;margin-top:.2rem;"></div>
+                <label for="rw-reason-other" style="font-size:.82rem;font-weight:700;color:var(--b-muted);margin-top:.4rem;">Other (free text — used when no reason above fits)</label>
+                <input id="rw-reason-other" type="text" maxlength="500" placeholder="e.g. The role closed before my interview was scheduled">
             </div>
             <div class="rw-field">
                 <label for="rw-timeline">Timeline (applied when? heard back when? key dates)</label>

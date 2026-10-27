@@ -104,13 +104,13 @@ def test_recently_closed_view(authed_client):
 
 def test_seed_mentors_labeled_example_not_verified(authed_client, app):
     html = authed_client.get("/mentors").get_data(as_text=True)
-    assert "Example profile" in html
-    # The hub explainer distinguishes examples from real verified mentors.
-    assert "practice requests" in html
+    assert "Illustrative profile" in html
+    # The hub explainer distinguishes illustrative seeds from real mentors.
+    assert "cannot be booked" in html
     from unified_app import Mentor
     with app.app_context():
         seed = Mentor.query.filter_by(is_seed=True).first()
         assert seed is not None
         profile = authed_client.get(f"/mentors/{seed.id}").get_data(as_text=True)
-    assert "Example profile" in profile
-    assert "practice requests" in profile
+    assert "Illustrative profile" in profile
+    assert "cannot be booked" in profile

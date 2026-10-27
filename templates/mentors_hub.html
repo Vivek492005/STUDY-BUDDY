@@ -4,6 +4,7 @@
 {% block title %}Mentors &amp; office hours | STUDY-BUDDY{% endblock %}
 {% block head %}
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -33,7 +34,7 @@
 {# ---------- Mentors directory ---------- #}
 <section class="b-section" aria-label="Mentors">
     <div class="b-sec-head"><h2>Meet the <span class="b-grad">mentors</span></h2><p>{{ mentors|length }} mentor{{ 's' if mentors|length != 1 }}{% if path_filter %} in {{ path_label(path_filter) }}{% endif %}</p></div>
-    <p style="color:var(--b-muted);font-size:.88rem;margin:0 0 1rem;">Profiles marked <strong>Example profile</strong> demonstrate how mentoring works while the first real mentors are onboarded — bookings on them are practice requests. Real mentors join via application and carry the ✓ Verified badge.</p>
+    <p style="color:var(--b-muted);font-size:.88rem;margin:0 0 1rem;">Profiles marked <strong>Illustrative profile</strong> are examples only — they cannot be booked. Bookings open when real mentors join via application and carry the ✓ Verified badge.</p>
     {% if mentors %}
     <div class="b-bento">
         {% for m in mentors %}
@@ -43,7 +44,7 @@
                 <div style="min-width:0;">
                     <h3 style="margin:0;font-size:1.05rem;">
                         {{ m.name }}
-                        {% if m.is_seed %}<span class="b-pill" title="Example profile that shows how mentoring works — real mentors join via application and are verified by the team" style="margin-left:.4rem;">Example profile</span>{% elif m.verified %}<span class="b-pill" title="Verified by the STUDY-BUDDY team" style="margin-left:.4rem;">✓ Verified</span>{% endif %}
+                        {% if m.is_seed %}<span class="b-pill" title="Illustrative profile — an example, not a real mentor. Real mentors join via application and are verified by the team" style="margin-left:.4rem;">Illustrative profile</span>{% elif m.verified %}<span class="b-pill" title="Verified by the STUDY-BUDDY team" style="margin-left:.4rem;">✓ Verified</span>{% endif %}
                     </h3>
                     <p style="color:var(--b-muted);font-size:.86rem;margin:.2rem 0;">{{ m.headline }}</p>
                     <p style="font-size:.82rem;margin:.2rem 0;">{{ path_label(m.path) }}{% if m.company %} · {{ m.company }}{% endif %}{% if m.college %} · {{ m.college }}{% endif %}</p>
@@ -104,4 +105,60 @@
     <div class="b-card b-reveal"><p style="color:var(--b-muted);margin:0;">You haven't booked any office hours yet.</p></div>
     {% endif %}
 </section>
+
+{# ---------- Phase 5: matched mentors ---------- #}
+<section class="b-section" aria-label="Matched mentors">
+    <div class="b-sec-head"><h2>Matched <span class="b-grad">mentors</span></h2><p>Ranked by your career profile — the strongest fits first.</p></div>
+    <p id="mn-match-empty" style="display:none;color:var(--b-muted);">No strong matches yet — complete your career discovery to improve matches.</p>
+    <div class="b-bento" id="mn-match-list"></div>
+</section>
+
+{# ---------- Phase 5: mentor Q&A library ---------- #}
+<section class="b-section" aria-label="Mentor Q&A library">
+    <div class="b-sec-head"><h2>Mentor <span class="b-grad">Q&amp;A</span></h2><p>Answers from the community knowledge base — no answer is invented; unanswered questions go to the mentor inbox.</p></div>
+    <div style="margin-bottom:1rem;">
+        <label class="b-label" for="mn-qa-topic">Topic</label>
+        <select id="mn-qa-topic" class="b-input" style="width:100%;max-width:20rem;">
+            <option value="">All topics</option>
+        </select>
+    </div>
+    <div class="b-bento" id="mn-qa-list"></div>
+    <div class="b-card b-reveal" style="margin-top:1rem;">
+        <h3 style="margin-top:0;">Ask a question</h3>
+        <form id="mn-qa-ask">
+            <label class="b-label" for="mn-qa-question">Your question</label>
+            <textarea id="mn-qa-question" class="b-input" rows="2" style="width:100%;" placeholder="What would you ask a mentor?"></textarea>
+            <div class="b-cta-row" style="margin-top:.8rem;">
+                <button class="b-btn b-btn--primary b-btn--sm" type="submit">Send to the mentor inbox</button>
+            </div>
+            <p class="b-pill" id="mn-qa-ask-msg" style="display:none;margin-top:.8rem;"></p>
+        </form>
+        <div style="margin-top:1rem;">
+            <h3 style="font-size:1rem;">My questions</h3>
+            <div id="mn-qa-mine"><p style="color:var(--b-muted);margin:0;">Loading…</p></div>
+        </div>
+    </div>
+</section>
+
+{# ---------- Phase 5: mentor dashboard (mentors only; hidden unless the API answers) ---------- #}
+<section class="b-section" id="mn-dashboard" style="display:none;" aria-label="Mentor dashboard">
+    <div class="b-sec-head"><h2>Your mentor <span class="b-grad">dashboard</span></h2><p><span id="mn-dash-count">0</span> bookings.</p></div>
+    <div class="b-bento">
+        <div class="b-card b-reveal">
+            <h3 style="margin-top:0;">Bookings</h3>
+            <div id="mn-dash-bookings"></div>
+        </div>
+        <div class="b-card b-reveal">
+            <h3 style="margin-top:0;">Reviews</h3>
+            <p id="mn-dash-avg" style="color:var(--b-muted);font-size:.9rem;">No reviews yet</p>
+            <div id="mn-dash-reviews"></div>
+        </div>
+        <div class="b-card b-reveal">
+            <h3 style="margin-top:0;">Open questions</h3>
+            <div id="mn-dash-qa"></div>
+        </div>
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/mentors_hub.js') }}"></script>
 {% endblock %}

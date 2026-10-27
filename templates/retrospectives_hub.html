@@ -4,6 +4,7 @@
 {% block title %}Rejection Retrospectives | AI Career &amp; Research Assistant{% endblock %}
 {% block head %}
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career-polish.css') }}">
     <style>
         .rt-funnel { display: flex; flex-direction: column; gap: .55rem; margin-top: 1rem; }
         .rt-fstage { display: grid; grid-template-columns: 150px 1fr 130px; gap: .8rem; align-items: center; }
@@ -96,6 +97,7 @@
         <div class="b-card b-span-2 b-reveal">
             <h3 style="margin-top:0;">By role</h3>
             {% if roles %}
+            <div class="cp-table-scroll">
             <table class="rt-table">
                 <thead><tr><th>Role</th><th>Apps</th><th>Rejection rate</th><th>Response rate</th><th></th></tr></thead>
                 <tbody>
@@ -108,6 +110,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% else %}
             <p style="color:var(--b-muted);">No roles yet.</p>
             {% endif %}
@@ -116,6 +119,7 @@
             <h3 style="margin-top:0;">Where rejections cluster</h3>
             <p style="color:var(--b-muted);font-size:.82rem;margin-top:-.4rem;">From your retrospectives — the stage the process reached before the rejection.</p>
             {% if rejection_stages.total %}
+            <div class="cp-table-scroll">
             <table class="rt-table">
                 <thead><tr><th>Stage reached</th><th>Rejections</th><th></th></tr></thead>
                 <tbody>
@@ -127,6 +131,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+            </div>
             {% if rejection_stages.unknown %}
             <p style="color:var(--b-muted);font-size:.82rem;">{{ rejection_stages.unknown }} retrospective(s) didn't record a stage.</p>
             {% endif %}
@@ -178,13 +183,30 @@
     {% endif %}
 </section>
 
+{# ---------- 90-day trends (Phase 4) ---------- #}
+<section class="b-section" aria-label="90-day trends" id="rt-trends">
+    <div class="b-sec-head"><h2>Last <span class="b-grad">90 days</span></h2><p>Where your retrospectives cluster — by reason, stage, and week. Counts only, from your own data.</p></div>
+    <div class="b-card b-reveal">
+        <p id="rt-trends-empty" style="display:none;color:var(--b-muted);">No retrospectives in the last 90 days yet.</p>
+        <div id="rt-trends-body">
+            <p style="color:var(--b-muted);font-size:.9rem;" id="rt-trends-total"></p>
+            <h3 style="margin:1rem 0 0;">By reason</h3>
+            <div id="rt-trends-reasons"></div>
+            <h3 style="margin:1rem 0 0;">By stage reached</h3>
+            <div id="rt-trends-stages"></div>
+            <h3 style="margin:1rem 0 0;">By week</h3>
+            <div id="rt-trends-weeks"></div>
+        </div>
+    </div>
+</section>
+
 {# ---------- Recent retrospectives ---------- #}
 <section class="b-section" aria-label="Recent retrospectives">
     <div class="b-sec-head"><h2>Recent <span class="b-grad">retrospectives</span></h2><p>{{ total_retros }} logged. Open one to continue the wizard.</p></div>
     {% if recent %}
     <div class="b-bento">
         {% for r in recent %}
-        <div class="b-card b-reveal">
+        <div class="b-card b-reveal" data-retro="{{ r.id }}">
             <div style="display:flex;justify-content:space-between;gap:.6rem;align-items:start;">
                 <div>
                     <h3 style="margin:0;">{{ r.company }}</h3>
@@ -192,7 +214,30 @@
                 </div>
                 {% if r.completed %}<span class="rt-tag rt-tag--ok">Completed</span>{% else %}<span class="rt-tag">In progress</span>{% endif %}
             </div>
-            {% if r.wizard_url %}<div class="b-cta-row" style="margin-top:.8rem;"><a class="b-btn b-btn--ghost" href="{{ r.wizard_url }}">{% if r.completed %}Review{% else %}Continue{% endif %}</a></div>{% endif %}
+            {% if r.wizard_url %}<div class="b-cta-row" style="margin-top:.8rem;"><a class="b-btn b-btn--ghost" href="{{ r.wizard_url }}">{% if r.completed %}Review{% else %}Continue{% endif %}</a>
+            <button class="b-btn b-btn--ghost rt-fb-toggle" type="button" data-retro="{{ r.id }}">Add interview feedback</button></div>{% endif %}
+            {# Phase 4: anonymous sharing — opt-in only, aggregated elsewhere #}
+            <label style="display:flex;gap:.5rem;align-items:center;margin-top:.8rem;font-size:.85rem;color:var(--b-muted);cursor:pointer;">
+                <input type="checkbox" class="rt-share-toggle" data-retro="{{ r.id }}"{% if r.shared is defined and r.shared %} checked{% endif %}>
+                Share anonymously to help others learn
+                <span class="rt-share-status">{% if r.shared is defined and r.shared %}Sharing anonymously{% else %}Not shared{% endif %}</span>
+            </label>
+            {# Phase 4: interview feedback form + entries #}
+            <form class="rt-fb-form" data-retro="{{ r.id }}" style="display:none;margin-top:1rem;">
+                <div class="rt-exp-form" style="margin-top:0;">
+                    <div><label>Round</label><input class="rt-fb-round" type="text" maxlength="120" placeholder="e.g. OA, Technical round 1, HR" required></div>
+                    <div><label>Questions asked (one per line)</label><textarea class="rt-fb-questions" rows="3" maxlength="5000" placeholder="One question per line"></textarea></div>
+                    <div><label>Self-rating (1–5)</label>
+                        <select class="rt-fb-rating">
+                            <option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option>
+                        </select>
+                    </div>
+                    <div><label>Notes</label><textarea class="rt-fb-notes" rows="2" maxlength="5000" placeholder="What went well, what to improve"></textarea></div>
+                    <div class="b-cta-row"><button class="b-btn b-btn--primary" type="submit">Save feedback</button></div>
+                    <p class="rt-err rt-fb-error" role="alert"></p>
+                </div>
+            </form>
+            <div class="rt-fb-list" data-retro="{{ r.id }}" style="margin-top:.8rem;"></div>
         </div>
         {% endfor %}
     </div>
@@ -207,7 +252,7 @@
     <div class="b-card b-reveal">
         {% if experiments %}
         <table class="rt-table">
-            <thead><tr><th>Hypothesis</th><th>Change</th><th>Target</th><th>Status</th><th>Result</th><th>Advance</th></tr></thead>
+            <thead><tr><th>Hypothesis</th><th>Change</th><th>Target</th><th>Status</th><th>Result</th><th>Outcome</th><th>Advance</th></tr></thead>
             <tbody>
             {% for e in experiments %}
             <tr data-exp="{{ e.id }}">
@@ -216,6 +261,18 @@
                 <td>{{ e.target }}</td>
                 <td><span class="rt-status rt-status--{{ e.status }}">{{ e.status }}</span></td>
                 <td>{% if e.result %}{{ e.result }}{% else %}<span style="color:var(--b-muted);">—</span>{% endif %}</td>
+                {# Phase 4: outcome control — did the change help? #}
+                <td>
+                    <span class="rt-outcome-label">{{ e.outcome | default('pending', true) }}</span>
+                    <select class="rt-outcome" data-id="{{ e.id }}" aria-label="Experiment outcome" style="display:block;margin-top:.4rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:inherit;padding:.3rem;font-size:.85rem;">
+                        {% for opt in ['pending', 'helped', 'no-change', 'hurt'] %}
+                        <option value="{{ opt }}"{% if (e.outcome | default('pending', true)) == opt %} selected{% endif %}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                    <input class="rt-outcome-note" data-id="{{ e.id }}" type="text" maxlength="1000" placeholder="Note (optional)" style="display:block;margin-top:.4rem;width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:inherit;padding:.3rem .5rem;font-size:.85rem;">
+                    <button class="b-btn b-btn--ghost rt-outcome-save" data-id="{{ e.id }}" type="button" style="margin-top:.4rem;">Save outcome</button>
+                    <p class="rt-err rt-outcome-error" data-id="{{ e.id }}" role="alert"></p>
+                </td>
                 <td>
                     {% if e.status == 'planned' %}
                     <button class="b-btn b-btn--ghost rt-adv" data-to="running" data-id="{{ e.id }}" type="button">Start</button>
@@ -242,6 +299,15 @@
             <div class="b-cta-row"><button class="b-btn b-btn--primary" type="submit">Log experiment</button></div>
             <p class="rt-err" id="rt-exp-error" role="alert"></p>
         </form>
+    </div>
+</section>
+
+{# ---------- Shared learnings (Phase 4: opt-in aggregates only) ---------- #}
+<section class="b-section" aria-label="Shared learnings" id="rt-learnings">
+    <div class="b-sec-head"><h2>Shared <span class="b-grad">learnings</span></h2><p>Aggregated from retrospectives people chose to share anonymously. Counts only — never anyone's words, company, or story.</p></div>
+    <div class="b-card b-reveal">
+        <div id="rt-learnings-list"></div>
+        <p id="rt-learnings-empty" style="display:none;color:var(--b-muted);">No shared learnings yet.</p>
     </div>
 </section>
 {% endblock %}

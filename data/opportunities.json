@@ -1,1017 +1,2196 @@
 {
   "meta": {
-    "last_updated": "2026-10-24",
+    "last_refresh": "2026-10-25",
+    "last_updated": "2026-10-25",
     "notice": "Curated starter set for student guidance. Deadlines are indicative — always verify dates and eligibility on the official website before applying.",
     "schema_doc": "See opportunities.py OPPS_SCHEMA for the documented JSON schema used to extend this dataset."
   },
   "opportunities": [
     {
+      "curated": true,
       "deadline": "2026-10-20",
       "eligibility": "Final-year BE/BTech students and graduates in engineering, technology, architecture, science and humanities.",
       "id": "gate-2027",
       "link": "https://gate.iitk.ac.in",
       "organization": "IITs / IISc",
+      "source": "curated",
+      "status": "closed",
+      "tags": [
+        "exam"
+      ],
       "title": "GATE 2027",
-      "type": "exam",
-      "curated": true,
-      "source": "curated"
+      "type": "exam"
     },
     {
+      "curated": true,
       "deadline": "2026-10-22",
       "eligibility": "Student teams of 6 from AICTE/UGC-recognized institutes; solve ministry problem statements.",
       "id": "sih-2026",
       "link": "https://www.sih.gov.in",
       "organization": "Govt. of India",
+      "source": "curated",
+      "status": "closed",
+      "tags": [
+        "internship",
+        "hackathon"
+      ],
       "title": "Smart India Hackathon 2026",
-      "type": "internship",
-      "curated": true,
-      "source": "curated"
+      "type": "internship"
     },
     {
+      "curated": true,
       "deadline": "2026-10-28",
       "eligibility": "First-year undergraduate students in India; awarded on merit and means.",
       "id": "reliance-foundation-ug-2026",
       "link": "https://www.reliancefoundation.org",
       "organization": "Reliance Foundation",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship"
+      ],
       "title": "Reliance Foundation Undergraduate Scholarship 2026",
-      "type": "scholarship",
-      "curated": true,
-      "source": "curated"
+      "type": "scholarship"
     },
     {
+      "curated": true,
       "deadline": "2026-10-31",
       "eligibility": "Girl students admitted to first year of AICTE-approved technical diploma/degree programs.",
       "id": "aicte-pragati-2026",
       "link": "https://www.aicte-india.org",
       "organization": "AICTE",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship"
+      ],
       "title": "AICTE Pragati Scholarship 2026-27",
-      "type": "scholarship",
-      "curated": true,
-      "source": "curated"
+      "type": "scholarship"
     },
     {
+      "curated": true,
       "deadline": "2026-10-31",
       "eligibility": "Varies by scheme; SC/ST/OBC/minority students apply through the NSP portal.",
       "id": "nsp-post-matric-2026",
       "link": "https://scholarships.gov.in",
       "organization": "Govt. of India",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship"
+      ],
       "title": "National Scholarship Portal — Post-Matric 2026-27",
-      "type": "scholarship",
-      "curated": true,
-      "source": "curated"
+      "type": "scholarship"
     },
     {
+      "curated": true,
       "deadline": "2026-11-05",
       "eligibility": "First-year engineering students with 60%+ in Class 12 and family income criteria.",
       "id": "siemens-scholarship-2026",
       "link": "https://www.siemens.com",
       "organization": "Siemens India",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship"
+      ],
       "title": "Siemens Scholarship Program 2026",
-      "type": "scholarship",
-      "curated": true,
-      "source": "curated"
+      "type": "scholarship"
     },
     {
+      "curated": true,
       "deadline": "2026-11-15",
       "eligibility": "First- and second-year undergrads in CS or related fields; 12-week software project.",
       "id": "google-step-2027",
       "link": "https://www.google.com",
       "organization": "Google",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
       "title": "Google STEP Internship 2027",
-      "type": "internship",
-      "curated": true,
-      "source": "curated"
+      "type": "internship"
     },
     {
+      "curated": true,
       "deadline": "2026-11-15",
       "eligibility": "Top 1% in Class 12 board exams pursuing BSc/BS/MS natural-science courses.",
       "id": "inspire-she-2026",
       "link": "https://www.inspire-dst.gov.in",
       "organization": "DST, Govt. of India",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship"
+      ],
       "title": "INSPIRE Scholarship (SHE) 2026",
-      "type": "scholarship",
-      "curated": true,
-      "source": "curated"
+      "type": "scholarship"
     },
     {
+      "curated": true,
       "deadline": "2026-11-18",
       "eligibility": "Graduates aged 20–30; probationary officer posts in public-sector banks.",
       "id": "ibps-po-2027",
       "link": "https://www.ibps.in",
       "organization": "IBPS",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
       "title": "IBPS PO 2027",
-      "type": "exam",
-      "curated": true,
-      "source": "curated"
+      "type": "exam"
     },
     {
+      "curated": true,
       "deadline": "2026-11-20",
       "eligibility": "Pre-final-year undergraduates; stipend-supported research with IITR faculty.",
       "id": "iitr-spark-2027",
       "link": "https://www.iitr.ac.in",
       "organization": "IIT Roorkee",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "research"
+      ],
       "title": "SPARK Summer Research Internship 2027",
-      "type": "internship",
-      "curated": true,
-      "source": "curated"
+      "type": "internship"
     },
     {
+      "curated": true,
       "deadline": "2026-11-25",
       "eligibility": "Class 12 appearing or passed with Physics, Chemistry and Mathematics.",
       "id": "jee-main-2027-s1",
       "link": "https://jeemain.nta.ac.in",
       "organization": "NTA",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
       "title": "JEE Main 2027 (Session 1)",
-      "type": "exam",
-      "curated": true,
-      "source": "curated"
+      "type": "exam"
     },
     {
+      "curated": true,
       "deadline": "2026-11-30",
       "eligibility": "Pre-final and final-year CS students; 6-month internship with PPO potential.",
       "id": "amazon-sde-intern-2027",
       "link": "https://www.amazon.jobs",
       "organization": "Amazon",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
       "title": "Amazon SDE Intern 2027",
-      "type": "internship",
-      "curated": true,
-      "source": "curated"
+      "type": "internship"
     },
     {
+      "curated": true,
       "deadline": "2026-11-30",
       "eligibility": "Students from economically weaker sections in professional courses.",
       "id": "ongc-scholarship-2026",
       "link": "https://www.ongc.org",
       "organization": "ONGC Foundation",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship"
+      ],
       "title": "ONGC Scholarship 2026",
-      "type": "scholarship",
-      "curated": true,
-      "source": "curated"
+      "type": "scholarship"
     },
     {
+      "curated": true,
       "deadline": "2027-01-15",
       "eligibility": "UG/PG science students; 2-month fellowship with an Academy fellow.",
       "id": "iasc-srfp-2027",
       "link": "https://www.ias.ac.in",
       "organization": "Indian Academy of Sciences",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "research",
+        "fellowship"
+      ],
       "title": "IASc–INSA–NASI Summer Research Fellowship 2027",
-      "type": "internship",
-      "curated": true,
-      "source": "curated"
+      "type": "internship"
     },
     {
+      "curated": true,
       "deadline": "2027-01-20",
       "eligibility": "Graduates; Group B and C posts in central government ministries.",
       "id": "ssc-cgl-2027",
       "link": "https://ssc.gov.in",
       "organization": "SSC",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
       "title": "SSC CGL 2027",
-      "type": "exam",
-      "curated": true,
-      "source": "curated"
+      "type": "exam"
     },
     {
+      "curated": true,
       "deadline": "2027-02-05",
       "eligibility": "Graduates seeking PG admission in central and participating universities.",
       "id": "cuet-pg-2027",
       "link": "https://cuet.nta.nic.in",
       "organization": "NTA",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
       "title": "CUET PG 2027",
-      "type": "exam",
-      "curated": true,
-      "source": "curated"
+      "type": "exam"
     },
     {
+      "curated": true,
       "deadline": "2027-02-10",
       "eligibility": "Graduates aged 21–32; IAS/IPS/IFS and other services.",
       "id": "upsc-cse-2027",
       "link": "https://www.upsc.gov.in",
       "organization": "UPSC",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
       "title": "UPSC Civil Services 2027",
-      "type": "exam",
-      "curated": true,
-      "source": "curated"
+      "type": "exam"
     },
     {
+      "curated": true,
       "deadline": "2027-03-08",
       "eligibility": "Class 12 with PCB; MBBS/BDS/AYUSH admissions across India.",
       "id": "neet-ug-2027",
       "link": "https://neet.nta.nic.in",
       "organization": "NTA",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
       "title": "NEET UG 2027",
-      "type": "exam",
-      "curated": true,
-      "source": "curated"
+      "type": "exam"
     },
     {
-      "id": "devpost-31481-multimodal-ai-hackathon-2026",
-      "title": "Multimodal AI Hackathon 2026",
-      "organization": "Kamand Prompt, IIT Mandi",
-      "type": "hackathon",
+      "curated": false,
       "deadline": "2026-10-14",
       "eligibility": "Online; Prize pool ₹ 100,000; Open to student builders; see official page for eligibility and team rules.",
+      "id": "devpost-31481-multimodal-ai-hackathon-2026",
       "link": "https://multimodal-ai-hackathon-2026-7.devpost.com/",
-      "curated": false,
-      "source": "devpost"
+      "organization": "Kamand Prompt, IIT Mandi",
+      "source": "devpost",
+      "status": "closed",
+      "tags": [
+        "hackathon",
+        "ai"
+      ],
+      "title": "Multimodal AI Hackathon 2026",
+      "type": "hackathon"
     },
     {
-      "id": "devpost-30992-build-ship-shape-amazon-developer-hackat",
-      "title": "Build, Ship, Shape: Amazon Developer Hackathon",
-      "organization": "Amazon",
-      "type": "hackathon",
+      "curated": false,
       "deadline": "2026-10-23",
       "eligibility": "Online; Prize pool $138,000; Open to student builders; see official page for eligibility and team rules.",
+      "id": "devpost-30992-build-ship-shape-amazon-developer-hackat",
       "link": "https://amazonappdev2026.devpost.com/",
-      "curated": false,
-      "source": "devpost"
+      "organization": "Amazon",
+      "source": "devpost",
+      "status": "closed",
+      "tags": [
+        "hackathon"
+      ],
+      "title": "Build, Ship, Shape: Amazon Developer Hackathon",
+      "type": "hackathon"
     },
     {
-      "id": "devpost-30447-build-with-ai-basics",
-      "title": "Build With AI: Basics",
-      "organization": "Devpost",
-      "type": "hackathon",
+      "curated": false,
       "deadline": "2026-10-26",
       "eligibility": "Online; Prize pool $2,500; Open to student builders; see official page for eligibility and team rules.",
+      "id": "devpost-30447-build-with-ai-basics",
       "link": "https://learn-ai-basics.devpost.com/",
-      "curated": false,
-      "source": "devpost"
+      "organization": "Devpost",
+      "source": "devpost",
+      "status": "open",
+      "tags": [
+        "hackathon",
+        "ai"
+      ],
+      "title": "Build With AI: Basics",
+      "type": "hackathon"
     },
     {
-      "id": "devpost-30984-opencv-ai-competition-2026-powered-by-aw",
-      "title": "OpenCV AI Competition 2026, powered by AWS",
-      "organization": "OpenCV",
-      "type": "hackathon",
+      "curated": false,
       "deadline": "2026-10-27",
       "eligibility": "Online; Prize pool $20,250; Open to student builders; see official page for eligibility and team rules.",
+      "id": "devpost-30984-opencv-ai-competition-2026-powered-by-aw",
       "link": "https://opencv26.devpost.com/",
-      "curated": false,
-      "source": "devpost"
+      "organization": "OpenCV",
+      "source": "devpost",
+      "status": "open",
+      "tags": [
+        "hackathon",
+        "ai"
+      ],
+      "title": "OpenCV AI Competition 2026, powered by AWS",
+      "type": "hackathon"
     },
     {
-      "id": "devpost-31503-life-after-code",
-      "title": "Life After Code",
-      "organization": "GitLab",
-      "type": "hackathon",
+      "curated": false,
       "deadline": "2026-10-27",
       "eligibility": "Online; Prize pool $45,000; Open to student builders; see official page for eligibility and team rules.",
+      "id": "devpost-31503-life-after-code",
       "link": "https://gitlab-transcend.devpost.com/",
-      "curated": false,
-      "source": "devpost"
+      "organization": "GitLab",
+      "source": "devpost",
+      "status": "open",
+      "tags": [
+        "hackathon"
+      ],
+      "title": "Life After Code",
+      "type": "hackathon"
     },
     {
-      "id": "devpost-31052-aws-communication-developer-services-cds",
-      "title": "AWS Communication Developer Services (CDS) Agentic AI Partner Hackathon",
-      "organization": "AWS",
-      "type": "hackathon",
+      "curated": false,
       "deadline": "2026-10-28",
       "eligibility": "Online; Prize pool $40,000; Open to student builders; see official page for eligibility and team rules.",
+      "id": "devpost-31052-aws-communication-developer-services-cds",
       "link": "https://aws-cds-partner.devpost.com/",
-      "curated": false,
-      "source": "devpost"
+      "organization": "AWS",
+      "source": "devpost",
+      "status": "open",
+      "tags": [
+        "hackathon",
+        "ai"
+      ],
+      "title": "AWS Communication Developer Services (CDS) Agentic AI Partner Hackathon",
+      "type": "hackathon"
     },
     {
-      "id": "devpost-30790-nebius-x-nvidia-global-ai-hackathon",
-      "title": "Nebius x NVIDIA Global AI Hackathon",
-      "organization": "nebius",
-      "type": "hackathon",
+      "curated": false,
       "deadline": "2026-10-30",
       "eligibility": "Online; Prize pool $50,000; Open to student builders; see official page for eligibility and team rules.",
+      "id": "devpost-30790-nebius-x-nvidia-global-ai-hackathon",
       "link": "https://nebiusglobalaihackathon.devpost.com/",
-      "curated": false,
-      "source": "devpost"
+      "organization": "nebius",
+      "source": "devpost",
+      "status": "open",
+      "tags": [
+        "hackathon",
+        "ai"
+      ],
+      "title": "Nebius x NVIDIA Global AI Hackathon",
+      "type": "hackathon"
     },
     {
-      "id": "devpost-31302-paypal-ai-hackathon",
-      "title": "PayPal AI Hackathon",
-      "organization": "PayPal",
-      "type": "hackathon",
+      "curated": false,
       "deadline": "2026-11-12",
       "eligibility": "Online; Prize pool $67,500; Open to student builders; see official page for eligibility and team rules.",
+      "id": "devpost-31302-paypal-ai-hackathon",
       "link": "https://paypalaihackathon.devpost.com/",
-      "curated": false,
-      "source": "devpost"
+      "organization": "PayPal",
+      "source": "devpost",
+      "status": "open",
+      "tags": [
+        "hackathon",
+        "ai"
+      ],
+      "title": "PayPal AI Hackathon",
+      "type": "hackathon"
     },
     {
-      "id": "devpost-31024-meta-vr-start-developer-competition-2026",
-      "title": "Meta VR Start Developer Competition 2026",
-      "organization": "Meta",
-      "type": "hackathon",
+      "curated": false,
       "deadline": "2026-11-18",
       "eligibility": "Online; Prize pool $1,000,000; Open to student builders; see official page for eligibility and team rules.",
+      "id": "devpost-31024-meta-vr-start-developer-competition-2026",
       "link": "https://start-developer-competition-26.devpost.com/",
-      "curated": false,
-      "source": "devpost"
+      "organization": "Meta",
+      "source": "devpost",
+      "status": "open",
+      "tags": [
+        "hackathon"
+      ],
+      "title": "Meta VR Start Developer Competition 2026",
+      "type": "hackathon"
     },
     {
-      "id": "simplify-electronic-arts-software-engineer-intern",
-      "title": "Software Engineer Intern @ Electronic Arts",
-      "organization": "Electronic Arts",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern — Vancouver, BC, Canada (posted today)",
+      "id": "simplify-electronic-arts-software-engineer-intern",
       "link": "https://jobs.ea.com/en_US/careers/JobDetail/Software-Engineer-Intern/216287?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Electronic Arts",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern @ Electronic Arts",
+      "type": "internship"
     },
     {
-      "id": "simplify-bp-digital-data-ai-engineering-in",
-      "title": "Digital, Data, AI & Engineering Intern @ BP",
-      "organization": "BP",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Digital, Data, AI & Engineering Intern — London, UK (posted today)",
+      "id": "simplify-bp-digital-data-ai-engineering-in",
       "link": "https://bpinternational.wd3.myworkdayjobs.com/bpEarlyCareers/job/GB-London---25-North-Colonnade/Summer-Internship---Digital---Data--AI---Engineering---UK_RQ117081?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "BP",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "ai",
+        "data",
+        "engineering"
+      ],
+      "title": "Digital, Data, AI & Engineering Intern @ BP",
+      "type": "internship"
     },
     {
-      "id": "simplify-armadin-frontend-engineer-intern-membe",
-      "title": "Frontend Engineer Intern - Member of Technical Staff @ Armadin",
-      "organization": "Armadin",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Frontend Engineer Intern - Member of Technical Staff — Palo Alto, CA (posted today)",
+      "id": "simplify-armadin-frontend-engineer-intern-membe",
       "link": "https://jobs.ashbyhq.com/armadin/571d7673-ce4b-414c-b736-38297d1d2b8b/application?embed=true&utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Armadin",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering"
+      ],
+      "title": "Frontend Engineer Intern - Member of Technical Staff @ Armadin",
+      "type": "internship"
     },
     {
-      "id": "simplify-boston-consulting-group-forward-deployed-ai-engineer-i",
-      "title": "Forward Deployed AI Engineer Intern 🎓 @ Boston Consulting Group",
-      "organization": "Boston Consulting Group",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Forward Deployed AI Engineer Intern 🎓 — 4 locationsBoston, MALAChicago, ILNYC (posted today)",
+      "id": "simplify-boston-consulting-group-forward-deployed-ai-engineer-i",
       "link": "https://careers.bcg.com/global/en/job/59702?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Boston Consulting Group",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "ai",
+        "engineering"
+      ],
+      "title": "Forward Deployed AI Engineer Intern 🎓 @ Boston Consulting Group",
+      "type": "internship"
     },
     {
-      "id": "simplify-carbon-robotics-engineering-intern-hardware-so",
-      "title": "Engineering Intern - Hardware & Software @ Carbon Robotics",
-      "organization": "Carbon Robotics",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Engineering Intern - Hardware & Software — Seattle, WA (posted today)",
+      "id": "simplify-carbon-robotics-engineering-intern-hardware-so",
       "link": "https://carbonrobotics.com/job-openings?gh_jid=4721558006&utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Carbon Robotics",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "robotics",
+        "engineering",
+        "software",
+        "embedded"
+      ],
+      "title": "Engineering Intern - Hardware & Software @ Carbon Robotics",
+      "type": "internship"
     },
     {
-      "id": "simplify-figma-phd-intern-software-engineer-g",
-      "title": "PhD Intern - Software Engineer - Graphics 🎓 @ Figma",
-      "organization": "Figma",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "PhD Intern - Software Engineer - Graphics 🎓 — SFNYC (posted today)",
+      "id": "simplify-figma-phd-intern-software-engineer-g",
       "link": "https://boards.greenhouse.io/figma/jobs/6219995004?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Figma",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "phd",
+        "software"
+      ],
+      "title": "PhD Intern - Software Engineer - Graphics 🎓 @ Figma",
+      "type": "internship"
     },
     {
-      "id": "simplify-electronic-arts-technical-artist-co-op",
-      "title": "Technical Artist Co-op @ Electronic Arts",
-      "organization": "Electronic Arts",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Technical Artist Co-op — Vancouver, BC, Canada (posted today)",
+      "id": "simplify-electronic-arts-technical-artist-co-op",
       "link": "https://jobs.ea.com/en_US/careers/JobDetail/Technical-Artist-Co-op/216406?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Electronic Arts",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Technical Artist Co-op @ Electronic Arts",
+      "type": "internship"
     },
     {
-      "id": "simplify-netflix-software-engineer-intern",
-      "title": "Software Engineer Intern @ Netflix",
-      "organization": "Netflix",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern — LALos Gatos, CA (posted today)",
+      "id": "simplify-netflix-software-engineer-intern",
       "link": "https://explore.jobs.netflix.net/careers/job/790318904468?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Netflix",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern @ Netflix",
+      "type": "internship"
     },
     {
-      "id": "simplify-medpace-python-developer-intern",
-      "title": "Python Developer Intern @ Medpace",
-      "organization": "Medpace",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Python Developer Intern — Cincinnati, OH (posted today)",
+      "id": "simplify-medpace-python-developer-intern",
       "link": "https://careers.medpace.com/jobs/13059?icims=1&utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Medpace",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Python Developer Intern @ Medpace",
+      "type": "internship"
     },
     {
-      "id": "simplify-rhombus-software-engineer-intern",
-      "title": "Software Engineer Intern @ Rhombus",
-      "organization": "Rhombus",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern — Sacramento, CA (posted today)",
+      "id": "simplify-rhombus-software-engineer-intern",
       "link": "https://jobs.lever.co/rhombus-systems/59e7a5f3-b457-491d-af08-b629ad35e380/apply?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Rhombus",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern @ Rhombus",
+      "type": "internship"
     },
     {
-      "id": "simplify-servicenow-ai-engineering-associate-softw",
-      "title": "AI Engineering Associate Software Engineer Intern @ ServiceNow",
-      "organization": "ServiceNow",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "AI Engineering Associate Software Engineer Intern — 4 locationsSanta Clara, CAWest Palm Beach, FLKirkland, WASan Diego, CA (posted today)",
+      "id": "simplify-servicenow-ai-engineering-associate-softw",
       "link": "https://jobs.smartrecruiters.com/ServiceNow/744000155345889?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "ServiceNow",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "ai",
+        "engineering",
+        "software"
+      ],
+      "title": "AI Engineering Associate Software Engineer Intern @ ServiceNow",
+      "type": "internship"
     },
     {
-      "id": "simplify-opp-software-engineer-intern",
-      "title": "Software Engineer Intern 🎓 @ ",
-      "organization": "",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern 🎓 — 4 locationsSanta Clara, CAWest Palm Beach, FLKirkland, WASan Diego, CA (posted today)",
+      "id": "simplify-opp-software-engineer-intern",
       "link": "https://jobs.smartrecruiters.com/ServiceNow/744000155345689?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 0,
       "source": "simplifyjobs",
-      "posted_days_ago": 0
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern 🎓 @ ",
+      "type": "internship"
     },
     {
-      "id": "simplify-nvidia-sparse-linear-algebra-librarie",
-      "title": "Sparse Linear Algebra Libraries Intern 🎓 @ NVIDIA",
-      "organization": "NVIDIA",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Sparse Linear Algebra Libraries Intern 🎓 — Santa Clara, CA (posted 1d ago)",
+      "id": "simplify-nvidia-sparse-linear-algebra-librarie",
       "link": "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite/job/US-CA-Santa-Clara/Sparse-Linear-Algebra-Libraries-Intern---Summer-2027_JR2027429?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "NVIDIA",
+      "posted_days_ago": 1,
       "source": "simplifyjobs",
-      "posted_days_ago": 1
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Sparse Linear Algebra Libraries Intern 🎓 @ NVIDIA",
+      "type": "internship"
     },
     {
-      "id": "simplify-cai-programmer-intern",
-      "title": "Programmer Intern @ CAI",
-      "organization": "CAI",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Programmer Intern — Allentown, PA (posted 1d ago)",
+      "id": "simplify-cai-programmer-intern",
       "link": "https://cai.wd5.myworkdayjobs.com/computer_aid/job/PA-CLIENT-STATE/Programmer-Intern_R8523?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "CAI",
+      "posted_days_ago": 1,
       "source": "simplifyjobs",
-      "posted_days_ago": 1
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Programmer Intern @ CAI",
+      "type": "internship"
     },
     {
-      "id": "simplify-databricks-software-engineer-intern",
-      "title": "Software Engineer Intern @ Databricks",
-      "organization": "Databricks",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern — 4 locationsSFBellevue, WAMountain View, CAVancouver, BC, Canada (posted 1d ago)",
+      "id": "simplify-databricks-software-engineer-intern",
       "link": "https://boards.greenhouse.io/embed/job_app?token=6865687002&utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Databricks",
+      "posted_days_ago": 1,
       "source": "simplifyjobs",
-      "posted_days_ago": 1
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern @ Databricks",
+      "type": "internship"
     },
     {
-      "id": "simplify-electronic-arts-data-and-ai-engineer-intern",
-      "title": "Data and AI Engineer Intern 🎓 @ Electronic Arts",
-      "organization": "Electronic Arts",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Data and AI Engineer Intern 🎓 — Austin, TX (posted 1d ago)",
+      "id": "simplify-electronic-arts-data-and-ai-engineer-intern",
       "link": "https://jobs.ea.com/en_US/careers/JobDetail/Data-AI-Engineering-Intern-Summer-2027/216238?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Electronic Arts",
+      "posted_days_ago": 1,
       "source": "simplifyjobs",
-      "posted_days_ago": 1
+      "status": "open",
+      "tags": [
+        "internship",
+        "ai",
+        "data",
+        "engineering"
+      ],
+      "title": "Data and AI Engineer Intern 🎓 @ Electronic Arts",
+      "type": "internship"
     },
     {
-      "id": "simplify-google-forward-deployed-engineer-inte",
-      "title": "Forward Deployed Engineer Intern @ Google",
-      "organization": "Google",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Forward Deployed Engineer Intern — NYCSunnyvale, CA (posted 1d ago)",
+      "id": "simplify-google-forward-deployed-engineer-inte",
       "link": "https://www.google.com/about/careers/applications/jobs/results/75665705386549958?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Google",
+      "posted_days_ago": 1,
       "source": "simplifyjobs",
-      "posted_days_ago": 1
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering"
+      ],
+      "title": "Forward Deployed Engineer Intern @ Google",
+      "type": "internship"
     },
     {
-      "id": "simplify-capula-technology-intern",
-      "title": "Technology Intern @ Capula",
-      "organization": "Capula",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Technology Intern — London, UK (posted 1d ago)",
+      "id": "simplify-capula-technology-intern",
       "link": "https://apply.workable.com/capula-investment-management-ltd/j/96EBCF5617/apply?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Capula",
+      "posted_days_ago": 1,
       "source": "simplifyjobs",
-      "posted_days_ago": 1
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Technology Intern @ Capula",
+      "type": "internship"
     },
     {
-      "id": "simplify-bosch-home-comfort-ai-business-solutions-intern",
-      "title": "AI Business Solutions Intern @ Bosch Home Comfort",
-      "organization": "Bosch Home Comfort",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "AI Business Solutions Intern — Coventry, UK (posted 1d ago)",
+      "id": "simplify-bosch-home-comfort-ai-business-solutions-intern",
       "link": "https://jobs.smartrecruiters.com/BoschGroup/744000154992819?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Bosch Home Comfort",
+      "posted_days_ago": 1,
       "source": "simplifyjobs",
-      "posted_days_ago": 1
+      "status": "open",
+      "tags": [
+        "internship",
+        "ai",
+        "business"
+      ],
+      "title": "AI Business Solutions Intern @ Bosch Home Comfort",
+      "type": "internship"
     },
     {
-      "id": "simplify-captech-consulting-consulting-software-engineer-i",
-      "title": "Consulting Software Engineer Intern @ CapTech Consulting",
-      "organization": "CapTech Consulting",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Consulting Software Engineer Intern — Richmond, VA (posted 1d ago)",
+      "id": "simplify-captech-consulting-consulting-software-engineer-i",
       "link": "https://jobs.smartrecruiters.com/CapTechConsulting/744000155019115?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "CapTech Consulting",
+      "posted_days_ago": 1,
       "source": "simplifyjobs",
-      "posted_days_ago": 1
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Consulting Software Engineer Intern @ CapTech Consulting",
+      "type": "internship"
     },
     {
-      "id": "simplify-rtx-software-engineer-intern",
-      "title": "Software Engineer Intern @ RTX",
-      "organization": "RTX",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern — Fullerton, CA (posted 2d ago)",
+      "id": "simplify-rtx-software-engineer-intern",
       "link": "https://globalhr.wd5.myworkdayjobs.com/rec_rtx_ext_gateway/job/US-CA-FULLERTON-675--1801-Hughes-Dr--BLDG-675/Software-Engineering-Intern--Summer-2027-_01879741?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "RTX",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern @ RTX",
+      "type": "internship"
     },
     {
-      "id": "simplify-nissan-global-financial-ai-engineer-intern",
-      "title": "Financial AI Engineer Intern @ Nissan Global",
-      "organization": "Nissan Global",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Financial AI Engineer Intern — Franklin, TN (posted 2d ago)",
+      "id": "simplify-nissan-global-financial-ai-engineer-intern",
       "link": "https://alliance.wd3.myworkdayjobs.com/en-US/nissanjobs/job/Franklin-Tennessee---United-States-of-America/Financial-AI-Engineering-Intern---Summer-2027---Franklin--TN_R00214241?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Nissan Global",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "ai",
+        "engineering"
+      ],
+      "title": "Financial AI Engineer Intern @ Nissan Global",
+      "type": "internship"
     },
     {
-      "id": "simplify-lseg-engineering-intern",
-      "title": "Engineering Intern @ LSEG",
-      "organization": "LSEG",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Engineering Intern — Nottingham, UK (posted 2d ago)",
+      "id": "simplify-lseg-engineering-intern",
       "link": "https://lseg.wd3.myworkdayjobs.com/Graduate_Careers/job/Nottingham-United-Kingdom/Engineering-Summer-Internship-Programme_R0124221?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "LSEG",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering"
+      ],
+      "title": "Engineering Intern @ LSEG",
+      "type": "internship"
     },
     {
-      "id": "simplify-life-fitness-android-software-engineer-inte",
-      "title": "Android Software Engineer Intern @ Life Fitness",
-      "organization": "Life Fitness",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Android Software Engineer Intern — Schaumburg, IL (posted 2d ago)",
+      "id": "simplify-life-fitness-android-software-engineer-inte",
       "link": "https://lifefitness.wd1.myworkdayjobs.com/searchLFN/job/Schaumburg-IL-60173/Android-Software-Intern_JR-025277?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Life Fitness",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "mobile",
+        "engineering",
+        "software"
+      ],
+      "title": "Android Software Engineer Intern @ Life Fitness",
+      "type": "internship"
     },
     {
-      "id": "simplify-kainos-placement-technologist-intern",
-      "title": "Placement Technologist Intern @ Kainos",
-      "organization": "Kainos",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Placement Technologist Intern — Londonderry, UK (posted 2d ago)",
+      "id": "simplify-kainos-placement-technologist-intern",
       "link": "https://kainos.wd3.myworkdayjobs.com/kainos/job/Derry-Londonderry/Placement-Technologist--L-Derry----June-2027-Start-Date_JR_18557-1?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Kainos",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Placement Technologist Intern @ Kainos",
+      "type": "internship"
     },
     {
-      "id": "simplify-opp-technologist-intern",
-      "title": "Technologist Intern @ ",
-      "organization": "",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Technologist Intern — Belfast, UK (posted 2d ago)",
+      "id": "simplify-opp-technologist-intern",
       "link": "https://kainos.wd3.myworkdayjobs.com/kainos/job/Belfast/Placement-Technologist--Belfast----June-2027-Start-Date_JR_18556?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Technologist Intern @ ",
+      "type": "internship"
     },
     {
-      "id": "simplify-opp-technologist-intern-2",
-      "title": "Technologist Intern @ ",
-      "organization": "",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Technologist Intern — Birmingham, UK (posted 2d ago)",
+      "id": "simplify-opp-technologist-intern-2",
       "link": "https://kainos.wd3.myworkdayjobs.com/kainos/job/Birmingham/Placement-Technologist--Birmingham----July-2027-Start-Date_JR_18558?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Technologist Intern @ ",
+      "type": "internship"
     },
     {
+      "curated": false,
+      "deadline": null,
+      "eligibility": "Software Development Intern — Falls Church, VA (posted 2d ago)",
       "id": "simplify-general-dynamics-information-t-software-development-intern",
-      "title": "Software Development Intern @ General Dynamics Information Technology",
-      "organization": "General Dynamics Information Technology",
-      "type": "internship",
-      "deadline": null,
-      "eligibility": "Software Development Intern — Falls Church, VA (posted 2d ago)",
       "link": "https://gdit.wd5.myworkdayjobs.com/gdit_earlytalent/job/USA-VA-Falls-Church/Summer-2027-Software-Development-Internship_RQ228406-1?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "General Dynamics Information Technology",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "software"
+      ],
+      "title": "Software Development Intern @ General Dynamics Information Technology",
+      "type": "internship"
     },
     {
+      "curated": false,
+      "deadline": null,
+      "eligibility": "Software Development Intern — Falls Church, VA (posted 2d ago)",
       "id": "simplify-opp-software-development-intern",
-      "title": "Software Development Intern @ ",
-      "organization": "",
-      "type": "internship",
-      "deadline": null,
-      "eligibility": "Software Development Intern — Falls Church, VA (posted 2d ago)",
       "link": "https://gdit.wd5.myworkdayjobs.com/gdit_earlytalent/job/USA-VA-Falls-Church/Summer-2027-Software-Development-Internship_RQ228404-1?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "software"
+      ],
+      "title": "Software Development Intern @ ",
+      "type": "internship"
     },
     {
-      "id": "simplify-opp-software-development-intern-2",
-      "title": "Software Development Intern @ ",
-      "organization": "",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Development Intern — Falls Church, VA (posted 2d ago)",
+      "id": "simplify-opp-software-development-intern-2",
       "link": "https://gdit.wd5.myworkdayjobs.com/gdit_earlytalent/job/USA-VA-Falls-Church/Summer-2027-Software-Development-Internship_RQ228405-2?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "software"
+      ],
+      "title": "Software Development Intern @ ",
+      "type": "internship"
     },
     {
-      "id": "simplify-expedia-group-mobile-engineer-intern",
-      "title": "Mobile Engineer Intern @ Expedia Group",
-      "organization": "Expedia Group",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Mobile Engineer Intern — Seattle, WAAustin, TXSan Jose, CA (posted 2d ago)",
+      "id": "simplify-expedia-group-mobile-engineer-intern",
       "link": "https://expedia.wd108.myworkdayjobs.com/search/job/Austin-Domain-11---HomeAway/Mobile-Engineering-Intern---2027---Austin--San-Jose--Seattle_R-110306-1?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Expedia Group",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "mobile",
+        "engineering"
+      ],
+      "title": "Mobile Engineer Intern @ Expedia Group",
+      "type": "internship"
     },
     {
-      "id": "simplify-opp-software-development-engineer-",
-      "title": "Software Development Engineer Intern @ ",
-      "organization": "",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Development Engineer Intern — Seattle, WAAustin, TXSan Jose, CA (posted 2d ago)",
+      "id": "simplify-opp-software-development-engineer-",
       "link": "https://expedia.wd108.myworkdayjobs.com/search/job/Washington---Seattle-Campus/Software-Development-Engineering-Intern---2027---Austin--San-Jose--Seattle_R-110311-1?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Development Engineer Intern @ ",
+      "type": "internship"
     },
     {
-      "id": "simplify-corewell-health-digital-services-web-and-mobil",
-      "title": "Digital Services Web and Mobile Developer Intern @ Corewell Health",
-      "organization": "Corewell Health",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Digital Services Web and Mobile Developer Intern — Grand Rapids, MI (posted 2d ago)",
+      "id": "simplify-corewell-health-digital-services-web-and-mobil",
       "link": "https://spectrumhealth.wd5.myworkdayjobs.com/CorewellHealthCareers/job/Grand-Rapids-MI/Digital-Services-Web-and-Mobile-Development-Internship-Summer-2027_R224434?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Corewell Health",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "mobile"
+      ],
+      "title": "Digital Services Web and Mobile Developer Intern @ Corewell Health",
+      "type": "internship"
     },
     {
-      "id": "simplify-opp-digital-services-development-s",
-      "title": "Digital Services Development Support and Operations Internship @ ",
-      "organization": "",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Digital Services Development Support and Operations Internship — Grand Rapids, MISouthfield, MISt Joseph, MI (posted 2d ago)",
+      "id": "simplify-opp-digital-services-development-s",
       "link": "https://spectrumhealth.wd5.myworkdayjobs.com/CorewellHealthCareers/job/Grand-Rapids-MI/Digital-Services-Development-Support-and-Operations-Internship-Summer-2027_R227468?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Digital Services Development Support and Operations Internship @ ",
+      "type": "internship"
     },
     {
-      "id": "simplify-cai-software-developer-intern",
-      "title": "Software Developer Intern @ CAI",
-      "organization": "CAI",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Developer Intern — Pennsylvania (posted 2d ago)",
+      "id": "simplify-cai-software-developer-intern",
       "link": "https://cai.wd5.myworkdayjobs.com/computer_aid/job/PA-CLIENT-STATE/Software-Developer-Intern_R8554?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "CAI",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "software"
+      ],
+      "title": "Software Developer Intern @ CAI",
+      "type": "internship"
     },
     {
-      "id": "simplify-atkinsr-alis-software-developer-intern",
-      "title": "Software Developer Intern @ AtkinsRéalis",
-      "organization": "AtkinsRéalis",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Developer Intern — Denver, CO (posted 2d ago)",
+      "id": "simplify-atkinsr-alis-software-developer-intern",
       "link": "https://slihrms.wd3.myworkdayjobs.com/careers/job/USCODenver/Software-Developer-Intern---Summer-2027_R-161580-1?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "AtkinsRéalis",
+      "posted_days_ago": 2,
       "source": "simplifyjobs",
-      "posted_days_ago": 2
+      "status": "open",
+      "tags": [
+        "internship",
+        "software"
+      ],
+      "title": "Software Developer Intern @ AtkinsRéalis",
+      "type": "internship"
     },
     {
-      "id": "simplify-electronic-arts-software-engineer-intern-2",
-      "title": "Software Engineer Intern @ Electronic Arts",
-      "organization": "Electronic Arts",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern — Vancouver, BC, Canada (posted 4d ago)",
+      "id": "simplify-electronic-arts-software-engineer-intern-2",
       "link": "https://jobs.ea.com/en_US/careers/JobDetail/Software-Engineer-Intern-Summer-2027-8-Months-Sports-Technology/216225?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Electronic Arts",
+      "posted_days_ago": 4,
       "source": "simplifyjobs",
-      "posted_days_ago": 4
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern @ Electronic Arts",
+      "type": "internship"
     },
     {
-      "id": "simplify-opp-software-engineer-co-op",
-      "title": "Software Engineer Co-op @ ",
-      "organization": "",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Co-op — Vancouver, BC, Canada (posted 4d ago)",
+      "id": "simplify-opp-software-engineer-co-op",
       "link": "https://jobs.ea.com/en_US/careers/JobDetail/Software-Engineer-Co-op/216231?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 4,
       "source": "simplifyjobs",
-      "posted_days_ago": 4
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Co-op @ ",
+      "type": "internship"
     },
     {
-      "id": "simplify-opp-gameplay-software-engineer-co-",
-      "title": "Gameplay Software Engineer Co-op @ ",
-      "organization": "",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Gameplay Software Engineer Co-op — Vancouver, BC, Canada (posted 4d ago)",
+      "id": "simplify-opp-gameplay-software-engineer-co-",
       "link": "https://jobs.ea.com/en_US/careers/JobDetail/Software-Engineer-Co-op/216230?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 4,
       "source": "simplifyjobs",
-      "posted_days_ago": 4
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Gameplay Software Engineer Co-op @ ",
+      "type": "internship"
     },
     {
-      "id": "simplify-gcm-grosvenor-software-engineer-intern",
-      "title": "Software Engineer Intern @ GCM Grosvenor",
-      "organization": "GCM Grosvenor",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern — Chicago, IL (posted 4d ago)",
+      "id": "simplify-gcm-grosvenor-software-engineer-intern",
       "link": "https://job-boards.greenhouse.io/gcmgrosvenor/jobs/8015792003?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "GCM Grosvenor",
+      "posted_days_ago": 4,
       "source": "simplifyjobs",
-      "posted_days_ago": 4
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern @ GCM Grosvenor",
+      "type": "internship"
     },
     {
-      "id": "simplify-affirm-it-engineer-intern-early-caree",
-      "title": "IT Engineer Intern - Early Careers @ Affirm",
-      "organization": "Affirm",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "IT Engineer Intern - Early Careers — SF (posted 4d ago)",
+      "id": "simplify-affirm-it-engineer-intern-early-caree",
       "link": "https://job-boards.greenhouse.io/affirm/jobs/8011375003?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Affirm",
+      "posted_days_ago": 4,
       "source": "simplifyjobs",
-      "posted_days_ago": 4
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering"
+      ],
+      "title": "IT Engineer Intern - Early Careers @ Affirm",
+      "type": "internship"
     },
     {
-      "id": "simplify-capstone-investment-advisors-tech-execution-intern",
-      "title": "Tech Execution Intern @ Capstone Investment Advisors",
-      "organization": "Capstone Investment Advisors",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Tech Execution Intern — NYC (posted 4d ago)",
+      "id": "simplify-capstone-investment-advisors-tech-execution-intern",
       "link": "https://job-boards.greenhouse.io/capstoneinvestmentadvisors/jobs/8882130002?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Capstone Investment Advisors",
+      "posted_days_ago": 4,
       "source": "simplifyjobs",
-      "posted_days_ago": 4
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Tech Execution Intern @ Capstone Investment Advisors",
+      "type": "internship"
     },
     {
-      "id": "simplify-wtw-software-developer-intern",
-      "title": "Software Developer Intern @ WTW",
-      "organization": "WTW",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Developer Intern — Reigate, UK (posted 4d ago)",
+      "id": "simplify-wtw-software-developer-intern",
       "link": "https://eedu.fa.em3.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1003/job/202605435?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "WTW",
+      "posted_days_ago": 4,
       "source": "simplifyjobs",
-      "posted_days_ago": 4
+      "status": "open",
+      "tags": [
+        "internship",
+        "software"
+      ],
+      "title": "Software Developer Intern @ WTW",
+      "type": "internship"
     },
     {
-      "id": "simplify-workday-software-engineer-intern",
-      "title": "Software Engineer Intern @ Workday",
-      "organization": "Workday",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern — Pleasanton, CA (posted 5d ago)",
+      "id": "simplify-workday-software-engineer-intern",
       "link": "https://workday.wd5.myworkdayjobs.com/Workday_Early_Career/job/USA-CA-Pleasanton/Software-Development-Engineer-Intern_JR-0110810?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Workday",
+      "posted_days_ago": 5,
       "source": "simplifyjobs",
-      "posted_days_ago": 5
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern @ Workday",
+      "type": "internship"
     },
     {
-      "id": "simplify-opp-software-application-developme",
-      "title": "Software Application Development Engineer Intern @ ",
-      "organization": "",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Application Development Engineer Intern — Pleasanton, CA (posted 5d ago)",
+      "id": "simplify-opp-software-application-developme",
       "link": "https://workday.wd5.myworkdayjobs.com/Workday_Early_Career/job/USA-CA-Pleasanton/Software-Application-Development-Engineer-Intern_JR-0110811?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "",
+      "posted_days_ago": 5,
       "source": "simplifyjobs",
-      "posted_days_ago": 5
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Application Development Engineer Intern @ ",
+      "type": "internship"
     },
     {
-      "id": "simplify-papa-john-s-digital-development-intern",
-      "title": "Digital Development Intern @ Papa John's",
-      "organization": "Papa John's",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Digital Development Intern — Atlanta, GA (posted 5d ago)",
+      "id": "simplify-papa-john-s-digital-development-intern",
       "link": "https://papajohns.wd1.myworkdayjobs.com/papajohnscareers/job/HQ_Atlanta/XMLNAME-2027-Summer-Intern---Digital-Development_R26_0000002155?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Papa John's",
+      "posted_days_ago": 5,
       "source": "simplifyjobs",
-      "posted_days_ago": 5
+      "status": "open",
+      "tags": [
+        "internship"
+      ],
+      "title": "Digital Development Intern @ Papa John's",
+      "type": "internship"
     },
     {
-      "id": "simplify-nissan-global-ea-cloud-intern",
-      "title": "EA & Cloud Intern @ Nissan Global",
-      "organization": "Nissan Global",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "EA & Cloud Intern — Franklin, TN (posted 5d ago)",
+      "id": "simplify-nissan-global-ea-cloud-intern",
       "link": "https://alliance.wd3.myworkdayjobs.com/en-US/nissanjobs/job/Franklin-Tennessee---United-States-of-America/EA---Cloud-Intern---Summer-2027---Franklin--TN_R00214214?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Nissan Global",
+      "posted_days_ago": 5,
       "source": "simplifyjobs",
-      "posted_days_ago": 5
+      "status": "open",
+      "tags": [
+        "internship",
+        "cloud"
+      ],
+      "title": "EA & Cloud Intern @ Nissan Global",
+      "type": "internship"
     },
     {
-      "id": "simplify-globalfoundries-software-engineer-intern",
-      "title": "Software Engineer Intern @ GlobalFoundries",
-      "organization": "GlobalFoundries",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Engineer Intern — Austin, TXSanta Clara, CA (posted 5d ago)",
+      "id": "simplify-globalfoundries-software-engineer-intern",
       "link": "https://globalfoundries.wd1.myworkdayjobs.com/External/job/USA---Texas---Austin/Software-Engineering-Intern--Summer-2027-_JR-2604039?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "GlobalFoundries",
+      "posted_days_ago": 5,
       "source": "simplifyjobs",
-      "posted_days_ago": 5
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software Engineer Intern @ GlobalFoundries",
+      "type": "internship"
     },
     {
-      "id": "simplify-elanco-pet-health-sales-excellence-in",
-      "title": "Pet Health Sales Excellence Intern - AI Innovation & Enablement @ Elanco",
-      "organization": "Elanco",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Pet Health Sales Excellence Intern - AI Innovation & Enablement — Indianapolis, IN (posted 5d ago)",
+      "id": "simplify-elanco-pet-health-sales-excellence-in",
       "link": "https://elanco.wd5.myworkdayjobs.com/en-US/External_Career/job/Indianapolis-IN/US-Pet-Health-Sales-Excellence-Intern---AI-Innovation---Enablement--Summer-2027-_R0027467?utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Elanco",
+      "posted_days_ago": 5,
       "source": "simplifyjobs",
-      "posted_days_ago": 5
+      "status": "open",
+      "tags": [
+        "internship",
+        "ai",
+        "innovation"
+      ],
+      "title": "Pet Health Sales Excellence Intern - AI Innovation & Enablement @ Elanco",
+      "type": "internship"
     },
     {
-      "id": "simplify-peraton-software-development-intern",
-      "title": "Software Development Intern @ Peraton",
-      "organization": "Peraton",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software Development Intern — Topeka, KS (posted 5d ago)",
+      "id": "simplify-peraton-software-development-intern",
       "link": "https://careers-peraton.icims.com/jobs/172061/job?mobile=true&needsRedirect=false&utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "Peraton",
+      "posted_days_ago": 5,
       "source": "simplifyjobs",
-      "posted_days_ago": 5
+      "status": "open",
+      "tags": [
+        "internship",
+        "software"
+      ],
+      "title": "Software Development Intern @ Peraton",
+      "type": "internship"
     },
     {
-      "id": "simplify-general-dynamics-mission-syste-software-systems-engineering-i",
-      "title": "Software/Systems Engineering Intern @ General Dynamics Mission Systems",
-      "organization": "General Dynamics Mission Systems",
-      "type": "internship",
+      "curated": false,
       "deadline": null,
       "eligibility": "Software/Systems Engineering Intern — Middletown, RI (posted 5d ago)",
+      "id": "simplify-general-dynamics-mission-syste-software-systems-engineering-i",
       "link": "https://careers-gdms.icims.com/jobs/75463/job?mobile=true&needsRedirect=false&utm_source=Simplify&ref=Simplify",
-      "curated": false,
+      "organization": "General Dynamics Mission Systems",
+      "posted_days_ago": 5,
       "source": "simplifyjobs",
-      "posted_days_ago": 5
+      "status": "open",
+      "tags": [
+        "internship",
+        "engineering",
+        "software"
+      ],
+      "title": "Software/Systems Engineering Intern @ General Dynamics Mission Systems",
+      "type": "internship"
     },
     {
-      "id": "tcs-hackquest-11",
-      "title": "TCS HackQuest Season 11",
-      "organization": "TCS",
-      "type": "hackathon",
+      "curated": true,
       "deadline": "2026-11-16",
       "eligibility": "Students graduating in 2027 (B.E./B.Tech, M.E./M.Tech, BCA/MCA, B.Sc./M.Sc. and related courses) with a valid TCS NextStep CT/DT reference ID; individual participation.",
+      "id": "tcs-hackquest-11",
       "link": "https://hackquest.tcsapps.com/",
+      "organization": "TCS",
       "source": "curated",
-      "curated": true
+      "status": "open",
+      "tags": [
+        "hackathon"
+      ],
+      "title": "TCS HackQuest Season 11",
+      "type": "hackathon"
     },
     {
-      "id": "homingo-ai-hackathon-2026",
-      "title": "Homingo AI Hackathon (Online)",
-      "organization": "Homingo",
-      "type": "hackathon",
+      "curated": true,
       "deadline": "2026-11-15",
       "eligibility": "Open to all participants across India; solo or teams of 2-4; AI tools allowed; submit a public GitHub repo and a short demo video.",
+      "id": "homingo-ai-hackathon-2026",
       "link": "https://hackathon.homingo.co.in/",
+      "organization": "Homingo",
       "source": "curated",
-      "curated": true
+      "status": "open",
+      "tags": [
+        "hackathon",
+        "ai"
+      ],
+      "title": "Homingo AI Hackathon (Online)",
+      "type": "hackathon"
     },
     {
-      "id": "xat-2027",
-      "title": "XAT 2027",
-      "organization": "XLRI Jamshedpur",
-      "type": "exam",
+      "curated": true,
       "deadline": "2026-12-06",
       "eligibility": "Graduation degree holders or final-year students applying for MBA/PGDM admissions; scores accepted by XLRI, XIMB, MICA, IMT and others.",
+      "id": "xat-2027",
       "link": "https://xatonline.in",
+      "organization": "XLRI Jamshedpur",
       "source": "curated",
-      "curated": true
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
+      "title": "XAT 2027",
+      "type": "exam"
     },
     {
-      "id": "snap-2026",
-      "title": "SNAP 2026",
-      "organization": "Symbiosis International",
-      "type": "exam",
+      "curated": true,
       "deadline": "2026-11-25",
       "eligibility": "Graduates (50% marks; 45% for reserved categories) applying for MBA programmes at Symbiosis institutes; up to three attempts.",
+      "id": "snap-2026",
       "link": "https://www.snaptest.org",
+      "organization": "Symbiosis International",
       "source": "curated",
-      "curated": true
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
+      "title": "SNAP 2026",
+      "type": "exam"
     },
     {
-      "id": "uceed-2027",
-      "title": "UCEED 2027",
-      "organization": "IIT Bombay",
-      "type": "exam",
+      "curated": true,
       "deadline": "2026-10-31",
       "eligibility": "Students who passed Class XII in 2026 or are appearing in 2027, from any stream, applying for B.Des. at IIT Bombay, Delhi, Guwahati, Hyderabad, Indore, Roorkee or IIITDM Jabalpur.",
+      "id": "uceed-2027",
       "link": "https://www.uceed.iitb.ac.in/2027/index.html",
+      "organization": "IIT Bombay",
       "source": "curated",
-      "curated": true
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
+      "title": "UCEED 2027",
+      "type": "exam"
     },
     {
-      "id": "nid-dat-2027",
-      "title": "NID DAT 2027",
-      "organization": "National Institute of Design",
-      "type": "exam",
+      "curated": true,
       "deadline": "2026-11-30",
       "eligibility": "Students applying for B.Des./M.Des. programmes at the National Institute of Design; check stream-specific eligibility on the official site.",
+      "id": "nid-dat-2027",
       "link": "https://admissions.nid.edu",
+      "organization": "National Institute of Design",
       "source": "curated",
-      "curated": true
+      "status": "open",
+      "tags": [
+        "exam",
+        "design"
+      ],
+      "title": "NID DAT 2027",
+      "type": "exam"
     },
     {
-      "id": "nift-2027",
-      "title": "NIFT 2027",
-      "organization": "National Institute of Fashion Technology",
-      "type": "exam",
+      "curated": true,
       "deadline": "2026-11-16",
       "eligibility": "Students applying for B.Des., M.Des., MFM, MFTech or BFTech programmes at NIFT campuses.",
+      "id": "nift-2027",
       "link": "https://www.nift.ac.in",
+      "organization": "National Institute of Fashion Technology",
       "source": "curated",
-      "curated": true
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
+      "title": "NIFT 2027",
+      "type": "exam"
     },
     {
-      "id": "mat-dec-2026",
-      "title": "MAT December 2026",
-      "organization": "AIMA",
-      "type": "exam",
+      "curated": true,
       "deadline": "2026-12-21",
       "eligibility": "Graduates applying for MBA/PGDM admissions; PBT (last date 14 Dec 2026) and CBT modes available, re-attempts allowed.",
+      "id": "mat-dec-2026",
       "link": "https://mat.aima.in",
+      "organization": "AIMA",
       "source": "curated",
-      "curated": true
+      "status": "open",
+      "tags": [
+        "exam"
+      ],
+      "title": "MAT December 2026",
+      "type": "exam"
     },
     {
-      "id": "hdfc-ecss-2026-27",
-      "title": "HDFC Bank Parivartan ECSS Scholarship 2026-27",
-      "organization": "HDFC Bank",
-      "type": "scholarship",
+      "curated": true,
       "deadline": "2026-12-31",
       "eligibility": "Indian students in diploma, ITI, polytechnic, UG or PG courses with at least 55% in the previous exam and annual family income up to Rs 2.5 lakh; final cycle closes 31 Dec 2026.",
+      "id": "hdfc-ecss-2026-27",
       "link": "https://www.buddy4study.com/article/parivartan-ecss-programme",
+      "organization": "HDFC Bank",
       "source": "curated",
-      "curated": true
+      "status": "open",
+      "tags": [
+        "scholarship"
+      ],
+      "title": "HDFC Bank Parivartan ECSS Scholarship 2026-27",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-10-31",
+      "description": "Central Sector Scheme for college and university students applying through the National Scholarship Portal.",
+      "eligibility": "Class 12 pass in the top 20th percentile of the board; enrolled in a regular degree course; family income up to Rs 8 lakh per year",
+      "id": "nsp-central-sector-csss-2026",
+      "link": "https://scholarships.gov.in",
+      "organization": "Dept. of Higher Education, Ministry of Education",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "government",
+        "merit"
+      ],
+      "title": "Central Sector Scheme of Scholarship (CSSS) 2026-27",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-10-31",
+      "description": "Top Class Education scheme for OBC, EBC and DNT students studying in notified institutions.",
+      "eligibility": "OBC, EBC or DNT student; enrolled in a top-class institution; family income within scheme limits",
+      "id": "nsp-pm-yasasvi-2026",
+      "link": "https://scholarships.gov.in",
+      "organization": "Ministry of Social Justice and Empowerment",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "government"
+      ],
+      "title": "PM YASASVI Top Class Scholarship 2026-27",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-10-31",
+      "description": "Central Sector Scheme supporting meritorious students from economically weaker sections from class 9 to 12.",
+      "eligibility": "Class 9 to 12 student from an economically weaker section; selected through the NMMSS examination",
+      "id": "nsp-nmmss-2026",
+      "link": "https://scholarships.gov.in",
+      "organization": "Ministry of Education",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "government",
+        "school"
+      ],
+      "title": "National Means-cum-Merit Scholarship (NMMSS) 2026-27",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-10-31",
+      "description": "AICTE scholarship for specially-abled students in technical degree and diploma courses.",
+      "eligibility": "Student with 40% or more disability; enrolled in an AICTE-approved degree or diploma course; family income up to Rs 8 lakh per year",
+      "id": "aicte-saksham-2026",
+      "link": "https://scholarships.gov.in",
+      "organization": "AICTE",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "government",
+        "engineering"
+      ],
+      "title": "AICTE Saksham Scholarship 2026-27",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-10-31",
+      "description": "AICTE scholarship for students facing extreme personal hardship in technical courses.",
+      "eligibility": "Orphan, ward of a martyr, or ward of a parent with severe disability or critical illness; enrolled in an AICTE-approved course; family income up to Rs 8 lakh per year",
+      "id": "aicte-swanath-2026",
+      "link": "https://scholarships.gov.in",
+      "organization": "AICTE",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "government",
+        "engineering"
+      ],
+      "title": "AICTE Swanath Scholarship 2026-27",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-12-08",
+      "description": "Full-cost scholarship for postgraduate study at the University of Cambridge. Deadlines vary by course; 8 December 2026 covers the international round for most courses.",
+      "eligibility": "Non-UK applicant to a full-time postgraduate course at Cambridge; applying by the course funding deadline",
+      "id": "gates-cambridge-2027",
+      "link": "https://www.gatescambridge.org",
+      "organization": "Gates Cambridge Trust, University of Cambridge",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "uk",
+        "postgraduate",
+        "phd"
+      ],
+      "title": "Gates Cambridge Scholarship 2027",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": "2027-01-10",
+      "description": "One-year residential postgraduate diploma in interdisciplinary studies at Ashoka University. Round 1 final deadline shown; Round 2 closes 21 March 2027.",
+      "eligibility": "Recognised undergraduate degree in any discipline; final-year undergraduates completing by summer 2027",
+      "id": "young-india-fellowship-2028",
+      "link": "https://www.ashoka.edu.in/yif-admissions/",
+      "organization": "Ashoka University",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "fellowship",
+        "scholarship",
+        "leadership"
+      ],
+      "title": "Young India Fellowship (Class of 2028)",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Fellowship supporting PhD research at premier Indian institutions. December cycle dates are tentative and set by institute nomination timelines.",
+      "eligibility": "UG or PG student from an IIT, NIT, IISc, IISER or selected centrally funded institution; PhD admission through the fellowship",
+      "id": "pmrf-dec-2026",
+      "link": "https://www.pmrf.in",
+      "organization": "Ministry of Education",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "fellowship",
+        "research",
+        "phd"
+      ],
+      "title": "Prime Minister's Research Fellowship (PMRF) - December 2026 cycle",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "EU-funded joint master's programmes delivered by consortia of universities. Each programme sets its own deadline, usually October to January.",
+      "eligibility": "Bachelor's degree holder; applying to a specific Erasmus Mundus programme",
+      "id": "erasmus-mundus-2027",
+      "link": "https://erasmus-plus.ec.europa.eu",
+      "organization": "European Commission",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "europe",
+        "postgraduate"
+      ],
+      "title": "Erasmus Mundus Joint Masters 2027",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Working Internships in Science and Engineering for Indian students at German universities and research institutes.",
+      "eligibility": "Indian undergraduate student in science or engineering; invited by a German host for a research stay",
+      "id": "daad-wise-2026",
+      "link": "https://www.daad.in",
+      "organization": "DAAD",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "research",
+        "germany"
+      ],
+      "title": "DAAD WISE Scholarship",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Scholarship for meritorious students from economically weaker sections entering higher, technical or vocational education. Sources conflict on the 2026 deadline, so no date is shown here.",
+      "eligibility": "Class 10 or 12 pass with at least 60% marks; first-year UG, diploma, ITI or vocational student; family income up to Rs 4.5 lakh per year",
+      "id": "lic-golden-jubilee-2026",
+      "link": "https://gjss.licindia.in",
+      "organization": "LIC Golden Jubilee Foundation",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "merit"
+      ],
+      "title": "LIC Golden Jubilee Scholarship 2026-27",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-11-05",
+      "description": "National Eligibility Test for Junior Research Fellowship, Assistant Professor eligibility and PhD admission in science subjects.",
+      "eligibility": "Indian national with an MSc or equivalent in a science subject; JRF age limit 30 years as on 1 December 2026",
+      "id": "csir-ugc-net-dec-2026",
+      "link": "https://csirnet.nta.nic.in",
+      "organization": "NTA / CSIR",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "research",
+        "science",
+        "phd"
+      ],
+      "title": "Joint CSIR-UGC NET December 2026",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Common Law Admission Test for undergraduate law programmes at national law universities.",
+      "eligibility": "Class 12 pass or appearing; applying for UG law programmes at national law universities",
+      "id": "clat-2027",
+      "link": "https://consortiumofnlus.ac.in",
+      "organization": "Consortium of NLUs",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "law"
+      ],
+      "title": "CLAT 2027",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Entry-level examination of the chartered accountancy course in India.",
+      "eligibility": "Class 12 pass or appearing; registered with ICAI for the Foundation course",
+      "id": "ca-foundation-2026",
+      "link": "https://www.icai.org",
+      "organization": "Institute of Chartered Accountants of India",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "finance"
+      ],
+      "title": "CA Foundation",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Graduate Management Admission Test accepted by business schools worldwide. Test dates are scheduled year-round.",
+      "eligibility": "Candidate applying to graduate management programmes; no specific degree prerequisite",
+      "id": "gmat-2026",
+      "link": "https://www.mba.com",
+      "organization": "GMAC",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "management",
+        "mba"
+      ],
+      "title": "GMAT",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Graduate Record Examination for admission to graduate and business programmes. Test dates are scheduled year-round.",
+      "eligibility": "Candidate applying to graduate programmes; no specific degree prerequisite",
+      "id": "gre-2026",
+      "link": "https://www.ets.org",
+      "organization": "ETS",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "postgraduate"
+      ],
+      "title": "GRE General Test",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "International English Language Testing System with Academic and General Training modules. Test dates run year-round.",
+      "eligibility": "Candidate needing an English proficiency score for study, work or migration",
+      "id": "ielts-2026",
+      "link": "https://www.ielts.org",
+      "organization": "British Council / IDP / Cambridge",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "english"
+      ],
+      "title": "IELTS",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Recruitment examination for Probationary Officers at the State Bank of India.",
+      "eligibility": "Graduate in any discipline; within the age limits in the official notification",
+      "id": "sbi-po-2027",
+      "link": "https://sbi.co.in",
+      "organization": "State Bank of India",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "banking",
+        "government"
+      ],
+      "title": "SBI Probationary Officer (PO)",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Recruitment examination for Grade B officers at the Reserve Bank of India.",
+      "eligibility": "Graduate in any discipline; within the age limits in the official notification",
+      "id": "rbi-grade-b-2026",
+      "link": "https://www.rbi.org.in",
+      "organization": "Reserve Bank of India",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "banking",
+        "finance",
+        "government"
+      ],
+      "title": "RBI Grade B Officer",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "UPSC examination for officer entry into the Indian Military Academy, Naval Academy, Air Force Academy and Officers' Training Academy.",
+      "eligibility": "Graduate in any discipline; within the age and marital-status limits in the notification",
+      "id": "cds-2027",
+      "link": "https://upsc.gov.in",
+      "organization": "UPSC",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "defence",
+        "government"
+      ],
+      "title": "CDS (Combined Defence Services)",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Air Force Common Admission Test for officer entry into the flying, ground duty and technical branches.",
+      "eligibility": "Graduate in any discipline with 60% marks; within the age limits in the notification",
+      "id": "afcat-2027",
+      "link": "https://afcat.cdac.in",
+      "organization": "Indian Air Force",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "defence",
+        "government"
+      ],
+      "title": "AFCAT",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "National Eligibility Test for Assistant Professor eligibility and PhD admission across Indian universities.",
+      "eligibility": "Master's degree holder or appearing; applying for Assistant Professor eligibility or PhD admission",
+      "id": "ugc-net-dec-2026",
+      "link": "https://ugcnet.nta.nic.in",
+      "organization": "NTA / UGC",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "research",
+        "phd"
+      ],
+      "title": "UGC NET December 2026",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Fellowship examination for PhD research in biomedical and social sciences at ICMR institutes and universities.",
+      "eligibility": "MSc or equivalent in life sciences or social sciences; within the age limit in the notification",
+      "id": "icmr-jrf-2026",
+      "link": "https://www.icmr.gov.in",
+      "organization": "ICMR",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "exam",
+        "research",
+        "medical",
+        "phd"
+      ],
+      "title": "ICMR Junior Research Fellowship",
+      "type": "exam"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-10-31",
+      "description": "Month-long open-source celebration in October 2026 focused on open-source AI. Collect virtual stickers through challenges and local Fests.",
+      "eligibility": "Anyone; participation through online challenges or local Fests",
+      "id": "hacktoberfest-2026",
+      "link": "https://hacktoberfest.com",
+      "organization": "DigitalOcean / DEV / MLH",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "hackathon",
+        "coding",
+        "ai",
+        "open-source"
+      ],
+      "title": "Hacktoberfest 2026",
+      "type": "hackathon"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Microsoft's global student technology competition for teams building with Azure and AI.",
+      "eligibility": "Student aged 18 or older; team project using Microsoft technologies",
+      "id": "imagine-cup-2026",
+      "link": "https://imaginecup.microsoft.com",
+      "organization": "Microsoft",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "hackathon",
+        "coding",
+        "ai",
+        "startup"
+      ],
+      "title": "Microsoft Imagine Cup",
+      "type": "hackathon"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Global innovation challenge to reimagine luxury fragrance through creativity, technology and science.",
+      "eligibility": "Aged 18 to 30; individual registration, then teams of 3",
+      "id": "loreal-brandstorm-2026",
+      "link": "https://brandstorm.loreal.com",
+      "organization": "L'Oréal Group",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "competition",
+        "marketing",
+        "design",
+        "innovation"
+      ],
+      "title": "L'Oréal Brandstorm 2026",
+      "type": "competition"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Global student startup competition for social enterprises, run through on-campus rounds and national finals.",
+      "eligibility": "University student; team-based social enterprise pitch",
+      "id": "hult-prize-2026",
+      "link": "https://www.hultprize.org",
+      "organization": "Hult Prize Foundation",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "competition",
+        "startup",
+        "social-impact"
+      ],
+      "title": "Hult Prize 2026",
+      "type": "competition"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Business quiz competition for students run by the Tata group.",
+      "eligibility": "Full-time student; team-based business quiz",
+      "id": "tata-crucible-2026",
+      "link": "https://www.tatacrucible.com",
+      "organization": "Tata Group",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "competition",
+        "quiz",
+        "business"
+      ],
+      "title": "Tata Crucible",
+      "type": "competition"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Robotics competition by IIT Bombay where teams solve real-world problems with robots built to a theme.",
+      "eligibility": "Engineering or science student; team-based robotics challenge",
+      "id": "eyantra-2026",
+      "link": "https://www.eyantra.in",
+      "organization": "IIT Bombay",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "competition",
+        "robotics",
+        "embedded"
+      ],
+      "title": "e-Yantra Robotics Competition",
+      "type": "competition"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Algorithmic programming contest for university teams, run through regional contests feeding a world final.",
+      "eligibility": "University student; team of 3 for the regional contest",
+      "id": "icpc-2026",
+      "link": "https://icpc.global",
+      "organization": "ICPC Foundation",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "competition",
+        "coding",
+        "programming"
+      ],
+      "title": "ICPC (International Collegiate Programming Contest)",
+      "type": "competition"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Annual science and technology festival of IIT Bombay with competitions across robotics, coding, design and more.",
+      "eligibility": "Student; event-specific eligibility per competition",
+      "id": "techfest-2026",
+      "link": "https://www.techfest.org",
+      "organization": "IIT Bombay",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "competition",
+        "robotics",
+        "coding",
+        "design"
+      ],
+      "title": "Techfest Competitions",
+      "type": "competition"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-11-01",
+      "description": "One to six month practical placement at CERN in Geneva in technical or administrative areas. India is a CERN Associate Member State.",
+      "eligibility": "Full-time student aged 18 or older from a CERN Member or Associate Member State; technical or administrative field",
+      "id": "cern-short-term-internship-2026",
+      "link": "https://careers.cern",
+      "organization": "CERN",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "research",
+        "physics",
+        "engineering"
+      ],
+      "title": "CERN Short-Term Internship 2026",
+      "type": "internship"
+    },
+    {
+      "curated": true,
+      "deadline": "2026-11-14",
+      "description": "Six-month paid internship at the Defence Research and Development Establishment, Gwalior, across 8 positions.",
+      "eligibility": "MSc or BE/BTech student in biological sciences, chemical sciences or engineering; 75% marks or 7.5 CGPA; under 28 years",
+      "id": "drdo-drde-internship-2026",
+      "link": "https://www.drdo.gov.in",
+      "organization": "DRDO (DRDE Gwalior)",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "research",
+        "defence",
+        "science"
+      ],
+      "title": "DRDO DRDE Gwalior Internship 2026",
+      "type": "internship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Six-week to six-month unpaid internship in policy research at NITI Aayog, New Delhi. Apply between the 1st and 10th of any month.",
+      "eligibility": "UG student after 2nd year, PG or research scholar; application window 1st to 10th of every month",
+      "id": "niti-aayog-internship-2026",
+      "link": "https://workforindia.niti.gov.in/intern/InternshipEntry/homepage.aspx",
+      "organization": "NITI Aayog",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "government",
+        "policy",
+        "research"
+      ],
+      "title": "NITI Aayog Internship Scheme",
+      "type": "internship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Internships at ISRO centres in satellite communication, remote sensing and space technology. Cycles vary by centre.",
+      "eligibility": "Engineering student from 6th semester, ME/MTech or MSc student; 60% aggregate or 6.32 CGPA",
+      "id": "isro-internship-2026",
+      "link": "https://www.isro.gov.in",
+      "organization": "ISRO / Department of Space",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "space",
+        "engineering",
+        "research"
+      ],
+      "title": "ISRO Internship",
+      "type": "internship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Software engineering internship at Google for penultimate-year students. Apply through Google Careers when the summer cycle opens.",
+      "eligibility": "Student in the penultimate year of a degree in computer science or a related field",
+      "id": "google-swe-internship-2027",
+      "link": "https://careers.google.com",
+      "organization": "Google",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "software",
+        "coding"
+      ],
+      "title": "Google Software Engineering Internship",
+      "type": "internship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Software engineering internship at Microsoft. Apply through Microsoft Careers when the cycle opens.",
+      "eligibility": "Student enrolled in a degree in computer science or a related field",
+      "id": "microsoft-swe-internship-2027",
+      "link": "https://careers.microsoft.com",
+      "organization": "Microsoft",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "software",
+        "coding",
+        "cloud"
+      ],
+      "title": "Microsoft Software Engineering Internship",
+      "type": "internship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Internships at Adobe across engineering and design roles. Apply through Adobe's careers site when the cycle opens.",
+      "eligibility": "Student enrolled in a degree in computer science or a related field",
+      "id": "adobe-internship-2027",
+      "link": "https://www.adobe.com",
+      "organization": "Adobe",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "software",
+        "design"
+      ],
+      "title": "Adobe Internship",
+      "type": "internship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Summer internship at Goldman Sachs across engineering, finance and operations. Apply through the firm's careers site when the cycle opens.",
+      "eligibility": "Student in the penultimate year of an undergraduate or postgraduate degree",
+      "id": "goldman-sachs-internship-2027",
+      "link": "https://www.goldmansachs.com",
+      "organization": "Goldman Sachs",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "internship",
+        "finance",
+        "software"
+      ],
+      "title": "Goldman Sachs Summer Internship",
+      "type": "internship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "AICTE scholarship for students from Jammu and Kashmir and Ladakh studying outside the region.",
+      "eligibility": "Student domiciled in Jammu and Kashmir or Ladakh; enrolled in a course outside the region through the scheme",
+      "id": "pmsss-2026",
+      "link": "https://www.aicte-india.org",
+      "organization": "AICTE",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "scholarship",
+        "government"
+      ],
+      "title": "PMSSS (Prime Minister's Special Scholarship Scheme)",
+      "type": "scholarship"
+    },
+    {
+      "curated": true,
+      "deadline": null,
+      "description": "Two-year fellowship teaching in under-resourced schools in India, with leadership training and alumni support.",
+      "eligibility": "Graduate in any discipline; Indian citizen or OCI card holder",
+      "id": "teach-for-india-2027",
+      "link": "https://www.teachforindia.org",
+      "organization": "Teach For India",
+      "source": "curated",
+      "status": "open",
+      "tags": [
+        "fellowship",
+        "teaching",
+        "leadership"
+      ],
+      "title": "Teach For India Fellowship",
+      "type": "scholarship"
     }
   ]
 }
