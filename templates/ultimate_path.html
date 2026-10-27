@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}{{ path.title }} | Study-Buddy Labs{% endblock %}
+
+{% block head %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}
+
+{% block content %}
+<section class="b-section">
+  <p><a href="/ultimate/lab">&larr; Back to Study-Buddy Labs</a></p>
+  <div class="b-card b-card--hero">
+    <div class="b-pill">Guided path</div>
+    <h1 class="b-hero-title">{{ path.title }}</h1>
+    <p class="b-lede">{{ path.tagline }}</p>
+    <p class="lab-desc" id="path-progress">{{ path.done }} of {{ path.total }} steps done{% if finished %} — path complete{% endif %}.</p>
+    <p class="lab-desc">Tool steps are verified by a real Lab run (10 XP each). Page steps are marked done by you and earn progress, not XP. Finishing the path earns 25 XP once.</p>
+  </div>
+
+  <div class="b-card b-card--lite" style="margin-top: 24px;">
+    <h2>Steps</h2>
+    <ol>
+      {% for step in path.steps %}
+      <li style="margin-bottom: 14px;" data-step="{{ step.id }}">
+        <strong>{{ step.title }}</strong>
+        {% if step.done %}
+        <span class="b-tag">Done</span>
+        {% endif %}
+        <div class="lab-desc">{{ step.detail }}</div>
+        {% if step.kind == 'tool' %}
+        <div><a href="/ultimate/lab?tool={{ step.tool_id }}">Open {{ step.tool_id }} in the Lab</a>
+          <span class="lab-desc"> — run it, then use “Count toward a path step” on the result.</span></div>
+        {% elif step.kind == 'page' %}
+        <div><a href="{{ step.href }}">Open the page</a>
+          {% if not step.done %}
+          <button class="b-btn b-btn--sm mark-page-step" type="button" data-path="{{ path.id }}" data-step="{{ step.id }}">Mark done</button>
+          {% endif %}
+        </div>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+
+  {% if path.completed and not finished %}
+  <div class="b-card b-card--lite" style="margin-top: 24px;" id="path-finish">
+    <h2>{{ path.finish_label }}</h2>
+    <p class="lab-desc">{{ path.finish_detail }}</p>
+    {% if path.finish_kind == 'tracker' %}
+    <div>
+      <label class="b-label" for="finish-role">Target role</label>
+      <input type="text" id="finish-role" class="b-input" placeholder="e.g. Backend intern" autocomplete="off">
+    </div>
+    <div>
+      <label class="b-label" for="finish-company">Company (optional)</label>
+      <input type="text" id="finish-company" class="b-input" placeholder="Leave blank for a wishlist row" autocomplete="off">
+    </div>
+    {% endif %}
+    <button class="b-btn" id="finish-path" type="button" data-path="{{ path.id }}">Finish path</button>
+    <p class="lab-desc" id="finish-status" aria-live="polite"></p>
+  </div>
+  {% elif finished %}
+  <div class="b-card b-card--lite" style="margin-top: 24px;">
+    <h2>Path complete</h2>
+    <p class="lab-desc">This path is finished. Keep going:</p>
+    <ul>
+      {% for link in path.finish_links %}
+      <li><a href="{{ link.href }}">{{ link.label }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script nonce="{{ csp_nonce() }}">
+(function () {
+    function csrfHeaders(extra) {
+        var headers = extra || {};
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) headers['X-CSRFToken'] = meta.getAttribute('content');
+        return headers;
+    }
+    function postJson(url, body) {
+        return fetch(url, {
+            method: 'POST',
+            headers: csrfHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(body || {})
+        }).then(function (r) { return r.json(); });
+    }
+    document.querySelectorAll('.mark-page-step').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+            postJson('/api/ultimate/paths/' + encodeURIComponent(btn.getAttribute('data-path')) +
+                '/steps/' + encodeURIComponent(btn.getAttribute('data-step')) + '/complete', {})
+                .then(function (d) {
+                    if (d && d.ok) { window.location.reload(); }
+                    else { btn.disabled = false; btn.textContent = 'Mark done'; }
+                });
+        });
+    });
+    var finishBtn = document.getElementById('finish-path');
+    if (finishBtn) {
+        finishBtn.addEventListener('click', function () {
+            var status = document.getElementById('finish-status');
+            var body = {};
+            var roleEl = document.getElementById('finish-role');
+            var companyEl = document.getElementById('finish-company');
+            if (roleEl) body.role = roleEl.value;
+            if (companyEl) body.company = companyEl.value;
+            finishBtn.disabled = true;
+            finishBtn.textContent = 'Finishing…';
+            postJson('/api/ultimate/paths/' + encodeURIComponent(finishBtn.getAttribute('data-path')) + '/complete', body)
+                .then(function (d) {
+                    if (d && d.ok) { window.location.reload(); }
+                    else {
+                        status.textContent = (d && d.error) || 'Could not finish the path.';
+                        finishBtn.disabled = false;
+                        finishBtn.textContent = 'Finish path';
+                    }
+                });
+        });
+    }
+})();
+</script>
+{% endblock %}

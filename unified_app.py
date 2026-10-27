@@ -1596,6 +1596,77 @@ class XPLedger(db.Model):
                                                       cascade="all, delete-orphan"))
 
 
+class LabRun(db.Model):
+    """One Ultimate Lab tool execution (private to its owner).
+
+    History is the Lab's memory: every authenticated run records its
+    tool, a hash of the canonical input payload, and the JSON output so
+    runs can be listed, re-run, saved, and deleted. Rows are never
+    shared with other users and never used for training.
+    """
+    __tablename__ = "lab_run"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    tool_id = db.Column(db.String(200), nullable=False, index=True)
+    feature = db.Column(db.String(120), nullable=False, default="")
+    input_hash = db.Column(db.String(64), nullable=False, default="")
+    input_json = db.Column(db.Text, nullable=False, default="{}")
+    output_json = db.Column(db.Text, nullable=False, default="{}")
+    basis = db.Column(db.String(30), nullable=False, default="rule-based")
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+
+    user = db.relationship("User", backref=db.backref("lab_runs", lazy="dynamic",
+                                                      cascade="all, delete-orphan"))
+
+
+class LabSave(db.Model):
+    """A starred LabRun output (kept in My Lab)."""
+    __tablename__ = "lab_save"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    run_id = db.Column(db.Integer, db.ForeignKey("lab_run.id"), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+
+    user = db.relationship("User", backref=db.backref("lab_saves", lazy="dynamic",
+                                                      cascade="all, delete-orphan"))
+    run = db.relationship("LabRun", backref=db.backref("saves", lazy="dynamic",
+                                                       cascade="all, delete-orphan"))
+    __table_args__ = (db.UniqueConstraint("user_id", "run_id",
+                                          name="uq_lab_save_user_run"),)
+
+
+class LabToolFavorite(db.Model):
+    """A favourited Lab tool (quick access in My Lab)."""
+    __tablename__ = "lab_tool_favorite"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    tool_id = db.Column(db.String(200), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+
+    user = db.relationship("User", backref=db.backref("lab_tool_favorites",
+                                                      lazy="dynamic",
+                                                      cascade="all, delete-orphan"))
+    __table_args__ = (db.UniqueConstraint("user_id", "tool_id",
+                                          name="uq_lab_fav_user_tool"),)
+
+
+class LabPathProgress(db.Model):
+    """Per-user progress on a guided Lab path (one row per completed step)."""
+    __tablename__ = "lab_path_progress"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    path = db.Column(db.String(80), nullable=False, index=True)
+    step = db.Column(db.String(80), nullable=False)
+    run_id = db.Column(db.Integer, db.ForeignKey("lab_run.id"), nullable=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+
+    user = db.relationship("User", backref=db.backref("lab_path_progress",
+                                                      lazy="dynamic",
+                                                      cascade="all, delete-orphan"))
+    __table_args__ = (db.UniqueConstraint("user_id", "path", "step",
+                                          name="uq_lab_path_user_step"),)
+
+
 class StreakState(db.Model):
     """Per-user streak with monthly forgiveness shields (Wave 5 #27).
 
@@ -3394,8 +3465,8 @@ def _rotate_session_on_login():
 def register_routes(app):
 
     # ---------- ULTIMATE LAB (91 power tools) ----------
-    from studybuddy.ultimate_routes import register_ultimate_routes
-    register_ultimate_routes(app, limiter)
+    from studybuddy.ultimate_routes import register_ultimate_bp
+    register_ultimate_bp(app, limiter)
 
     # ---------- MAIN HUB ----------
     @app.route('/')

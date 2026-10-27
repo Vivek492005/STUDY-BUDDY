@@ -57,6 +57,17 @@
 "/api/topics": public
 "/api/ultimate/run/<path:tool_id>": auth
 "/api/ultimate/tools": auth
+"/api/ultimate/favorites": auth
+"/api/ultimate/favorites/<path:tool_id>": auth
+"/api/ultimate/history": auth
+"/api/ultimate/runs/<int:run_id>": auth
+"/api/ultimate/runs/<int:run_id>/rerun": auth
+"/api/ultimate/runs/<int:run_id>/save": auth
+"/api/ultimate/paths": auth
+"/api/ultimate/paths/<path_id>": auth
+"/api/ultimate/paths/<path_id>/steps/<step_id>/complete": auth
+"/api/ultimate/paths/<path_id>/complete": auth
+"/api/ultimate/search": auth
 "/aptitude": public
 "/aptitude/<int:attempt_id>": auth
 "/aptitude/mistakes": auth
@@ -264,6 +275,8 @@
 "/api/tracker/referrals/<int:ref_id>": auth
 "/try": public
 "/ultimate/lab": auth
+"/ultimate/paths/<path_id>": auth
+"/ultimate/rooms/<slug>": auth
 "/verify-email/<token>": auth
 "/version": public
 "/api/mentors/matches": auth

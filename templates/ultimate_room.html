@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ room.feature }} room | Study-Buddy Labs{% endblock %}
+
+{% block content %}
+<section class="b-section">
+  <p><a href="/ultimate/lab">&larr; Back to Study-Buddy Labs</a></p>
+  <div class="b-card b-card--hero">
+    <div class="b-pill">Feature room</div>
+    <h1 class="b-hero-title">{{ room.feature }}</h1>
+    <p class="b-lede">{{ room.overview }}</p>
+    <p class="lab-desc">{{ room.tools|length }} tools in this room.</p>
+  </div>
+
+  <div class="b-card b-card--lite" style="margin-top: 24px;">
+    <h2>Guided workflow</h2>
+    <p class="lab-desc">Work the tools in order. Each one opens in the Lab hub, where you run it and save the output to My Lab.</p>
+    <ol>
+      {% for tool in room.tools %}
+      <li style="margin-bottom: 10px;">
+        <a href="/ultimate/lab?tool={{ tool.id }}">{{ tool.name }}</a>
+        <span class="lab-desc"> — {{ tool.description }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+
+  {% if room.outputs %}
+  <div class="b-card b-card--lite" style="margin-top: 24px;">
+    <h2>Where outputs go</h2>
+    <p class="lab-desc">A run's next actions point onward from here.</p>
+    <ul>
+      {% for output in room.outputs %}
+      <li><a href="{{ output.href }}">{{ output.label }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

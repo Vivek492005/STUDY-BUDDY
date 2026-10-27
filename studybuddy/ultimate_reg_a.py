@@ -1,8 +1,9 @@
 """Registry fragment A — Features 1-9 ultimate tools.
 
 Each entry maps a UI tool to a real backend function in studybuddy/.
-The dispatcher imports the module and calls the function with the
-field values (JSON-parsing fields marked "json": True).
+This file is the metadata source (id, feature, name, description,
+fields); dispatch goes through the typed handlers in labs_registry.py
+(Lab Phase 0), which import the backend functions directly.
 Do NOT import the modules here.
 """
 

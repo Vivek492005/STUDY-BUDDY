@@ -1336,6 +1336,12 @@ CAREER_XP_ACTIONS = {
                             "assessment_completed"),
     "salary_evaluate": ("salary_evaluated", 10, "salary_evaluated"),
     "mentor_book": ("mentor_booked", 20, "mentor_booked"),
+    # Ultimate Lab (Phase 0/1): runs pay per recorded LabRun row, steps
+    # per completed path step, completion once per path — all through the
+    # same idempotent per-ref ledger, never a second progress system.
+    "lab_run": ("lab_run", 5, "lab_run"),
+    "lab_path_step": ("lab_path_step", 10, "lab_path_step"),
+    "lab_path_complete": ("lab_path_complete", 25, "lab_path_complete"),
 }
 
 

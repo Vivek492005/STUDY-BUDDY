@@ -112,20 +112,23 @@ class TestAuthBlueprint:
 class TestLabsRegistry:
     def test_tools_migrated_count(self):
         from studybuddy.labs_registry import migrated_tool_ids
-        # 20 original ARC-05 tools + 2 aptitude tools (Feature 10)
-        assert len(migrated_tool_ids()) == 22
+        # Lab Phase 0 completed the migration: 91 grid tools + 2
+        # typed-only aptitude tools (not in the grid by design).
+        assert len(migrated_tool_ids()) == 93
 
     def test_allowlist_rejects_unknown_id(self):
         from studybuddy.labs_registry import run_typed_tool
         result, error = run_typed_tool("nope/evil'; DROP TABLE", {})
         assert result is None and "Unknown tool" in error
 
-    def test_allowlist_rejects_legacy_id(self):
-        # a real legacy tool id must NOT dispatch through the typed registry
+    def test_promoted_id_dispatches_through_allowlist(self):
+        # Lab Phase 0 promoted every legacy id: a formerly-legacy id now
+        # dispatches (empty payload fails validation, never "Unknown tool").
         from studybuddy.labs_registry import is_migrated, run_typed_tool
-        assert not is_migrated("arxiv/bulk-import")
+        assert is_migrated("arxiv/bulk-import")
         result, error = run_typed_tool("arxiv/bulk-import", {})
-        assert result is None and "Unknown tool" in error
+        assert result is None and error is not None
+        assert "Unknown tool" not in error
 
     def test_input_validation_errors(self):
         from studybuddy.labs_registry import run_typed_tool
@@ -154,13 +157,13 @@ class TestLabsRegistry:
         assert "__import__" not in code
         # every handler maps to a directly-imported function (allowlist)
         from studybuddy import labs_registry as lr
-        assert len(lr.TOOL_HANDLERS) == 22
+        assert len(lr.TOOL_HANDLERS) == 93
         for handler in lr.TOOL_HANDLERS.values():
             assert callable(handler.fn)
             assert handler.meta.requires_login is True
             assert handler.meta.rate_limit
 
-    def test_inventory_csv_marks_legacy(self):
+    def test_inventory_csv_marks_all_migrated(self):
         import csv
         rows = list(csv.DictReader(open(os.path.join(
             os.path.dirname(__file__), "..", "docs", "labs-inventory.csv"))))
@@ -168,7 +171,8 @@ class TestLabsRegistry:
         migrated = [r for r in rows if "migrated" in r["owner"]
                     and "legacy" not in r["owner"]]
         legacy = [r for r in rows if "legacy-unmigrated" in r["owner"]]
-        assert len(migrated) == 20 and len(legacy) == 71
+        # Lab Phase 0 completed the migration: no legacy rows remain.
+        assert len(migrated) == 91 and len(legacy) == 0
 
 
 # ===========================================================================

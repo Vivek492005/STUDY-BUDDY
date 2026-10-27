@@ -84,9 +84,11 @@ def test_migrated_forms_match_pydantic_models_exactly(client):
 
 
 def test_form_schema_object_field_has_keys_and_example():
+    # Lab Phase 0: portfolio/case-study is typed now; the object keys +
+    # example survive the migration (source "schema", not "legacy").
     tool = next(t for t in ALL_TOOLS if t["id"] == "portfolio/case-study")
     form = form_schema(tool)
-    assert form["source"] == "legacy"
+    assert form["source"] == "schema"
     field = form["fields"][0]
     assert field["kind"] == "object"
     assert field["keys"] == ["title", "description", "tech",

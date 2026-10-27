@@ -13,6 +13,11 @@
     align-items: start;
     margin-top: 28px;
   }
+  /* Lab Phase 1 mobile fix: grid items default to min-width auto
+     (= min-content), so the 1fr track expanded to the full pills row
+     + card grid (~5460px) on narrow screens. min-width 0 lets both
+     columns shrink; the pills row scrolls inside the aside instead. */
+  .lab-layout > * { min-width: 0; }
   .lab-side {
     position: sticky;
     top: 84px;
@@ -87,14 +92,45 @@
   <div class="b-card b-card--hero">
     <div class="b-pill">Power tools</div>
     <h1 class="b-hero-title">Study-Buddy Labs <span class="beta-badge">BETA</span></h1>
-    <p class="b-lede"><span id="lab-hero-count">91</span> power tools across 31 features — every ultimate enhancement, runnable right here.</p>
+    <p class="b-lede"><span id="lab-hero-count">{{ lab_tool_count }}</span> power tools across {{ lab_feature_count }} features — every ultimate enhancement, runnable right here.</p>
     <div class="lab-search">
       <label class="b-label" for="lab-search">Search tools</label>
       <input type="text" id="lab-search" class="b-input" placeholder="Search by name, description or feature…" autocomplete="off">
     </div>
+    <div id="lab-intent" aria-live="polite"></div>
     <div class="lab-hero-meta">
       <span class="b-tag" id="lab-live-count">Loading…</span>
     </div>
+  </div>
+
+  <div class="b-card b-card--lite" id="my-lab" style="margin-top: 24px;">
+    <h2>My Lab</h2>
+    <p class="lab-desc">Your private run history, saved outputs and favourite tools. Runs are never shared with anyone.</p>
+    <div id="lab-favs" aria-live="polite"></div>
+    <div id="lab-history" aria-live="polite"></div>
+    <button id="lab-clear-history" class="b-btn b-btn--sm b-btn--ghost" type="button">Delete all history</button>
+  </div>
+
+  <div class="b-card b-card--lite" id="lab-paths" style="margin-top: 24px;">
+    <h2>Guided paths</h2>
+    <p class="lab-desc">Step-by-step paths through the Lab. Tool steps are verified by a real run; finishing a path earns 25 XP once.</p>
+    {% for p in lab_paths %}
+    <div style="margin-bottom: 10px;">
+      <a href="/ultimate/paths/{{ p.id }}">{{ p.title }}</a>
+      <span class="lab-desc"> — {{ p.tagline }} ({{ p.done }} of {{ p.total }} steps done{% if p.completed %}, complete{% endif %})</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="b-card b-card--lite" id="lab-rooms" style="margin-top: 24px;">
+    <h2>Feature rooms</h2>
+    <p class="lab-desc">One room per feature: overview, guided workflow, and where outputs go.</p>
+    {% for r in lab_rooms %}
+    <div style="margin-bottom: 6px;">
+      <a href="/ultimate/rooms/{{ r.slug }}">{{ r.feature }}</a>
+      <span class="lab-desc"> ({{ r.tool_count }} tools)</span>
+    </div>
+    {% endfor %}
   </div>
 
   <div class="lab-layout">
@@ -228,6 +264,7 @@
 
     function toolCard(tool) {
         var card = el('article', 'b-card b-card--lite lab-card');
+        card.setAttribute('data-tool-id', tool.id || '');
         card.appendChild(el('span', 'b-tag', tool.feature || 'Tool'));
         card.appendChild(el('h3', null, tool.name || tool.id || 'Untitled tool'));
         card.appendChild(el('p', 'lab-desc', tool.description || ''));
@@ -539,7 +576,7 @@
             });
         })
         .then(function (payload) {
-            renderResult(resultBox, payload);
+            renderResult(resultBox, payload, tool.id);
         })
         .catch(function (err) {
             resultBox.innerHTML = '';
@@ -553,7 +590,7 @@
         });
     }
 
-    function renderResult(box, payload) {
+    function renderResult(box, payload, toolId) {
         box.innerHTML = '';
         if (!payload || payload.ok !== true) {
             box.appendChild(el('div', 'b-flash b-flash--error',
@@ -572,7 +609,196 @@
         copyBtn.style.marginBottom = '0';
         copyBtn.addEventListener('click', function () { copyText(pre.textContent, copyBtn); });
         box.appendChild(copyBtn);
+        /* Lab Phase 0: honest labels + next actions on every result. */
+        if (payload.labels) {
+            var tagLine = el('p', 'lab-desc', 'Basis: ' + (payload.labels.basis || 'rule-based') +
+                ' · Source: ' + (payload.labels.data_source || 'user input'));
+            box.appendChild(tagLine);
+        }
+        if (Array.isArray(payload.next_actions)) {
+            payload.next_actions.forEach(function (a) {
+                if (a.kind === 'save') {
+                    if (!payload.run_id) return;
+                    var saveBtn = el('button', 'b-btn b-btn--sm', 'Save output to My Lab');
+                    saveBtn.type = 'button';
+                    saveBtn.addEventListener('click', function () {
+                        saveRun(payload.run_id, saveBtn, function () { loadHistory(); });
+                    });
+                    box.appendChild(saveBtn);
+                } else if (a.href) {
+                    var link = el('a', 'b-btn b-btn--sm b-btn--ghost', a.label || a.kind);
+                    link.href = a.href;
+                    box.appendChild(link);
+                }
+            });
+        }
+        /* Lab Phase 1: count this run toward an open path step. */
+        if (payload.run_id && toolId) attachPathButtons(box, payload.run_id, toolId);
         box.appendChild(pre);
+        if (payload.run_id) loadHistory();
+    }
+
+    function attachPathButtons(box, runId, toolId) {
+        fetch('/api/ultimate/paths', { headers: { 'Accept': 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                if (!d || !Array.isArray(d.paths)) return;
+                d.paths.forEach(function (p) {
+                    (p.steps || []).forEach(function (s) {
+                        if (s.done || s.kind !== 'tool') return;
+                        if (s.tool_id !== toolId) return;
+                        var btn = el('button', 'b-btn b-btn--sm',
+                            'Count toward path: ' + p.title + ' — ' + s.title);
+                        btn.type = 'button';
+                        btn.addEventListener('click', function () {
+                            btn.disabled = true;
+                            fetch('/api/ultimate/paths/' + encodeURIComponent(p.id) +
+                                '/steps/' + encodeURIComponent(s.id) + '/complete', {
+                                method: 'POST',
+                                headers: csrfHeaders({ 'Content-Type': 'application/json' }),
+                                body: JSON.stringify({ run_id: runId })
+                            }).then(function (r) { return r.json(); })
+                            .then(function (res) {
+                                if (res && res.ok) { btn.textContent = 'Counted toward path!'; }
+                                else { btn.disabled = false; }
+                            });
+                        });
+                        box.appendChild(btn);
+                    });
+                });
+            });
+    }
+
+    /* ---- My Lab: history, favourites, rerun, delete (Lab Phase 0) ---- */
+    var favsBox = document.getElementById('lab-favs');
+    var histBox = document.getElementById('lab-history');
+    var clearBtn = document.getElementById('lab-clear-history');
+
+    function toolName(id) {
+        for (var i = 0; i < state.tools.length; i++) {
+            if (state.tools[i].id === id) return state.tools[i].name || id;
+        }
+        return id;
+    }
+
+    function openToolById(id) {
+        state.activeFeature = 'all';
+        state.query = '';
+        searchInput.value = '';
+        if (intentBox) intentBox.innerHTML = '';
+        buildPills();
+        applyFilters();
+        var card = grid.querySelector('[data-tool-id="' + id + '"]');
+        if (card) {
+            card.scrollIntoView();
+            var toggle = card.querySelector('button');
+            if (toggle) toggle.click();
+        }
+    }
+
+    function saveRun(id, btn, done) {
+        fetch('/api/ultimate/runs/' + id + '/save', {
+            method: 'POST', headers: csrfHeaders({ 'Content-Type': 'application/json' })
+        }).then(function (r) { return r.json(); }).then(function (d) {
+            if (d && d.ok) {
+                if (btn) btn.textContent = 'Saved!';
+                if (done) done();
+            }
+        });
+    }
+
+    function loadFavorites() {
+        if (!favsBox) return;
+        fetch('/api/ultimate/favorites', { headers: { 'Accept': 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                favsBox.innerHTML = '';
+                if (!d || !Array.isArray(d.favorites) || d.favorites.length === 0) {
+                    favsBox.appendChild(el('p', 'lab-desc', 'No favourite tools yet.'));
+                    return;
+                }
+                favsBox.appendChild(el('h3', null, 'Favourite tools'));
+                d.favorites.forEach(function (f) {
+                    var b = el('button', 'b-btn b-btn--sm b-btn--ghost', f.name || f.tool_id);
+                    b.type = 'button';
+                    b.addEventListener('click', function () { openToolById(f.tool_id); });
+                    favsBox.appendChild(b);
+                });
+            });
+    }
+
+    function loadHistory() {
+        if (!histBox) return;
+        fetch('/api/ultimate/history?limit=20', { headers: { 'Accept': 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                histBox.innerHTML = '';
+                if (!d || !Array.isArray(d.runs) || d.runs.length === 0) {
+                    histBox.appendChild(el('p', 'lab-desc', 'No runs yet. Run a tool above and it will appear here.'));
+                    return;
+                }
+                histBox.appendChild(el('h3', null, 'Recent runs'));
+                d.runs.forEach(function (run) {
+                    var row = el('div', 'b-card b-card--lite');
+                    row.appendChild(el('h3', null, toolName(run.tool_id)));
+                    row.appendChild(el('p', 'lab-desc',
+                        (run.feature || '') + ' · ' + (run.basis || '') +
+                        ' · ' + (run.created_at || '') +
+                        (run.saved ? ' · Saved' : '')));
+                    if (run.output_preview) {
+                        var pre = el('pre', 'lab-pre');
+                        pre.textContent = run.output_preview;
+                        row.appendChild(pre);
+                    }
+                    var rerunBtn = el('button', 'b-btn b-btn--sm', 'Rerun');
+                    rerunBtn.type = 'button';
+                    rerunBtn.addEventListener('click', function () {
+                        fetch('/api/ultimate/runs/' + run.id + '/rerun', {
+                            method: 'POST', headers: csrfHeaders({ 'Content-Type': 'application/json' })
+                        }).then(function (r) { return r.json(); }).then(function (p) {
+                            if (p && p.ok) loadHistory();
+                        });
+                    });
+                    row.appendChild(rerunBtn);
+                    var saveBtn = el('button', 'b-btn b-btn--sm b-btn--ghost',
+                        run.saved ? 'Saved' : 'Save');
+                    saveBtn.type = 'button';
+                    saveBtn.addEventListener('click', function () {
+                        if (run.saved) {
+                            fetch('/api/ultimate/runs/' + run.id + '/save', {
+                                method: 'DELETE', headers: csrfHeaders({})
+                            }).then(function () { loadHistory(); });
+                        } else {
+                            saveRun(run.id, saveBtn, function () { loadHistory(); });
+                        }
+                    });
+                    row.appendChild(saveBtn);
+                    var delBtn = el('button', 'b-btn b-btn--sm b-btn--ghost', 'Delete');
+                    delBtn.type = 'button';
+                    delBtn.addEventListener('click', function () {
+                        fetch('/api/ultimate/runs/' + run.id, {
+                            method: 'DELETE', headers: csrfHeaders({})
+                        }).then(function () { loadHistory(); });
+                    });
+                    row.appendChild(delBtn);
+                    var openBtn = el('button', 'b-btn b-btn--sm b-btn--ghost', 'Open tool');
+                    openBtn.type = 'button';
+                    openBtn.addEventListener('click', function () { openToolById(run.tool_id); });
+                    row.appendChild(openBtn);
+                    histBox.appendChild(row);
+                });
+            });
+    }
+
+    function loadMyLab() { loadFavorites(); loadHistory(); }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+            if (!window.confirm('Delete all of your Lab run history? Saved outputs go too.')) return;
+            fetch('/api/ultimate/history', {
+                method: 'DELETE', headers: csrfHeaders({})
+            }).then(function () { loadHistory(); });
+        });
     }
 
     function load() {
@@ -599,6 +825,10 @@
                 liveCount.textContent = count + ' tools · ' + state.features.length + ' features';
                 buildPills();
                 applyFilters();
+                loadMyLab();
+                var deep = null;
+                try { deep = new URLSearchParams(window.location.search).get('tool'); } catch (e) { deep = null; }
+                if (deep) openToolById(deep);
             })
             .catch(function (err) {
                 setStatus('');
@@ -622,6 +852,43 @@
         state.query = searchInput.value;
         applyFilters();
     });
+
+    /* Lab Phase 1: intent search — suggestions above the grid, without
+       replacing the client-side filter above. */
+    var intentBox = document.getElementById('lab-intent');
+    var intentTimer = null;
+    function renderIntent(data) {
+        if (!intentBox) return;
+        intentBox.innerHTML = '';
+        if (!data) return;
+        function chipRow(heading, tools) {
+            if (!tools || !tools.length) return;
+            var wrap = el('div', null);
+            wrap.appendChild(el('p', 'lab-desc', heading));
+            tools.forEach(function (t) {
+                var btn = el('button', 'b-btn b-btn--sm b-btn--ghost', t.name || t.id);
+                btn.type = 'button';
+                btn.addEventListener('click', function () { openToolById(t.id); });
+                wrap.appendChild(btn);
+            });
+            intentBox.appendChild(wrap);
+        }
+        chipRow('Try these:', data.intent);
+        chipRow('More matches:', data.matches);
+    }
+    if (searchInput && intentBox) {
+        searchInput.addEventListener('input', function () {
+            var q = searchInput.value || '';
+            if (intentTimer) clearTimeout(intentTimer);
+            if (q.trim().length < 2) { renderIntent(null); return; }
+            intentTimer = setTimeout(function () {
+                fetch('/api/ultimate/search?q=' + encodeURIComponent(q),
+                    { headers: { 'Accept': 'application/json' } })
+                    .then(function (r) { return r.json(); })
+                    .then(function (d) { if (d && d.ok) renderIntent(d); });
+            }, 250);
+        });
+    }
 
     load();
 })();

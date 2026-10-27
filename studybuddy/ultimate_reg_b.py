@@ -1,8 +1,9 @@
 """Feature 11-20 ultimate tool registry (second fragment).
 
-Each entry maps a UI tool to a real function in studybuddy/. The dispatcher
-imports the module and calls the function with the fields' values as kwargs.
-Params of type "textarea" with "json": True are JSON-parsed before dispatch.
+Each entry maps a UI tool to a real function in studybuddy/. This file is
+the metadata source; dispatch goes through the typed handlers in
+labs_registry.py (Lab Phase 0). Params of type "textarea" with
+"json": True are JSON-parsed before dispatch.
 """
 
 TOOLS_B = [
