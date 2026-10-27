@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js" data-theme="hub">
+<html lang="{{ current_locale }}" class="no-js" data-theme="hub">
 <head>
     <meta charset="UTF-8">
     <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study-Buddy — Career &amp; Research Intelligence for Students</title>
+    <title>{{ _("Study-Buddy — Career & Research Intelligence for Students") }}</title>
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/kinetic.css') }}">
 </head>
 <body class="sb-editorial">
-    <a class="skip-link" href="#main-content" style="position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:.75rem 1.25rem;z-index:9999;font-weight:700;">Skip to main content</a>
+    <a class="skip-link" href="#main-content" style="position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:.75rem 1.25rem;z-index:9999;font-weight:700;">{{ _("Skip to main content") }}</a>
     <style>.skip-link:focus{left:0}:focus-visible{outline:3px solid #c8ff2e;outline-offset:2px}@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}</style>
 
     {% set nav_active = 'hub' %}
@@ -31,30 +31,30 @@
     <main class="b-wrap" id="main-content" tabindex="-1">
         <!-- HERO — Mode A editorial. No fake scores, no floating badges. -->
         <section class="sb-hero" aria-label="Introduction">
-            <p class="sb-kicker">Free &amp; open source — for students</p>
+            <p class="sb-kicker">{{ _("Free & open source — for students") }}</p>
             <div class="sb-hero-grid">
-                <h1 class="sb-display" aria-label="Learn Practice Build Get hired.">
-                    <span class="sb-mask"><span>Learn</span></span>
-                    <span class="sb-mask"><span style="--sb-delay:90ms">Practice</span></span>
-                    <span class="sb-mask"><span style="--sb-delay:180ms">Build</span></span>
-                    <span class="sb-mask"><span style="--sb-delay:270ms"><span class="sb-accent">Get hired.</span></span></span>
+                <h1 class="sb-display" aria-label="{{ _("Learn Practice Build Get hired.") }}">
+                    <span class="sb-mask"><span>{{ _("Learn") }}</span></span>
+                    <span class="sb-mask"><span style="--sb-delay:90ms">{{ _("Practice") }}</span></span>
+                    <span class="sb-mask"><span style="--sb-delay:180ms">{{ _("Build") }}</span></span>
+                    <span class="sb-mask"><span style="--sb-delay:270ms"><span class="sb-accent">{{ _("Get hired.") }}</span></span></span>
                 </h1>
                 <div class="sb-hero-visual">
                     <img class="sb-hero-photo" src="{{ url_for('static', filename='img/hero-student-back.jpg') }}" alt="" aria-hidden="true">
                     <svg class="sb-brush sb-brush--big" viewBox="0 0 300 400" fill="none" aria-hidden="true"><path d="M196 6 C 232 84, 176 148, 222 226 C 254 282, 214 344, 232 398 L 138 398 C 140 322, 184 262, 142 188 C 110 128, 152 58, 140 6 Z" fill="#2447ff"/></svg>
-                    <p class="sb-note sb-note--a">Same you,<br>sharper future.</p>
-                    <p class="sb-note sb-note--b">Better skills.<br>Brighter opportunities. →</p>
+                    <p class="sb-note sb-note--a">{{ _("Same you,") }}<br>{{ _("sharper future.") }}</p>
+                    <p class="sb-note sb-note--b">{{ _("Better skills.") }}<br>{{ _("Brighter opportunities.") }} →</p>
                     <a class="sb-hero-card" href="{{ url_for('resume_home') }}">
-                        <span class="sb-hero-card-t"><b>AI-Powered Resume Analysis</b><span>Get instant feedback</span></span>
+                        <span class="sb-hero-card-t"><b>{{ _("AI-Powered Resume Analysis") }}</b><span>{{ _("Get instant feedback") }}</span></span>
                         <span class="sb-hero-card-arrow" aria-hidden="true">↗</span>
                     </a>
                 </div>
             </div>
             <div class="sb-hero-below">
-                <p class="sb-lede">Your AI-powered study and career companion. Analyse a resume, practise interviews, solve DSA problems, and research with your own documents — in one place, with transparent feedback, not mystery scores.</p>
+                <p class="sb-lede">{{ _("Your AI-powered study and career companion. Analyse a resume, practise interviews, solve DSA problems, and research with your own documents — in one place, with transparent feedback, not mystery scores.") }}</p>
                 <div class="sb-cta-row">
-                    <a class="sb-btn sb-btn--primary" href="{{ url_for('resume_home') }}">Analyse my resume →</a>
-                    <a class="sb-btn sb-btn--outline" href="#tools">Explore the tools</a>
+                    <a class="sb-btn sb-btn--primary" href="{{ url_for('resume_home') }}">{{ _("Analyse my resume") }} →</a>
+                    <a class="sb-btn sb-btn--outline" href="#tools">{{ _("Explore the tools") }}</a>
                 </div>
             </div>
             <div class="sb-trust">

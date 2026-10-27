@@ -2840,6 +2840,26 @@ def register_security_headers(app):
         from flask import g
         g.csp_nonce = secrets.token_urlsafe(16)
 
+    @app.before_request
+    def _set_locale():
+        # Hindi switcher (GFI #1): locale order is ?lang (validated) >
+        # lang cookie (the persisted choice) > Accept-Language header.
+        # Only locales with a parseable catalog are served (en, hi).
+        from flask import g, request
+
+        from studybuddy.i18n import available_locales, resolve_locale
+        avail = set(available_locales())
+
+        def _valid(value):
+            cand = (value or "").strip().lower().split("-")[0]
+            return cand if cand in avail else None
+
+        g.locale = resolve_locale(
+            _valid(request.args.get("lang"))
+            or _valid(request.cookies.get("lang")),
+            request.headers.get("Accept-Language"),
+        )
+
     @app.after_request
     def _set_security_headers(resp):
         resp.headers.setdefault("X-Content-Type-Options", "nosniff")
@@ -2886,6 +2906,16 @@ def register_security_headers(app):
             resp.headers.setdefault(
                 "Strict-Transport-Security",
                 "max-age=31536000; includeSubDomains")
+        # Hindi switcher (GFI #1): persist an explicitly requested valid
+        # locale so the choice survives navigation (?lang is validated;
+        # invalid values never set a cookie).
+        _lang = request.args.get("lang")
+        if _lang:
+            from studybuddy.i18n import available_locales as _avail
+            cand = _lang.strip().lower().split("-")[0]
+            if cand in set(_avail()):
+                resp.set_cookie("lang", cand, max_age=365 * 86400,
+                                samesite="Lax")
         return resp
 
     # SEC-05: CSP violation reporting endpoint (rate-limited, no payloads
@@ -2912,6 +2942,19 @@ def register_security_headers(app):
     def _csp_nonce_processor():
         from flask import g
         return {"csp_nonce": lambda: getattr(g, "csp_nonce", "")}
+
+    # Hindi switcher (GFI #1): _() translates via the stdlib .po catalog
+    # for the request locale resolved in _set_locale. Strings with no Hindi
+    # entry fall back to English (the msgid itself), so unmarked pages
+    # render exactly as before.
+    @app.context_processor
+    def _i18n_processor():
+        from flask import g
+
+        from studybuddy.i18n import translate as _tr
+        locale = getattr(g, "locale", "en")
+        return {"_": lambda s, **kw: _tr(s, locale=locale, **kw),
+                "current_locale": locale}
 
 
 def _load_benchmark_scores(path=None):

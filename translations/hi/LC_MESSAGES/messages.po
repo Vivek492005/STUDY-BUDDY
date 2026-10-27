@@ -105,3 +105,54 @@ msgstr "सूचनाएँ"
 
 msgid "Unsubscribe"
 msgstr "अनसब्सक्राइब करें"
+
+msgid "Study-Buddy — Career & Research Intelligence for Students"
+msgstr "स्टडी-बडी — छात्रों के लिए करियर और रिसर्च इंटेलिजेंस"
+
+msgid "Skip to main content"
+msgstr "मुख्य सामग्री पर जाएँ"
+
+msgid "Free & open source — for students"
+msgstr "छात्रों के लिए — मुफ़्त और ओपन सोर्स"
+
+msgid "Learn Practice Build Get hired."
+msgstr "सीखें, अभ्यास करें, बनाएँ, नौकरी पाएँ।"
+
+msgid "Learn"
+msgstr "सीखें"
+
+msgid "Practice"
+msgstr "अभ्यास करें"
+
+msgid "Build"
+msgstr "बनाएँ"
+
+msgid "Get hired."
+msgstr "नौकरी पाएँ।"
+
+msgid "Same you,"
+msgstr "वही आप,"
+
+msgid "sharper future."
+msgstr "और भी बेहतर भविष्य।"
+
+msgid "Better skills."
+msgstr "बेहतर स्किल्स।"
+
+msgid "Brighter opportunities."
+msgstr "उज्ज्वल अवसर।"
+
+msgid "AI-Powered Resume Analysis"
+msgstr "AI-संचालित रिज़्यूमे विश्लेषण"
+
+msgid "Get instant feedback"
+msgstr "तुरंत फ़ीडबैक पाएँ"
+
+msgid "Your AI-powered study and career companion. Analyse a resume, practise interviews, solve DSA problems, and research with your own documents — in one place, with transparent feedback, not mystery scores."
+msgstr "आपका AI-संचालित पढ़ाई और करियर साथी। रिज़्यूमे का विश्लेषण करें, इंटरव्यू का अभ्यास करें, DSA समस्याएँ हल करें, और अपने दस्तावेज़ों के साथ रिसर्च करें — सब एक जगह, पारदर्शी फ़ीडबैक के साथ, रहस्यमय स्कोर के साथ नहीं।"
+
+msgid "Analyse my resume"
+msgstr "मेरा रिज़्यूमे विश्लेषित करें"
+
+msgid "Explore the tools"
+msgstr "टूल्स देखें"

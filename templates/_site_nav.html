@@ -75,5 +75,10 @@
                 {% include "_auth_links.html" %}
             </ul>
         </nav>
+        <div class="b-lang-switch" role="group" aria-label="Language">
+            <a href="{{ request.path }}?lang=en"{% if current_locale == 'en' %} aria-current="true" style="font-weight:700"{% endif %}>EN</a>
+            <span aria-hidden="true">|</span>
+            <a href="{{ request.path }}?lang=hi"{% if current_locale == 'hi' %} aria-current="true" style="font-weight:700"{% endif %}>हिंदी</a>
+        </div>
     </div>
 </header>
