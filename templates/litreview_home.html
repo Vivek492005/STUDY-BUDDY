@@ -36,7 +36,7 @@
                     <span><strong>{{ d.title }}</strong><br><span style="color:var(--b-muted);font-size:.82rem;">{{ d.chunks }} passages</span></span>
                 </label>
                 {% else %}
-                <p style="color:var(--b-muted);">Your library is empty — <a href="{{ url_for('study_library') }}">upload a PDF</a> first.</p>
+                <p style="color:var(--b-muted);">Your library is empty — <a href="{{ url_for('study_library.study_library') }}">upload a PDF</a> first.</p>
                 {% endfor %}
             </div>
         </div>
