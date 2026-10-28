@@ -24,10 +24,10 @@
 "/api/career/freshness": public
 "/api/career/snapshot": auth
 "/api/chat_research": auth
-"/api/cite/bibtex/export": auth
-"/api/cite/bibtex/import": auth
-"/api/cite/format": auth
-"/api/cite/guide/<style>": auth
+"/api/cite/bibtex/export": public
+"/api/cite/bibtex/import": public
+"/api/cite/format": public
+"/api/cite/guide/<style>": public
 "/api/coding-practice": public
 "/api/coding-practice/<company>": public
 "/api/companies": public
@@ -40,7 +40,7 @@
 "/api/eng/jobs/recommend": public
 "/api/interview-questions/<company>": public
 "/api/interview/intel/<company>": public
-"/api/parse_preview": auth
+"/api/parse_preview": public
 "/api/star/examples": public
 "/api/study/collections": auth
 "/api/study/collections/<token>/papers": auth

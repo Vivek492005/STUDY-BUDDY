@@ -16,14 +16,30 @@
 # documented for their auth + error contracts only — their success
 # bodies depend on external services and are NOT asserted in tests.
 # Follow-up: schemathesis fuzzing against this spec (roadmap TEST-13).
+#
+# SCOPE (audit fix, 2026-10-28): this spec is the PUBLIC API contract.
+# It documents EVERY public /api/* path in tests/route_policy.yaml
+# (verified by tests/test_ws5_contracts.py::test_spec_covers_route_policy),
+# plus a selective set of authenticated endpoints. Auth endpoints NOT in
+# this spec are still classified in tests/route_policy.yaml and covered
+# by tests/test_route_policy.py — they are undocumented here, not
+# undocumented everywhere. The previous contract test demanded equality
+# between spec paths and ALL policy /api/* paths (24 vs 97), which had
+# been failing since the policy grew; the rescoped test asserts public
+# coverage exactly, forbids phantom paths, and floors the auth-op count
+# so auth documentation cannot silently shrink. The 9 public paths added
+# 2026-10-28 had their x-response-keys probed from live handler output,
+# not written from memory (see tests/test_ws5_contracts.py EXAMPLE_URLS).
 openapi: 3.0.3
 info:
   title: Study-Buddy Internal JSON API
   version: "1.0.0-contract-v1"
   description: >
     Hand-written contract for the /api/* JSON endpoints (contract-testing
-    v1). Auth levels mirror tests/route_policy.yaml. Success bodies of
-    LLM/network-backed endpoints are documented from code, not asserted.
+    v1). Scope: every PUBLIC /api/* path in tests/route_policy.yaml, plus
+    a selective set of authenticated endpoints. Auth levels mirror
+    tests/route_policy.yaml. Success bodies of LLM/network-backed
+    endpoints are documented from code, not asserted.
 servers:
   - url: http://127.0.0.1:5000
     description: local dev
@@ -35,6 +51,9 @@ tags:
   - name: citation
   - name: research
   - name: lab
+  - name: career
+  - name: mentors
+  - name: salary
 paths:
   # ---------------------------------------------------------------- practice
   /api/companies:
@@ -554,6 +573,199 @@ paths:
         '400': {$ref: '#/components/responses/BadRequest'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '413': {$ref: '#/components/responses/PayloadTooLarge'}
+  # ------------------------------------------------- public surface, added
+  # 2026-10-28 (audit fix): the remaining public /api/* paths from
+  # tests/route_policy.yaml. x-response-keys probed from live handlers.
+  /api/career/freshness:
+    get:
+      tags: [career]
+      summary: Data freshness per dataset (career data)
+      x-flask-path: /api/career/freshness
+      x-auth: public
+      x-response-keys: [datasets, success]
+      responses:
+        '200':
+          description: Freshness report
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [datasets, success]
+                properties:
+                  datasets: {type: object}
+                  success: {type: boolean}
+  /api/dsa/progress:
+    get:
+      tags: [practice]
+      summary: DSA progress summary (zeroed for anonymous visitors)
+      x-flask-path: /api/dsa/progress
+      x-auth: public
+      x-response-keys: [a2z, classic, is_authed]
+      responses:
+        '200':
+          description: Progress summary
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [a2z, classic, is_authed]
+                properties:
+                  a2z: {type: object}
+                  classic: {type: object}
+                  is_authed: {type: boolean}
+  /api/interview/intel/{company}:
+    get:
+      tags: [practice]
+      summary: Interview intel for one company
+      x-flask-path: /api/interview/intel/<company>
+      x-auth: public
+      x-response-keys: [categories, company, focus_tip, note, sample_questions, top_roles, total_questions]
+      parameters:
+        - {name: company, in: path, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: Company interview intel
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [company]
+                properties:
+                  company: {type: string}
+                  categories: {type: array, items: {type: string}}
+                  sample_questions: {type: array, items: {type: object}}
+                  total_questions: {type: integer}
+  /api/mentors/qa:
+    get:
+      tags: [mentors]
+      summary: Public mentor Q&A list
+      x-flask-path: /api/mentors/qa
+      x-auth: public
+      x-response-keys: [qa, success]
+      responses:
+        '200':
+          description: Q&A list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [qa, success]
+                properties:
+                  qa: {type: array, items: {type: object}}
+                  success: {type: boolean}
+  # NOTE: only the GET is documented here. The same path also accepts a
+  # POST, but it is session-authenticated (@login_required) and requires
+  # a prior booking with the mentor, so it is not part of the public
+  # contract; it is covered by tests/test_route_policy.py and
+  # tests/test_mentors.py instead.
+  /api/mentors/{mentor_id}/reviews:
+    get:
+      tags: [mentors]
+      summary: Public review list + average for one mentor
+      x-flask-path: /api/mentors/<int:mentor_id>/reviews
+      x-auth: public
+      x-response-keys: [average, count, reviews, success]
+      parameters:
+        - {name: mentor_id, in: path, required: true, schema: {type: integer}}
+      responses:
+        '200':
+          description: Review list (average null, count 0 when no reviews)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [average, count, reviews, success]
+                properties:
+                  average: {type: number, nullable: true}
+                  count: {type: integer}
+                  reviews: {type: array, items: {type: object}}
+                  success: {type: boolean}
+        '404':
+          description: Unknown mentor id
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Error'}
+  /api/opportunities/refresh-status:
+    get:
+      tags: [career]
+      summary: Opportunity board refresh status
+      x-flask-path: /api/opportunities/refresh-status
+      x-auth: public
+      x-response-keys: [closed, last_refresh, last_updated, open, success, total]
+      responses:
+        '200':
+          description: Refresh status counts
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success, total, open, closed]
+                properties:
+                  success: {type: boolean}
+                  total: {type: integer}
+                  open: {type: integer}
+                  closed: {type: integer}
+  /api/retrospectives/learnings:
+    get:
+      tags: [career]
+      summary: Public retrospective learnings
+      x-flask-path: /api/retrospectives/learnings
+      x-auth: public
+      x-response-keys: [learnings, success]
+      responses:
+        '200':
+          description: Learnings list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [learnings, success]
+                properties:
+                  learnings: {type: array, items: {type: object}}
+                  success: {type: boolean}
+  /api/salary/curve:
+    get:
+      tags: [salary]
+      summary: Salary growth curve for one role x tier
+      x-flask-path: /api/salary/curve
+      x-auth: public
+      x-response-keys: [curve, disclaimer, role, success, tier]
+      parameters:
+        - {name: role, in: query, required: true, schema: {type: string}}
+        - {name: tier, in: query, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: Growth curve across experience bands
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [curve, role, success, tier]
+                properties:
+                  curve: {type: array, items: {type: object}}
+                  role: {type: string}
+                  tier: {type: string}
+                  success: {type: boolean}
+        '400': {$ref: '#/components/responses/BadRequest'}
+  /api/salary/scripts:
+    get:
+      tags: [salary]
+      summary: Salary negotiation scripts (indicative, never live)
+      x-flask-path: /api/salary/scripts
+      x-auth: public
+      x-response-keys: [disclaimer, scripts, success]
+      responses:
+        '200':
+          description: Negotiation scripts
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [disclaimer, scripts, success]
+                properties:
+                  disclaimer: {type: string}
+                  scripts: {type: array, items: {type: object}}
+                  success: {type: boolean}
 components:
   securitySchemes:
     sessionCookie:

@@ -452,6 +452,7 @@ from studybuddy.mock_interview import (
     score_answer,
     validate_interview_setup,
 )
+from studybuddy.rubric_embeddings import get_rubric_embed
 from studybuddy.opportunities import TYPES as OPP_TYPES
 from studybuddy.opportunities import OpportunityDataError, list_opportunities, opp_exists
 from studybuddy.opportunities import get_meta as opp_meta
@@ -3678,11 +3679,22 @@ def register_routes(app):
                                          expires_at=expires)
                 db.session.add(prt)
                 db.session.commit()
-                link = url_for('reset_password', token=raw, _external=True)
+                # SEC-01 (audit 2026-10-28): the reset link is NEVER shown
+                # to the requester and NEVER logged. The previous code
+                # flashed the raw link to an unauthenticated requester,
+                # which defeated the generic message below and allowed
+                # takeover of any account whose email is known. No mailer
+                # exists in this codebase yet, so there is no delivery
+                # channel: the token is stored hashed server-side (as
+                # before) and the link itself is deliberately discarded
+                # here — it is not flashed, not returned, and not written
+                # to logs (raw tokens in log storage would recreate the
+                # same exposure). Self-service reset therefore requires
+                # email integration; see docs/ops/password-reset-email.md.
+                # Until then the requester sees only the generic message
+                # below, identical for existing and unknown addresses.
                 log.info("password_reset_issued user_id_hash=%s",
                          _safe_user_ref_id(user.id))
-                # TODO: send via email in production; flash for dev
-                flash(f'Reset link (dev): {link}', 'info')
             flash(done_msg, 'info')
             return redirect(url_for('auth.login'))
         return render_template('forgot_password.html')
@@ -5765,7 +5777,7 @@ def register_routes(app):
             if not question:
                 continue
             answer = str(item.get("answer") or "")[:8000]
-            s = score_answer(question, answer)
+            s = score_answer(question, answer, embed=get_rubric_embed())
             s["answer_text"] = answer
             scored.append(s)
         if not scored:
@@ -10333,7 +10345,7 @@ border-bottom:1px solid #ccc;padding-bottom:4px}}a{{color:#2447ff}}
         p = request.get_json(force=True) or {}
         res = eng_interview_v2.score_answer(
             p.get("question", ""), p.get("answer", ""),
-            p.get("key_points", []))
+            p.get("key_points", []), embed=get_rubric_embed())
         # NEVER render res["score"] without res["rubric"] + res["improvements"]
         return jsonify(res)
 

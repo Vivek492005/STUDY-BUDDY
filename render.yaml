@@ -6,15 +6,13 @@ services:
     runtime: python
     # OPS-01: pin the interpreter — a 3.10 vs 3.12 mismatch once crashed
     # every deploy (backslash in f-string is a SyntaxError on <3.12).
+    # SEC-03 (audit 2026-10-28): this service block MUST declare envVars
+    # exactly once. A previous version declared it twice; in YAML the
+    # last block wins, which silently dropped the PYTHON_VERSION pin.
+    # tests/test_render_yaml.py fails on duplicate keys.
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
-    buildCommand: pip install --require-hashes -r requirements.txt
-    # 2 workers + threads handle concurrent uploads; 120s timeout covers the
-    # resume pipeline and Gemini calls (which fail fast at 30s per attempt).
-    startCommand: gunicorn unified_app:app --workers 2 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT
-    healthCheckPath: /healthz
-    envVars:
       - key: SECRET_KEY
         generateValue: true
       - key: FLASK_ENV
@@ -31,7 +29,26 @@ services:
         fromDatabase:
           name: acra-db
           property: connectionString
+    buildCommand: pip install --require-hashes -r requirements.txt
+    # 2 workers + threads handle concurrent uploads; 120s timeout covers the
+    # resume pipeline and Gemini calls (which fail fast at 30s per attempt).
+    # NOTE: this startCommand disagrees with gunicorn.conf.py (1 worker /
+    # 60s) — see Stage 2 of the audit fixes; gunicorn.conf.py is the
+    # intended single source of truth and this line is reconciled there.
+    startCommand: gunicorn unified_app:app --workers 2 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT
+    healthCheckPath: /healthz
 
+# DATABASE DECISION — READ BEFORE CHANGING THIS BLOCK (audit SEC-02,
+# 2026-10-28): docs/ops/hosting-plan.md records a decision to use Neon
+# free Postgres because Render free Postgres expires 30 days after
+# creation (14-day grace, then deletion), but this file still wires
+# DATABASE_URL from the Render free database acra-db below. Do NOT edit
+# this block from the config alone: confirm which database production
+# actually uses in the Render dashboard, then follow the migration /
+# cutover steps in docs/ops/neon-database-decision.md. Changing this
+# block without a verified cutover either breaks production deploys
+# (pointing at a Neon database that does not exist yet) or silently
+# re-points a Neon-backed production at Render free Postgres.
 databases:
   - name: acra-db
     plan: free
