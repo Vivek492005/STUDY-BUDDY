@@ -30,6 +30,12 @@ log = logging.getLogger("acra.parsing")
 # ---------------------------------------------------------------------------
 # SEC-08 limits
 # ---------------------------------------------------------------------------
+# PERF-01 (audit Stage 4): these are the parsing-layer caps. The WEB
+# ceiling is Flask's MAX_CONTENT_LENGTH (16 MB, unified_app.py), which
+# rejects larger bodies before any handler runs — so the 30 MB paper
+# cap binds only for direct/library calls, while the 5 MB resume cap
+# (stricter than the ceiling) binds everywhere. The upload forms
+# state the effective limits; keep all three places in sync.
 MAX_RESUME_BYTES = 5 * 1024 * 1024        # 5 MB for resumes
 MAX_PAPER_BYTES = 30 * 1024 * 1024        # 30 MB for research papers
 MAX_RESUME_PAGES = 6

@@ -12,7 +12,7 @@ is registered from *inside* ``create_app`` — i.e. only after ``unified_app``
 has finished importing.
 """
 
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_user, logout_user
 
 from app.extensions import limiter
@@ -56,18 +56,32 @@ def register():
                 error = pw_msg
             elif '@' not in email or '.' not in email:
                 error = 'Please enter a valid email address.'
-            elif User.query.filter_by(email=email).first():
-                # Generic to avoid enumeration (SEC-09)
-                error = 'An account with this email already exists. Please log in.'
             else:
-                user = User(name=name, email=email)
-                user.set_password(password)
-                db.session.add(user)
-                db.session.commit()
-                _rotate_session_on_login()
-                login_user(user)
-                flash(f'Welcome, {user.name}! Your account is ready.', 'success')
-                return redirect(url_for('dashboard'))
+                # SEC-06 (audit fix, 2026-10-28): the old code flashed
+                # "An account with this email already exists" — an
+                # account-existence oracle. The response must now be
+                # identical whether the email exists or not: same
+                # redirect, same flash, no auto-login either way (an
+                # auto-logged-in new account vs a login redirect for
+                # an existing one would still distinguish them).
+                # There is no mailer yet, so no "check your inbox"
+                # promise is made — the message is true for both cases
+                # (a new account was just created; an existing one was
+                # already ready). Existence is recorded only in the
+                # internal security log, never in the response.
+                existing = User.query.filter_by(email=email).first()
+                if existing is None:
+                    user = User(name=name, email=email)
+                    user.set_password(password)
+                    db.session.add(user)
+                    db.session.commit()
+                else:
+                    user = existing
+                log_security_event("register_attempt", user_id=user.id,
+                                   details={"account_exists": existing is not None})
+                flash('Your account is ready. Please log in to continue.',
+                      'success')
+                return redirect(url_for('auth.login'))
     return render_template('register.html', error=error,
                            google_configured=_google_configured())
 
@@ -109,5 +123,16 @@ def logout():
     # cookie data behind; clear it so nothing session-scoped survives.
     from flask import session as _session
     _session.clear()
+    # Stage 4 fix: session.clear() above ALSO wipes the "_remember" =
+    # "clear" marker logout_user() just set, so Flask-Login's
+    # after_request handler would never delete the remember cookie —
+    # the browser would keep re-presenting it and re-authenticating
+    # after every logout (and, via the session-version hook, loop on
+    # /login forever). Restore the marker when a remember cookie was
+    # actually presented.
+    _remember_name = current_app.config.get(
+        "REMEMBER_COOKIE_NAME", "remember_token")
+    if _remember_name in request.cookies:
+        _session["_remember"] = "clear"
     flash('You have been logged out.', 'info')
     return redirect(url_for('index'))

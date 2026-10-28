@@ -85,12 +85,13 @@ class TestAuthBlueprint:
         assert login_manager.login_view == "auth.login"
 
     def test_register_login_logout_flow(self, client):
-        # register
+        # register (SEC-06, 2026-10-28: no auto-login — identical
+        # response whether or not the account already existed)
         r = client.post("/register", data={
             "name": "Arc Test", "email": "arc01@example.com",
             "password": "Str0ng!Pass123", "age_confirm": "on",
         })
-        assert r.status_code == 302 and r.headers["Location"] == "/dashboard"
+        assert r.status_code == 302 and r.headers["Location"] == "/login"
         # logout must be POST
         assert client.get("/logout").status_code == 405
         r = client.post("/logout")

@@ -137,6 +137,12 @@ def _signup_and_login(page, base):
     page.fill("#password", "<redacted>")
     page.check('input[name="age_confirm"]')
     page.click('button[type="submit"]')
+    # SEC-06 (audit Stage 4): /register no longer auto-logs in — new and
+    # existing emails get the same redirect to /login — so log in here.
+    page.wait_for_url("**/login**", timeout=15000)
+    page.fill("#email", email)
+    page.fill("#password", "<redacted>")
+    page.click('button[type="submit"]')
     page.wait_for_url("**/dashboard**", timeout=15000)
 
 

@@ -97,6 +97,44 @@ def test_logout_clears_session(client, app):
     assert "/login" in r.headers["Location"]
 
 
+def test_versionless_form_login_survives_ip_change(client, app):
+    """Full-suite regression (2026-10-28): a form-login session whose
+    first post-login request arrives from a new IP must NOT be logged
+    out. Flask-Login's "basic" protection flips `_fresh` to False on
+    an IP change, and the version hook previously read `_fresh`
+    alone as "cookie restoration". `_id` (set by login_user) proves
+    the form login, so the version is adopted and the page loads."""
+    from tests.conftest import register
+    register(client, email="ipchange@example.com")
+    login(client, email="ipchange@example.com")
+    r = client.get("/dashboard",
+                   environ_base={"REMOTE_ADDR": "203.0.113.99"})
+    assert r.status_code == 200
+    with client.session_transaction() as sess:
+        assert sess.get("session_version") == 0
+    with app.app_context():
+        from unified_app import User, db
+        user = db.session.query(User).filter_by(
+            email="ipchange@example.com").first()
+        assert user.session_version == 0
+
+
+def test_versionless_cookie_restoration_still_rejected(client, app):
+    """The `_id` adoption rule must not open the remember-me hole: a
+    session with `_user_id` but no `_id` and no stored version is a
+    cookie restoration (Flask-Login never sets `_id` on cookie loads)
+    and is still sent back to login."""
+    uid = _make_user(app, "cookie@example.com")
+    with client.session_transaction() as sess:
+        sess["_user_id"] = str(uid)
+        sess["_fresh"] = False
+        sess.pop("_id", None)
+        sess.pop("session_version", None)
+    r = client.get("/dashboard", follow_redirects=False)
+    assert r.status_code == 302
+    assert "/login" in r.headers["Location"]
+
+
 def test_export_requires_fresh_session(client, app):
     """Fresh (password) login downloads; a remember-me-restored
     session (fresh flag False, as Flask-Login sets on cookie loads)

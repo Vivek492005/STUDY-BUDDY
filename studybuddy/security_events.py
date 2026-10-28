@@ -5,7 +5,8 @@ Emits one JSON-ish log line per security-relevant event on the
 
     login_success, login_failure,
     password_reset_request, password_reset_complete,
-    rate_limit_hit, ssrf_block, upload_reject, admin_action
+    rate_limit_hit, ssrf_block, upload_reject, admin_action,
+    register_attempt
 
 Privacy rules (hard):
 - NEVER log emails, passwords, tokens, raw IPs, full URLs, filenames,
@@ -32,6 +33,10 @@ EVENT_TYPES = frozenset({
     "ssrf_block",
     "upload_reject",
     "admin_action",
+    # SEC-06 (audit Stage 4): registration attempts, with an
+    # account_exists boolean for abuse detection. The boolean is
+    # internal-only — the user-facing response never reveals it.
+    "register_attempt",
 })
 
 # Keys that must never appear in details (defense in depth — callers

@@ -85,6 +85,8 @@
                             <span class="file-type-badge">PDF</span>
                             <span class="file-type-badge">DOCX</span>
                         </div>
+                        {# PERF-01: state the effective limit (5 MB parsing cap, stricter than the 16 MB web ceiling). #}
+                        <p style="font-size:.85rem;opacity:.75;margin-top:.4rem;">Max 5 MB per file.</p>
                         <input type="file" class="file-input" id="fileInput" aria-label="Upload your resume" name="resume" accept=".pdf,.docx,.doc">
                         
                         <div class="file-selected" id="fileSelected">
@@ -135,6 +137,8 @@
                 </div>
                 <div id="jdFileWrap">
                     <input class="jd-file" type="file" id="jdMatchFile" aria-label="Upload job description file" name="resume" accept=".pdf,.docx,.doc">
+                    {# PERF-01: JD uploads parse as kind="resume", so the same 5 MB cap applies. #}
+                    <p style="font-size:.85rem;opacity:.75;margin-top:.3rem;">Max 5 MB per file.</p>
                 </div>
 
                 <div class="jd-error" id="jdError" hidden></div>

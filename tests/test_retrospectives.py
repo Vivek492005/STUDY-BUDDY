@@ -440,7 +440,7 @@ def test_wizard_404_for_other_users_application(authed_client, app):
     aid = _make_app(app, uid, stage="rejected")
     authed_client.post("/logout", follow_redirects=False)
     register(authed_client, name="Second", email="second@example.com")
-    login(authed_client, email="second@example.com", password="<redacted>")
+    login(authed_client, email="second@example.com")
     r = authed_client.get("/retrospectives/new/%d" % aid)
     assert r.status_code == 404
 
@@ -546,7 +546,7 @@ def test_save_other_users_application_404(authed_client, app):
     aid = _make_app(app, uid, stage="rejected")
     authed_client.post("/logout", follow_redirects=False)
     register(authed_client, name="Second", email="second@example.com")
-    login(authed_client, email="second@example.com", password="<redacted>")
+    login(authed_client, email="second@example.com")
     r = _save(authed_client, aid, "facts", facts="hijack")
     assert r.status_code == 404
 
@@ -618,7 +618,7 @@ def test_complete_other_users_application_404(authed_client, app):
     aid = _make_app(app, uid, stage="rejected")
     authed_client.post("/logout", follow_redirects=False)
     register(authed_client, name="Second", email="second@example.com")
-    login(authed_client, email="second@example.com", password="<redacted>")
+    login(authed_client, email="second@example.com")
     r = authed_client.post("/retrospectives/api/complete/%d" % aid, json={})
     assert r.status_code == 404
 
@@ -673,7 +673,7 @@ def test_experiment_create_other_users_link_404(authed_client, app):
     aid = _make_app(app, uid, stage="rejected")
     authed_client.post("/logout", follow_redirects=False)
     register(authed_client, name="Second", email="second@example.com")
-    login(authed_client, email="second@example.com", password="<redacted>")
+    login(authed_client, email="second@example.com")
     r = _create_exp(authed_client, linked_application_id=aid)
     assert r.status_code == 404
 
@@ -742,7 +742,7 @@ def test_experiment_result_other_users_404(authed_client, app):
     exp_id = _create_exp(authed_client).get_json()["experiment"]["id"]
     authed_client.post("/logout", follow_redirects=False)
     register(authed_client, name="Second", email="second@example.com")
-    login(authed_client, email="second@example.com", password="<redacted>")
+    login(authed_client, email="second@example.com")
     r = _set_result(authed_client, exp_id, "running")
     assert r.status_code == 404
 

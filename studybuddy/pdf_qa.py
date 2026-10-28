@@ -46,6 +46,9 @@ import pypdf
 # ---------------------------------------------------------------------------
 
 #: Uploads larger than this are rejected by :func:`validate_upload`.
+#: PERF-01 (audit Stage 4): like the parsing caps, this binds for
+#: direct calls; web uploads hit Flask's 16 MB MAX_CONTENT_LENGTH
+#: ceiling first, so the effective web limit for PDF QA is 16 MB.
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024  # 25 MB
 
 #: Hard cap on chunks per document — protects memory on huge PDFs.

@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 import benchmark_resume  # noqa: E402
 from studybuddy.benchmark_collection import store_contribution  # noqa: E402
 from studybuddy.benchmark_redaction import redact_resume_text  # noqa: E402
-from tests.conftest import register  # noqa: E402
+from tests.conftest import login, register  # noqa: E402
 from unified_app import BenchmarkContribution  # noqa: E402
 
 PII_TEXT = """John Doe
@@ -125,6 +125,7 @@ class TestContributeFlow:
 
     def test_preview_stores_nothing(self, client, app):
         register(client)
+        login(client)
         resp = client.post("/benchmark/contribute/preview",
                            data={"resume_text": PII_TEXT})
         assert resp.status_code == 200
@@ -134,6 +135,7 @@ class TestContributeFlow:
 
     def test_confirm_without_consent_stores_nothing(self, client, app):
         register(client)
+        login(client)
         resp = client.post("/benchmark/contribute/confirm",
                            data={"resume_text": PII_TEXT})
         assert resp.status_code == 302
@@ -141,6 +143,7 @@ class TestContributeFlow:
 
     def test_confirm_with_consent_stores_redacted(self, client, app):
         register(client)
+        login(client)
         red, _ = redact_resume_text(PII_TEXT)
         resp = client.post("/benchmark/contribute/confirm",
                            data={"resume_text": red, "consent": "on"})
@@ -155,6 +158,7 @@ class TestContributeFlow:
     def test_confirm_re_redacts_retyped_pii(self, client, app):
         # The contributor re-types their email into the editable preview.
         register(client)
+        login(client)
         red, _ = redact_resume_text(PII_TEXT)
         sneaky = red.replace("[EMAIL_1]", "john.doe@example.com")
         client.post("/benchmark/contribute/confirm",
@@ -165,6 +169,7 @@ class TestContributeFlow:
 
     def test_delete_own_contribution(self, client, app):
         register(client)
+        login(client)
         client.post("/benchmark/contribute/confirm",
                     data={"resume_text": CLEAN_TEXT, "consent": "on"})
         assert _count(app) == 1
@@ -177,12 +182,14 @@ class TestContributeFlow:
 
     def test_delete_other_users_contribution_404s(self, client, app):
         register(client)  # user A contributes
+        login(client)
         client.post("/benchmark/contribute/confirm",
                     data={"resume_text": CLEAN_TEXT, "consent": "on"})
         with app.app_context():
             row_id = BenchmarkContribution.query.first().id
         other = app.test_client()  # fresh client = user B
         register(other, name="Second User", email="second@example.com")
+        login(other, email="second@example.com")
         resp = other.post(f"/benchmark/contribute/{row_id}/delete")
         assert resp.status_code == 404
         assert _count(app) == 1

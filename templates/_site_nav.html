@@ -83,5 +83,13 @@
                See docs/configuration.md "Internationalization". #}
             <a href="{{ switch_url('hi') }}" title="Hindi translation currently covers the landing page; other pages stay in English."{% if current_locale == 'hi' %} aria-current="true" style="font-weight:700"{% endif %}>हिंदी</a>
         </div>
+        {% if llm_consent_given is defined and not llm_consent_given %}
+        {# SEC-09 (audit Stage 4): prompt signed-in users whose LLM
+           consent is missing or stale (policy version changed) to
+           re-consent. Anonymous users never see this (the processor
+           reports consent as given for them). Route-level enforcement
+           is a separate inventory task — see the progress note. #}
+        <a href="{{ url_for('llm_consent') }}?next={{ request.path }}" class="b-consent-nudge" title="AI features need your current consent (not yet given, or the policy changed since you agreed).">Review AI consent</a>
+        {% endif %}
     </div>
 </header>

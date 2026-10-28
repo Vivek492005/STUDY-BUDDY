@@ -1,8 +1,15 @@
 # Configuration
 
 All configuration comes from environment variables, validated in
-`studybuddy/app_config.py` (`AppConfig.from_env()`). Nothing else in the
-codebase should read `os.environ` for config.
+`studybuddy/app_config.py` (`AppConfig.from_env()`). NOTE (audit OPS-03
+correction, 2026-10-28): the old claim that "nothing else reads
+`os.environ`" was false — several modules read environment variables
+directly (35 keys found by static scan; see `tests/test_env_documented.py`,
+which fails if a newly read key is not documented here, in
+`.env.example`, or in that test's platform allowlist). The sections
+below cover the full set; `RATELIMIT_STORAGE_URI` is read via a dynamic
+import in `app/extensions.py`, so the static scan cannot see it — it is
+documented under "Rate-limit storage" anyway.
 
 ## Core
 
@@ -56,6 +63,18 @@ codebase should read `os.environ` for config.
 | Variable | Default | Description |
 |---|---|---|
 | `RATELIMIT_STORAGE_URI` | `memory://` | Flask-Limiter backend. In-process by default (exact on Render with its single worker; resets on deploy/restart). Set to a Redis URL for a shared store — full procedure in `docs/ops/rate-limits.md`. |
+
+## Runtime + refresh flags
+
+| Variable | Default | Description |
+|---|---|---|
+| `CSP_REPORT_ONLY` | — | Set to `1` to run Content-Security-Policy in report-only mode (violations reported, not enforced). Test/dev use. |
+| `SKIP_DB_INIT` | — | Set to skip database initialisation at app startup (used by some test/boot paths). |
+| `LIVE_REFRESH_DISABLED` | — | Set to disable live data refreshes (opportunity board auto-refresh). |
+| `OPP_NO_AUTO_REFRESH` | — | Set to disable the opportunity board's automatic refresh specifically. |
+| `STUDYBUDDY_NO_PARSE_SANDBOX` | — | Set to `1` to parse uploads in-process instead of the sandboxed subprocess (test/dev use; the sandbox is the production path). |
+| `HTTPS_PROXY` / `HTTP_PROXY` / `SSL_CERT_FILE` | — | Standard proxy/certificate environment honored by outbound HTTP clients; not app-specific configuration. |
+| `DYNO` / `RENDER` | — | Platform-detection flags set by Heroku / Render themselves (not user-configured); the app uses them only to detect its host environment. |
 
 ## Admins + misc
 

@@ -2828,6 +2828,14 @@ def create_app(config_overrides=None):
     app.config["SQLALCHEMY_DATABASE_URI"] = get_db_url()
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(__file__), "uploads")
+    # PERF-01 (audit Stage 4): this is the WEB ceiling for every upload
+    # (Flask rejects larger bodies before any handler runs). Per-kind
+    # effective limits, enforced by studybuddy/parsing.py: resumes
+    # 5 MB (stricter than this ceiling, so it binds on web too);
+    # research papers 16 MB via web (the 30 MB parsing cap binds only
+    # for direct/library calls); PDF-QA uploads 16 MB via web (the
+    # 25 MB pdf_qa cap binds only for direct calls). The upload forms
+    # state these limits in the UI; keep all three places in sync.
     app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB max
 
     if config_overrides:
@@ -2955,12 +2963,21 @@ def register_security_headers(app):
         # Version adoption rules (no per-login-path edits needed):
         # - version present and equal -> pass.
         # - version present and stale -> logout + clear + re-login.
-        # - version absent and session is fresh (a form login, where
-        #   _rotate_session_on_login cleared the session first) ->
-        #   adopt the current version. This grandfathers sessions
-        #   created before this deploy, and covers every login path
-        #   (form, register, Google OAuth) without touching them.
-        # - version absent and session is NOT fresh (a remember-me
+        # - version absent and the session proves a form login
+        #   happened in it -> adopt the current version. The proof
+        #   is `_id` (set by login_user) OR a fresh flag. `_fresh`
+        #   alone is NOT sufficient: Flask-Login's "basic" session
+        #   protection flips `_fresh` to False when the client IP
+        #   changes (CGNAT/mobile rotation), so a form-login session
+        #   whose first post-login request arrives from a new IP
+        #   would otherwise be misread as a cookie restoration and
+        #   logged out (full-suite regression, 2026-10-28). A
+        #   remember-me restoration sets `_user_id` + `_fresh=False`
+        #   but never sets `_id`, so it still fails both checks and
+        #   must re-authenticate. This grandfathers sessions created
+        #   before this deploy and covers every login path (form,
+        #   register, Google OAuth) without touching them.
+        # - version absent and neither proof present (a remember-me
         #   cookie restoration) -> logout. A cookie-restored session
         #   cannot prove it predates the last password change, so it
         #   must re-authenticate. One-time cost: remember-me users log
@@ -2974,12 +2991,22 @@ def register_security_headers(app):
         if stored is not None:
             if stored == current:
                 return None
-        elif session.get("_fresh", False):
+        elif session.get("_fresh", False) or "_id" in session:
             session["session_version"] = current
             return None
         uid = current_user.id
         logout_user()
         session.clear()
+        # Stage 4 fix: session.clear() wipes the "_remember" = "clear"
+        # marker logout_user() just set, so the remember cookie would
+        # survive this revocation — and the browser would re-present
+        # it on the very next request, re-restoring the same
+        # version-less session and looping on /login forever. Restore
+        # the marker when a remember cookie was actually presented.
+        _remember_name = app.config.get(
+            "REMEMBER_COOKIE_NAME", "remember_token")
+        if _remember_name in request.cookies:
+            session["_remember"] = "clear"
         log.info("session_version_revoked user_id_hash=%s",
                  _safe_user_ref_id(uid))
         if request.path.startswith("/api/"):
@@ -3648,16 +3675,27 @@ def register_routes(app):
     @app.route('/version')
     def version():
         import subprocess
-        sha = "unknown"
+        # OPS-04 (audit Stage 4): prefer the build-time stamp written
+        # by scripts/write_version.py (real tag + SHA from the build's
+        # .git). Fall back to the old behaviour when no stamp exists
+        # (local dev; Docker builds exclude .git by design).
+        stamp_sha, stamp_version = None, None
         try:
-            sha = subprocess.run(
-                ["git", "rev-parse", "--short", "HEAD"],
-                capture_output=True, text=True, timeout=5,
-                cwd=os.path.dirname(__file__)).stdout.strip() or "unknown"
-        except Exception:  # noqa: BLE001 - version must not raise
+            from studybuddy._version import APP_VERSION as stamp_version
+            from studybuddy._version import GIT_SHA as stamp_sha
+        except Exception:  # noqa: BLE001 - no stamp is normal in dev
             pass
+        sha = stamp_sha or "unknown"
+        if not stamp_sha:
+            try:
+                sha = subprocess.run(
+                    ["git", "rev-parse", "--short", "HEAD"],
+                    capture_output=True, text=True, timeout=5,
+                    cwd=os.path.dirname(__file__)).stdout.strip() or "unknown"
+            except Exception:  # noqa: BLE001 - version must not raise
+                pass
         # OSS-06: semantic version for releases
-        app_version = "1.0.0"
+        app_version = stamp_version or "1.0.0"
         schema_rev = "unknown"
         try:
             from alembic.runtime.migration import MigrationContext

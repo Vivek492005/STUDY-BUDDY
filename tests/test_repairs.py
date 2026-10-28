@@ -20,9 +20,16 @@ JS = (REPO_ROOT / "static" / "js" / "research_app.js").read_text()
 
 
 def _login(client, email="repairs@example.com"):
-    """Register + log in (SEC-12: LLM endpoints require login)."""
+    """Register + log in (SEC-12: LLM endpoints require login).
+
+    NOTE (audit Stage 4, SEC-06): /register no longer auto-logs in —
+    new and existing emails get the same redirect to /login — so the
+    login POST below is required, not redundant.
+    """
     client.post("/register", data={"name": "Repairs", "email": email,
                                    "password": "Str0ng!Test#2026", "age_confirm": "1"})
+    client.post("/login", data={"email": email,
+                                "password": "Str0ng!Test#2026"})
 
 
 

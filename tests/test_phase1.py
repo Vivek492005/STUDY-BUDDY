@@ -5,6 +5,10 @@ import io
 
 from tests.conftest import login, register  # noqa: F401  (fixtures)
 
+# NOTE (audit Stage 4, SEC-06): /register no longer auto-logs in — new
+# and existing emails get the same redirect to /login — so tests that
+# need an authenticated session call login(client) after register().
+
 from unified_app import AnonymousAnalysis, Goal, ResearchSession, ResumeAnalysis, User, db
 
 # ---------- Existing GET routes: no regressions ----------
@@ -74,17 +78,25 @@ def test_register_login_logout_flow(client, app):
 def test_logout_get_is_rejected(client):
     # P2#11: sign-out must be a POST; a GET can never log the user out.
     register(client)
+    login(client)
     resp = client.get("/logout")
     assert resp.status_code == 405
     assert client.get("/dashboard").status_code == 200  # still logged in
 
 
 def test_register_duplicate_email_rejected(client, app):
+    # SEC-06 (audit Stage 4): a duplicate registration is no longer
+    # "rejected" with an existence-revealing error. It gets the same
+    # 302-to-login response as a fresh registration, creates no second
+    # row, and never mentions that the email exists.
     assert register(client).status_code == 302
     client.post("/logout")  # register page redirects logged-in users; test as anonymous
     resp = register(client)
-    assert resp.status_code == 200
-    assert b"already exists" in resp.data
+    assert resp.status_code == 302
+    assert resp.headers["Location"].endswith("/login")
+    page = client.get("/login")
+    assert b"already exists" not in page.data
+    assert b"Your account is ready. Please log in to continue." in page.data
     with app.app_context():
         assert User.query.filter_by(email="aarav@example.com").count() == 1
 
@@ -110,6 +122,7 @@ def test_navbar_shows_auth_state(client):
     assert "Login" in html and "Sign Up" in html
     # logged in: name + Logout visible
     register(client)
+    login(client)
     html = client.get("/").data.decode()
     assert "Aarav Sharma" in html and "Logout" in html and "Dashboard" in html
 
@@ -149,6 +162,7 @@ def test_anonymous_analysis_persists_with_ttl_not_in_user_history(client, app, s
 
 def test_logged_in_analysis_persists_and_renders(client, app, sample_pdf):
     register(client)
+    login(client)
     resp = upload_resume(client, sample_pdf)
     payload = resp.get_json()
     assert payload["success"] is True
@@ -176,12 +190,16 @@ def test_logged_in_analysis_persists_and_renders(client, app, sample_pdf):
 
 
 def test_users_cannot_see_each_others_results(client, app, sample_pdf):
+    # SEC-06: register no longer auto-logs in, so each user logs in
+    # explicitly — the isolation assertion itself is unchanged.
     register(client, email="user1@example.com")
+    login(client, email="user1@example.com")
     payload = upload_resume(client, sample_pdf).get_json()
     other_result_url = payload["redirect"]
 
     client.post("/logout")
     register(client, name="User Two", email="user2@example.com")
+    login(client, email="user2@example.com")
     resp = client.get(other_result_url)
     assert resp.status_code == 404  # not theirs
 
@@ -198,6 +216,7 @@ def test_analyze_rejects_bad_input(client):
 
 def test_goal_crud(client, app):
     register(client)
+    login(client)
     # add
     resp = client.post("/goals/add", data={"title": "Crack SDE-1 interviews",
                                            "target_date": "2027-03-01"},
@@ -221,6 +240,7 @@ def test_goal_crud(client, app):
 
 def test_goal_requires_title(client):
     register(client)
+    login(client)
     resp = client.post("/goals/add", data={"title": "  "}, follow_redirects=True)
     assert b"cannot be empty" in resp.data
 
@@ -231,6 +251,7 @@ def test_research_chat_without_key_returns_gracefully(client, app):
     # no GEMINI_API_KEY in test env -> friendly message, nothing persisted
     # (SEC-12: login required for this LLM-backed endpoint)
     register(client)
+    login(client)
     resp = client.post("/api/chat_research", json={"message": "summarize this",
                                                   "document_text": "some paper text"})
     assert resp.status_code == 200
@@ -252,6 +273,7 @@ def test_research_chat_saves_session_when_logged_in(client, app, monkeypatch):
                         lambda prompt: "## Summary\nThis is a test answer.")
 
     register(client)
+    login(client)
     doc = "quantum computing paper abstract " * 20
     r1 = client.post("/api/chat_research",
                      json={"message": "What is this paper about?", "document_text": doc})
@@ -285,6 +307,7 @@ def test_research_session_new_doc_starts_new_session(client, app, monkeypatch):
     monkeypatch.setattr(unified_app, "call_gemini_ai", lambda prompt: "answer")
 
     register(client)
+    login(client)
     sid1 = client.post("/api/chat_research",
                        json={"message": "q1", "document_text": "paper A " * 50}
                        ).get_json()["research_session_id"]

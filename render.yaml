@@ -29,7 +29,7 @@ services:
         fromDatabase:
           name: acra-db
           property: connectionString
-    buildCommand: pip install --require-hashes -r requirements.txt
+    buildCommand: python scripts/write_version.py && pip install --require-hashes -r requirements.txt
     # Worker/timeout settings live ONLY in gunicorn.conf.py (audit fix,
     # 2026-10-28 — previously this line said 2 workers / 120s while the
     # conf file said 1 worker / 60s, and the live server ran the

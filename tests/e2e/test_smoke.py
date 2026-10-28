@@ -65,13 +65,19 @@ def _unique_email(prefix="e2e"):
 
 
 def _signup(page, base, name="E2E User", email=None, password="<redacted>"):
-    """Drive the real /register form; returns the email used."""
+    """Drive the real /register + /login forms; returns the email used."""
     email = email or _unique_email()
     page.goto(f"{base}/register")
     page.fill("#name", name)
     page.fill("#email", email)
     page.fill("#password", password)
     page.check('input[name="age_confirm"]')
+    page.click('button[type="submit"]')
+    # SEC-06 (audit Stage 4): /register no longer auto-logs in — new and
+    # existing emails get the same redirect to /login — so log in here.
+    page.wait_for_url("**/login**", timeout=15000)
+    page.fill("#email", email)
+    page.fill("#password", password)
     page.click('button[type="submit"]')
     page.wait_for_url("**/dashboard**", timeout=15000)
     return email
@@ -148,7 +154,11 @@ def test_delete_account(page, live_server):
     page.goto(f"{live_server}/account/delete")
     page.fill('input[name="password"]', PASSWORD)
     page.fill("#confirm", "DELETE")
-    page.click('button[type="submit"]')
+    # NOTE: 'button[type="submit"]' is ambiguous here — the nav logout
+    # form's button comes first in DOM order and was clicked instead
+    # (logging the user out, then looping on /login via the remember
+    # cookie). Click the delete button by its text.
+    page.click('button:has-text("Permanently Delete My Account")')
     # After deletion the user is logged out and sent to the landing page.
     page.wait_for_url(live_server + "/", timeout=15000)
     assert "login" in page.inner_text("body").lower() or \

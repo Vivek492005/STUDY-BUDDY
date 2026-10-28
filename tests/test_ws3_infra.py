@@ -380,7 +380,9 @@ def test_alembic_single_linear_head():
     cfg = Config()
     cfg.set_main_option("script_location", str(REPO / "migrations"))
     script = ScriptDirectory.from_config(cfg)
-    assert list(script.get_heads()) == ["d4e5f6a7b8c9"]
+    assert list(script.get_heads()) == ["e5f6a7b8c9d0"]
+    sess_ver = script.get_revision("e5f6a7b8c9d0")
+    assert sess_ver.down_revision == "d4e5f6a7b8c9"  # audit Stage 2
     arc04 = script.get_revision("d4e5f6a7b8c9")
     assert arc04.down_revision == "c3d4e5f6a7b8"
     llm03 = script.get_revision("c3d4e5f6a7b8")

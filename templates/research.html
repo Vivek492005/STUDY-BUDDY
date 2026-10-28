@@ -205,6 +205,8 @@
                             <div class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/></svg></div>
                             <h3>Upload Research Papers</h3>
                             <p>Drag and drop PDF files or click to browse</p>
+                            {# PERF-01: effective web limit is the 16 MB Flask ceiling (the 30 MB parsing cap binds only for direct calls). #}
+                            <p style="font-size:.85rem;opacity:.75;">Max 16 MB per PDF.</p>
                             <input type="file" id="file-input" aria-label="Upload PDF files" multiple accept=".pdf" class="hidden">
                             <button class="btn btn-primary btn-sm js-browse" id="browse-files-static">Browse Files</button>
                         </div>
