@@ -78,7 +78,7 @@
 
         {% if report.overall.attempted == 0 %}
         <div class="dg-card dg-empty">
-            <p>No practice data yet. <a href="{{ url_for('dsa_home') }}">Solve your first problem</a> and your diagnosis will appear here.</p>
+            <p>No practice data yet. <a href="{{ url_for('dsa.dsa_home') }}">Solve your first problem</a> and your diagnosis will appear here.</p>
         </div>
         {% else %}
         <div class="dg-card b-card b-reveal">
@@ -109,7 +109,7 @@
         <div class="dg-card b-card b-reveal">
             <h3 class="dg-h3">Recommended next</h3>
             {% for rec in report.recommendations %}
-            <a class="dg-rec" href="{{ url_for('dsa_problem_page', problem_id=rec.problem_id) }}">
+            <a class="dg-rec" href="{{ url_for('dsa.dsa_problem_page', problem_id=rec.problem_id) }}">
                 <div class="t">{{ rec.title }} <span class="dg-chip diff-{{ rec.difficulty }}">{{ rec.difficulty }}</span></div>
                 <div class="r">{{ rec.reason }}</div>
             </a>

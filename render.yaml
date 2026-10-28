@@ -30,12 +30,13 @@ services:
           name: acra-db
           property: connectionString
     buildCommand: pip install --require-hashes -r requirements.txt
-    # 2 workers + threads handle concurrent uploads; 120s timeout covers the
-    # resume pipeline and Gemini calls (which fail fast at 30s per attempt).
-    # NOTE: this startCommand disagrees with gunicorn.conf.py (1 worker /
-    # 60s) — see Stage 2 of the audit fixes; gunicorn.conf.py is the
-    # intended single source of truth and this line is reconciled there.
-    startCommand: gunicorn unified_app:app --workers 2 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT
+    # Worker/timeout settings live ONLY in gunicorn.conf.py (audit fix,
+    # 2026-10-28 — previously this line said 2 workers / 120s while the
+    # conf file said 1 worker / 60s, and the live server ran the
+    # unmeasured 2-worker shape on a 512 MB instance). The conf file
+    # binds 0.0.0.0:$PORT itself; do not re-add inline worker flags
+    # here. tests/test_render_yaml.py locks this command.
+    startCommand: gunicorn -c gunicorn.conf.py unified_app:app
     healthCheckPath: /healthz
 
 # DATABASE DECISION — READ BEFORE CHANGING THIS BLOCK (audit SEC-02,

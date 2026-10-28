@@ -55,6 +55,23 @@ def test_render_yaml_single_envvars_with_python_pin():
     assert "DATABASE_URL" in by_key
 
 
+def test_render_yaml_uses_gunicorn_conf():
+    """Single source of truth (audit fix, 2026-10-28): worker/timeout
+    flags live only in gunicorn.conf.py. An inline --workers/--timeout
+    here would silently disagree with the conf file again."""
+    cfg = _load()
+    start = cfg["services"][0]["startCommand"]
+    assert start == "gunicorn -c gunicorn.conf.py unified_app:app", start
+
+
+def test_dockerfile_uses_gunicorn_conf():
+    text = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    assert "gunicorn.conf.py" in text
+    # Quoted flags would only appear in the JSON CMD array (the
+    # HEALTHCHECK's --timeout=10s is unrelated and must not trip this).
+    assert '"--workers"' not in text and '"--timeout"' not in text
+
+
 def test_render_yaml_database_block_present():
     """The acra-db block is the live wiring until the Neon cutover
     documented in docs/ops/neon-database-decision.md is verified.

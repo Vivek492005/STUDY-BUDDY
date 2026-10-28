@@ -44,12 +44,12 @@
             </div>
             <p style="margin-top:1.4rem;color:var(--text-muted,#a3a3a0);">
                 Classic problem set: <strong style="color:#fff;">{{ classic.solved }}/{{ classic.total }} solved ({{ classic.pct }}%)</strong> —
-                <a href="{{ url_for('dsa_home') }}" style="color:var(--accent-primary);font-weight:700;">practice</a> ·
-                <a href="{{ url_for('dsa_diagnosis') }}" style="color:var(--accent-primary);font-weight:700;">weak-topic diagnosis</a> ·
-                <a href="{{ url_for('dsa_a2z_page') }}" style="color:var(--accent-primary);font-weight:700;">open the A2Z sheet</a>
+                <a href="{{ url_for('dsa.dsa_home') }}" style="color:var(--accent-primary);font-weight:700;">practice</a> ·
+                <a href="{{ url_for('dsa.dsa_diagnosis') }}" style="color:var(--accent-primary);font-weight:700;">weak-topic diagnosis</a> ·
+                <a href="{{ url_for('dsa.dsa_a2z_page') }}" style="color:var(--accent-primary);font-weight:700;">open the A2Z sheet</a>
             </p>
             {% if a2z.tracked == 0 %}
-            <p style="margin-top:0.6rem;">Nothing tracked yet — <a href="{{ url_for('dsa_a2z_page') }}" style="color:var(--accent-primary);font-weight:700;">pick your first problem from the sheet</a> and mark it solved to see this page come alive.</p>
+            <p style="margin-top:0.6rem;">Nothing tracked yet — <a href="{{ url_for('dsa.dsa_a2z_page') }}" style="color:var(--accent-primary);font-weight:700;">pick your first problem from the sheet</a> and mark it solved to see this page come alive.</p>
             {% endif %}
         </div>
 

@@ -7,6 +7,7 @@ running half-configured.
 """
 
 import os
+from datetime import timedelta
 
 _MISSING = object()
 
@@ -27,6 +28,15 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
+
+    # Remember-me hardening (audit fix, 2026-10-28): Flask-Login
+    # defaults were 365 days, Secure False, SameSite None — a stolen
+    # remember cookie stayed valid up to a year and was more exposed
+    # than the session cookie. 30 days + Lax everywhere; Secure only in
+    # ProductionConfig (dev runs over plain http).
+    REMEMBER_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_SAMESITE = "Lax"
+    REMEMBER_COOKIE_DURATION = timedelta(days=30)
 
     RATELIMIT_DEFAULTS = ["200 per day", "60 per hour"]
 
@@ -56,6 +66,7 @@ class TestingConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     SESSION_COOKIE_SECURE = True
+    REMEMBER_COOKIE_SECURE = True
 
     @classmethod
     def validate(cls):

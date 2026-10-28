@@ -14,28 +14,25 @@
 | `max_requests` / `max_requests_jitter` | 1000 / 100 | recycle workers to cap slow memory growth; jitter avoids thundering restart |
 | `preload_app` | off | only after a thread-safety audit of every module (caches, singletons) |
 
-## ⚠️ render.yaml startCommand should change (REPORTED — not edited)
+## ✅ Reconciled 2026-10-28 (audit fix): one source of truth
 
-Current (render.yaml line 15):
-
-```
-gunicorn unified_app:app --workers 2 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT
-```
-
-Problems: **2 workers × ~130 MB ≈ 260 MB+ baseline** on a 512 MB instance,
-plus `--timeout 120` lets a hung worker pin memory for 2 minutes.
-
-Recommended:
-
-```
-gunicorn -c gunicorn.conf.py unified_app:app
-```
-
-Same for the `Dockerfile` CMD (currently `--workers 2 --timeout 120` inline).
+Previously `render.yaml` ran `gunicorn unified_app:app --workers 2
+--threads 4 --timeout 120` while this file prescribed 1 worker / 60 s —
+**2 workers × ~130 MB ≈ 260 MB+ baseline** on a 512 MB instance, plus a
+120 s timeout letting a hung worker pin memory for 2 minutes. Both
+`render.yaml` (`startCommand: gunicorn -c gunicorn.conf.py
+unified_app:app`) and the `Dockerfile` CMD now invoke gunicorn with
+`-c gunicorn.conf.py` and no inline flags; values change only in the
+conf file. `tests/test_render_yaml.py` locks the render command and
+`tests/test_ws6_ops.py::test_gunicorn_config_values` locks the conf
+values (1 worker / gthread / 4 threads / 60 s).
 The 120 s timeout existed to cover the resume pipeline + Gemini calls; with
 `timeout=60`, LLM calls must keep their own 30 s per-attempt fail-fast and
 long pipelines must move to background jobs (PERF-05) — this is the correct
-trade, not a regression.
+trade, not a regression. Side benefit: with a single worker process,
+Flask-Limiter's in-memory buckets are exact on Render (see
+`docs/ops/rate-limits.md`) — the old 2-worker shape enforced limits
+per-process (~2× nominal).
 
 ## Measured numbers (2026-10-19, this VM)
 

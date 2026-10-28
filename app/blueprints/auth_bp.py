@@ -105,5 +105,9 @@ def logout():
     if request.method == 'GET':
         abort(405, description="Please use the Log out button to sign out.")
     logout_user()
+    # Audit fix (2026-10-28): logout_user() alone leaves the session
+    # cookie data behind; clear it so nothing session-scoped survives.
+    from flask import session as _session
+    _session.clear()
     flash('You have been logged out.', 'info')
     return redirect(url_for('index'))

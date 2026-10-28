@@ -6,9 +6,15 @@
 # 2026-10-19: 127 MB peak boot + /healthz + /readyz + /version).
 #
 # Start with:  gunicorn -c gunicorn.conf.py unified_app:app
-# Render:      change render.yaml startCommand to
-#              "gunicorn -c gunicorn.conf.py unified_app:app"
-#              (render.yaml NOT edited here — see docs/ops/memory.md)
+#
+# SINGLE SOURCE OF TRUTH (audit fix, 2026-10-28): render.yaml's
+# startCommand and the Dockerfile CMD both invoke gunicorn with
+# "-c gunicorn.conf.py" and no inline worker/timeout flags. Change
+# worker, thread, or timeout values HERE, never inline in those files
+# (the previous inline 2-worker / 120 s shape disagreed with this file
+# and ran unmeasured on the 512 MB free tier). tests/test_render_yaml.py
+# and tests/test_ws6_ops.py::test_gunicorn_config_values lock this file's
+# values. See docs/ops/memory.md for the measured numbers.
 import os
 import multiprocessing  # noqa: F401  (kept for the commented formula below)
 

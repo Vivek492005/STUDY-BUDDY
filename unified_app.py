@@ -50,6 +50,7 @@ from flask import (
 from flask_login import (
     UserMixin,
     current_user,
+    fresh_login_required,
     login_required,
     login_user,
     # NOTE (ARC-01): logout_user moved with the auth blueprint; the one
@@ -388,25 +389,11 @@ from studybuddy.cover_generator import (
     rule_based_outreach,
     validate_cover_inputs,
 )
-from studybuddy.a2z_lessons import get_lesson as a2z_get_lesson
-from studybuddy.a2z_lessons import lesson_ids as a2z_lesson_ids
-from studybuddy.a2z_lessons import resolve_suggested as a2z_resolve_suggested
-from studybuddy.dsa_practice import (
-    all_problems,
-    a2z_problems,
-    expand_statuses,
-    filter_problems,
-    get_problem,
-    progress_summary,
-    public_problem,
-    reveal_approach,
-    reveal_hint,
-    sheet_structure,
-    validate_status_payload,
-    weak_topic_diagnosis,
-)
-from studybuddy.dsa_practice import difficulties as dsa_difficulties
-from studybuddy.dsa_practice import topics as dsa_topics
+# Monolith split Phase 2 (audit fix, 2026-10-28): the DSA helpers
+# (all_problems, filter_problems, progress_summary, ...) moved with the
+# routes to studybuddy/dsa_routes.py. Only a2z_problems is still used
+# here (landing-page DSA count below).
+from studybuddy.dsa_practice import a2z_problems
 from studybuddy.flashcards import generate_deck as fc_generate_deck
 from studybuddy.flashcards import grade_mcq as fc_grade_mcq
 from studybuddy.flashcards import mastery_stats as fc_mastery_stats
@@ -528,6 +515,14 @@ class User(UserMixin, db.Model):
     email_verified_at = db.Column(db.DateTime, nullable=True)
     # --- SEC-17: server-side admin role (not just email in env) ---
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
+    # Session revocation (audit fix, 2026-10-28): bumped on every
+    # password change/reset. A before_request hook (see create_app)
+    # compares the version stored in the session cookie against this
+    # column and logs out stale sessions, so a stolen session stops
+    # working as soon as the victim resets their password. Default 0;
+    # see migrations/versions/*_session_version.py (Postgres needs the
+    # migration — dev SQLite gets it via create_all).
+    session_version = db.Column(db.Integer, default=0, nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -2849,6 +2844,11 @@ def create_app(config_overrides=None):
         migrate.init_app(app, db, render_as_batch=_is_sqlite)
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"  # ARC-01: auth blueprint endpoint
+    # Audit fix (2026-10-28): without refresh_view, @fresh_login_required
+    # (used by /account/export) aborts 401 with no login path — a dead
+    # end for browser users. Point it at the same login form so a stale
+    # session is sent back to re-authenticate, then on to the export.
+    login_manager.refresh_view = "auth.login"
     login_manager.login_message_category = "info"
     # SEC-06 (revised 2026-10-23): session protection stays on, but in
     # "basic" mode. "strong" binds the session to the client IP + UA and
@@ -2942,6 +2942,51 @@ def register_security_headers(app):
             or _valid(request.cookies.get("lang")),
             request.headers.get("Accept-Language"),
         )
+
+    @app.before_request
+    def _enforce_session_version():
+        # Session revocation (audit fix, 2026-10-28): User.session_version
+        # is bumped on every password change/reset. A session whose
+        # stored version no longer matches is logged out immediately,
+        # so a stolen session stops working as soon as the victim
+        # resets their password (previously it survived until the
+        # 12-hour session lifetime expired).
+        #
+        # Version adoption rules (no per-login-path edits needed):
+        # - version present and equal -> pass.
+        # - version present and stale -> logout + clear + re-login.
+        # - version absent and session is fresh (a form login, where
+        #   _rotate_session_on_login cleared the session first) ->
+        #   adopt the current version. This grandfathers sessions
+        #   created before this deploy, and covers every login path
+        #   (form, register, Google OAuth) without touching them.
+        # - version absent and session is NOT fresh (a remember-me
+        #   cookie restoration) -> logout. A cookie-restored session
+        #   cannot prove it predates the last password change, so it
+        #   must re-authenticate. One-time cost: remember-me users log
+        #   in once more after this deploy.
+        if not current_user.is_authenticated:
+            return None
+        from flask_login import logout_user
+
+        stored = session.get("session_version")
+        current = current_user.session_version or 0
+        if stored is not None:
+            if stored == current:
+                return None
+        elif session.get("_fresh", False):
+            session["session_version"] = current
+            return None
+        uid = current_user.id
+        logout_user()
+        session.clear()
+        log.info("session_version_revoked user_id_hash=%s",
+                 _safe_user_ref_id(uid))
+        if request.path.startswith("/api/"):
+            return jsonify({"error": "Please log in again."}), 401
+        flash("Your session expired after a password change. "
+              "Please log in again.", "info")
+        return redirect(url_for("auth.login"))
 
     @app.after_request
     def _set_security_headers(resp):
@@ -3722,6 +3767,10 @@ def register_routes(app):
                                        error=pw_msg)
             user = db.session.get(User, prt.user_id)
             user.set_password(password)
+            # Revoke all other sessions (audit fix, 2026-10-28): the
+            # session-version hook logs out every session whose stored
+            # version no longer matches, including stolen ones.
+            user.session_version = (user.session_version or 0) + 1
             prt.used_at = datetime.now(UTC)
             db.session.commit()
             log.info("password_reset_completed user_id_hash=%s",
@@ -3795,6 +3844,12 @@ def register_routes(app):
     # PRIV-02: Export my data (JSON download)
     @app.route('/account/export')
     @login_required
+    # Re-auth for a sensitive action (audit fix, 2026-10-28): a
+    # remember-me-restored session is not fresh, so it is sent back to
+    # the login form before any personal data is downloaded. Fresh
+    # (password) sessions pass through. /account/delete already has
+    # its own password + DELETE confirmation, so it needs no extra gate.
+    @fresh_login_required
     @limiter.limit("10 per hour")
     def account_export():
         """Download all personal data as JSON (DPDP data-principal right)."""
@@ -3825,32 +3880,11 @@ def register_routes(app):
                 if consent is not None else None)
         except Exception:
             data["llm_consent"] = None
-        # Collect all user-owned rows across known tables
-        for model, name in [
-            (ResumeAnalysis, "resume_analyses"),
-            (ResumeVersion, "resume_versions"),
-            (JDMatchReport, "jd_matches"),
-            (BulletRewrite, "bullet_rewrites"),
-            (CoverDoc, "cover_docs"),
-            (LinkedInReport, "linkedin_reports"),
-            (JobApplication, "job_applications"),
-            (InterviewSession, "interview_sessions"),
-            (AptitudeAttempt, "aptitude_attempts"),
-            (QuizAttempt, "quiz_attempts"),
-            (STARDraft, "star_drafts"),
-            (RoadmapProgress, "roadmap_progress"),
-            (CareerAssessment, "career_assessments"),
-            (Retrospective, "retrospectives"),
-        ]:
-            try:
-                rows = model.query.filter_by(user_id=user.id).all()
-                data[name] = [
-                    {c.name: str(getattr(r, c.name))
-                     for c in r.__table__.columns}
-                    for r in rows
-                ]
-            except Exception:
-                data[name] = []
+        # All user-owned rows via the canonical registry
+        # (studybuddy/user_data.py) — the old 14-model list silently
+        # omitted most user data. Keys for the original 14 are unchanged.
+        from studybuddy.user_data import export_user_data
+        data.update(export_user_data(user.id))
         payload = _json.dumps(data, indent=2, default=str)
         return Response(
             payload,
@@ -3987,18 +4021,24 @@ def register_routes(app):
                 flash('Incorrect password.', 'error')
                 return render_template('account_delete.html')
             uid = current_user.id
-            # Delete all user-owned rows (cascade handles most, be explicit)
-            for model in [ResumeAnalysis, ResumeVersion, JDMatchReport,
-                          BulletRewrite, CoverDoc, LinkedInReport,
-                          JobApplication, InterviewSession, AptitudeAttempt,
-                          QuizAttempt, STARDraft, RoadmapProgress,
-                          CareerAssessment, Retrospective, CertPlan,
-                          StudyDoc, Experiment, CommunicationAnalysis,
-                          DSAProgress]:
-                try:
-                    model.query.filter_by(user_id=uid).delete()
-                except Exception:
-                    pass
+            # Delete ALL user-owned rows via the canonical registry
+            # (studybuddy/user_data.py). The old 19-model loop silently
+            # swallowed per-model failures AND omitted 40+ tables, so
+            # "delete my account and all data" left orphans behind (and
+            # could fail outright on Postgres FK enforcement). The new
+            # helper fails loudly instead: on error nothing is deleted.
+            from studybuddy.user_data import delete_all_user_data
+            try:
+                counts = delete_all_user_data(uid, db)
+            except Exception:
+                db.session.rollback()
+                log.exception("account delete incomplete user_id_hash=%s",
+                              _safe_user_ref_id(uid))
+                flash('Account deletion failed. No data was deleted; '
+                      'please try again or contact support.', 'error')
+                return render_template('account_delete.html')
+            log.info("account_delete_counts user_id_hash=%s counts=%s",
+                     _safe_user_ref_id(uid), counts)
             # Finally delete the user
             user = db.session.get(User, uid)
             db.session.delete(user)
@@ -5918,231 +5958,10 @@ def register_routes(app):
                                analysis_id=row.id, created_at=row.created_at)
 
     # ---------- DSA PRACTICE (Wave 2 #15) ----------
-    @app.route('/dsa')
-    def dsa_home():
-        """DSA practice: filter problems by topic/difficulty.
-
-        The progress tracker is built into this page (user request,
-        2026-10-23): the same summary the standalone tracker page uses,
-        rendered right under the intro instead of behind a link.
-        """
-        progress_rows = []
-        if current_user.is_authenticated:
-            rows = DSAProgress.query.filter_by(user_id=current_user.id).all()
-            progress_rows = [(r.problem_id, r.status) for r in rows]
-        progress = progress_summary(progress_rows)
-        return render_template('dsa.html', topics=dsa_topics(),
-                               difficulties=dsa_difficulties(),
-                               total=len(all_problems()),
-                               is_authed=current_user.is_authenticated,
-                               a2z=progress['a2z'],
-                               classic=progress['classic'])
-
-    @app.route('/api/dsa/problems')
-    def dsa_problem_list():
-        """JSON problem list with optional topic/difficulty filters."""
-        topic = (request.args.get('topic') or '').strip()[:60]
-        difficulty = (request.args.get('difficulty') or '').strip()[:10]
-        problems = filter_problems(topic or None, difficulty or None)
-        out = []
-        if current_user.is_authenticated:
-            rows = DSAProgress.query.filter_by(user_id=current_user.id).all()
-            progress = expand_statuses([(r.problem_id, r.status) for r in rows])
-            for p in problems:
-                p = dict(p)
-                p['my_status'] = progress.get(p['id'])
-                out.append(p)
-        else:
-            out = problems
-        return jsonify({'problems': out, 'count': len(out)})
-
-    @app.route('/api/dsa/progress')
-    def dsa_progress_api():
-        """Progress summary JSON for the tracker embedded on /dsa.
-
-        The embedded tracker refreshes from this endpoint when the tab
-        becomes visible again, so marks made in another tab (or on a
-        problem page) show up without a manual reload. Anonymous
-        visitors get the zeroed summary.
-        """
-        progress_rows = []
-        if current_user.is_authenticated:
-            rows = DSAProgress.query.filter_by(user_id=current_user.id).all()
-            progress_rows = [(r.problem_id, r.status) for r in rows]
-        summary = progress_summary(progress_rows)
-        return jsonify({'is_authed': current_user.is_authenticated,
-                        'a2z': summary['a2z'],
-                        'classic': summary['classic']})
-
-    @app.route('/dsa/diagnosis')
-    @login_required
-    def dsa_diagnosis():
-        """Weak-topic diagnosis dashboard (owner only)."""
-        rows = DSAProgress.query.filter_by(user_id=current_user.id).all()
-        progress = [{"problem_id": r.problem_id, "status": r.status,
-                     "hints_used": r.hints_used} for r in rows]
-        report = weak_topic_diagnosis(progress)
-        return render_template('dsa_diagnosis.html', report=report)
-
-    @app.route('/dsa/a2z')
-    def dsa_a2z_page():
-        """Striver A2Z sheet — simple rows: solve on the original
-        platform, mark progress here."""
-        statuses = {}
-        if current_user.is_authenticated:
-            rows = DSAProgress.query.filter_by(user_id=current_user.id).all()
-            statuses = expand_statuses([(r.problem_id, r.status) for r in rows])
-        steps = sheet_structure(statuses)
-        return render_template('dsa_a2z.html', steps=steps,
-                               total=sum(s['total'] for s in steps),
-                               solved=sum(s['solved'] for s in steps),
-                               lesson_ids=a2z_lesson_ids())
-
-    @app.route('/dsa/a2z/<problem_id>/learn')
-    def dsa_a2z_learn(problem_id):
-        """In-app lesson for an A2Z theory topic or pattern problem:
-        full content, code, and suggested follow-up practice."""
-        problem_id = (problem_id or '').strip()[:50]
-        entries = {e['id']: e for e in a2z_problems()}
-        entry = entries.get(problem_id)
-        lesson = a2z_get_lesson(problem_id)
-        if entry is None or lesson is None:
-            abort(404)
-        status = None
-        if current_user.is_authenticated:
-            rows = DSAProgress.query.filter_by(user_id=current_user.id).all()
-            status = expand_statuses(
-                [(r.problem_id, r.status) for r in rows]).get(problem_id)
-        suggested = a2z_resolve_suggested(
-            lesson, {p['id']: p for p in all_problems()})
-        return render_template('dsa_a2z_learn.html', entry=entry,
-                               lesson=lesson, status=status,
-                               suggested=suggested,
-                               is_authed=current_user.is_authenticated)
-
-    @app.route('/dsa/tracker')
-    @login_required
-    def dsa_tracker_page():
-        """Progress tracker: overall, per-module and per-difficulty."""
-        rows = DSAProgress.query.filter_by(user_id=current_user.id).all()
-        progress = progress_summary([(r.problem_id, r.status) for r in rows])
-        return render_template('dsa_tracker.html', a2z=progress['a2z'],
-                               classic=progress['classic'])
-
-    @app.route('/dsa/<problem_id>/untrack', methods=['POST'])
-    @limiter.limit("30 per hour")
-    def dsa_untrack(problem_id):
-        """Remove a progress mark (undo a 'Mark as solved')."""
-        if not current_user.is_authenticated:
-            return jsonify({'error': 'Please log in to save progress.'}), 401
-        problem_id = (problem_id or '').strip()[:50]
-        if not get_problem(problem_id):
-            return jsonify({'error': 'Unknown problem.'}), 404
-        row = DSAProgress.query.filter_by(user_id=current_user.id,
-                                          problem_id=problem_id).first()
-        if row:
-            db.session.delete(row)
-            db.session.commit()
-        return jsonify({'success': True, 'status': None})
-
-    @app.route('/dsa/<problem_id>')
-    def dsa_problem_page(problem_id):
-        """Problem workspace: statement, progressive hints, code area."""
-        problem_id = (problem_id or '').strip()[:50]
-        p = get_problem(problem_id)
-        if not p:
-            abort(404)
-        hints_revealed = 0
-        my_status = None
-        saved_code = ""
-        if current_user.is_authenticated:
-            row = DSAProgress.query.filter_by(user_id=current_user.id,
-                                              problem_id=problem_id).first()
-            if row:
-                hints_revealed = row.hints_used
-                my_status = row.status
-                saved_code = row.code or ""
-            else:
-                # The same problem may have been marked in the other
-                # set (classic <-> A2Z share problems by LeetCode slug).
-                all_rows = DSAProgress.query.filter_by(
-                    user_id=current_user.id).all()
-                my_status = expand_statuses(
-                    [(r.problem_id, r.status) for r in all_rows]).get(problem_id)
-        payload = public_problem(problem_id, hints_revealed)
-        return render_template('dsa_problem.html', problem=payload,
-                               my_status=my_status, saved_code=saved_code,
-                               is_authed=current_user.is_authenticated)
-
-    def _dsa_progress_row(problem_id):
-        row = DSAProgress.query.filter_by(user_id=current_user.id,
-                                          problem_id=problem_id).first()
-        if not row:
-            row = DSAProgress(user_id=current_user.id, problem_id=problem_id)
-            db.session.add(row)
-        return row
-
-    @app.route('/dsa/<problem_id>/hint', methods=['POST'])
-    @limiter.limit("30 per hour")
-    def dsa_hint(problem_id):
-        """Reveal the next progressive hint. Login required; persisted."""
-        if not current_user.is_authenticated:
-            return jsonify({'error': 'Please log in to use hints.'}), 401
-        problem_id = (problem_id or '').strip()[:50]
-        if not get_problem(problem_id):
-            return jsonify({'error': 'Unknown problem.'}), 404
-        try:
-            row = _dsa_progress_row(problem_id)
-            hint, new_count = reveal_hint(problem_id, row.hints_used or 0)
-            row.hints_used = new_count
-            if row.status == 'attempted':
-                pass
-            db.session.commit()
-        except Exception:
-            log.exception("DSA hint persistence failed")
-            db.session.rollback()
-            return jsonify({'error': 'Could not reveal hint. Please try again.'}), 500
-        return jsonify({'success': True, 'hint': hint, 'hints_used': new_count,
-                        'exhausted': hint is None})
-
-    @app.route('/dsa/<problem_id>/approach', methods=['POST'])
-    @limiter.limit("30 per hour")
-    def dsa_approach(problem_id):
-        """Reveal the approach outline — only on explicit request."""
-        if not current_user.is_authenticated:
-            return jsonify({'error': 'Please log in to view the approach.'}), 401
-        problem_id = (problem_id or '').strip()[:50]
-        approach = reveal_approach(problem_id)
-        if approach is None:
-            return jsonify({'error': 'Unknown problem.'}), 404
-        return jsonify({'success': True, 'approach': approach})
-
-    @app.route('/dsa/<problem_id>/status', methods=['POST'])
-    @limiter.limit("30 per hour")
-    def dsa_status(problem_id):
-        """Save code + mark solved/stuck/attempted. Login required."""
-        if not current_user.is_authenticated:
-            return jsonify({'error': 'Please log in to save progress.'}), 401
-        problem_id = (problem_id or '').strip()[:50]
-        if not get_problem(problem_id):
-            return jsonify({'error': 'Unknown problem.'}), 404
-        payload = request.get_json(silent=True) or {}
-        data, error = validate_status_payload(payload)
-        if error:
-            return jsonify({'error': error}), 400
-        try:
-            row = _dsa_progress_row(problem_id)
-            row.status = data['status']
-            row.code = data['code']
-            db.session.commit()
-        except Exception:
-            log.exception("DSA status persistence failed")
-            db.session.rollback()
-            return jsonify({'error': 'Could not save progress. Please try again.'}), 500
-        # Wave 5 #27: only a *solved* problem earns XP — attempts don't.
-        if row.status == 'solved':
-            _momentum_hook(current_user.id, 'dsa_solved')
-        return jsonify({'success': True, 'status': row.status})
+    # /dsa/* + /api/dsa/* now live in studybuddy/dsa_routes.py
+    # (identical URLs, methods, rate limits; endpoints blueprint-prefixed
+    # as dsa.* — template url_for call sites updated at move time).
+    # Registered with the other blueprints below (see study_library).
 
     # ---------- TIMED APTITUDE TESTS (Wave 2 #16) ----------
     def _aptitude_user_stats(user_id):
@@ -8035,6 +7854,12 @@ border-bottom:1px solid #ccc;padding-bottom:4px}}a{{color:#2447ff}}
     # study_library.* — template url_for call sites updated at move time).
     from studybuddy.study_library import study_library_bp
     app.register_blueprint(study_library_bp)
+
+    # Monolith split Phase 2 (audit fix, 2026-10-28): /dsa/* +
+    # /api/dsa/* now live in studybuddy/dsa_routes.py (identical URLs,
+    # methods, rate limits; endpoints blueprint-prefixed as dsa.*).
+    from studybuddy.dsa_routes import dsa_bp
+    app.register_blueprint(dsa_bp)
 
     # GFI #5: opt-in benchmark resume collection (all routes auth-gated).
     from studybuddy.benchmark_collection import benchmark_bp

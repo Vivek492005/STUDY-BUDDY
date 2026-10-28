@@ -15,7 +15,7 @@
         <ul>
             <li><a href="{{ url_for('resume_home') }}">Resume Studio <span>{{ analyses|length }} analyses</span></a></li>
             <li><a href="{{ url_for('interview_home') }}">Mock Interviews <span>{{ interviews|length }} sessions</span></a></li>
-            <li><a href="{{ url_for('dsa_home') }}">DSA Practice <span>Solve</span></a></li>
+            <li><a href="{{ url_for('dsa.dsa_home') }}">DSA Practice <span>Solve</span></a></li>
             <li><a href="{{ url_for('research_home') }}">Research Hub <span>Open</span></a></li>
             <li><a href="{{ url_for('tracker_board') }}">Application Tracker <span>{{ tracker_stats.total if tracker_stats else 0 }} tracked</span></a></li>
             <li><a href="{{ url_for('learn_hub') }}">Learn Hub <span>Open</span></a></li>
