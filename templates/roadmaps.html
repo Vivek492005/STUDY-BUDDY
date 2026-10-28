@@ -3,7 +3,16 @@
 {% block theme %}resume{% endblock %}
 {% block title %}Learning Roadmaps | AI Career & Research Assistant{% endblock %}
 {% block nav_learn %}b-active{% endblock %}
-{% block head %}<meta name="csrf-token" content="{{ csrf_token() }}">{% endblock %}
+{% block head %}<meta name="csrf-token" content="{{ csrf_token() }}">
+<style>
+  /* 390px fix (audit Stage 3): the skill-card grid below was hardcoded
+     to 3 columns, squeezing each card to ~120px at phone widths so the
+     level <select> overflowed its card (found by the 390px eval).
+     One column on narrow screens; the card's checkbox + name + select
+     then fit comfortably. */
+  .gap-skills-grid{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:640px){.gap-skills-grid{grid-template-columns:1fr}}
+</style>{% endblock %}
 
 {% block content %}
 <section class="roadmap-hero" aria-label="Learning roadmaps">
@@ -52,7 +61,7 @@
             {% for domain, _ in domains %}
             <details class="gap-domain" style="margin-bottom:.6rem;" {% if loop.first %}open{% endif %}>
                 <summary style="cursor:pointer;font-weight:600;margin-bottom:.5rem;">{{ domain }} <span class="gap-domain-count" data-domain="{{ domain }}"></span></summary>
-                <div class="b-bento" style="grid-template-columns:repeat(3,1fr);">
+                <div class="b-bento gap-skills-grid">
                     {% for s in skills if s.domain == domain %}
                     <label class="b-card b-card--lite gap-skill-card" style="display:flex;gap:.6rem;align-items:center;cursor:pointer;padding:.8rem 1rem;" data-domain="{{ domain }}">
                         <input type="checkbox" class="b-check gap-skill" value="{{ s.id }}" data-name="{{ s.name }}">

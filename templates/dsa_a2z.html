@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js" data-theme="resume">
+<html lang="{{ current_locale }}" class="no-js" data-theme="resume">
 <head>
     <meta charset="UTF-8">
     <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
@@ -11,6 +11,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bento.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/kinetic.css') }}">
+    <!-- UX-01 global mobile-overflow guard (audit fix, 2026-10-28):
+         same shared guard as templates/base.html -- this template does
+         not extend base, so it carries its own copy. -->
+    <style>img, table, video, iframe, embed, object{max-width:100%}pre{max-width:100%;overflow-x:auto}html, body{overflow-x:clip}</style>
 </head>
 <body class="sb-dsa">
     {% set nav_active = 'practice' %}

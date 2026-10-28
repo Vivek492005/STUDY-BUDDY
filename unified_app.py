@@ -3077,12 +3077,25 @@ def register_security_headers(app):
     # render exactly as before.
     @app.context_processor
     def _i18n_processor():
-        from flask import g
+        from flask import g, request
+        from urllib.parse import urlencode
 
         from studybuddy.i18n import translate as _tr
         locale = getattr(g, "locale", "en")
+
+        def _switch_url(target_locale):
+            # Audit fix (2026-10-28): the old switcher used
+            # {{ request.path }}?lang=..., which dropped the page's
+            # other query parameters (e.g. /dsa?topic=arrays lost the
+            # filter on switch). Rebuild the current URL with lang
+            # replaced, everything else preserved.
+            args = request.args.to_dict()
+            args["lang"] = target_locale
+            return request.path + "?" + urlencode(args)
+
         return {"_": lambda s, **kw: _tr(s, locale=locale, **kw),
-                "current_locale": locale}
+                "current_locale": locale,
+                "switch_url": _switch_url}
 
 
 def _load_benchmark_scores(path=None):

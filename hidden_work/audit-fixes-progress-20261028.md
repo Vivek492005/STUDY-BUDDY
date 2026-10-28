@@ -244,9 +244,126 @@ mechanism. Test env: `~/workspace/acra/.venv/bin/python` with
   `test_dsa` + `test_route_policy` + `test_authz_matrix` → 45 passed;
   career/momentum/interview/data04/eval/health/peer suites → 205
   passed. Ruff clean on all Stage 2 files.
-- Commit (local, unpushed): see Stage 2 commit SHA in the report.
+- Commit (local, unpushed): `d4af269` — "fix(audit stage 2): session
+  hardening, delete completeness, retention, gunicorn, DSA split".
 
-## STAGE 3 — Product quality — NOT STARTED
+## STAGE 3 — Product quality — DONE, gates green
+
+### Docs cleanup
+- Legacy docs archived via `git mv` (history preserved) to
+  `docs/archive/streamlit-era/` + `docs/archive/README.md` explaining
+  what was archived and why: `DEPLOYMENT.md`, `STREAMLIT_CLOUD.md`,
+  `README.md`, `home.py`, `app.js`, `dashboard.html`, `index.html`,
+  `index.css`, `constructor/`, `deconstructor/`. NOT archived:
+  `docs/data/` and `docs/assets/` (referenced by README/docs) and
+  `docs/docs/` (architecture PNGs, out of audit scope). No in-repo
+  references to the archived files were found in `.py` / `.html` /
+  `.md` before the move.
+- LICENSE conflict reconciled: `docs/LICENSE` (MIT, 2025, different
+  holder — legacy artifact) overwritten with the root `LICENSE`
+  content (MIT, 2026 Vivek Bartwal); file kept so links do not break.
+  `pyproject.toml` already declared MIT, consistent with the root.
+  Engineering cleanup, not a legal verdict.
+- `pyproject.toml` drift fixed to mirror `requirements.in` exactly:
+  `python-dotenv` 1.0.0 → 1.2.4, `google-genai` 2.30.1 → 2.31.0,
+  `Authlib` now pinned 1.9.1, `flask-migrate` moved from dev-optional
+  to main dependencies, and the previously omitted `defusedxml`,
+  `pypdfium2`, `pdfplumber`, `psycopg[binary]`, `pyyaml` added. A
+  header comment states `requirements.in` + hash-pinned
+  `requirements.txt` remain the authoritative install source.
+- `.env.example` completed: LLM fallback keys + `LLM_MODE` /
+  `LLM_BASE_URL` / `LLM_MODEL`, `FERNET_KEY(S)` (+ `ENCRYPTION_KEY`
+  legacy note), `SENTRY_DSN` (disabled-by-default note),
+  `RATELIMIT_STORAGE_URI` (memory-default note),
+  `STUDYBUDDY_ADMINS`, `RESEARCH_CONTACT_EMAIL`, `RAG_EMBEDDER`.
+  `SECRET_KEY` is now generation-command-only (the old
+  `change-me-to-a-long-random-secret` fill-in is a value production
+  boot blocklists). Google redirect URI corrected to the current
+  prod host `https://study-buddy-3m16.onrender.com/auth/google/callback`.
+- `docs/configuration.md` extended: Encryption (FERNET), Error
+  tracking (Sentry), Rate-limit storage, Admins + misc sections, and
+  an Internationalization (Hindi) section stating the honest scope
+  (landing fully translated; nav + page bodies English; `?lang`
+  validated; query strings preserved on switch; `<html lang>`
+  follows the resolved locale).
+- README corrected from data files, not memory: Quick Start now
+  includes `cp .env.example .env` + the Python 3.12 requirement;
+  opportunities 83 → 124 open (128 total in the current file);
+  collected tests ~9,600 → 9,786 (measured 2026-10-28 via
+  `pytest --collect-only`); `unified_app.py` 9,000+ → ~11,900 lines
+  (measured 11,881); `studybuddy/` description corrected (Flask
+  blueprints + network modules live there, not pure logic only);
+  Testing section defers to `CONTRIBUTING.md` as authoritative;
+  Run + Deployment sections now show the hash-pinned install and the
+  conf-based gunicorn command (`gunicorn -c gunicorn.conf.py
+  unified_app:app`); `DATABASE_URL` wording points at the Neon
+  decision doc instead of asserting Render Postgres.
+
+### Hindi switcher — honestly scoped (no nav translation)
+- DECISION: the ~40 nav labels were NOT translated. Translation
+  quality for 40 labels cannot be verified by tests, and a
+  half-translated nav (Hindi labels, English bodies) is arguably
+  worse UX than a clearly-scoped landing translation. Instead the
+  scope is stated in the UI (switcher tooltip) and in
+  `docs/configuration.md`.
+- Fixes that DID land: `templates/base.html` `<html lang="en">` →
+  `<html lang="{{ current_locale }}">`, and the same change applied
+  repo-wide — all 33 full-page templates now render a dynamic lang
+  (0 hardcoded `lang="en"` remain; verified by grep). The switcher
+  in `templates/_site_nav.html` now uses a `switch_url(locale)`
+  helper (added to the `_i18n_processor` context processor in
+  `unified_app.py`) that rebuilds the current URL with `lang`
+  replaced and every other query parameter preserved — the old
+  `{{ request.path }}?lang=...` links dropped filters like
+  `/dsa?topic=arrays`. The switcher's Hindi link carries
+  `title="Hindi translation currently covers the landing page;
+  other pages stay in English."`.
+- Tests: `tests/test_hindi_switcher.py` extended (query preservation,
+  lang replacement without duplication, `lang="hi"` on a standalone
+  page AND a base-extending page, scope tooltip present). The
+  existing 6 Hindi tests still pass unchanged.
+
+### Mobile overflow guard + 390px re-evaluation (UX-01)
+- Guard added to `templates/base.html` (inherited by 47 templates)
+  and to all 32 standalone full-page templates (33 `<html>`
+  templates total): media/table `max-width: 100%`, `pre`
+  horizontal scrolling, `html, body { overflow-x: clip }` (clip, not
+  hidden, so sticky positioning keeps working). No `display: block`
+  on tables (breaks layout).
+- Evaluation: local headless Chromium (Playwright) at 390×844
+  against a local dev server — NOT the live browser, NOT prod.
+  Reusable script `scripts/eval_overflow_390.py`; before/after JSON
+  reports + full write-up in
+  `hidden_work/overflow-390px-20261028.md`.
+- Honest result: NO page had document-level overflow before the
+  guard (scrollWidth 390 on all 16 evaluated pages) — the audit's
+  "can overflow" was a risk statement, and the measured hub pages
+  were already contained. Element overhangs found were clipped
+  decorative (ticker marquee, cursor glow, SVG chart internals) or
+  scroll-container-contained (salary city table inside
+  `.cp-table-scroll { overflow-x: auto }` — scrollable, not cut
+  off). The guard changed nothing on these pages (before/after
+  identical) and is a preventive safety net for unevaluated pages.
+- ONE real defect found and fixed: `/learn/roadmaps` skill-card grid
+  was hardcoded to 3 columns, squeezing cards to ~120px at phone
+  widths so 9 level `<select>` elements overflowed their cards.
+  Fix: `gap-skills-grid` class (3 columns desktop, 1 column below
+  640px), inline style removed; re-evaluation confirms the selects
+  no longer overhang. Same hardcoded-3-column pattern in
+  `certs.html:41`, `profile.html:93`, `study_cite.html:39` was NOT
+  evaluated (auth-gated pages were out of this QA run) — flagged in
+  the evidence doc for the next 390px pass, not silently claimed.
+- Tests: `tests/test_mobile_overflow_guard.py` (guard present in
+  base + every standalone page, no hardcoded `lang="en"`, roadmaps
+  grid rule). Candidate paths `/roadmaps` / `/quizzes` 404'd (wrong
+  guesses); real routes `/learn/roadmaps` / `/learn/quizzes` were
+  evaluated instead.
+- Stage 3 gate evidence: `test_hindi_switcher` +
+  `test_mobile_overflow_guard` + `test_route_policy` +
+  `test_dsa_blueprint_routes` + `test_dsa` + `test_authz_matrix` +
+  `test_ws5_contracts` → 67 passed. Ruff clean on all Stage 3
+  Python files. Commit (local, unpushed): see Stage 3 commit SHA in
+  the report.
 
 ## STAGE 4 — Differentiation & growth (code-feasible only) — NOT STARTED
 

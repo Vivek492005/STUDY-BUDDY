@@ -71,7 +71,8 @@ Built as a Flask monolith, it pairs **Google Gemini** (with automatic fallback t
 git clone https://github.com/Vivek492005/STUDY-BUDDY.git
 cd STUDY-BUDDY
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt   # Python 3.12 required (see render.yaml's PYTHON_VERSION pin)
+cp .env.example .env              # then fill in your keys (never commit .env)
 python unified_app.py        # → http://localhost:5000
 ```
 
@@ -82,7 +83,8 @@ git clone https://github.com/Vivek492005/STUDY-BUDDY.git
 cd STUDY-BUDDY
 python -m venv .venv
 .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+pip install -r requirements.txt   # Python 3.12 required (see render.yaml's PYTHON_VERSION pin)
+Copy-Item .env.example .env       # then fill in your keys (never commit .env)
 python unified_app.py        # → http://localhost:5000
 ```
 
@@ -167,7 +169,7 @@ Core features work with no API keys. Full configuration (env vars, production, d
 
 | Feature | What it does |
 |---|---|
-| Auto-Refreshing Board | **83 open opportunities** at the October 2026 refresh — hackathons from the Devpost API, internships from SimplifyJobs — with a freshness indicator; expired auto-entries are pruned, duplicates removed |
+| Auto-Refreshing Board | **124 open opportunities** (128 total in the current data file) — hackathons from the Devpost API, internships from SimplifyJobs — with a freshness indicator; expired auto-entries are pruned, duplicates removed |
 | Smart Merging | Curated entries are never touched; expired auto-entries are pruned, duplicates removed |
 | Filters & Bookmarks | Filter by type (hackathon / internship / competition), bookmark what matters |
 
@@ -207,7 +209,7 @@ Core features work with no API keys. Full configuration (env vars, production, d
 | AI | Google Gemini API with Groq/OpenRouter fallback; TF-IDF/BM25 retrieval (sentence-transformers optional — keyword fallback in production) |
 | Frontend | Jinja2 templates, kinetic editorial + Bento CSS design systems, vanilla JS |
 | Server | Gunicorn |
-| Testing | pytest (~9,600 collected cases, measured October 2026) |
+| Testing | pytest (9,786 collected cases, measured 2026-10-28) |
 | Deployment | Render (free tier) |
 
 ---
@@ -216,8 +218,8 @@ Core features work with no API keys. Full configuration (env vars, production, d
 
 ```
 acra/
-├── unified_app.py          # Flask app: models, routes, app factory (9,000+ lines)
-├── studybuddy/             # Feature modules (pure-logic, no Flask/network/LLM)
+├── unified_app.py          # Flask app: models, routes, app factory (~11,900 lines)
+├── studybuddy/             # Feature modules (Flask blueprints, LLM gateway, data loaders, pure logic)
 │   ├── momentum.py         # XP / streaks / leagues / quests engine
 │   ├── community.py        # Peer mocks + mentor office hours
 │   ├── health_review.py    # Monthly career health aggregation
@@ -242,7 +244,7 @@ acra/
 ├── static/
 │   ├── css/bento.css       # Design system
 │   └── img/                # STUDY-BUDDY owl logo + favicons
-├── tests/                  # pytest suite (~9,600 collected cases)
+├── tests/                  # pytest suite (9,786 collected cases, measured 2026-10-28)
 └── data/                   # JSON content banks (questions, resources)
 ```
 
@@ -296,7 +298,7 @@ To set an environment variable for the current PowerShell session
 | Variable | Required | Description |
 |---|---|---|
 | `SECRET_KEY` | ✅ | Flask session secret — set a long random value in production |
-| `DATABASE_URL` | ⚠️ prod | PostgreSQL URL (Render provides this); falls back to local SQLite |
+| `DATABASE_URL` | ⚠️ prod | Managed PostgreSQL URL; falls back to local SQLite. Which managed database production uses (Render free Postgres vs Neon) is tracked in `docs/ops/neon-database-decision.md` — confirm there before re-pointing production. |
 | `GEMINI_API_KEY` | optional | Enables Gemini-powered feedback, rewriting, and Q&A enhancements |
 
 ### Run
@@ -305,8 +307,8 @@ To set an environment variable for the current PowerShell session
 # Development
 python unified_app.py
 
-# Production (as deployed)
-gunicorn unified_app:app
+# Production (as deployed; worker/timeout settings live only in gunicorn.conf.py)
+gunicorn -c gunicorn.conf.py unified_app:app
 ```
 
 > Gunicorn is Unix-only. On Windows, run the development server with
@@ -323,8 +325,9 @@ Open **http://localhost:5000** and create an account to get started.
 pytest tests/ -q
 ```
 
-- **~9,600 collected test cases** (measured October 2026; parametrized cases counted individually), covering every feature module: happy paths, validation, auth isolation, CSRF, rate limits, and error/edge cases
+- **9,786 collected test cases** (measured 2026-10-28; parametrized cases counted individually), covering every feature module: happy paths, validation, auth isolation, CSRF, rate limits, and error/edge cases
 - Run the suite twice before any release; the project standard is **100% green, 0 failures**
+- `CONTRIBUTING.md` is authoritative for the full setup (venv, `requirements-dev.txt`, sandbox env, ruff, benchmarks) — the one-liner above assumes that setup is done
 
 ---
 
@@ -332,10 +335,10 @@ pytest tests/ -q
 
 The live site runs on **Render's free tier**:
 
-1. Connect the GitHub repo to Render as a **Web Service**
-2. Build command: `pip install -r requirements.txt`
-3. Start command: `gunicorn unified_app:app`
-4. Set `SECRET_KEY`, `DATABASE_URL` (Render Postgres), and `GEMINI_API_KEY` in the dashboard
+1. Connect the GitHub repo to Render as a **Web Service** (or use the committed `render.yaml`, which is authoritative)
+2. Build command: `pip install --require-hashes -r requirements.txt`
+3. Start command: `gunicorn -c gunicorn.conf.py unified_app:app` (worker/timeout settings live only in `gunicorn.conf.py`)
+4. Set `SECRET_KEY`, `DATABASE_URL` (managed database — see `docs/ops/neon-database-decision.md` for the Render-vs-Neon status), and `GEMINI_API_KEY` in the dashboard
 5. Every push to `main` auto-deploys
 
 ---

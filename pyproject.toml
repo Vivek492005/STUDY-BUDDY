@@ -5,14 +5,22 @@ description = "STUDY-BUDDY — AI Career & Research Assistant (Flask)"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.12"
+# NOTE (audit fix, 2026-10-28): requirements.in + hash-pinned
+# requirements.txt are the authoritative install source (Render,
+# Dockerfile, and CI all install from requirements.txt). This list
+# mirrors requirements.in exactly — pinned where .in pins, loose where
+# .in is loose — so `pip install .` does not silently diverge. If you
+# change a dependency, change requirements.in first, regenerate
+# requirements.txt with hashes, then mirror the change here.
 dependencies = [
     "flask==3.1.3",
-    "python-dotenv==1.0.0",
-    "google-genai==2.30.1",
+    "python-dotenv==1.2.4",
+    "google-genai==2.31.0",
     "pypdf==6.21.2",
     "python-docx==1.2.0",
     "gunicorn==26.2.0",
     "werkzeug==3.1.9",
+    "Authlib==1.9.1",
     "requests",
     "google-api-python-client",
     "google-auth-httplib2",
@@ -22,7 +30,12 @@ dependencies = [
     "flask-sqlalchemy",
     "flask-login",
     "psycopg2-binary",
-    "Authlib",
+    "flask-migrate",
+    "defusedxml",
+    "pypdfium2",
+    "pdfplumber",
+    "psycopg[binary]",
+    "pyyaml",
 ]
 
 [project.optional-dependencies]
@@ -33,7 +46,6 @@ dev = [
     "bandit",
     "pip-audit",
     "pre-commit",
-    "flask-migrate",
 ]
 
 [tool.ruff]

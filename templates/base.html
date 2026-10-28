@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js" data-theme="{% block theme %}hub{% endblock %}">
+<html lang="{{ current_locale }}" class="no-js" data-theme="{% block theme %}hub{% endblock %}">
 <head>
     <meta charset="UTF-8">
     <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
@@ -27,6 +27,20 @@
       padding:.75rem 1.25rem;z-index:9999;font-weight:700;border-radius:0 0 8px 0}
     .skip-link:focus{left:0}
     :focus-visible{outline:3px solid #4f8cff;outline-offset:2px}
+    /* UX-01 global mobile-overflow guard (audit fix, 2026-10-28):
+       overflow fixes used to be page-scoped only (resume 480px fix,
+       career 560px breakpoint), so any unevaluated page with a wide
+       table, long unbroken string, or fixed-width element could
+       overflow narrow screens. This shared guard caps replaced and
+       table content, scrolls long <pre> blocks instead of letting
+       them push the viewport, and clips horizontal overflow at the
+       viewport as a safety net (clip, not hidden, so sticky
+       positioning keeps working). It does not replace per-page
+       layout fixes where a page genuinely needs rework — see
+       hidden_work/overflow-390px-20261028.md for the evaluation. */
+    img, table, video, iframe, embed, object{max-width:100%}
+    pre{max-width:100%;overflow-x:auto}
+    html, body{overflow-x:clip}
     @media (prefers-reduced-motion:reduce){
       *,*::before,*::after{animation-duration:.01ms!important;
         transition-duration:.01ms!important;scroll-behavior:auto!important}

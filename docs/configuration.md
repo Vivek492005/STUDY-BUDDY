@@ -36,6 +36,53 @@ codebase should read `os.environ` for config.
 | `MAX_UPLOAD_MB` | `16` | Resume/PDF upload cap. |
 | `SKIP_DB_INIT` | — | `1` skips `create_all()` (used when generating migrations). |
 
+## Encryption (user API keys)
+
+| Variable | Default | Description |
+|---|---|---|
+| `FERNET_KEY` | — | Single base64 Fernet key (44 urlsafe chars) encrypting per-user API keys at rest. Generate: `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`. |
+| `FERNET_KEYS` | — | Comma-separated keys, NEWEST FIRST, for rotation. Takes precedence over `FERNET_KEY`. |
+| `ENCRYPTION_KEY` | — | Legacy fallback name (used only when neither Fernet variable is set; `SECRET_KEY` is the last-resort fallback in code — do not rely on it). |
+
+## Error tracking (Sentry)
+
+| Variable | Default | Description |
+|---|---|---|
+| `SENTRY_DSN` | — | Sentry DSN. No-op unless set AND `sentry-sdk` is installed (it is not in `requirements.txt` as of 2026-10-28; see the audit-fixes progress note, BLOCKED B-3, for enablement). Reports are PII-scrubbed by `studybuddy/sentry_init.py`. |
+| `SENTRY_ENVIRONMENT` / `SENTRY_RELEASE` / `SENTRY_TRACES_RATE` / `SENTRY_PROFILES_RATE` | — | Optional Sentry tuning; read only when a DSN is set. |
+
+## Rate-limit storage
+
+| Variable | Default | Description |
+|---|---|---|
+| `RATELIMIT_STORAGE_URI` | `memory://` | Flask-Limiter backend. In-process by default (exact on Render with its single worker; resets on deploy/restart). Set to a Redis URL for a shared store — full procedure in `docs/ops/rate-limits.md`. |
+
+## Admins + misc
+
+| Variable | Default | Description |
+|---|---|---|
+| `STUDYBUDDY_ADMINS` | — | Comma-separated admin emails (mentor verification, admin views). |
+| `RESEARCH_CONTACT_EMAIL` | — | Contact shown on research pages (optional). |
+| `RAG_EMBEDDER` | — | RAG embedder backend for the study library (optional). |
+
+## Internationalization (Hindi) — honest scope
+
+- The landing page (`/`) is fully translated: 50 strings in
+  `translations/hi/LC_MESSAGES/messages.po`, rendered via the stdlib
+  `.po` reader in `studybuddy/i18n.py` (no Flask-Babel required).
+  Strings with no Hindi entry fall back to English.
+- The shared navigation and all other page bodies remain English.
+  The switcher (EN | हिंदी, in the shared nav) therefore changes the
+  landing page's language and persists the choice in a `lang` cookie;
+  it does not translate the rest of the site. This scope is stated
+  here and in the switcher's tooltip — not implied otherwise.
+- Locale resolution: `?lang` (validated; invalid values never set a
+  cookie) > `lang` cookie > `Accept-Language` header. Switching
+  preserves the page's other query parameters (the switch links
+  rebuild the current URL with `lang` replaced, they do not drop the
+  query string). `<html lang>` follows the resolved locale on every
+  template.
+
 ## Feature flags
 
 | Variable | Default | Description |

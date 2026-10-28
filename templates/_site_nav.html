@@ -76,9 +76,12 @@
             </ul>
         </nav>
         <div class="b-lang-switch" role="group" aria-label="Language">
-            <a href="{{ request.path }}?lang=en"{% if current_locale == 'en' %} aria-current="true" style="font-weight:700"{% endif %}>EN</a>
+            <a href="{{ switch_url('en') }}"{% if current_locale == 'en' %} aria-current="true" style="font-weight:700"{% endif %}>EN</a>
             <span aria-hidden="true">|</span>
-            <a href="{{ request.path }}?lang=hi"{% if current_locale == 'hi' %} aria-current="true" style="font-weight:700"{% endif %}>हिंदी</a>
+            {# Honest scope (audit fix, 2026-10-28): Hindi covers the
+               landing page; the rest of the site stays in English.
+               See docs/configuration.md "Internationalization". #}
+            <a href="{{ switch_url('hi') }}" title="Hindi translation currently covers the landing page; other pages stay in English."{% if current_locale == 'hi' %} aria-current="true" style="font-weight:700"{% endif %}>हिंदी</a>
         </div>
     </div>
 </header>
