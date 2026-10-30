@@ -15,6 +15,7 @@ import os
 import re
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.parse
@@ -22,7 +23,10 @@ import urllib.request
 
 REPO = os.path.join(os.path.dirname(__file__), "..")
 APP = os.path.join(REPO, "unified_app.py")
-PY = os.path.join(REPO, ".venv", "bin", "python")
+# Prefer the repo venv when present (local dev); fall back to the running
+# interpreter (CI installs deps into the system python, no .venv there).
+_VENV_PY = os.path.join(REPO, ".venv", "bin", "python")
+PY = _VENV_PY if os.path.exists(_VENV_PY) else sys.executable
 
 
 def _free_port():

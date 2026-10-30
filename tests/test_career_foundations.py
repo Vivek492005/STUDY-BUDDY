@@ -117,16 +117,24 @@ def test_deadline_crud_and_list(client, app):
 
 
 def test_deadlines_include_bookmarked_opportunity(client, app):
+    # Date-independent: pick any opportunity whose deadline is still in the
+    # future (a hardcoded id+date rots once the deadline passes).
+    from studybuddy.opportunities import list_opportunities
+    today = date.today().isoformat()
+    future_opps = [o for o in list_opportunities()
+                   if (o.get("deadline") or "") > today]
+    assert future_opps, "no future-dated opportunity in test data"
+    target = future_opps[0]
     _authed(client)
     uid = _user_id(app)
     with app.app_context():
         db.session.add(OpportunityBookmark(
-            user_id=uid, opp_id="reliance-foundation-ug-2026"))
+            user_id=uid, opp_id=target["id"]))
         db.session.commit()
     items = client.get("/api/career/deadlines").get_json()["deadlines"]
     opp_items = [i for i in items if i["source"] == "opportunity"]
     assert opp_items, items
-    assert opp_items[0]["date"] == "2026-10-28"
+    assert opp_items[0]["date"] == target["deadline"]
 
 
 def test_deadlines_pure_function_window():
