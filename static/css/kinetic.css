@@ -93,11 +93,54 @@
 .b-nav .b-btn--primary { background: var(--sb-blue); color: #fff; border-radius: 0; box-shadow: none; }
 .b-nav .b-btn--ghost { background: transparent; border-color: #555; color: #fff; border-radius: 0; }
 .b-nav-user { color: #fff; }
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   #b-nav-menu, [data-theme="resume"] #b-nav-menu, [data-theme="research"] #b-nav-menu {
     background: #0a0a0a !important;
   }
   .b-nav-links .b-dropdown-menu { border: 0; }
+}
+
+/* ---------- nav crowding fix (2026-10-30): bar items must never wrap/merge ----------
+   With 10+ links + brand + lang switch, mid-width viewports ran out of room and
+   flex wrapped "STUDY-BUDDY" / "ULTIMATE LAB" / the lang switch onto two lines.
+   Keep every item on one line and tighten spacing progressively instead. */
+.b-nav-in { flex-wrap: nowrap; }
+.b-brand { white-space: nowrap; flex-shrink: 0; }
+.b-nav-links { flex-wrap: nowrap; }
+.b-nav-links > li { flex-shrink: 0; }
+.b-nav-links a, .b-nav-links .b-dropbtn { white-space: nowrap; }
+.b-lang-switch { white-space: nowrap; flex-shrink: 0; }
+@media (max-width: 1450px) {
+  .b-nav-links { gap: 14px; }
+  .b-brand { font-size: 1.3rem; }
+}
+@media (max-width: 1150px) {
+  .b-nav-links { gap: 10px; }
+  .b-nav-links a, .b-nav-links .b-dropbtn { font-size: 0.72rem; }
+  .b-brand { font-size: 1.15rem; }
+  .b-brand img { width: 30px; height: 30px; }
+}
+
+/* SEC-09 consent nudge: single-line nav item, never wraps into the lang switch. */
+.b-consent-nudge {
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 8px;
+  color: #ffd166;
+  font-family: var(--sb-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-color: #ffd166;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.b-consent-nudge:hover { color: #ffe1a1; }
+@media (max-width: 1150px) {
+  /* Bar is ~3px over budget here; drop the nudge's left margin to fit. */
+  .b-consent-nudge { margin-left: 0; }
 }
 
 /* ---------- kill the generic-AI decorations on V2 pages ---------- */

@@ -5,7 +5,7 @@ What is covered here (honest scope):
   version does NOT count once the version bumps; re-consenting under
   the new version counts again.
 - The surfacing: signed-in users without current consent see a
-  "Review AI consent" prompt in the shared nav; anonymous users never
+  "AI consent" prompt in the shared nav; anonymous users never
   do (consent is a per-account record).
 
 What is NOT covered here: route-level enforcement. No AI route
@@ -29,7 +29,7 @@ def test_missing_consent_shows_nav_prompt(client):
     _authed(client)
     resp = client.get("/")
     assert resp.status_code == 200
-    assert b"Review AI consent" in resp.data
+    assert b"AI consent" in resp.data
     assert b"/consent/llm" in resp.data
 
 
@@ -39,34 +39,34 @@ def test_current_consent_hides_nav_prompt(client):
                        follow_redirects=False)
     assert resp.status_code == 302
     resp = client.get("/")
-    assert b"Review AI consent" not in resp.data
+    assert b"AI consent" not in resp.data
 
 
 def test_stale_version_consent_does_not_count(client, monkeypatch):
     _authed(client)
     client.post("/consent/llm", data={"agree": "yes"})
-    assert b"Review AI consent" not in client.get("/").data
+    assert b"AI consent" not in client.get("/").data
 
     # Policy version bumps: the v1 consent must stop counting.
     monkeypatch.setattr("unified_app.CONSENT_POLICY_VERSION", "v2")
     resp = client.get("/")
-    assert b"Review AI consent" in resp.data
+    assert b"AI consent" in resp.data
 
     # Re-consenting under the new version counts again.
     client.post("/consent/llm", data={"agree": "yes"})
-    assert b"Review AI consent" not in client.get("/").data
+    assert b"AI consent" not in client.get("/").data
 
 
 def test_withdraw_shows_prompt_again(client):
     _authed(client)
     client.post("/consent/llm", data={"agree": "yes"})
-    assert b"Review AI consent" not in client.get("/").data
+    assert b"AI consent" not in client.get("/").data
     resp = client.post("/consent/llm/withdraw", follow_redirects=False)
     assert resp.status_code == 302
-    assert b"Review AI consent" in client.get("/").data
+    assert b"AI consent" in client.get("/").data
 
 
 def test_anonymous_users_see_no_prompt(client):
     resp = client.get("/")
     assert resp.status_code == 200
-    assert b"Review AI consent" not in resp.data
+    assert b"AI consent" not in resp.data

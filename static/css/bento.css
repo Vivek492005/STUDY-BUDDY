@@ -669,14 +669,15 @@ a.b-card:hover, a.b-card:focus-visible { color: inherit; }
 .b-dropdown-menu a:hover, .b-dropdown-menu a:focus-visible {
   background: var(--b-accent-soft); color: var(--b-text);
 }
-/* Hamburger toggle (mobile) */
+/* Hamburger toggle (mobile). Breakpoint 1024px: the 10-item desktop nav
+   no longer fits below that, so collapse to the menu instead of crowding. */
 .b-nav-toggle {
   display: none; background: none; border: 1px solid var(--b-border);
   border-radius: 10px; padding: .55rem .6rem; cursor: pointer;
   flex-direction: column; gap: 5px; align-items: center; justify-content: center;
 }
 .b-nav-toggle span { display: block; width: 20px; height: 2px; border-radius: 2px; background: var(--b-text); }
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .b-nav { position: sticky; }
   .b-nav-toggle { display: inline-flex; }
   #b-nav-menu {

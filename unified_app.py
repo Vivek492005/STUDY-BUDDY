@@ -439,7 +439,6 @@ from studybuddy.mock_interview import (
     score_answer,
     validate_interview_setup,
 )
-from studybuddy.rubric_embeddings import get_rubric_embed
 from studybuddy.opportunities import TYPES as OPP_TYPES
 from studybuddy.opportunities import OpportunityDataError, list_opportunities, opp_exists
 from studybuddy.opportunities import get_meta as opp_meta
@@ -5868,7 +5867,7 @@ def register_routes(app):
             if not question:
                 continue
             answer = str(item.get("answer") or "")[:8000]
-            s = score_answer(question, answer, embed=get_rubric_embed())
+            s = score_answer(question, answer)
             s["answer_text"] = answer
             scored.append(s)
         if not scored:
@@ -10221,7 +10220,7 @@ border-bottom:1px solid #ccc;padding-bottom:4px}}a{{color:#2447ff}}
         p = request.get_json(force=True) or {}
         res = eng_interview_v2.score_answer(
             p.get("question", ""), p.get("answer", ""),
-            p.get("key_points", []), embed=get_rubric_embed())
+            p.get("key_points", []))
         # NEVER render res["score"] without res["rubric"] + res["improvements"]
         return jsonify(res)
 

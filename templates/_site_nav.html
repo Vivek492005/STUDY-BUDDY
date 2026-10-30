@@ -89,7 +89,7 @@
            re-consent. Anonymous users never see this (the processor
            reports consent as given for them). Route-level enforcement
            is a separate inventory task — see the progress note. #}
-        <a href="{{ url_for('llm_consent') }}?next={{ request.path }}" class="b-consent-nudge" title="AI features need your current consent (not yet given, or the policy changed since you agreed).">Review AI consent</a>
+        <a href="{{ url_for('llm_consent') }}?next={{ request.path }}" class="b-consent-nudge" title="AI features need your current consent (not yet given, or the policy changed since you agreed).">AI consent</a>
         {% endif %}
     </div>
 </header>

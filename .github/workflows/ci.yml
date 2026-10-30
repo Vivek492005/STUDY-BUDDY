@@ -40,7 +40,7 @@ jobs:
       # NOTE: ruff format is intentionally not gated yet — 187 legacy files
       # would be reformatted. ARC-07 ratchets formatting per-module.
       # ARC-07: mypy on new typed modules (gradual adoption)
-      - run: mypy studybuddy/auth_hardening.py studybuddy/pii_redaction.py studybuddy/exceptions.py studybuddy/anti_gaming.py studybuddy/grounded_gen.py --ignore-missing-imports 2>&1 | tail -20
+      - run: set -o pipefail; mypy studybuddy/auth_hardening.py studybuddy/pii_redaction.py studybuddy/exceptions.py studybuddy/anti_gaming.py studybuddy/grounded_gen.py --ignore-missing-imports 2>&1 | tail -20
 
   test-sqlite:
     name: pytest (SQLite)
@@ -53,11 +53,11 @@ jobs:
           cache: pip
       - run: pip install --require-hashes -r requirements-dev.txt
       # TEST-11: -n auto (xdist) + DeprecationWarning as error for our code.
-      - run: python -m pytest tests/ -q -n auto -p no:cacheprovider --tb=line -W error::DeprecationWarning -W "ignore::DeprecationWarning:flask_login.login_manager" --cov=studybuddy --cov-report=term-missing 2>&1 | tail -60
+      - run: set -o pipefail; python -m pytest tests/ -q -n auto -p no:cacheprovider --tb=line -W error::DeprecationWarning -W "ignore::DeprecationWarning:flask_login.login_manager" --cov=studybuddy --cov-report=term-missing 2>&1 | tail -60
         env:
           STUDYBUDDY_NO_PARSE_SANDBOX: "1"
       # TEST-04: Benchmarks on every PR (small subset)
-      - run: python benchmarks/run.py --quick 2>&1 | tail -10
+      - run: set -o pipefail; python benchmarks/run.py --quick 2>&1 | tail -10
         env:
           STUDYBUDDY_NO_PARSE_SANDBOX: "1"
 
@@ -99,7 +99,7 @@ jobs:
       - run: flask db check
         env:
           FLASK_APP: unified_app
-      - run: python -m pytest tests/ -q -n auto -p no:cacheprovider --tb=line 2>&1 | tail -50
+      - run: set -o pipefail; python -m pytest tests/ -q -n auto -p no:cacheprovider --tb=line 2>&1 | tail -50
         env:
           STUDYBUDDY_NO_PARSE_SANDBOX: "1"
 
