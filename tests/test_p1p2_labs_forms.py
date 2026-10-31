@@ -606,3 +606,11 @@ def test_eval3_b3_keyword_plan(client):
         "report": {"missing_keywords": ["docker"],
                    "missing_skills": ["docker"]}})
     assert isinstance(result, list) and result and "keyword" in result[0]
+
+
+def test_eval3_b3_qa_to_notes_nested_citations(client):
+    result = _run(client, "pdfqa/qa-to-notes", {
+        "qa_pairs": [{"question": "What is X?", "answer": "X is Y.",
+                      "citations": [{"doc": "Paper", "page": 3}]}],
+        "title": "Notes"})
+    assert "markdown" in result and "What is X?" in result["markdown"]
