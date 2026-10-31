@@ -58,6 +58,15 @@
   .lab-req { color: #f87171; font-weight: 700; }
   .lab-checkrow { display: flex; align-items: center; gap: 10px; }
   .lab-checkrow .b-label { margin-bottom: 0; }
+  .lab-fieldset { border: 1px solid var(--b-border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .lab-rows { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .lab-row { border: 1px solid var(--b-border); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .lab-row-head { display: flex; justify-content: space-between; align-items: center; }
+  .lab-row-title { font-size: 0.78rem; font-weight: 700; opacity: 0.7; }
+  .lab-subgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .lab-subgrid .b-field { margin: 0; }
+  .lab-addrow { align-self: flex-start; margin-top: 4px; }
+  @media (max-width: 640px) { .lab-subgrid { grid-template-columns: 1fr; } }
   .lab-result { margin-top: 14px; }
   .lab-pre {
     background: rgba(0, 0, 0, 0.35); border: 1px solid var(--b-border);
@@ -373,6 +382,328 @@
         }
     }
 
+    /* ---- Eval 3: structured controls for object/json fields ----
+       Object/json schema fields render as typed controls instead of
+       raw-JSON textareas: per-key inputs for single objects, repeatable
+       rows for arrays of objects, (name, value) rows for dynamic-key
+       dicts. The submitted payload keeps the exact shape the old
+       hand-written JSON produced — the user just no longer writes JSON. */
+
+    var LAB_LONG_KEYS = /(text|description|notes|abstract|feedback|context|answer|evidence|summary|question|why|where|bio|message|comment|eligibility)$/i;
+    var LAB_NUMBER_KEYS = /(score|weeks|days_left|sent|callbacks|streak|wrong|right|stars|count|pct|lpa|price|amount|seconds|minutes|hours|limit|top_n|year|qty|quantity|_xp|_taken|number)$/i;
+    var LAB_LIST_KEYS = /^(skills|authors|topics|tags|keywords|items|bullets|competencies|citations|chunks|strengths|weaknesses|goals)$/i;
+
+    function labUid() { return Math.random().toString(36).slice(2); }
+
+    function labIsArray(f) {
+        /* Server ships is_array from the label ("JSON array of {...}");
+           the legacy fallback only has a hint string to go on. */
+        if (f.is_array) return true;
+        return /array/i.test(f.hint || '');
+    }
+
+    function labKeyType(f, key) {
+        var t = (f.key_types || {})[key];
+        if (t) return t;
+        if (LAB_LIST_KEYS.test(key)) return 'lines';
+        if (LAB_NUMBER_KEYS.test(key)) return 'number';
+        if (LAB_LONG_KEYS.test(key)) return 'textarea';
+        return 'text';
+    }
+
+    function labKeyLabel(f, key) {
+        var l = (f.key_labels || {})[key];
+        if (l) return l;
+        return key.replace(/_/g, ' ').replace(/^\w/, function (c) { return c.toUpperCase(); });
+    }
+
+    /* -> {empty:true} | {value} | {error}. Text inputs mirror hand-written
+       JSON: "true"/"false" become booleans, numeric strings become numbers. */
+    function labCoerce(raw, inputType) {
+        if (inputType === 'number') {
+            var s = String(raw == null ? '' : raw).trim();
+            if (!s) return { empty: true };
+            var n = Number(s);
+            return isNaN(n) ? { error: 'must be a number' } : { value: n };
+        }
+        var s2 = String(raw == null ? '' : raw).trim();
+        if (!s2) return { empty: true };
+        if (/^(true|false)$/i.test(s2)) return { value: /^true$/i.test(s2) };
+        if (/^-?\d+(\.\d+)?$/.test(s2)) return { value: Number(s2) };
+        return { value: s2 };
+    }
+
+    /* One typed control for a single object key. Returns {node, get}. */
+    function labKeyControl(f, key, uid) {
+        var type = labKeyType(f, key);
+        var labelText = labKeyLabel(f, key);
+        if (type === 'bool') {
+            var row = el('div', 'lab-checkrow');
+            var cb = el('input', 'b-check');
+            cb.type = 'checkbox';
+            cb.id = uid;
+            var lb = el('label', 'b-label', labelText);
+            lb.setAttribute('for', uid);
+            row.appendChild(cb);
+            row.appendChild(lb);
+            return { node: row, get: function () { return { value: !!cb.checked, isBool: true }; } };
+        }
+        if (type === 'rows') {
+            var holder = el('div', 'b-field');
+            holder.appendChild(el('span', 'b-label', labelText));
+            var sub = labRowsEditor({
+                keys: ((f.sub_keys || {})[key]) || [],
+                key_types: ((f.key_sub_types || {})[key]) || {},
+                key_labels: f.key_labels || {}
+            }, uid);
+            holder.appendChild(sub.node);
+            return { node: holder, get: sub.get };
+        }
+        var wrap = el('div', 'b-field');
+        var lb2 = el('label', 'b-label', labelText);
+        lb2.setAttribute('for', uid);
+        var input;
+        if (type === 'lines' || type === 'textarea') {
+            input = el('textarea', 'b-textarea');
+            input.rows = type === 'lines' ? 2 : 3;
+        } else {
+            input = el('input', 'b-input');
+            input.type = type === 'number' ? 'number' : 'text';
+            if (type === 'number') input.inputMode = 'decimal';
+        }
+        input.id = uid;
+        wrap.appendChild(lb2);
+        wrap.appendChild(input);
+        if (type === 'lines') {
+            wrap.appendChild(el('small', 'lab-hint', 'One per line.'));
+        }
+        return { node: wrap, get: function () {
+            if (type === 'lines') {
+                var items = input.value.split('\n').map(function (s) { return s.trim(); })
+                    .filter(function (s) { return s.length > 0; });
+                return items.length ? { value: items } : { empty: true };
+            }
+            return labCoerce(input.value, type);
+        } };
+    }
+
+    /* Repeatable rows for an array of objects. spec: {keys, key_types,
+       key_labels, sub_keys, key_sub_types}. get() -> {value:[...]}. */
+    function labRowsEditor(spec, uid) {
+        var box = el('div', 'lab-rows');
+        var rows = [];
+        function renumber() {
+            rows.forEach(function (r, i) {
+                var t = r.node.querySelector('.lab-row-title');
+                if (t) t.textContent = 'Item ' + (i + 1);
+            });
+        }
+        function addRow() {
+            var idx = rows.length;
+            var rowBox = el('div', 'lab-row');
+            var head = el('div', 'lab-row-head');
+            head.appendChild(el('span', 'lab-row-title', 'Item ' + (idx + 1)));
+            var del = el('button', 'b-btn b-btn--sm b-btn--ghost', 'Remove');
+            del.type = 'button';
+            head.appendChild(del);
+            rowBox.appendChild(head);
+            var grid = el('div', 'lab-subgrid');
+            var controls = spec.keys.map(function (k, ki) {
+                var c = labKeyControl(spec, k, uid + '-r' + idx + 'k' + ki);
+                grid.appendChild(c.node);
+                return { key: k, get: c.get };
+            });
+            rowBox.appendChild(grid);
+            var entry = { node: rowBox, controls: controls };
+            del.addEventListener('click', function () {
+                box.removeChild(rowBox);
+                rows.splice(rows.indexOf(entry), 1);
+                renumber();
+            });
+            rows.push(entry);
+            box.appendChild(rowBox);
+            renumber();
+        }
+        var wrap = el('div');
+        wrap.appendChild(box);
+        var addBtn = el('button', 'b-btn b-btn--sm lab-addrow', 'Add item');
+        addBtn.type = 'button';
+        addBtn.addEventListener('click', addRow);
+        wrap.appendChild(addBtn);
+        addRow();
+        return { node: wrap, get: function () {
+            var items = [];
+            for (var i = 0; i < rows.length; i++) {
+                var obj = {}, bools = [], filled = false;
+                for (var j = 0; j < rows[i].controls.length; j++) {
+                    var c = rows[i].controls[j];
+                    var r = c.get();
+                    if (r.error) return { error: labKeyLabel(spec, c.key) + ' ' + r.error };
+                    if (r.isBool) { bools.push({ key: c.key, value: r.value }); continue; }
+                    if (r.empty) continue;
+                    obj[c.key] = r.value;
+                    filled = true;
+                }
+                bools.forEach(function (b) {
+                    if (b.value || filled) { obj[b.key] = b.value; filled = filled || b.value; }
+                });
+                if (filled) items.push(obj);
+            }
+            return items.length ? { value: items } : { empty: true };
+        } };
+    }
+
+    /* Per-key inputs for a single object field. */
+    function labObjectEditor(f, uid) {
+        var box = el('div', 'lab-fieldset');
+        var controls = f.keys.map(function (k, i) {
+            var c = labKeyControl(f, k, uid + '-k' + i);
+            box.appendChild(c.node);
+            return { key: k, get: c.get };
+        });
+        return { node: box, get: function () {
+            var obj = {}, filled = false;
+            for (var i = 0; i < controls.length; i++) {
+                var r = controls[i].get();
+                if (r.error) return { error: labKeyLabel(f, controls[i].key) + ' ' + r.error };
+                if (r.isBool) { obj[controls[i].key] = r.value; filled = true; continue; }
+                if (r.empty) continue;
+                obj[controls[i].key] = r.value;
+                filled = true;
+            }
+            return filled ? { value: obj } : { empty: true };
+        } };
+    }
+
+    /* (name, value) rows for a dynamic-key dict: {dimension: score}. */
+    function labPairsEditor(f, uid) {
+        var box = el('div', 'lab-rows');
+        var rows = [];
+        function addRow() {
+            var rowBox = el('div', 'lab-row');
+            var grid = el('div', 'lab-subgrid');
+            var kInput = el('input', 'b-input');
+            kInput.type = 'text';
+            kInput.placeholder = f.key_label || 'Name';
+            kInput.setAttribute('aria-label', f.key_label || 'Name');
+            var vInput = el('input', 'b-input');
+            var vt = f.value_kind === 'number' ? 'number' : 'text';
+            vInput.type = vt;
+            if (vt === 'number') vInput.inputMode = 'decimal';
+            vInput.placeholder = f.value_label || 'Value';
+            vInput.setAttribute('aria-label', f.value_label || 'Value');
+            var kWrap = el('div', 'b-field');
+            kWrap.appendChild(kInput);
+            var vWrap = el('div', 'b-field');
+            vWrap.appendChild(vInput);
+            grid.appendChild(kWrap);
+            grid.appendChild(vWrap);
+            rowBox.appendChild(grid);
+            var del = el('button', 'b-btn b-btn--sm b-btn--ghost lab-addrow', 'Remove');
+            del.type = 'button';
+            var entry = { k: kInput, v: vInput, node: rowBox };
+            del.addEventListener('click', function () {
+                box.removeChild(rowBox);
+                rows.splice(rows.indexOf(entry), 1);
+            });
+            rowBox.appendChild(del);
+            rows.push(entry);
+            box.appendChild(rowBox);
+        }
+        var wrap = el('div');
+        wrap.appendChild(box);
+        var addBtn = el('button', 'b-btn b-btn--sm lab-addrow', 'Add row');
+        addBtn.type = 'button';
+        addBtn.addEventListener('click', addRow);
+        wrap.appendChild(addBtn);
+        addRow();
+        return { node: wrap, get: function () {
+            var obj = {}, filled = false;
+            for (var i = 0; i < rows.length; i++) {
+                var k = rows[i].k.value.trim();
+                if (!k) continue;
+                var r = labCoerce(rows[i].v.value, f.value_kind === 'number' ? 'number' : 'text');
+                if (r.error) return { error: (f.value_label || 'Value') + ' for "' + k + '" ' + r.error };
+                if (r.empty) continue;
+                obj[k] = r.value;
+                filled = true;
+            }
+            return filled ? { value: obj } : { empty: true };
+        } };
+    }
+
+    /* {month, dimensions: {name: {score, evidence}}} for the health report. */
+    function labReviewEditor(f, uid) {
+        var wrap = el('div');
+        var mWrap = el('div', 'b-field');
+        var mLabel = el('label', 'b-label', 'Month (optional)');
+        mLabel.setAttribute('for', uid + '-month');
+        var mInput = el('input', 'b-input');
+        mInput.type = 'text';
+        mInput.id = uid + '-month';
+        mInput.placeholder = 'e.g. October 2026';
+        mWrap.appendChild(mLabel);
+        mWrap.appendChild(mInput);
+        wrap.appendChild(mWrap);
+        wrap.appendChild(el('span', 'b-label', 'Dimensions'));
+        var editor = labRowsEditor({
+            keys: ['dimension', 'score', 'evidence'],
+            key_types: { score: 'number', evidence: 'textarea' },
+            key_labels: { dimension: 'Dimension', score: 'Score', evidence: 'Evidence' }
+        }, uid + '-dim');
+        wrap.appendChild(editor.node);
+        return { node: wrap, get: function () {
+            var r = editor.get();
+            if (r.error) return r;
+            var dims = {};
+            (r.value || []).forEach(function (row) {
+                if (!row.dimension) return;
+                var inner = {};
+                if (row.score !== undefined) inner.score = row.score;
+                if (row.evidence !== undefined) inner.evidence = row.evidence;
+                dims[String(row.dimension)] = inner;
+            });
+            if (!Object.keys(dims).length) return { empty: true };
+            var out = { dimensions: dims };
+            var month = mInput.value.trim();
+            if (month) out.month = month;
+            return { value: out };
+        } };
+    }
+
+    /* Rows compose modes: array (default), kvlist ([{k: v}, ...]),
+       kvdict ({row[dict_key]: {rest...}}). */
+    function labComposeRows(items, f) {
+        var mode = f.compose || 'array';
+        if (mode === 'kvlist') {
+            var k0 = f.keys[0], k1 = f.keys[1];
+            return items.map(function (o) {
+                var d = {};
+                d[o[k0]] = o[k1];
+                return d;
+            });
+        }
+        if (mode === 'kvdict') {
+            var dk = f.dict_key || f.keys[0];
+            var out = {};
+            items.forEach(function (o) {
+                var name = o[dk];
+                if (name === undefined || name === null || String(name).trim() === '') return;
+                var inner = {};
+                Object.keys(o).forEach(function (k) { if (k !== dk) inner[k] = o[k]; });
+                out[String(name)] = inner;
+            });
+            return out;
+        }
+        return items;
+    }
+
+    function labFinishField(wrap, f) {
+        wrap.dataset.fieldName = f.name || '';
+        wrap.dataset.fieldRequired = f.required ? '1' : '';
+        return wrap;
+    }
+
     function buildForm(tool, formWrap, resultBox, toggle) {
         var form = (tool.form && Array.isArray(tool.form.fields)) ? tool.form : legacyToForm(tool);
         var fields = form.fields;
@@ -421,6 +752,48 @@
             if (f.default !== undefined && f.default !== null) input.value = String(f.default);
             wrap.appendChild(label);
             wrap.appendChild(input);
+        } else if ((kind === 'object' && Array.isArray(f.keys) && f.keys.length) ||
+                   (kind === 'json' && Array.isArray(f.keys) && f.keys.length && !labIsArray(f))) {
+            /* Single object: one typed input per key. */
+            wrap.appendChild(label);
+            var oe = labObjectEditor(f, 'lab-' + labUid() + '-' + (f.name || 'f'));
+            wrap.appendChild(oe.node);
+            if (f.hint) wrap.appendChild(el('small', 'lab-hint', f.hint));
+            wrap.dataset.fieldKind = 'objectkeys';
+            wrap._getValue = oe.get;
+            return labFinishField(wrap, f);
+        } else if (kind === 'rows' ||
+                   (kind === 'json' && Array.isArray(f.keys) && f.keys.length && labIsArray(f))) {
+            /* Array of objects: repeatable rows, composed on submit. */
+            wrap.appendChild(label);
+            var re = labRowsEditor(f, 'lab-' + labUid() + '-' + (f.name || 'f'));
+            wrap.appendChild(re.node);
+            if (f.hint) wrap.appendChild(el('small', 'lab-hint', f.hint));
+            wrap.dataset.fieldKind = 'rows';
+            wrap._getValue = function () {
+                var r = re.get();
+                if (r.value) r.value = labComposeRows(r.value, f);
+                return r;
+            };
+            return labFinishField(wrap, f);
+        } else if (kind === 'pairs') {
+            /* Dynamic-key dict: (name, value) rows. */
+            wrap.appendChild(label);
+            var pe = labPairsEditor(f, 'lab-' + labUid() + '-' + (f.name || 'f'));
+            wrap.appendChild(pe.node);
+            if (f.hint) wrap.appendChild(el('small', 'lab-hint', f.hint));
+            wrap.dataset.fieldKind = 'pairs';
+            wrap._getValue = pe.get;
+            return labFinishField(wrap, f);
+        } else if (kind === 'reviewmap') {
+            /* Health review: month + per-dimension rows. */
+            wrap.appendChild(label);
+            var ve = labReviewEditor(f, 'lab-' + labUid() + '-' + (f.name || 'f'));
+            wrap.appendChild(ve.node);
+            if (f.hint) wrap.appendChild(el('small', 'lab-hint', f.hint));
+            wrap.dataset.fieldKind = 'reviewmap';
+            wrap._getValue = ve.get;
+            return labFinishField(wrap, f);
         } else if (kind === 'text' || kind === 'lines' || kind === 'object' || kind === 'json') {
             input = el('textarea', 'b-textarea');
             input.rows = (kind === 'object' || kind === 'json') ? 6 : (kind === 'lines' ? 3 : 4);
@@ -498,6 +871,22 @@
             var name = node.dataset.fieldName;
             var kind = node.dataset.fieldKind || 'string';
             var required = node.dataset.fieldRequired === '1';
+            if (node._getValue) {
+                /* Structured control (Eval 3): composed value, same
+                   shape the hand-written JSON produced. */
+                var cr = node._getValue();
+                if (cr.error) {
+                    return { error: 'Field "' + name + '": ' + cr.error };
+                }
+                if (cr.empty) {
+                    if (required) {
+                        return { error: 'Required field "' + name + '" needs at least one entry.' };
+                    }
+                    continue;
+                }
+                values[name] = cr.value;
+                continue;
+            }
             var input = node.querySelector('input, textarea, select');
             if (!input || !name) continue;
 

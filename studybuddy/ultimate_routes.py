@@ -101,6 +101,250 @@ def _example_for(kind, keys):
     return None
 
 
+def _normalize_keys(keys):
+    """Turn label-documented key spellings into real payload keys.
+
+    Labels document alternates as ``stage/name`` (either key is read by
+    the backend; the first is canonical) and optionals as ``weeks?``.
+    The renderer needs the canonical key plus a human label — keeping
+    the raw spelling would emit keys the handler never reads.
+    """
+    out_keys, labels = [], {}
+    for raw in keys:
+        optional = raw.endswith("?")
+        base = raw[:-1] if optional else raw
+        if "/" in base:
+            parts = [p.strip() for p in base.split("/") if p.strip()]
+            key = parts[0]
+            label = " / ".join(
+                p.replace("_", " ").strip().capitalize() for p in parts)
+        else:
+            key = base
+            label = _humanize(base)
+        if optional:
+            label += " (optional)"
+        if key and key not in out_keys:
+            out_keys.append(key)
+        labels[key] = label
+    return out_keys, labels
+
+
+# ---------------------------------------------------------------------------
+# Eval 3 (Labs UX forms): curated field shapes.
+#
+# The generic derivation covers every tool, but a handful of fields are
+# shape-opaque to it (free-form JsonValue/JsonObject with no key hints in
+# the label, or keys whose value types the label cannot express). For
+# those, the real shape is curated here from what the backend handler
+# actually reads (see the handler docstrings), so the Lab page renders
+# typed controls instead of a raw-JSON textarea. Overrides only refine
+# presentation — payload keys and wire shapes are unchanged, and the
+# JSON submit path keeps working.
+# ---------------------------------------------------------------------------
+
+_FIELD_OVERRIDES_CACHE = None
+
+
+def _field_overrides():
+    """(tool_id, field_name) -> field-entry refinements. Memoized."""
+    global _FIELD_OVERRIDES_CACHE
+    if _FIELD_OVERRIDES_CACHE is not None:
+        return _FIELD_OVERRIDES_CACHE
+    # Label sources for fixed-key dict fields (imported lazily: this
+    # module must not import backends at top level per monolith-split).
+    from studybuddy.communication_coach import _VIDEO_CHECKS
+    from studybuddy.peer_mocks import _RUBRIC_DIMS
+
+    _JD_REPORT_HINT = ("Paste the Result JSON from the JD-Match Scoring "
+                       "tool — run it first, then use its Copy result button.")
+    _JD_REPORT_EXAMPLE = json.dumps(
+        {"score": 0, "matched_skills": [], "missing_skills": [],
+         "missing_keywords": []}, indent=2)
+    _CARD_KEYS = ["id", "question", "answer"]
+    _CARD_TYPES = {"question": "textarea", "answer": "textarea"}
+    _PAPER_KEYS = ["title", "abstract", "link"]
+    _PAPER_TYPES = {"abstract": "textarea"}
+
+    _FIELD_OVERRIDES_CACHE = {
+        # --- ATS report: a nested dict produced by another tool; the
+        # honest control is a guided JSON textarea with a real skeleton.
+        ("jd/prescreen", "report"): {
+            "hint": _JD_REPORT_HINT, "example": _JD_REPORT_EXAMPLE},
+        ("jd/keyword-plan", "report"): {
+            "hint": _JD_REPORT_HINT, "example": _JD_REPORT_EXAMPLE},
+        ("jd/offer-odds", "report"): {
+            "hint": _JD_REPORT_HINT, "example": _JD_REPORT_EXAMPLE},
+        # Optional[int] renders as kind "json" (Union annotation); the
+        # handler does int(applicants_estimate), so a number input is right.
+        ("jd/offer-odds", "applicants_estimate"): {
+            "kind": "integer",
+            "hint": "Rough applicant count (optional)."},
+        # --- Arrays of strings -> one-per-line, no JSON needed.
+        ("gaps/feasibility", "skills"): {"kind": "lines"},
+        ("arxiv/reading-queue", "interests"): {"kind": "lines"},
+        ("trending/personalized-feed", "skills"): {"kind": "lines"},
+        ("trending/weekly-digest", "skills"): {"kind": "lines"},
+        ("opportunities/fit-score", "skills"): {"kind": "lines"},
+        # --- Arrays of objects -> repeatable rows.
+        ("roadmaps/weekly-planner", "roadmap_stages"): {
+            "kind": "rows", "keys": ["stage", "weeks", "project"],
+            "key_labels": {"stage": "Stage", "weeks": "Weeks",
+                           "project": "Project (optional)"},
+            "key_types": {"weeks": "number"}},
+        ("trending/personalized-feed", "papers"): {
+            "kind": "rows", "keys": _PAPER_KEYS, "key_types": _PAPER_TYPES},
+        ("trending/weekly-digest", "papers"): {
+            "kind": "rows", "keys": _PAPER_KEYS, "key_types": _PAPER_TYPES},
+        ("opportunities/deadline-alerts", "opportunities"): {
+            "kind": "rows",
+            "keys": ["title", "organization", "days_left", "link"],
+            "key_types": {"days_left": "number"},
+            "hint": "One row per opportunity; days_left drives the buckets."},
+        ("flashcards/exam-sprint", "cards"): {
+            "kind": "rows", "keys": _CARD_KEYS, "key_types": _CARD_TYPES},
+        ("flashcards/weak-card-loop", "cards"): {
+            "kind": "rows", "keys": _CARD_KEYS, "key_types": _CARD_TYPES},
+        # {card_id: {wrong, right}} -> rows composed into the nested dict.
+        ("flashcards/weak-card-loop", "card_stats"): {
+            "kind": "rows", "keys": ["card_id", "wrong", "right"],
+            "key_labels": {"card_id": "Card id", "wrong": "Wrong",
+                           "right": "Right"},
+            "key_types": {"wrong": "number", "right": "number"},
+            "compose": "kvdict", "dict_key": "card_id",
+            "hint": "One row per card: how many times you got it wrong/right."},
+        # [{dimension: score}] -> one (dimension, score) row per peer score.
+        ("health/peer-benchmarks", "peer_scores"): {
+            "kind": "rows", "keys": ["dimension", "score"],
+            "key_types": {"score": "number"}, "compose": "kvlist",
+            "hint": "One row per peer score entry."},
+        # --- Single objects -> per-key inputs.
+        ("pdfqa/verify-citations", "answer_dict"): {
+            "kind": "object", "keys": ["answer"],
+            "key_types": {"answer": "textarea"}},
+        ("opportunities/fit-score", "opportunity"): {
+            "kind": "object", "keys": ["title", "eligibility", "type"],
+            "key_types": {"eligibility": "textarea"}},
+        # --- Dynamic-key dicts -> (name, value) rows, no JSON.
+        ("health/action-nudges", "current_scores"): {
+            "kind": "pairs", "key_label": "Dimension",
+            "value_label": "Score (0-100)", "value_kind": "number",
+            "hint": "e.g. applications, interview_prep, learning, networking"},
+        ("health/action-nudges", "previous_scores"): {
+            "kind": "pairs", "key_label": "Dimension",
+            "value_label": "Last month's score", "value_kind": "number"},
+        ("health/peer-benchmarks", "my_scores"): {
+            "kind": "pairs", "key_label": "Dimension",
+            "value_label": "My score", "value_kind": "number"},
+        # {month, dimensions: {name: {score, evidence}}} -> month + rows.
+        ("health/monthly-report", "review"): {"kind": "reviewmap"},
+        # Fixed-key dicts with known labels -> per-key typed inputs.
+        ("coach/video-presence", "self_scores"): {
+            "keys": [cid for cid, _, _ in _VIDEO_CHECKS],
+            "key_labels": {cid: label for cid, label, _ in _VIDEO_CHECKS},
+            "key_types": {cid: "bool" for cid, _, _ in _VIDEO_CHECKS},
+            "hint": "Tick each check you can honestly claim."},
+        ("peermocks/score-rubric", "scores"): {
+            "keys": [d for d, _, _ in _RUBRIC_DIMS],
+            "key_labels": {d: label for d, label, _ in _RUBRIC_DIMS},
+            "key_types": {d: "number" for d, _, _ in _RUBRIC_DIMS},
+            "hint": "Score each dimension 1-5."},
+    }
+    return _FIELD_OVERRIDES_CACHE
+
+
+# Per-key presentation refinements for generically-derived fields:
+# (tool_id, field_name) -> {"key_types": {key: type}, "key_labels": {...},
+# "keys": [...], "sub_keys": {...}, "key_sub_types": {...}}.
+# Key types: text | textarea | number | bool | lines | rows.
+_KEY_OVERRIDES = {
+    ("pdfqa/answer-across-docs", "docs"): {
+        "key_types": {"chunks": "lines"}},
+    ("pdfqa/qa-to-notes", "qa_pairs"): {
+        "key_types": {"question": "textarea", "answer": "textarea",
+                      "citations": "lines"}},
+    ("peermocks/match-partners", "users"): {
+        "key_types": {"strengths": "lines", "weaknesses": "lines"}},
+    ("mentors/prep-packet", "mentee"): {
+        "key_types": {"goals": "lines"}},
+    ("mentors/async-qa-digest", "questions"): {
+        "key_types": {"question": "textarea"}},
+    ("citations/in-text", "meta"): {
+        "key_types": {"authors": "lines"}},
+    ("assessment/roadmap", "cluster"): {
+        "key_types": {"skills": "lines"}},
+    ("portfolio/case-study", "project"): {
+        "key_types": {"description": "textarea", "tech": "lines"}},
+    ("portfolio/recruiter-preview", "portfolio"): {
+        "key_types": {"skills": "lines", "projects": "rows"},
+        "sub_keys": {"projects": ["title", "description", "demo_link"]},
+        "key_sub_types": {"projects": {"description": "textarea"}}},
+    ("assessment/delta", "old_results"): {
+        "key_types": {"match": "number"}},
+    ("assessment/delta", "new_results"): {
+        "key_types": {"match": "number"}},
+    ("quizzes/leaderboard", "entries"): {
+        "key_types": {"score_pct": "number", "quizzes_taken": "number"}},
+    ("quizzes/weakness-drill", "past_results"): {
+        "keys": ["topic", "correct"],
+        "key_labels": {"topic": "Topic (or question id)",
+                       "correct": "Answered correctly"},
+        "key_types": {"correct": "bool"}},
+    ("retro/track-experiment", "variants"): {
+        "key_types": {"sent": "number", "callbacks": "number"}},
+    ("retro/pattern-alerts", "retrospectives"): {
+        "key_types": {"notes": "textarea", "feedback": "textarea"}},
+    ("retro/win-library", "wins"): {
+        "key_types": {"what_worked": "textarea", "context": "textarea"}},
+    ("mock/redo-tracker", "attempts"): {
+        "key_types": {"score": "number"}},
+    ("dsa/spaced-repetition", "mistakes"): {
+        "key_types": {"streak": "number"}},
+    ("flashcards/anki-export", "cards"): {
+        "key_types": {"question": "textarea", "answer": "textarea"}},
+    ("arxiv/reading-queue", "papers"): {
+        "key_types": {"year": "number", "abstract": "textarea"}},
+    ("litreview/cluster", "papers"): {
+        "key_types": {"abstract": "textarea"}},
+    ("litreview/gap-highlight", "papers"): {
+        "key_types": {"abstract": "textarea"}},
+    ("gaps/trend-crosscheck", "trending_papers"): {
+        "key_types": {"abstract": "textarea"}},
+    ("trending/paper-to-projects", "paper"): {
+        "key_types": {"abstract": "textarea"}},
+    ("github/pin-optimizer", "repos"): {
+        "key_types": {"description": "textarea", "stars": "number",
+                      "topics": "lines"}},
+    ("tracker/compare-offers", "offers"): {
+        "key_types": {"base_lpa": "number"}},
+    ("momentum/squad-leaderboard", "members"): {
+        "key_types": {"weekly_xp": "number"}},
+    ("roadmaps/project-milestones", "roadmap_stages"): {
+        "key_types": {"weeks": "number"}},
+    ("star/story-bank", "stories"): {
+        "key_types": {"text": "textarea", "competencies": "lines"}},
+}
+
+
+def _apply_form_overrides(tool_id, fields):
+    """Merge curated shapes into the generically-derived field entries."""
+    field_ov = _field_overrides()
+    for f in fields:
+        key = (tool_id, f["name"])
+        if key in field_ov:
+            f.update(field_ov[key])
+        if key in _KEY_OVERRIDES:
+            ov = _KEY_OVERRIDES[key]
+            if "keys" in ov:
+                f["keys"] = ov["keys"]
+            for map_key in ("key_types", "key_labels", "sub_keys",
+                            "key_sub_types"):
+                if map_key in ov:
+                    merged = dict(f.get(map_key) or {})
+                    merged.update(ov[map_key])
+                    f[map_key] = merged
+    return fields
+
+
 def _constraint(metadata, cls, attr):
     for m in metadata:
         if isinstance(m, cls):
@@ -186,10 +430,18 @@ def _pydantic_form_fields(model, legacy_labels):
         if kind in ("object", "json"):
             keys = _brace_keys(legacy_labels.get(name, ""))
             if keys:
-                entry["keys"] = keys
+                norm_keys, norm_labels = _normalize_keys(keys)
+                entry["keys"] = norm_keys
+                entry["key_labels"] = norm_labels
                 example = _example_for(kind, keys)
                 if example is not None:
                     entry["example"] = example
+        if kind == "json":
+            # Array-of-objects vs single-object: the label says which
+            # ("JSON array of {...}" vs "JSON object {...}"). The renderer
+            # uses this to pick repeatable rows vs a per-key fieldset.
+            entry["is_array"] = "array" in (
+                legacy_labels.get(name) or "").lower()
         extra = finfo.json_schema_extra
         if isinstance(extra, dict) and extra.get("options"):
             # Generated select fields: membership is NOT validated (legacy
@@ -216,9 +468,9 @@ def form_schema(tool):
         f["name"]: f.get("label") or ""
         for f in tool.get("fields", [])
     }
+    fields = _pydantic_form_fields(handler.input_model, legacy_labels)
     return {"source": "schema",
-            "fields": _pydantic_form_fields(handler.input_model,
-                                            legacy_labels)}
+            "fields": _apply_form_overrides(tool["id"], fields)}
 
 
 def run_tool(tool_id, payload):
