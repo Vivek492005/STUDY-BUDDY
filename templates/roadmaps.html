@@ -110,7 +110,7 @@
            activate the card by speaking its visible heading (WCAG 2.5.3).
            An aria-label that omits the visible description fails
            axe label-content-name-mismatch. #}
-        <a class="b-card b-card--feature b-reveal skill-card" data-domain="{{ s.domain }}" href="{{ url_for('roadmap_detail', skill_id=s.id) }}">
+        <a class="b-card b-card--feature b-reveal skill-card" data-domain="{{ s.domain }}" href="{{ url_for('learn.roadmap_detail', skill_id=s.id) }}">
             <span class="b-tag">{{ s.domain }}</span>
             <h3 style="margin:0;">{{ s.name }}</h3>
             <p style="color:var(--b-muted);margin:0;font-size:.9rem;">{{ s.summary }}</p>

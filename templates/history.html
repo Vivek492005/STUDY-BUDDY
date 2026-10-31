@@ -18,7 +18,7 @@
             <li><a href="{{ url_for('dsa.dsa_home') }}">DSA Practice <span>Solve</span></a></li>
             <li><a href="{{ url_for('research_home') }}">Research Hub <span>Open</span></a></li>
             <li><a href="{{ url_for('tracker_board') }}">Application Tracker <span>{{ tracker_stats.total if tracker_stats else 0 }} tracked</span></a></li>
-            <li><a href="{{ url_for('learn_hub') }}">Learn Hub <span>Open</span></a></li>
+            <li><a href="{{ url_for('learn.learn_hub') }}">Learn Hub <span>Open</span></a></li>
         </ul>
     </aside>
     <div>
@@ -295,30 +295,30 @@
 {% if learn_roadmap or quiz_attempts or cert_plans %}
 <div class="b-bento">
     {% for item in learn_roadmap[:4] %}
-    <a class="b-card b-card--lite b-reveal" href="{{ url_for('roadmaps_dashboard') }}" style="text-decoration:none;">
+    <a class="b-card b-card--lite b-reveal" href="{{ url_for('learn.roadmaps_dashboard') }}" style="text-decoration:none;">
         <div style="font-weight:600;margin-bottom:.3rem;">{{ item.skill_name }} roadmap</div>
         <div class="b-bar" style="margin:.5rem 0;"><i style="width:{{ item.pct }}%;"></i></div>
         <div style="color:var(--b-muted);font-size:.82rem;">{{ item.completed }}/{{ item.total }} stages complete</div>
     </a>
     {% endfor %}
     {% for a in quiz_attempts[:4] %}
-    <a class="b-card b-card--lite b-reveal" href="{{ url_for('view_quiz_result', attempt_id=a.id) }}" style="text-decoration:none;">
+    <a class="b-card b-card--lite b-reveal" href="{{ url_for('learn.view_quiz_result', attempt_id=a.id) }}" style="text-decoration:none;">
         <div style="font-weight:600;margin-bottom:.3rem;">{{ a.skill|replace('-',' ')|title }} quiz — {{ (a.summary_json.pct if a.summary_json else 0) }}%</div>
         <div style="color:var(--b-muted);font-size:.82rem;">{{ (a.summary_json.score if a.summary_json else 0) }}/{{ a.num_questions }} correct{% if a.timed %} · timed{% endif %}</div>
         <div style="color:var(--b-muted);font-size:.82rem;">{{ a.submitted_at.strftime('%d %b %Y, %I:%M %p') if a.submitted_at else '' }}</div>
     </a>
     {% endfor %}
     {% for p in cert_plans[:4] %}
-    <a class="b-card b-card--lite b-reveal" href="{{ url_for('certs_plans') }}" style="text-decoration:none;">
+    <a class="b-card b-card--lite b-reveal" href="{{ url_for('learn.certs_plans') }}" style="text-decoration:none;">
         <div style="font-weight:600;margin-bottom:.3rem;">{{ cert_names.get(p.cert_id, p.cert_id) }}</div>
         <div style="color:var(--b-muted);font-size:.82rem;">{{ p.weeks }}-week study plan</div>
         <div style="color:var(--b-muted);font-size:.82rem;">{{ p.created_at.strftime('%d %b %Y') }}</div>
     </a>
     {% endfor %}
 </div>
-<div style="margin-top:1rem;"><a class="b-btn b-btn--ghost b-btn--sm" href="{{ url_for('learn_hub') }}">Open the Learn hub</a></div>
+<div style="margin-top:1rem;"><a class="b-btn b-btn--ghost b-btn--sm" href="{{ url_for('learn.learn_hub') }}">Open the Learn hub</a></div>
 {% else %}
-<div class="b-card b-reveal"><p style="color:var(--b-muted);">Nothing here yet. <a href="{{ url_for('learn_hub') }}" style="color:var(--b-a3);">Start learning</a> — roadmaps, quizzes, and certifications will show up here.</p></div>
+<div class="b-card b-reveal"><p style="color:var(--b-muted);">Nothing here yet. <a href="{{ url_for('learn.learn_hub') }}" style="color:var(--b-a3);">Start learning</a> — roadmaps, quizzes, and certifications will show up here.</p></div>
 {% endif %}
 
 <div class="b-sec-head b-reveal" style="margin-top:2.5rem;">

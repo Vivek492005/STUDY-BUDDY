@@ -89,7 +89,7 @@
         </div>
         <button class="b-btn b-btn--primary b-magnet" id="quiz-start" {% if not is_authed %}disabled title="Sign in to take a quiz"{% endif %}>Start quiz</button>
         <button class="b-btn b-btn--ghost b-magnet" id="quiz-drill" {% if not is_authed %}disabled title="Sign in to drill weak topics"{% endif %}>Drill weak topics</button>
-        {% if is_authed %}<a class="b-btn b-btn--ghost" href="{{ url_for('quizzes_mistakes') }}">Review mistakes</a>{% endif %}
+        {% if is_authed %}<a class="b-btn b-btn--ghost" href="{{ url_for('learn.quizzes_mistakes') }}">Review mistakes</a>{% endif %}
         <span id="quiz-status" role="status" style="margin-left:1rem;color:var(--b-muted);"></span>
     </div>
 </section>
@@ -143,7 +143,7 @@
         {% endfor %}
     </div>
     {% if is_authed %}
-    <div style="margin-top:1.4rem;"><a class="b-btn b-btn--ghost" href="{{ url_for('quizzes_history') }}">View quiz history</a></div>
+    <div style="margin-top:1.4rem;"><a class="b-btn b-btn--ghost" href="{{ url_for('learn.quizzes_history') }}">View quiz history</a></div>
     {% endif %}
 </section>
 {% endblock %}

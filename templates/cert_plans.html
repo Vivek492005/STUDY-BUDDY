@@ -19,7 +19,7 @@
     {% set plan = p.plan_json or {} %}
     <div class="b-card b-reveal" style="margin-bottom:1.2rem;">
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:.8rem;flex-wrap:wrap;">
-            <h3 style="margin:0;"><a href="{{ url_for('cert_detail', cert_id=p.cert_id) }}">{{ cert_names.get(p.cert_id, p.cert_id) }}</a></h3>
+            <h3 style="margin:0;"><a href="{{ url_for('learn.cert_detail', cert_id=p.cert_id) }}">{{ cert_names.get(p.cert_id, p.cert_id) }}</a></h3>
             <span class="b-tag">{{ p.weeks }} weeks &middot; saved {{ p.created_at.strftime('%d %b %Y') }}</span>
         </div>
         <details style="margin-top:.8rem;">
@@ -46,7 +46,7 @@
     <div class="b-card b-card--cta b-reveal">
         <h2>No study plans <span class="b-grad">yet</span></h2>
         <p class="b-lede" style="margin-left:auto;margin-right:auto;">Open any certification and generate a week-by-week plan — it will be saved here.</p>
-        <a class="b-btn b-btn--primary b-magnet" href="{{ url_for('certs_home') }}">Browse certifications</a>
+        <a class="b-btn b-btn--primary b-magnet" href="{{ url_for('learn.certs_home') }}">Browse certifications</a>
     </div>
     {% endif %}
 </section>

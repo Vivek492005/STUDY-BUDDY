@@ -7,7 +7,7 @@
 {% block content %}
 <section style="padding-top:2.6rem;">
     <div class="b-reveal">
-        <a href="{{ url_for('quizzes_home') }}" style="font-size:.9rem;">&larr; Back to quizzes</a>
+        <a href="{{ url_for('learn.quizzes_home') }}" style="font-size:.9rem;">&larr; Back to quizzes</a>
         <div class="b-sec-head">
             <span class="b-pill">{{ attempt.skill|replace('-',' ')|title }} &middot; {{ summary.total }} questions{% if summary.expired %} &middot; time expired{% endif %}</span>
             <h1>Quiz <span class="b-grad">report</span></h1>
@@ -39,8 +39,8 @@
         <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;">
             {% for t in summary.weak_topics %}<span class="b-tag" style="color:var(--b-warn);border-color:rgba(251,191,36,.4);">{{ t }} — {{ summary.by_topic[t].pct }}%</span>{% endfor %}
         </div>
-        <a class="b-btn b-btn--primary b-btn--sm" href="{{ url_for('quizzes_home') }}?drill={{ attempt.skill }}">Drill these weak topics</a>
-        <a class="b-btn b-btn--ghost b-btn--sm" href="{{ url_for('quizzes_mistakes') }}">Review all mistakes</a>
+        <a class="b-btn b-btn--primary b-btn--sm" href="{{ url_for('learn.quizzes_home') }}?drill={{ attempt.skill }}">Drill these weak topics</a>
+        <a class="b-btn b-btn--ghost b-btn--sm" href="{{ url_for('learn.quizzes_mistakes') }}">Review all mistakes</a>
         <a class="b-btn b-btn--ghost b-btn--sm" href="{{ summary.roadmap_url }}">Open the {{ attempt.skill|replace('-',' ')|title }} roadmap</a>
     </div>
 </section>

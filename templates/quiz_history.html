@@ -9,7 +9,7 @@
     <div class="b-sec-head b-reveal">
         <span class="b-pill"><span class="b-pulse"></span>History</span>
         <h1>Quiz <span class="b-grad">history</span></h1>
-        <p class="b-lede">Every attempt, with your best score per skill up top. Wrong answers collect in your <a href="{{ url_for('quizzes_mistakes') }}">Mistake Book</a> until you get them right.</p>
+        <p class="b-lede">Every attempt, with your best score per skill up top. Wrong answers collect in your <a href="{{ url_for('learn.quizzes_mistakes') }}">Mistake Book</a> until you get them right.</p>
     </div>
 </section>
 
@@ -32,7 +32,7 @@
     <div class="b-bento">
         {% for a in attempts %}
         {% set s = a.summary_json or {} %}
-        <a class="b-card b-card--lite b-reveal" href="{{ url_for('view_quiz_result', attempt_id=a.id) }}">
+        <a class="b-card b-card--lite b-reveal" href="{{ url_for('learn.view_quiz_result', attempt_id=a.id) }}">
             <div style="display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;">
                 <h3 style="margin:0;">{{ a.skill|replace('-',' ')|title }}</h3>
                 <span class="b-tag">{{ s.get('pct', 0) }}%</span>
@@ -49,7 +49,7 @@
     <div class="b-card b-card--cta b-reveal">
         <h2>No quizzes <span class="b-grad">yet</span></h2>
         <p class="b-lede" style="margin-left:auto;margin-right:auto;">Take your first quiz and your history will appear here.</p>
-        <a class="b-btn b-btn--primary b-magnet" href="{{ url_for('quizzes_home') }}">Start a quiz</a>
+        <a class="b-btn b-btn--primary b-magnet" href="{{ url_for('learn.quizzes_home') }}">Start a quiz</a>
     </div>
     {% endif %}
 </section>

@@ -25,8 +25,8 @@
 <section class="b-section" style="padding-top:0;" aria-label="Mistakes in {{ group.skill }}">
     <div class="b-sec-head" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
         <h2 style="margin:0;">{{ group.skill|replace('-',' ')|title }} <span class="b-grad">· {{ group.mistakes|length }}</span></h2>
-        <a class="b-btn b-btn--primary b-btn--sm" href="{{ url_for('quizzes_home') }}?drill={{ group.skill }}">Drill weak topics</a>
-        <a class="b-btn b-btn--ghost b-btn--sm" href="{{ url_for('roadmap_detail', skill_id=group.skill) }}">Open the roadmap</a>
+        <a class="b-btn b-btn--primary b-btn--sm" href="{{ url_for('learn.quizzes_home') }}?drill={{ group.skill }}">Drill weak topics</a>
+        <a class="b-btn b-btn--ghost b-btn--sm" href="{{ url_for('learn.roadmap_detail', skill_id=group.skill) }}">Open the roadmap</a>
     </div>
     <div style="display:grid;gap:1rem;">
         {% for m in group.mistakes %}
@@ -52,7 +52,7 @@
     <div class="b-card b-reveal">
         <h2 style="margin-top:0;">No open mistakes</h2>
         <p style="color:var(--b-muted);">Either you haven't submitted a quiz yet, or everything you've answered lately is correct. Take a quiz and any slip will land here for review.</p>
-        <a class="b-btn b-btn--primary" href="{{ url_for('quizzes_home') }}">Take a skill quiz</a>
+        <a class="b-btn b-btn--primary" href="{{ url_for('learn.quizzes_home') }}">Take a skill quiz</a>
     </div>
 </section>
 {% endif %}

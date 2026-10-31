@@ -40,19 +40,19 @@
 <section class="sb-learn" style="padding-top:2.8rem;" aria-label="Continue learning">
     <h2 class="sb-learn-h2">Continue where you left off</h2>
     <div class="sb-tool-grid">
-        <a class="sb-tool sb-reveal" href="{{ url_for('roadmaps_dashboard') }}">
+        <a class="sb-tool sb-reveal" href="{{ url_for('learn.roadmaps_dashboard') }}">
             <span class="sb-tool-num">Roadmaps</span>
             <span class="sb-tool-title">{{ cont.stages_done }}/{{ cont.stages_total }} stages done</span>
             <p>{% if cont.next_skill %}Next up: {{ cont.next_skill.skill_name }} — {{ cont.next_skill.completed }}/{{ cont.next_skill.total }} stages complete.{% elif cont.skills_started %}Every started roadmap is complete. Pick a new skill below.{% else %}You haven't started a roadmap yet — the gap analyzer takes two minutes.{% endif %}</p>
             <span class="sb-tool-link">Open my dashboard →</span>
         </a>
-        <a class="sb-tool sb-reveal" href="{{ url_for('quizzes_history') }}">
+        <a class="sb-tool sb-reveal" href="{{ url_for('learn.quizzes_history') }}">
             <span class="sb-tool-num">Quizzes</span>
             <span class="sb-tool-title">{% if cont.best_skill %}Best: {{ cont.best_pct }}%{% else %}No quizzes yet{% endif %}</span>
             <p>{{ cont.quizzes_taken }} quiz{{ 'zes' if cont.quizzes_taken != 1 }} submitted{% if cont.best_skill %}, strongest in {{ cont.best_skill|replace('-',' ')|title }}{% endif %}.{% if cont.open_mistakes %} {{ cont.open_mistakes }} open mistake{{ 's' if cont.open_mistakes != 1 }} waiting in your Mistake Book.{% endif %}</p>
             <span class="sb-tool-link">{% if cont.open_mistakes %}Review mistakes →{% else %}Quiz history →{% endif %}</span>
         </a>
-        <a class="sb-tool sb-reveal" href="{{ url_for('certs_plans') }}">
+        <a class="sb-tool sb-reveal" href="{{ url_for('learn.certs_plans') }}">
             <span class="sb-tool-num">Certifications</span>
             <span class="sb-tool-title">{{ cont.cert_plans }} study plan{{ 's' if cont.cert_plans != 1 }} saved</span>
             <p>{% if cont.cert_plans %}Pick up your week-by-week plan where you left it.{% else %}No plan yet — get a ranked cert recommendation for your role and budget.{% endif %}</p>
@@ -66,26 +66,26 @@
     <h2 class="sb-learn-h2">Three ways to level up</h2>
     <p class="sb-learn-sub">Pick a track — they connect with each other.</p>
     <div class="sb-tool-grid">
-        <a class="sb-tool sb-reveal" href="{{ url_for('roadmaps_home') }}">
+        <a class="sb-tool sb-reveal" href="{{ url_for('learn.roadmaps_home') }}">
             <span class="sb-tool-num">01 / Roadmaps</span>
             <span class="sb-tool-title">Skill-gap<br>Roadmaps</span>
             <p>Tell us your target role and current skills — get a ranked gap report and a week-by-week learning plan built from free resources. Track your stage-by-stage progress.</p>
             <span class="sb-tool-link">Explore roadmaps →</span>
         </a>
-        <a class="sb-tool sb-reveal" href="{{ url_for('quizzes_home') }}">
+        <a class="sb-tool sb-reveal" href="{{ url_for('learn.quizzes_home') }}">
             <span class="sb-tool-num">02 / Quizzes</span>
             <span class="sb-tool-title">Skill<br>Quizzes</span>
             <p>Timed or untimed quizzes across {{ num_quiz_skills }} skills with instant explanations, topic-wise breakdowns, and weak-topic diagnosis that points back to your roadmap.</p>
             <span class="sb-tool-link">Start a quiz →</span>
         </a>
-        <a class="sb-tool sb-reveal" href="{{ url_for('certs_home') }}">
+        <a class="sb-tool sb-reveal" href="{{ url_for('learn.certs_home') }}">
             <span class="sb-tool-num">03 / Certifications</span>
             <span class="sb-tool-title">Certification<br>Guidance</span>
             <p>Which cert is actually worth your money? Get ranked recommendations by role, skills, and budget — with approximate INR costs and week-by-week study plans.</p>
             <span class="sb-tool-link">Find your cert →</span>
         </a>
         {% if is_authed %}
-        <a class="sb-tool sb-reveal" href="{{ url_for('roadmaps_dashboard') }}">
+        <a class="sb-tool sb-reveal" href="{{ url_for('learn.roadmaps_dashboard') }}">
             <span class="sb-tool-num">04 / Progress</span>
             <span class="sb-tool-title">My Learning<br>Dashboard</span>
             <p>Your roadmap stages, quiz best scores, and saved certification study plans — all in one place.</p>
@@ -113,10 +113,10 @@
 <section class="sb-learn" style="padding-top:3.5rem;" aria-label="How the tracks connect">
     <h2 class="sb-learn-h2">How it fits together</h2>
     <div class="sb-learn-steps">
-        <div class="sb-learn-step"><p><b><i>01</i>Diagnose</b> — run the skill-gap analyzer for your target role</p><a href="{{ url_for('roadmaps_home') }}">Roadmaps →</a></div>
-        <div class="sb-learn-step"><p><b><i>02</i>Learn</b> — follow the staged plan with free resources and checkpoints</p><a href="{{ url_for('roadmaps_home') }}">Roadmaps →</a></div>
-        <div class="sb-learn-step"><p><b><i>03</i>Test</b> — quiz yourself; weak topics link straight back to roadmap stages</p><a href="{{ url_for('quizzes_home') }}">Quizzes →</a></div>
-        <div class="sb-learn-step"><p><b><i>04</i>Certify</b> — when you're ready, pick the certification with the best ROI</p><a href="{{ url_for('certs_home') }}">Certs →</a></div>
+        <div class="sb-learn-step"><p><b><i>01</i>Diagnose</b> — run the skill-gap analyzer for your target role</p><a href="{{ url_for('learn.roadmaps_home') }}">Roadmaps →</a></div>
+        <div class="sb-learn-step"><p><b><i>02</i>Learn</b> — follow the staged plan with free resources and checkpoints</p><a href="{{ url_for('learn.roadmaps_home') }}">Roadmaps →</a></div>
+        <div class="sb-learn-step"><p><b><i>03</i>Test</b> — quiz yourself; weak topics link straight back to roadmap stages</p><a href="{{ url_for('learn.quizzes_home') }}">Quizzes →</a></div>
+        <div class="sb-learn-step"><p><b><i>04</i>Certify</b> — when you're ready, pick the certification with the best ROI</p><a href="{{ url_for('learn.certs_home') }}">Certs →</a></div>
     </div>
 </section>
 {% endblock %}
