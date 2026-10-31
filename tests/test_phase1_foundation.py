@@ -31,7 +31,7 @@ class TestReproducibleBuilds:
         """SEC-07 pins must be present in the compiled lockfile."""
         text = open(os.path.join(REPO, "requirements.txt")).read()
         for pkg, ver in [("flask", "3.1.3"), ("werkzeug", "3.1.9"),
-                         ("gunicorn", "26.2.0"), ("pypdf", "6.21.2")]:
+                         ("gunicorn", "26.2.0"), ("pypdf", "6.21.4")]:
             assert re.search(rf"^{pkg}=={re.escape(ver)}\b", text, re.M), \
                 f"{pkg}=={ver} missing from lockfile"
 
