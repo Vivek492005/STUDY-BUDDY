@@ -5,8 +5,10 @@ company/role/category/difficulty, each with ideal-answer key points).
 
 Rubric (per answer, 0-100, deterministic and server-side):
   - correctness / approach ........ 40 (key-point coverage, plus a bounded
-    lexical TF-IDF cosine similarity bonus — word-overlap statistics,
-    NOT embeddings; see _key_point_similarity)
+    similarity bonus — lexical TF-IDF cosine by default (word-overlap
+    statistics, NOT embeddings; see _key_point_similarity), or Gemini
+    embedding cosine when the RUBRIC_EMBEDDINGS flag is on and an embed
+    callable is passed; see _key_point_similarity_with_signal)
   - communication ................. 25
   - depth ......................... 20
   - edge cases / completeness ..... 15
@@ -25,6 +27,9 @@ import random
 import re
 from collections import Counter, defaultdict
 from typing import Any
+
+from studybuddy.rubric_embeddings import cosine_vectors
+from studybuddy.rubric_tfidf import improved_key_point_similarity
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                          "data", "interview_questions.json")
@@ -242,6 +247,55 @@ def _key_point_similarity(
     return sum(sims) / len(sims), sims
 
 
+def _key_point_similarity_with_signal(
+    key_points: list[str] | None,
+    answer: str | None,
+    embed=None,
+) -> tuple[float, list[float], str]:
+    """(mean, per-point, signal) — hybrid: API embeddings or improved TF-IDF.
+
+    ``embed`` is an optional callable ``(text) -> vector`` (from
+    studybuddy.rubric_embeddings.get_rubric_embed). Precedence per call:
+
+    1. embed provided AND at least one embedding cosine actually computed
+       -> signal "embeddings" (method "gemini").
+    2. embed provided but unavailable/failed (None, empty, raises) ->
+       improved TF-IDF fallback (studybuddy.rubric_tfidf) -> signal
+       "tfidf" (method "tfidf").
+    3. embed is None (flag off, the default) -> the LEGACY TF-IDF path
+       below is NOT used here; callers keep calling _key_point_similarity
+       directly for byte-identical output. (This function is only reached
+       with embed=None from legacy call sites that predate the flag.)
+
+    The rule is all-or-nothing per call: mixing signals inside one score
+    would make the label a lie, and a partially-embedded score would be
+    neither reproducible nor honest about what produced it.
+    """
+    if embed is not None:
+        try:
+            ans_vec = embed(answer or "")
+            if ans_vec:
+                sims: list[float] = []
+                failed = False
+                for kp in key_points or []:
+                    if not (kp or "").strip():
+                        continue  # mirrors the TF-IDF path's unusable-point skip
+                    kp_vec = embed(kp)
+                    if not kp_vec:
+                        failed = True
+                        break
+                    sims.append(round(cosine_vectors(ans_vec, kp_vec), 4))
+                if not failed and sims:
+                    return sum(sims) / len(sims), sims, "embeddings"
+        except Exception:
+            pass
+        # API unavailable or failed -> improved TF-IDF fallback (hybrid).
+        mean, sims = improved_key_point_similarity(key_points, answer)
+        return mean, sims, "tfidf"
+    mean, sims = _key_point_similarity(key_points, answer)
+    return mean, sims, "tfidf"
+
+
 def _key_point_coverage(
     key_points: list[str] | None,
     answer: str | None,
@@ -302,12 +356,22 @@ def _signal_ratio(
 def score_answer(
     question: dict[str, Any],
     answer: str | None,
+    embed=None,
 ) -> dict[str, Any]:
-    """Score one answer against the rubric. Returns a detailed dict."""
+    """Score one answer against the rubric. Returns a detailed dict.
+
+    ``embed`` is an optional callable ``(text) -> vector`` (Gemini
+    embeddings behind the RUBRIC_EMBEDDINGS flag; see
+    studybuddy.rubric_embeddings.get_rubric_embed). When it is None
+    (the default, flag off) the output is byte-identical to before this
+    feature existed. When it is passed, the output gains exactly one
+    key, "similarity_signal" ("embeddings" or "tfidf"), stating which
+    signal actually produced the similarity numbers.
+    """
     answer = (answer or "").strip()
     words = _content_words(answer)
     if not words:
-        return {
+        out: dict[str, Any] = {
             "question_id": question.get("id"),
             "scores": {"correctness": 0.0, "communication": 0.0,
                        "depth": 0.0, "edge_cases": 0.0},
@@ -321,19 +385,27 @@ def score_answer(
             "depth_signals": [],
             "edge_signals": [],
         }
+        if embed is not None:
+            out["similarity_signal"] = "tfidf"
+            out["similarity_method"] = "tfidf"
+        return out
     key_points = question.get("key_points") or []
 
     # --- correctness / approach (40) ---
     # Coverage-led: 40 * key-point word coverage, plus a bounded bonus
-    # from the lexical TF-IDF cosine similarity (NOT embeddings — see
-    # _key_point_similarity). Bonus-only is deliberate: per-point cosine
-    # between a long answer and a short key point is inherently small
-    # (length dilution — a strong test answer measured 0.04), so a
-    # subtractive blend would systematically penalize thorough answers.
-    # The bonus (max +2.0) rewards topical alignment without ever
-    # lowering a coverage-based score. Deterministic and rule-based.
+    # from the similarity signal — lexical TF-IDF cosine by default (NOT
+    # embeddings — see _key_point_similarity), or Gemini embedding cosine
+    # when an embed callable is passed (RUBRIC_EMBEDDINGS flag; see
+    # _key_point_similarity_with_signal). Bonus-only is deliberate:
+    # per-point cosine between a long answer and a short key point is
+    # inherently small (length dilution — a strong test answer measured
+    # 0.04), so a subtractive blend would systematically penalize
+    # thorough answers. The bonus (max +2.0) rewards topical alignment
+    # without ever lowering a coverage-based score. Deterministic and
+    # rule-based when embed is None.
     coverage, hits = _key_point_coverage(key_points, answer)
-    similarity, similarities = _key_point_similarity(key_points, answer)
+    similarity, similarities, signal = _key_point_similarity_with_signal(
+        key_points, answer, embed=embed)
     correctness = 40.0 * coverage + min(2.0, 8.0 * similarity)
     if len(words) < 20:
         correctness *= 0.4  # too thin to judge
@@ -366,7 +438,7 @@ def score_answer(
     edge = round(15.0 * edge_ratio, 1)
 
     total = round(min(100.0, correctness + comm + depth + edge), 1)
-    return {
+    out = {
         "question_id": question.get("id"),
         "scores": {
             "correctness": correctness,
@@ -384,6 +456,10 @@ def score_answer(
         "depth_signals": depth_found,
         "edge_signals": edge_found,
     }
+    if embed is not None:
+        out["similarity_signal"] = signal
+        out["similarity_method"] = "gemini" if signal == "embeddings" else "tfidf"
+    return out
 
 
 def generate_rule_based_feedback(

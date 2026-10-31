@@ -8,6 +8,8 @@ Feature flags let unfinished or low-supply features hide in production:
   FEATURE_LABS=0        Ultimate Lab dispatcher (/ultimate/*)
   FEATURE_PEER_MOCKS=0  peer mock interviews
   FEATURE_COMMUNITY=0   community mentors board
+  RUBRIC_EMBEDDINGS=0   interview rubric: Gemini embeddings instead of
+                        TF-IDF cosine (default OFF; TF-IDF stays default)
   LLM_MODE=off|byok|server  'off' disables all LLM calls (deterministic
                             fallbacks only); 'server' uses server keys.
 """
@@ -57,6 +59,7 @@ class AppConfig:
     feature_labs: bool = field(default=True)
     feature_peer_mocks: bool = field(default=True)
     feature_community: bool = field(default=True)
+    rubric_embeddings: bool = field(default=False)
 
     @classmethod
     def from_env(cls):
@@ -79,6 +82,7 @@ class AppConfig:
             feature_labs=_bool("FEATURE_LABS", True),
             feature_peer_mocks=_bool("FEATURE_PEER_MOCKS", True),
             feature_community=_bool("FEATURE_COMMUNITY", True),
+            rubric_embeddings=_bool("RUBRIC_EMBEDDINGS", False),
         )
 
     @property

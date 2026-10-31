@@ -28,6 +28,8 @@ import json
 import math
 import re
 
+from studybuddy.rubric_tfidf import improved_tfidf_cosine
+
 # ---------------------------------------------------------------------------
 # Transparent rubric (weights sum to 100)
 # ---------------------------------------------------------------------------
@@ -138,18 +140,26 @@ def _cosine_vec(va, vb):
 
 
 def semantic_similarity(a, b, embed=None):
-    """Similarity of ``a`` against ``b``.
+    """Similarity of ``a`` against ``b`` — hybrid (issue #55).
 
-    ``embed`` is an optional callable ``(text) -> vector`` (see RAG-03
-    embeddings); with it, true cosine similarity. Without it, the best
-    stemmed token-recall of ``a`` over the sentences of ``b`` — a purely
-    lexical fallback that cannot see paraphrase, labeled as such.
+    ``embed`` is an optional callable ``(text) -> vector`` (see
+    studybuddy.rubric_embeddings.get_rubric_embed). Precedence:
+
+    1. embed provided and the call succeeds -> true embedding cosine.
+    2. embed provided but the call fails/returns None (flag on, API
+       unavailable) -> improved TF-IDF fallback (studybuddy.rubric_tfidf),
+       sentence-maxed like the legacy path. Labelled "tfidf".
+    3. embed is None (flag off, default) -> the legacy stemmed
+       token-recall path, byte-identical to before. Labelled nothing
+       (no similarity_signal key).
     """
     if embed is not None:
         try:
             return max(0.0, min(1.0, float(_cosine_vec(list(embed(a)), list(embed(b))))))
         except Exception:
-            pass  # fall through to the lexical fallback
+            pass  # fall through to the improved TF-IDF fallback
+        candidates = _sentences(b) + [b or ""]
+        return max(improved_tfidf_cosine(a, c) for c in candidates)
     candidates = _sentences(b) + [b or ""]
     return max(lexical_recall(a, c) for c in candidates)
 
@@ -321,8 +331,22 @@ def score_answer(question, answer, key_points, *, threshold=COVERAGE_THRESHOLD,
         if llm_result.get("valid"):
             engine = "llm"
 
+    # Embedding-use tracking for the honest signal label: semantic_similarity
+    # falls back to the lexical path per key point when an embed call
+    # fails, so "embeddings" here means at least one key point was scored
+    # with embeddings (any failed pair fell back to TF-IDF-style recall).
+    # The wrapper lets embed exceptions propagate to that fallback.
+    _embed_used: list[bool] = []
+    _tracked_embed = None
+    if embed is not None:
+        def _tracked_embed(text):
+            vec = embed(text)
+            if vec:
+                _embed_used.append(True)
+            return vec
+
     coverage, coverage_detail = key_point_coverage(
-        answer, key_points, threshold=threshold, embed=embed)
+        answer, key_points, threshold=threshold, embed=_tracked_embed)
     star = star_structure(answer)
     spec = specificity(answer)
     clarity = clarity_and_length(answer)
@@ -348,7 +372,7 @@ def score_answer(question, answer, key_points, *, threshold=COVERAGE_THRESHOLD,
     if engine == "llm":
         breakdown["llm_judge"] = llm_result["scores"]
 
-    return {
+    out: dict = {
         "score": round(final * 100, 1),
         "engine": engine,
         "llm_model": llm_model if engine == "llm" else None,
@@ -359,6 +383,16 @@ def score_answer(question, answer, key_points, *, threshold=COVERAGE_THRESHOLD,
         "note": ("Rule-based semantic scoring" if engine == "rule-based"
                  else f"LLM-as-judge scoring (model: {llm_model}); validated against the fixed rubric"),
     }
+    if embed is not None:
+        # Added only when an embed callable was passed (flag on); flag-off
+        # output is byte-identical to before this feature existed.
+        out["similarity_signal"] = "embeddings" if _embed_used else "tfidf"
+        out["similarity_method"] = "gemini" if _embed_used else "tfidf"
+        if _embed_used:
+            out["note"] = ("Rule-based scoring; key-point similarity via "
+                           "Gemini embeddings (lexical fallback for any "
+                           "failed pair)")
+    return out
 
 
 # ---------------------------------------------------------------------------
