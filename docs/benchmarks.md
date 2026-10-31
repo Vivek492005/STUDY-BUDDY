@@ -54,7 +54,7 @@ labels mark numbers measured on generated gold data rather than real users.
 | Claim | Evidence | Status |
 |---|---|---|
 | Parser metrics above | `python benchmarks/run.py --quick` → `benchmarks/results.json` | synthetic |
-| 8,720 tests, suite green | `pytest tests/ -q` (67 test files) | CI |
+| 9,820 tests, suite green | `pytest tests/ -q` (124 test files) | CI |
 | RAG quality | `make rag-bench` (RAG-01) | tracked |
 
 ### What we do NOT claim

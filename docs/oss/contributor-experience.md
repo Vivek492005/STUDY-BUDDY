@@ -14,7 +14,7 @@ studybuddy/             feature modules, one concern each:
   prod_packs.py         community data packs, schema-checked (PROD-10)
 data/                   versioned datasets (see CONTRIBUTING-DATA.md)
 benchmarks/             gold sets + run.py harness (ENG-09)
-tests/                  8,720 tests; conftest.py has shared fixtures
+tests/                  9,820 tests; conftest.py has shared fixtures
 ```
 
 Start: read `docs/PROJECT_OVERVIEW.md`, then `studybuddy/parsing.py`
