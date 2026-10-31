@@ -361,3 +361,116 @@ def test_lab_page_ships_eval3_controls(client):
                    "labReviewEditor", "lab-row", "lab-fieldset",
                    "labComposeRows"):
         assert marker in html, marker
+
+
+# ---------------------------------------------------------------------------
+# Eval 3 batch 2: remaining keyed object/JSON tools — composed payloads run
+# end-to-end through the HTTP run endpoint.
+# ---------------------------------------------------------------------------
+
+def test_eval3_b2_assessment_roadmap(client):
+    result = _run(client, "assessment/roadmap", {
+        "cluster": {"name": "Backend Dev",
+                    "skills": ["python", "flask", "sql"]},
+        "weeks": 8})
+    assert result["total_weeks"] == 8 and len(result["weeks"]) == 8
+
+
+def test_eval3_b2_assessment_delta(client):
+    result = _run(client, "assessment/delta", {
+        "old_results": [{"id": "a", "name": "Backend", "match": 60}],
+        "new_results": [{"id": "a", "name": "Backend", "match": 75}]})
+    assert result["grew"] and result["grew"][0]["id"] == "a"
+
+
+def test_eval3_b2_voice_prep_single_object(client):
+    result = _run(client, "mock/voice-prep", {
+        "question": {"question": "Tell me about yourself"},
+        "answer_text": ("I am a backend developer with two years of experience "
+                        "building Flask APIs and data pipelines for analytics "
+                        "dashboards used daily"),
+        "seconds_taken": 60})
+    assert result["wpm"] > 0 and "verdict" in result
+
+
+def test_eval3_b2_redo_tracker(client):
+    result = _run(client, "mock/redo-tracker", {
+        "attempts": [{"question_id": "q1", "score": 60},
+                     {"question_id": "q1", "score": 75}]})
+    assert result["questions"] and result["total_redos"] == 1
+    assert result["questions"][0]["improvement"] == 15.0
+
+
+def test_eval3_b2_spaced_repetition(client):
+    result = _run(client, "dsa/spaced-repetition", {
+        "mistakes": [{"problem_id": "two-sum", "wrong_at": "2026-10-20",
+                      "streak": 2}]})
+    assert "due" in result and "guidance" in result
+
+
+def test_eval3_b2_story_bank(client):
+    result = _run(client, "star/story-bank", {
+        "stories": [{"id": "s1", "title": "Launch",
+                     "text": ("I led the launch of a payments API serving 10k "
+                              "users with zero downtime over six months")}]})
+    assert result["total_stories"] == 1 and "coverage" in result
+
+
+def test_eval3_b2_leaderboard(client):
+    result = _run(client, "quizzes/leaderboard", {
+        "entries": [{"user_id": "u1", "name": "Aarav", "skill": "dsa",
+                     "score_pct": 80, "quizzes_taken": 5}]})
+    assert result["leaders"] and result["leaders"][0]["name"] == "Aarav"
+
+
+def test_eval3_b2_reading_queue(client):
+    result = _run(client, "arxiv/reading-queue", {
+        "papers": [{"title": "Attention", "year": 2017,
+                    "abstract": "transformers", "id": "1706.03762"}],
+        "interests": ["nlp"], "minutes_per_paper": 30})
+    assert result["total_papers"] == 1 and result["queue"][0]["title"] == "Attention"
+
+
+def test_eval3_b2_in_text_citation(client):
+    result = _run(client, "citations/in-text", {
+        "meta": {"authors": ["Vaswani", "Shazeer"], "year": "2017",
+                 "title": "Attention is all you need"},
+        "style": "apa"})
+    assert "Vaswani" in result["snippets"]["apa"]
+
+
+def test_eval3_b2_find_duplicates(client):
+    result = _run(client, "citations/find-duplicates", {
+        "references": [{"title": "Attention is all you need"},
+                       {"title": "attention is all you need"}],
+        "threshold": 0.9})
+    assert result["count"] >= 1
+
+
+def test_eval3_b2_litreview_cluster(client):
+    result = _run(client, "litreview/cluster", {
+        "papers": [{"title": "A", "abstract": "neural networks for vision"},
+                   {"title": "B", "abstract": "transformers for language"}]})
+    assert result["total"] == 2
+
+
+def test_eval3_b2_trend_crosscheck(client):
+    result = _run(client, "gaps/trend-crosscheck", {
+        "gap_text": "cheap fine-tuning for small models",
+        "trending_papers": [{"title": "T", "abstract": "lora fine tuning"}]})
+    assert "verdict" in result
+
+
+def test_eval3_b2_anki_export(client):
+    result = _run(client, "flashcards/anki-export", {
+        "cards": [{"question": "Q?", "answer": "A"}],
+        "deck_name": "Test"})
+    assert result["count"] == 1 and "Q?" in result["tsv"]
+
+
+def test_eval3_b2_weekly_digest(client):
+    result = _run(client, "trending/weekly-digest", {
+        "papers": [{"title": "T", "abstract": "nlp transformers",
+                    "link": "https://example.dev"}],
+        "skills": ["nlp"], "top_n": 3})
+    assert result["count"] == 1 and result["digest"][0]["title"] == "T"
