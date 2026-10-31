@@ -105,7 +105,12 @@
     </div>
     <div class="b-bento" id="skill-grid">
         {% for s in skills %}
-        <a class="b-card b-card--feature b-reveal skill-card" data-domain="{{ s.domain }}" href="{{ url_for('roadmap_detail', skill_id=s.id) }}" aria-label="{{ s.name }} roadmap">
+        {# a11y (Eval 3, 2026-10-31): no aria-label — the accessible name
+           derives from the visible card content, so voice-input users can
+           activate the card by speaking its visible heading (WCAG 2.5.3).
+           An aria-label that omits the visible description fails
+           axe label-content-name-mismatch. #}
+        <a class="b-card b-card--feature b-reveal skill-card" data-domain="{{ s.domain }}" href="{{ url_for('roadmap_detail', skill_id=s.id) }}">
             <span class="b-tag">{{ s.domain }}</span>
             <h3 style="margin:0;">{{ s.name }}</h3>
             <p style="color:var(--b-muted);margin:0;font-size:.9rem;">{{ s.summary }}</p>

@@ -174,7 +174,11 @@
         </section>
         {% endif %}
 
-        <div class="tk-board" id="tkBoard">
+        {# a11y (Eval 3, 2026-10-31): scrollable region must be keyboard-
+           reachable (axe scrollable-region-focusable). tabindex + region
+           role; cards inside are draggable via mouse, board scrolls via
+           keyboard when focused. #}
+        <div class="tk-board" id="tkBoard" tabindex="0" role="region" aria-label="Applications by stage">
             {% for sid, label in stages %}
             <div class="tk-col b-kcol" data-stage="{{ sid }}">
                 <div class="tk-col-head"><h3>{{ label }}</h3><span class="tk-count b-kcount">{{ by_stage.get(sid, [])|length }}</span></div>

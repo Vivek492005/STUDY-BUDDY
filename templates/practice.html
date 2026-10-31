@@ -20,8 +20,14 @@
          same shared guard as templates/base.html — this template does
          not extend base, so it carries its own copy. -->
     <style>img, table, video, iframe, embed, object{max-width:100%}pre{max-width:100%;overflow-x:auto}html, body{overflow-x:clip}</style>
+    <style>
+    /* a11y: skip link (same rules as base.html) */
+    .skip-link{position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:.75rem 1.25rem;z-index:9999;font-weight:700;border-radius:0 0 8px 0}
+    .skip-link:focus{left:0}
+    </style>
 </head>
 <body class="sb-app">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="b-scroll-progress" data-scroll-progress aria-hidden="true"></div>
     <div class="b-ambient" aria-hidden="true">
         <div class="b-blob b-b1"></div>
@@ -34,7 +40,7 @@
     {% set nav_active = 'practice' %}
     {% include "_site_nav.html" %}
 
-    <div class="practice-page">
+    <main class="practice-page" id="main-content" tabindex="-1">
         <div class="practice-container">
             <!-- Header -->
             <div class="dashboard-header b-reveal">
@@ -138,7 +144,7 @@
 
                 <!-- Filters -->
                 <div class="filter-bar" id="interviewFilters" style="display: none;">
-                    <select class="filter-select" id="interviewCategoryFilter">
+                    <select class="filter-select" id="interviewCategoryFilter" aria-label="Filter interview questions by category">
                         <option value="">All Categories</option>
                         <option value="Behavioral">Behavioral</option>
                         <option value="Technical">Technical</option>
@@ -147,7 +153,7 @@
                         <option value="HR">HR</option>
                         <option value="Puzzles">Puzzles</option>
                     </select>
-                    <select class="filter-select" id="interviewDifficultyFilter">
+                    <select class="filter-select" id="interviewDifficultyFilter" aria-label="Filter interview questions by difficulty">
                         <option value="">All Difficulties</option>
                         <option value="Easy">Easy</option>
                         <option value="Medium">Medium</option>
@@ -188,13 +194,13 @@
 
                 <!-- Filters -->
                 <div class="filter-bar" id="codingFilters" style="display: none;">
-                    <select class="filter-select" id="codingTopicFilter">
+                    <select class="filter-select" id="codingTopicFilter" aria-label="Filter coding problems by topic">
                         <option value="">All Topics</option>
                         {% for topic in topics %}
                         <option value="{{ topic }}">{{ topic }}</option>
                         {% endfor %}
                     </select>
-                    <select class="filter-select" id="codingDifficultyFilter">
+                    <select class="filter-select" id="codingDifficultyFilter" aria-label="Filter coding problems by difficulty">
                         <option value="">All Difficulties</option>
                         <option value="Easy">Easy</option>
                         <option value="Medium">Medium</option>
@@ -206,7 +212,7 @@
                 <div class="questions-container" id="codingQuestions"></div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- Footer -->
     <footer class="b-footer">

@@ -72,3 +72,11 @@ textarea:focus-visible {
   .pb-row3 > :last-child { justify-self: end; }
   .pb-gh-row > input { min-width: 0; flex: 1; }
 }
+
+/* ---------- a11y contrast (Eval 3, 2026-10-31) ----------
+   Unearned badge cards are dimmed to 65% opacity by momentum_hub.js.
+   Their description <p> uses --b-muted (#a3a3a0), which blends down to
+   ~3:1 when dimmed. #d8d8d5 keeps the neutral-gray hue and reaches
+   6.1:1 at 65% opacity. The !important beats the inline color; the
+   [style*="opacity"] selector limits it to dimmed cards only. */
+#mm-badges-list article[style*="opacity"] p { color: #d8d8d5 !important; }

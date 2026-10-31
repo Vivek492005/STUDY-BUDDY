@@ -139,10 +139,10 @@
 
         <div class="ch-card" id="questions-card">
             <h3 class="ch-h3">1 · Pick a question to practice</h3>
-            <div class="ch-tabs" role="tablist">
-                <button type="button" class="ch-tab is-on" data-qtab="hr">HR round</button>
-                <button type="button" class="ch-tab" data-qtab="behavioral">Behavioral (STAR)</button>
-                <button type="button" class="ch-tab" data-qtab="technical">Explain a concept</button>
+            <div class="ch-tabs" role="tablist" aria-label="Question type">
+                <button type="button" class="ch-tab is-on" role="tab" aria-selected="true" data-qtab="hr">HR round</button>
+                <button type="button" class="ch-tab" role="tab" aria-selected="false" data-qtab="behavioral">Behavioral (STAR)</button>
+                <button type="button" class="ch-tab" role="tab" aria-selected="false" data-qtab="technical">Explain a concept</button>
             </div>
             <div class="ch-qgrid" id="q-grid"></div>
             <div class="ch-framework" id="q-framework">

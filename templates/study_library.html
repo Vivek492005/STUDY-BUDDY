@@ -23,12 +23,17 @@
             <h2>Add a <span class="b-grad">document</span></h2>
             <p>PDF only, up to 25&nbsp;MB. Text is extracted page by page so answers can cite exact pages.</p>
         </div>
-        <div id="qa-dropzone" class="b-card b-card--lite" style="text-align:center;cursor:pointer;" role="button" tabindex="0" aria-label="Upload a PDF document">
-            <p style="margin:0 0 .5rem;"><strong>Drop your PDF here</strong> or click to browse</p>
+        {# a11y (Eval 3, 2026-10-31): labelled by the visible heading via
+           aria-labelledby (not a mismatched aria-label) so voice-input
+           users can speak the visible text to activate it (WCAG 2.5.3).
+           The helper note lives OUTSIDE the button so the button's visible
+           text matches its name; it stays associated via aria-describedby. #}
+        <div id="qa-dropzone" class="b-card b-card--lite" style="text-align:center;cursor:pointer;" role="button" tabindex="0" aria-labelledby="qa-dropzone-label" aria-describedby="qa-dropzone-note">
+            <p style="margin:0;" id="qa-dropzone-label"><strong>Drop your PDF here</strong> or click to browse</p>
             <p class="b-form-error" style="display:none;" id="qa-upload-hint"></p>
-            <p style="color:var(--b-muted);font-size:.85rem;margin:0;">Scanned/image-only PDFs contain no extractable text — questions on those will honestly report that nothing was found.</p>
             <input type="file" id="qa-file" aria-label="Upload a PDF document" accept=".pdf,application/pdf" hidden>
         </div>
+        <p style="color:var(--b-muted);font-size:.85rem;margin:.5rem 0 0;text-align:center;" id="qa-dropzone-note">Scanned/image-only PDFs contain no extractable text — questions on those will honestly report that nothing was found.</p>
         <div class="b-cta-row" style="margin-top:1rem;">
             <button class="b-btn b-btn--primary" id="qa-upload-btn" type="button">Upload document</button>
             <span class="b-pill" id="qa-upload-status" style="display:none;"></span>

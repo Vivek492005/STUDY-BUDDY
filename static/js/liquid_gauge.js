@@ -20,6 +20,12 @@
     var svg = document.createElementNS(SVG_NS, "svg");
     svg.setAttribute("viewBox", "0 0 200 200");
     svg.setAttribute("role", "img");
+    /* a11y (Eval 3, 2026-10-31): role="img" requires an accessible name
+       (axe svg-img-alt). Labelled from the same data-* attributes the
+       visible percentage text uses. */
+    var _lbl = root.getAttribute("data-label") || "Progress";
+    var _pct = root.getAttribute("data-pct") || "0";
+    svg.setAttribute("aria-label", _lbl + ": " + _pct + "%");
     var defs = document.createElementNS(SVG_NS, "defs");
     var clip = document.createElementNS(SVG_NS, "clipPath");
     clip.setAttribute("id", "lqclip-" + Math.random().toString(36).slice(2, 8));
@@ -89,11 +95,14 @@
     num.innerHTML = "<b>0%</b><span></span>";
     root.appendChild(svg);
     root.appendChild(num);
-    return { water: water, numVal: num.querySelector("b"), numLabel: num.querySelector("span"), pct: 0 };
+    return { water: water, numVal: num.querySelector("b"), numLabel: num.querySelector("span"), pct: 0, svg: svg };
   }
   function setPct(inst, root, target, label) {
     target = Math.max(0, Math.min(100, target || 0));
     if (label !== undefined) inst.numLabel.textContent = label;
+    /* a11y (Eval 3): keep the svg's accessible name in sync with the value. */
+    var _ariaName = (label !== undefined && label) ? label : (inst.numLabel.textContent || "Progress");
+    inst.svg.setAttribute("aria-label", _ariaName + ": " + Math.round(target) + "%");
     // Surface travels from y=196 (empty, hidden below the disc)
     // to y=6 (full). The CSS transition on .lq-water animates it.
     var y = 196 - (target / 100) * 190;

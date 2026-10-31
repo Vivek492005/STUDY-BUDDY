@@ -506,10 +506,13 @@ body:has(.sb-dash) { background: #0a0a0a !important; }
 .sb-dsa .dsa-chip { font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.7rem; white-space: nowrap; }
 .sb-dsa .diff-Easy { background: rgba(16,185,129,0.15); color: #34d399; }
 .sb-dsa .diff-Medium { background: rgba(245,158,11,0.15); color: #f59e0b; }
-.sb-dsa .diff-Hard { background: rgba(239,68,68,0.15); color: #ef4444; }
+.sb-dsa .diff-Hard { background: rgba(239,68,68,0.15); color: #f87171; }
+/* a11y (Eval 3, 2026-10-31): #ef4444 on the red tint was 4.33:1 — #f87171
+   keeps the red hue and reaches 5.9:1 on the blended chip background. */
 .sb-dsa .st-solved { background: rgba(16,185,129,0.2); color: #34d399; }
 .sb-dsa .st-attempted { background: rgba(59,130,246,0.2); color: #60a5fa; }
-.sb-dsa .st-stuck { background: rgba(239,68,68,0.2); color: #ef4444; }
+.sb-dsa .st-stuck { background: rgba(239,68,68,0.2); color: #f87171; }
+/* a11y (Eval 3, 2026-10-31): same failing red pair as .diff-Hard above. */
 /* Interview layout (was inline in interview.html, now in kinetic) */
 .sb-iv .iv-card { padding: 2rem; margin-bottom: 1.2rem; }
 .sb-iv .iv-field { margin-bottom: 1rem; }
@@ -692,6 +695,15 @@ body.sb-editorial .sb-display { color: var(--sb-ink); }
 body.sb-editorial .sb-lede { color: #3f3f3a; }
 body.sb-editorial .sb-btn--outline { border-color: var(--sb-ink); color: var(--sb-ink); }
 body.sb-editorial .sb-btn--outline:hover { background: var(--sb-ink); color: #fff; }
+/* a11y contrast fixes (Eval 3, 2026-10-31) — light "paper" editorial theme.
+   These elements kept the global dark-theme colors (#22d3ee links, #ffd166
+   nudge, ink outline button) which fail on #f2f1ea / the blue CTA band.
+   Same hues, only lightened/darkened to reach 4.5:1. */
+body.sb-editorial .b-lang-switch a { color: #0c6b83; }
+body.sb-editorial .b-consent-nudge { color: #7c4d00; text-decoration-color: #7c4d00; }
+body.sb-editorial .b-consent-nudge:hover { color: #5f3b00; text-decoration-color: #5f3b00; }
+body.sb-editorial .sb-cta-band .sb-btn--outline { color: #fff; border-color: #fff; }
+body.sb-editorial .sb-cta-band .sb-btn--outline:hover { background: #fff; color: var(--sb-blue); }
 body.sb-editorial .sb-hero-visual { border-color: var(--sb-ink); }
 body.sb-editorial .sb-stats { border-color: #d8d6cc; }
 body.sb-editorial .sb-stat { border-color: #d8d6cc; }

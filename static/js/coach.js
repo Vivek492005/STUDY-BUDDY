@@ -112,8 +112,10 @@
         tab.addEventListener("click", function () {
             document.querySelectorAll("[data-qtab]").forEach(function (t) {
                 t.className = "ch-tab";
+                t.setAttribute("aria-selected", "false");  /* a11y: keep tab state in sync */
             });
             tab.className = "ch-tab is-on";
+            tab.setAttribute("aria-selected", "true");
             renderQuestions(tab.getAttribute("data-qtab"));
         });
     });

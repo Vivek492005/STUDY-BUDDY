@@ -66,26 +66,26 @@
     <h2 class="sb-learn-h2">Three ways to level up</h2>
     <p class="sb-learn-sub">Pick a track — they connect with each other.</p>
     <div class="sb-tool-grid">
-        <a class="sb-tool sb-reveal" href="{{ url_for('roadmaps_home') }}" aria-label="Skill roadmaps">
+        <a class="sb-tool sb-reveal" href="{{ url_for('roadmaps_home') }}">
             <span class="sb-tool-num">01 / Roadmaps</span>
             <span class="sb-tool-title">Skill-gap<br>Roadmaps</span>
             <p>Tell us your target role and current skills — get a ranked gap report and a week-by-week learning plan built from free resources. Track your stage-by-stage progress.</p>
             <span class="sb-tool-link">Explore roadmaps →</span>
         </a>
-        <a class="sb-tool sb-reveal" href="{{ url_for('quizzes_home') }}" aria-label="Skill quizzes">
+        <a class="sb-tool sb-reveal" href="{{ url_for('quizzes_home') }}">
             <span class="sb-tool-num">02 / Quizzes</span>
             <span class="sb-tool-title">Skill<br>Quizzes</span>
             <p>Timed or untimed quizzes across {{ num_quiz_skills }} skills with instant explanations, topic-wise breakdowns, and weak-topic diagnosis that points back to your roadmap.</p>
             <span class="sb-tool-link">Start a quiz →</span>
         </a>
-        <a class="sb-tool sb-reveal" href="{{ url_for('certs_home') }}" aria-label="Certification guidance">
+        <a class="sb-tool sb-reveal" href="{{ url_for('certs_home') }}">
             <span class="sb-tool-num">03 / Certifications</span>
             <span class="sb-tool-title">Certification<br>Guidance</span>
             <p>Which cert is actually worth your money? Get ranked recommendations by role, skills, and budget — with approximate INR costs and week-by-week study plans.</p>
             <span class="sb-tool-link">Find your cert →</span>
         </a>
         {% if is_authed %}
-        <a class="sb-tool sb-reveal" href="{{ url_for('roadmaps_dashboard') }}" aria-label="My learning dashboard">
+        <a class="sb-tool sb-reveal" href="{{ url_for('roadmaps_dashboard') }}">
             <span class="sb-tool-num">04 / Progress</span>
             <span class="sb-tool-title">My Learning<br>Dashboard</span>
             <p>Your roadmap stages, quiz best scores, and saved certification study plans — all in one place.</p>

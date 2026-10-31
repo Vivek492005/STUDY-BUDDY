@@ -20,7 +20,7 @@
         <a href="{{ url_for('index') }}"><svg viewBox="0 0 24 24"><path d="M14 5l7 7-7 7M21 12H8"/><path d="M8 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/></svg>Back to site</a>
     </div>
 </aside>
-<div class="sb-topbar">
+<header class="sb-topbar">
     <p class="sb-topbar-title">{{ sb_title|default('Study-Buddy') }}</p>
     {% if current_user.is_authenticated %}
     <a class="sb-topbar-user" href="{{ url_for('profile') }}">
@@ -30,4 +30,7 @@
     {% else %}
     <a class="sb-topbar-user" href="{{ url_for('auth.login') }}"><span class="sb-topbar-name">Log in</span></a>
     {% endif %}
-</div>
+</header>
+{# a11y (Eval 3, 2026-10-31): <header> as a direct child of <body> carries the
+   implicit banner landmark, so the title/user chip are landmark-contained
+   (axe "region" rule). Was a plain <div>; no visual change. #}

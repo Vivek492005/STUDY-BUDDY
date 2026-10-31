@@ -127,7 +127,9 @@
         </div>
     </div>
 
-    <p style="margin-top:1.6rem;"><a href="{{ url_for('research_home') }}" style="color:var(--b-a1);">&larr; Back to Research</a></p>
+    {# a11y (Eval 3, 2026-10-31): --b-a1 (#2447ff) on the dark page bg was
+       3.2:1 — #6e8bff keeps the blue hue, reaches 6.4:1. #}
+    <p style="margin-top:1.6rem;"><a href="{{ url_for('research_home') }}" style="color:#6e8bff;">&larr; Back to Research</a></p>
 </section>
 {% endblock %}
 
