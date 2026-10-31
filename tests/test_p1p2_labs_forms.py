@@ -474,3 +474,135 @@ def test_eval3_b2_weekly_digest(client):
                     "link": "https://example.dev"}],
         "skills": ["nlp"], "top_n": 3})
     assert result["count"] == 1 and result["digest"][0]["title"] == "T"
+
+
+# ---------------------------------------------------------------------------
+# Eval 3 batch 3: final group of keyed object/JSON tools — composed payloads
+# run end-to-end through the HTTP run endpoint.
+# ---------------------------------------------------------------------------
+
+def test_eval3_b3_link_check(client):
+    result = _run(client, "portfolio/link-check", {
+        "projects": [{"title": "SB", "link": "not-a-url",
+                      "demo_link": ""}]})
+    assert result["checked"] >= 1 and len(result["dead"]) >= 1
+
+
+def test_eval3_b3_paper_to_projects(client):
+    result = _run(client, "trending/paper-to-projects", {
+        "paper": {"title": "LoRA",
+                  "abstract": "low rank adaptation for fine tuning"}})
+    assert result["ideas"]
+
+
+def test_eval3_b3_to_tracker(client):
+    result = _run(client, "opportunities/to-tracker", {
+        "opportunity": {"organization": "Acme", "title": "Intern"}})
+    assert result["company"] == "Acme" and result["stage"]
+
+
+def test_eval3_b3_pipeline_analytics(client):
+    result = _run(client, "tracker/pipeline-analytics", {
+        "applications": [{"stage": "applied"}, {"stage": "interview"},
+                         {"stage": "applied"}]})
+    assert result["total_applications"] == 3 and result["funnel"]
+
+
+def test_eval3_b3_followup_nudges(client):
+    result = _run(client, "tracker/followup-nudges", {
+        "applications": [{"id": "1", "company": "Acme", "role": "Intern",
+                          "stage": "applied",
+                          "stage_updated_at": "2026-10-01"}]})
+    assert "nudges" in result
+
+
+def test_eval3_b3_compare_offers(client):
+    result = _run(client, "tracker/compare-offers", {
+        "offers": [{"company": "A", "role": "SDE", "base_lpa": 12},
+                   {"company": "B", "role": "SDE", "base_lpa": 15}]})
+    assert result["count"] == 2 and result["top_by_comp"] == "B"
+
+
+def test_eval3_b3_squad_leaderboard(client):
+    result = _run(client, "momentum/squad-leaderboard", {
+        "members": [{"user_id": "u1", "name": "Aarav", "weekly_xp": 120}]})
+    assert result["leader"] == "Aarav" and result["leader_xp"] == 120
+
+
+def test_eval3_b3_match_partners(client):
+    result = _run(client, "peermocks/match-partners", {
+        "users": [{"user_id": "u1", "name": "A", "strengths": ["dsa"],
+                   "weaknesses": ["system design"]},
+                  {"user_id": "u2", "name": "B",
+                   "strengths": ["system design"],
+                   "weaknesses": ["dsa"]}]})
+    assert result["pairs"] and result["pairs"][0]["a"] and result["pairs"][0]["b"]
+
+
+def test_eval3_b3_pattern_alerts(client):
+    result = _run(client, "retro/pattern-alerts", {
+        "retrospectives": [{"notes": "ghosted after round 2",
+                            "feedback": "slow followup"}]})
+    assert result["total_retros"] == 1
+
+
+def test_eval3_b3_track_experiment(client):
+    result = _run(client, "retro/track-experiment", {
+        "name": "Resume v2",
+        "variants": [{"name": "A", "sent": 50, "callbacks": 5},
+                     {"name": "B", "sent": 50, "callbacks": 12}]})
+    assert result["winner"] == "B" and "lift" in result
+
+
+def test_eval3_b3_win_library(client):
+    result = _run(client, "retro/win-library", {
+        "wins": [{"title": "Offer", "what_worked": "mock interviews",
+                  "context": "final year"}]})
+    assert result["count"] == 1 and result["playbook"]
+
+
+def test_eval3_b3_async_qa_digest(client):
+    result = _run(client, "mentors/async-qa-digest", {
+        "questions": [{"question": "How to prep?", "topic": "interviews",
+                       "asker": "Aarav"}]})
+    assert result["count"] == 1 and "markdown" in result
+
+
+def test_eval3_b3_prep_packet(client):
+    result = _run(client, "mentors/prep-packet", {
+        "mentee": {"name": "Aarav", "headline": "Student",
+                   "goals": "Get a backend job"},
+        "mentor": {"name": "M", "headline": "SDE"},
+        "topic": "interviews"})
+    assert "for_mentee" in result and "agenda" in result
+
+
+def test_eval3_b3_alumni_outcomes(client):
+    result = _run(client, "mentors/alumni-outcomes", {
+        "mentor_id": "m1",
+        "placements": [{"mentor_id": "m1", "company": "Google",
+                        "role": "SDE"}]})
+    assert result["count"] == 1
+
+
+def test_eval3_b3_pin_optimizer(client):
+    result = _run(client, "github/pin-optimizer", {
+        "repos": [{"name": "sb", "description": "AI copilot",
+                   "language": "Python", "stars": 10,
+                   "updated_at": "2026-10-01", "topics": ["ai"]}]})
+    assert result["picks"]
+
+
+def test_eval3_b3_gap_highlight(client):
+    result = _run(client, "litreview/gap-highlight", {
+        "papers": [{"title": "A", "abstract": "neural nets"},
+                   {"title": "B", "abstract": "transformers"}]})
+    assert result["total_papers"] == 2
+
+
+def test_eval3_b3_keyword_plan(client):
+    result = _run(client, "jd/keyword-plan", {
+        "resume_text": "Python developer with Flask experience",
+        "report": {"missing_keywords": ["docker"],
+                   "missing_skills": ["docker"]}})
+    assert isinstance(result, list) and result and "keyword" in result[0]

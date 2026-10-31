@@ -261,15 +261,19 @@ _KEY_OVERRIDES = {
         "key_types": {"chunks": "lines"}},
     ("pdfqa/qa-to-notes", "qa_pairs"): {
         "key_types": {"question": "textarea", "answer": "textarea",
-                      "citations": "lines"}},
+                      "citations": "rows"},
+        "sub_keys": {"citations": ["doc", "page"]},
+        "key_sub_types": {"citations": {"page": "number"}}},
     ("peermocks/match-partners", "users"): {
         "key_types": {"strengths": "lines", "weaknesses": "lines"}},
     ("mentors/prep-packet", "mentee"): {
-        "key_types": {"goals": "lines"}},
+        # goals is a plain string (handler _clean()s it), not a list.
+        "key_types": {"goals": "text"}},
     ("mentors/async-qa-digest", "questions"): {
         "key_types": {"question": "textarea"}},
     ("citations/in-text", "meta"): {
-        "key_types": {"authors": "lines"}},
+        # authors is a list; year stays text ("n.d." is a valid year).
+        "key_types": {"authors": "lines", "year": "text"}},
     ("assessment/roadmap", "cluster"): {
         "key_types": {"skills": "lines"}},
     ("portfolio/case-study", "project"): {
