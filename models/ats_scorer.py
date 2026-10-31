@@ -24,10 +24,32 @@ structure + keyword coverage + measurable impact + action-verb strength
     every resume. clean_text() now preserves % $ ₹ € £.
   - Experience years must come from extract_experience_years() called
     with sections=, so education dates are not counted as work years.
+
+Anti-gaming hardening (2026-10-31, Eval 3 follow-through — an external
+eval found a keyword-stuffed junk resume scoring 63 vs 72 for a clean
+resume, far too narrow a gap):
+  (a) Repetition caps / diminishing returns. Content tokens repeated
+      beyond a free allowance feed a stuffing penalty (up to 8 content
+      points); near-duplicate experience bullets collapse to one, so
+      22 copies of a template earn ~1/22 of the bullet points; and a
+      skill mentioned more than a handful of times has its evidence
+      weight decayed quadratically toward zero.
+  (b) Context-aware skill detection. A skill earns full weight only
+      with supporting context: a line outside the skills section where
+      the skill sits next to an action verb or a quantified metric
+      (usage evidence). Lines naming more than a handful of distinct
+      skills are treated as disguised lists and evidence none of them.
+      Bare comma-separated list mentions earn only a small flat credit
+      (capped), so stuffing dozens of keywords into SKILLS cannot
+      saturate the component.
+Legitimate resumes are unaffected: honest skill mentions stay under
+the repetition allowances, real bullets are not near-duplicates, and
+skills embedded in achievement bullets keep full weight.
 """
 
 import math
 import re
+from collections import Counter
 
 # Phone patterns: Indian 10-digit mobile (with optional +91/91/0 handling via
 # the 5+5 or 10-digit grouping) plus US/international 3-3-4 grouping.
@@ -133,6 +155,216 @@ def _curve(x, scale):
     return 1.0 - math.exp(-x / scale) if x > 0 else 0.0
 
 
+#: Stopwords excluded from the repetition analysis: function words an
+#: honest resume repeats freely must never look like stuffing.
+_REP_STOPWORDS = frozenset({
+    'the', 'and', 'for', 'with', 'from', 'that', 'this', 'have', 'been',
+    'were', 'are', 'was', 'has', 'had', 'will', 'would', 'can', 'could',
+    'should', 'may', 'might', 'must', 'shall', 'not', 'but', 'all',
+    'any', 'each', 'such', 'than', 'then', 'there', 'their', 'they',
+    'them', 'its', 'our', 'your', 'his', 'her', 'who', 'whom', 'which',
+    'what', 'when', 'where', 'how', 'why', 'into', 'over', 'under',
+    'between', 'through', 'during', 'about', 'against', 'among', 'per',
+    'a', 'an', 'of', 'to', 'in', 'on', 'at', 'by', 'as', 'is', 'it',
+    'or', 'if', 'so', 'up', 'out', 'off',
+})
+_REP_TOKEN_RE = re.compile(r'[a-z]{3,}')
+
+#: A content token may repeat this often for free (an honest resume
+#: repeats "experience", "team", "project" a handful of times); only
+#: repeats beyond the allowance feed the stuffing penalty.
+_REP_FREE_OCCURRENCES = 6
+_REP_PENALTY_RATE = 0.2
+_REP_PENALTY_CAP = 8.0
+
+
+def _repetition_penalty(text_lower):
+    """Keyword-stuffing penalty (Eval-3 anti-gaming, part a).
+
+    Counts non-stopword tokens repeated beyond _REP_FREE_OCCURRENCES.
+    Returns (penalty_points, excess_repeats, worst_tokens). Stuffed
+    resumes repeat the same keywords dozens of times to pad word
+    count and fake keyword coverage; honest resumes stay near zero.
+    """
+    counts = Counter(_REP_TOKEN_RE.findall(text_lower))
+    excess = 0
+    worst = []
+    for tok, cnt in counts.most_common():
+        if tok in _REP_STOPWORDS:
+            continue
+        if cnt > _REP_FREE_OCCURRENCES:
+            excess += cnt - _REP_FREE_OCCURRENCES
+            worst.append((tok, cnt))
+    penalty = min(_REP_PENALTY_CAP, _REP_PENALTY_RATE * excess)
+    return penalty, excess, worst[:5]
+
+
+#: Two experience lines are near-duplicates at this token Jaccard
+#: similarity (template filler differs only in the verb/number).
+_DUP_JACCARD_THRESHOLD = 0.8
+
+
+def _dedup_lines(lines):
+    """Collapse near-duplicate lines (Eval-3 anti-gaming, part a).
+
+    Returns (unique_lines, dup_ratio). Greedy: a line is a duplicate
+    when its token Jaccard similarity with any kept line reaches the
+    threshold. Empty-token lines are never duplicates of each other.
+    """
+    unique = []
+    uniq_token_sets = []
+    for ln in lines:
+        toks = set(_REP_TOKEN_RE.findall(ln.lower()))
+        is_dup = False
+        if toks:
+            for kept in uniq_token_sets:
+                inter = len(toks & kept)
+                union = len(toks | kept)
+                if inter and union and inter / union >= _DUP_JACCARD_THRESHOLD:
+                    is_dup = True
+                    break
+        if not is_dup:
+            unique.append(ln)
+            uniq_token_sets.append(toks)
+    dup_ratio = 1.0 - len(unique) / len(lines) if lines else 0.0
+    return unique, dup_ratio
+
+
+#: Canonical skill name -> alias surface forms, built lazily from the
+#: extractor's alias table so "py"/"js" mentions count toward
+#: "Python"/"JavaScript" repetition and support analysis.
+_SKILL_ALIASES_BY_CANON = None
+
+
+def _skill_alias_map():
+    global _SKILL_ALIASES_BY_CANON
+    if _SKILL_ALIASES_BY_CANON is None:
+        from models.skill_extractor import SKILL_ALIASES
+        by_canon = {}
+        for alias, canon in SKILL_ALIASES.items():
+            by_canon.setdefault(canon, []).append(alias)
+        _SKILL_ALIASES_BY_CANON = by_canon
+    return _SKILL_ALIASES_BY_CANON
+
+
+def _skill_forms(skill_name):
+    """Matchable surface forms for a skill: canonical name + aliases."""
+    forms = [skill_name.lower()]
+    for alias in _skill_alias_map().get(skill_name, []):
+        if alias not in forms:
+            forms.append(alias)
+    return forms
+
+
+def _form_pattern(form):
+    return re.compile(r'(?<![a-zA-Z])' + re.escape(form) + r'(?![a-zA-Z])')
+
+
+#: Compiled (form, pattern) pairs per skill name. The skills DB is
+#: static, so patterns are compiled once and reused across score
+#: calls (the stdlib re cache only holds 512 patterns — fewer than
+#: the DB's form count — so per-call compilation would recompile
+#: hundreds of patterns every time).
+_SKILL_PATTERN_CACHE = {}
+
+
+def _skill_patterns(name):
+    cached = _SKILL_PATTERN_CACHE.get(name)
+    if cached is None:
+        cached = [(form, _form_pattern(form)) for form in _skill_forms(name)]
+        _SKILL_PATTERN_CACHE[name] = cached
+    return cached
+
+
+#: A line naming more than this many distinct skills is a disguised
+#: list, not usage: it evidences none of them.
+_MAX_SKILLS_PER_SUPPORT_LINE = 5
+#: Occurrences of one skill beyond this decay quadratically toward
+#: zero (repeated occurrences of the same term contribute
+#: progressively less — Eval-3 anti-gaming, part a).
+_SKILL_OCC_CAP = 8
+
+
+def _analyze_skill_support(skills, sections):
+    """Context-aware skill evidence (Eval-3 anti-gaming, part b).
+
+    Returns (supported, n_unsupported, cats_supported):
+      supported: {skill_name: weight} for skills with >= 1 supporting
+        line. weight = repetition-decayed evidence (1.0 for a normally
+        mentioned skill, decaying toward 0 past _SKILL_OCC_CAP total
+        occurrences).
+      n_unsupported: skills found only as bare list mentions.
+      cats_supported: categories with >= 1 strongly-evidenced skill
+        (supporting line and repetition factor >= 0.5).
+    A supporting line lives outside the skills section, names at most
+    _MAX_SKILLS_PER_SUPPORT_LINE distinct skills, and places the skill
+    next to an action verb or a quantified metric (usage evidence).
+    """
+    patterns = {}   # skill name -> [(form, compiled pattern)]
+    categories = {}  # skill name -> category
+    for s in skills or []:
+        name = (s.get('name') or '').strip() if isinstance(s, dict) else str(s).strip()
+        if not name or name in patterns:
+            continue
+        patterns[name] = _skill_patterns(name)
+        categories[name] = s.get('category') if isinstance(s, dict) else None
+
+    # Candidate pool: every section except the skills list itself.
+    pool_lines = []
+    for sec_name, sec_text in (sections or {}).items():
+        if sec_name == 'skills':
+            continue
+        pool_lines.extend(
+            ln.strip() for ln in (sec_text or '').split('\n') if ln.strip())
+
+    def line_skills(ln_lower):
+        """Distinct skills confirmed present in this line (cheap
+        substring prefilter before the word-boundary regex)."""
+        hits = set()
+        for name, form_pats in patterns.items():
+            for form, pat in form_pats:
+                if form in ln_lower and pat.search(ln_lower):
+                    hits.add(name)
+                    break
+        return hits
+
+    occurrences = {name: 0 for name in patterns}
+    supporting = {name: 0 for name in patterns}
+    for ln in pool_lines:
+        ln_lower = ln.lower()
+        hits = line_skills(ln_lower)
+        for name in hits:
+            occurrences[name] += sum(len(pat.findall(ln_lower))
+                                     for _, pat in patterns[name])
+        if not hits or len(hits) > _MAX_SKILLS_PER_SUPPORT_LINE:
+            continue  # disguised list: evidences nothing
+        ln_tokens = set(_REP_TOKEN_RE.findall(ln_lower))
+        has_verb = bool(ln_tokens & _VERB_FORMS)
+        has_metric = bool(_METRIC_RE.search(ln))
+        if has_verb or has_metric:
+            for name in hits:
+                supporting[name] += 1
+
+    # Skills-section-only occurrences still count toward repetition.
+    skills_text = (sections or {}).get('skills', '').lower()
+    for name, form_pats in patterns.items():
+        occurrences[name] += sum(len(pat.findall(skills_text))
+                                 for _, pat in form_pats)
+
+    supported = {}
+    cats_supported = set()
+    for name in patterns:
+        if supporting[name] < 1:
+            continue
+        occ = occurrences[name]
+        rep_factor = 1.0 if occ <= _SKILL_OCC_CAP else (_SKILL_OCC_CAP / occ) ** 2
+        supported[name] = rep_factor
+        if rep_factor >= 0.5 and categories.get(name):
+            cats_supported.add(categories[name])
+    n_unsupported = sum(1 for name in patterns if supporting[name] < 1)
+    return supported, n_unsupported, cats_supported
+
+
 def _word_points(word_count, gaming_detected):
     """Word-count component (max 6). Peaks at a standard 1-2 page resume;
     very short or very long documents taper off. Withheld entirely when
@@ -154,23 +386,28 @@ def _word_points(word_count, gaming_detected):
 def _bullet_strength(experience_text, text_lower):
     """Fraction of experience lines that are 'strong': they start with an
     action verb AND (carry a metric OR run 8+ words). Returns
-    (score_0_to_4, total_lines, strong_lines). No experience section ->
-    (0, 0, 0) with the detail saying so (adding the section is itself
-    the fix, and the fix checklist says that)."""
+    (score_0_to_4, total_lines, strong_lines, dup_ratio). Near-duplicate
+    bullets (Eval-3 anti-gaming) collapse first: only unique lines can
+    be strong, and the score is spread over ALL original lines, so 22
+    copies of one template earn ~1/22 of the points instead of 22/22.
+    No experience section -> (0, 0, 0, 0) with the detail saying so
+    (adding the section is itself the fix, and the fix checklist says
+    that)."""
     if not experience_text:
-        return 0.0, 0, 0
+        return 0.0, 0, 0, 0.0
     lines = [ln.strip() for ln in experience_text.split('\n') if ln.strip()]
     if not lines:
-        return 0.0, 0, 0
+        return 0.0, 0, 0, 0.0
+    unique, dup_ratio = _dedup_lines(lines)
     strong = 0
-    for ln in lines:
+    for ln in unique:
         first = re.split(r'\s+', ln.strip(), maxsplit=1)[0].strip('•-*').lower()
         first = re.sub(r'[^a-z]', '', first)
         starts_with_verb = first in _VERB_FORMS
         has_metric = bool(_METRIC_RE.search(ln))
         if starts_with_verb and (has_metric or len(ln.split()) >= 8):
             strong += 1
-    return 4.0 * (strong / len(lines)), len(lines), strong
+    return 4.0 * (strong / len(lines)), len(lines), strong, dup_ratio
 
 
 def _date_consistency(experience_text):
@@ -242,31 +479,44 @@ def calculate_ats_score(resume_text, sections, skills, experience_years):
                     + f", {len(optional_found)} bonus sections"),
     }
 
-    # 2. Skills & Keywords (25 points): smooth curve over skill count
-    # plus category diversity — no cliffs, no hard cap below 25.
+    # 2. Skills & Keywords (25 points): CONTEXT-AWARE (Eval-3
+    # anti-gaming). A skill earns full weight only with supporting
+    # context — mentioned outside the skills section next to an action
+    # verb or a quantified metric. The main curve (20 pts) runs over
+    # repetition-decayed supported evidence plus evidenced-category
+    # diversity; bare comma-separated list mentions earn only a small
+    # flat credit (5 pts, capped), so stuffing dozens of keywords into
+    # SKILLS can never saturate the component. No cliffs.
+    supported, n_unsupported, cats_supported = _analyze_skill_support(
+        skills, sections)
     num_skills = len(skills)
-    categories = {s.get('category') for s in skills
-                  if isinstance(s, dict) and s.get('category')}
-    effective = num_skills + 0.5 * len(categories)
-    skill_score = 25.0 * _curve(effective, 10)
+    supported_effective = sum(supported.values()) + 0.5 * len(cats_supported)
+    skill_score = (20.0 * _curve(supported_effective, 2.0)
+                   + min(5.0, 0.35 * n_unsupported))
+    skill_score = max(0.0, min(skill_score, 25.0))
     scores['skills'] = {
         'score': round(skill_score, 1),
         'max': 25,
         'label': 'Skills & Keywords',
-        'details': f"{num_skills} skills found across {len(categories)} categories",
+        'details': (f"{num_skills} skills found: {len(supported)} with supporting "
+                    f"context across {len(cats_supported)} evidenced categories, "
+                    f"{n_unsupported} list-only (flat credit, capped)"),
     }
 
     # 3. Content Quality (20 points): word curve (6) + distinct action
     # verbs (5) + quantified achievements (5) + bullet strength (4),
-    # minus a weak-phrase penalty (up to 2).
+    # minus a weak-phrase penalty (up to 2) and a keyword-repetition
+    # stuffing penalty (up to 8, Eval-3 anti-gaming).
     word_count = len(resume_text.split())
     _text_lower = resume_text.lower()
     verbs_found = _find_verbs(_text_lower)
     metrics = _find_metrics(resume_text)
-    bullet_score, bullet_total, bullet_strong = _bullet_strength(
+    bullet_score, bullet_total, bullet_strong, bullet_dup = _bullet_strength(
         sections.get('experience', ''), _text_lower)
     weak_count = _count_weak_phrases(_text_lower)
-    penalty = min(2.0, 0.5 * weak_count)
+    weak_penalty = min(2.0, 0.5 * weak_count)
+    rep_penalty, rep_excess, rep_worst = _repetition_penalty(_text_lower)
+    penalty = weak_penalty + rep_penalty
     content_score = (
         _word_points(word_count, _gaming_detected)
         + 5.0 * _curve(len(verbs_found), 4)
@@ -281,7 +531,14 @@ def calculate_ats_score(resume_text, sections, skills, experience_years):
     if metrics:
         _content_details += f" (e.g. {', '.join(sorted(metrics)[:3])})"
     if weak_count:
-        _content_details += f"; {weak_count} vague phrase(s) (-{penalty:.1f})"
+        _content_details += f"; {weak_count} vague phrase(s) (-{weak_penalty:.1f})"
+    if rep_excess:
+        _worst_str = ', '.join(f"{t} x{c}" for t, c in rep_worst)
+        _content_details += (f"; keyword repetition: {rep_excess} excess repeats "
+                             f"(-{rep_penalty:.1f}; e.g. {_worst_str})")
+    if bullet_dup > 0.5:
+        _content_details += (f"; {bullet_dup:.0%} of experience lines are "
+                             "near-duplicates (template filler discounted)")
     if _gaming_detected:
         _content_details += " — repetitive text detected, word-count points withheld"
     scores['content'] = {
@@ -311,10 +568,19 @@ def calculate_ats_score(resume_text, sections, skills, experience_years):
     }
 
     # 5. Experience (15 points): smooth years curve; fallbacks when no
-    # year estimate exists but the section does.
+    # year estimate exists but the section does. Anti-gaming (Eval-3):
+    # claimed years are discounted when the experience section is
+    # mostly near-duplicate template bullets — mass-duplicated filler
+    # cannot evidence years of work. (bullet_dup comes from the
+    # content component's dedup analysis above.)
     if experience_years and experience_years > 0:
         exp_score = 15.0 * _curve(experience_years, 3)
         exp_detail = f"~{experience_years} years of experience detected (education dates excluded)"
+        if bullet_dup > 0.5:
+            _exp_factor = max(0.2, 1.0 - 0.8 * bullet_dup)
+            exp_score *= _exp_factor
+            exp_detail += (f"; duplicated-bullet discount x{_exp_factor:.2f} "
+                           f"({bullet_dup:.0%} near-duplicate lines)")
     elif 'experience' in sections:
         exp_score = 3.0
         exp_detail = "experience section present, no year estimate"

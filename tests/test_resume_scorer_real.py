@@ -206,3 +206,117 @@ def test_honesty_note_and_grade_mapping():
     assert result["max_score"] == 100
     assert result["grade"] in ("A", "B", "C", "D", "F")
     assert result["percentage"] == result["total_score"]
+
+
+# ---------------------------------------------------------------------------
+# Eval 3 anti-gaming regression tests (2026-10-31).
+#
+# An external eval found a keyword-stuffed junk resume scoring 63 vs 72
+# for a clean resume — far too narrow. The scorer now hardens two
+# vectors (see models/ats_scorer.py):
+#   (a) repetition caps / diminishing returns: repeated occurrences of
+#       the same term beyond a threshold contribute progressively less;
+#   (b) context-aware skill detection: bare comma-separated skill lists
+#       score lower than skills embedded in achievement bullets.
+# ---------------------------------------------------------------------------
+
+#: Realistic keyword-stuffed junk: every section present, a 50-skill
+#: bare list, and template filler bullets that repeat the same six
+#: keywords next to distinct action verbs and fabricated metrics.
+JUNK_STUFFED = """Alex Gamer
+alex.gamer@gmail.com | +91 99999 88888
+SUMMARY
+Results-driven technology professional with a passion for synergy and digital transformation.
+EXPERIENCE
+Senior Specialist, HustleCorp, 2019-2025
+Developed cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 7%.
+Designed cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 14%.
+Implemented cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 21%.
+Managed cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 28%.
+Created cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 35%.
+Built cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 42%.
+Led cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 49%.
+Launched cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 56%.
+Optimized cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 63%.
+Reduced cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 70%.
+Increased cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 77%.
+Automated cutting-edge solutions leveraging Python, Docker, Kubernetes, AWS, React and TensorFlow, improving outcomes by 84%.
+EDUCATION
+B.Tech Computer Science, Some University, 2015-2019
+SKILLS
+Python, Docker, Kubernetes, AWS, React, TensorFlow, JavaScript, TypeScript, Node.js, Java, SQL, MongoDB, PostgreSQL, Git, Linux, Django, Flask, FastAPI, Redis, GraphQL, PyTorch, Keras, Computer Vision, Pandas, NumPy, Scikit-learn, Airflow, Apache Spark, Kafka, Jenkins, Terraform, Ansible, Elasticsearch, Vue, Angular, Next.js, Express, Spring, MySQL, SQLite, Cassandra, Neo4j, Figma, Adobe Photoshop, Illustrator, Selenium, Cypress, Jest, PyTest, JUnit
+PROJECTS
+Delivered multiple enterprise projects using modern technologies and best practices.
+"""
+
+
+def test_stuffed_junk_scores_far_below_clean():
+    junk = score(JUNK_STUFFED)
+    clean = score(STRONG_ML)
+    gap = clean["total_score"] - junk["total_score"]
+    assert gap >= 25.0, f"anti-gaming gap too narrow: clean={clean['total_score']}, junk={junk['total_score']}"
+
+
+def test_stuffed_junk_stays_low_in_absolute_terms():
+    # Even a well-formatted stuffed resume must not reach "good" territory.
+    assert score(JUNK_STUFFED)["total_score"] < 55.0
+
+
+def test_stuffed_junk_discloses_gaming_signals():
+    breakdown = score(JUNK_STUFFED)["breakdown"]
+    assert "repetition" in breakdown["content"]["details"]
+    assert "near-duplicate" in breakdown["content"]["details"]
+    assert "list-only" in breakdown["skills"]["details"]
+    assert "duplicated-bullet" in breakdown["experience"]["details"]
+
+
+def test_clean_score_stays_in_band():
+    # Pre-change (2026-10-31, measured) STRONG_ML scored 77.9; the
+    # anti-gaming hardening must not tank honest resumes.
+    total = score(STRONG_ML)["total_score"]
+    assert abs(total - 77.9) <= 4.0, f"honest score moved too far: {total}"
+    assert 68.0 <= total <= 82.0
+
+
+def test_embedded_skills_beat_bare_lists():
+    """Same 8 skills: embedded in achievement bullets must beat a bare
+    comma-separated list by a clear margin (context-aware detection)."""
+    header = ("Sam Lee\nsam.lee@gmail.com | +91 98111 22233\n"
+              "SUMMARY\nBackend engineer with 3 years of experience.\n")
+    skills_block = "Python, SQL, Docker, Kubernetes, AWS, Git, Linux, React"
+    bare = (header + "EXPERIENCE\nBackend Engineer, Acme, 2022-2025\n"
+            "Maintained internal dashboards and handled support tickets.\n"
+            "EDUCATION\nB.Tech, Some University, 2018-2022\n"
+            "SKILLS\n" + skills_block + "\n")
+    embedded = (header + "EXPERIENCE\nBackend Engineer, Acme, 2022-2025\n"
+                "Built a Python API backed by SQL that served 10,000 requests per day.\n"
+                "Deployed Docker containers on Kubernetes clusters hosted on AWS, cutting release time by 40%.\n"
+                "Automated Git workflows on Linux servers, saving 20 hours per month.\n"
+                "Created a React dashboard used by 200 customers.\n"
+                "EDUCATION\nB.Tech, Some University, 2018-2022\n"
+                "SKILLS\n" + skills_block + "\n")
+    bare_skills = score(bare)["breakdown"]["skills"]["score"]
+    embedded_skills = score(embedded)["breakdown"]["skills"]["score"]
+    assert embedded_skills > bare_skills + 3.0, \
+        f"embedded={embedded_skills}, bare={bare_skills}"
+
+
+def test_repeated_skill_mentions_decay():
+    """Repeating one skill dozens of times must not raise its score —
+    occurrences beyond the cap decay toward zero."""
+    base = ("Robin Hood\nrobin.hood@gmail.com\n"
+            "EXPERIENCE\nDeveloper, Sherwood, 2021-2024\n"
+            "Built a Python tool that processed 500 files per day.\n"
+            "Maintained Python scripts for the team.\n"
+            "SKILLS\nPython, Git\n")
+    stuffed = base + "\n".join("Python " * 20 for _ in range(15)) + "\n"
+    base_skills = score(base)["breakdown"]["skills"]["score"]
+    stuffed_skills = score(stuffed)["breakdown"]["skills"]["score"]
+    assert stuffed_skills <= base_skills, \
+        f"repetition raised the skills score: base={base_skills}, stuffed={stuffed_skills}"
+
+
+def test_template_bullets_collapse():
+    """22 copies of one bullet template must earn ~1/22 of the bullet
+    points, not 22/22."""
+    assert "1/13 strong" in score(JUNK_STUFFED)["breakdown"]["content"]["details"]
