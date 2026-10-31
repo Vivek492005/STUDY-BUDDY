@@ -22,7 +22,7 @@
             </div>
             {% if mentor.bio %}<p style="max-width:60rem;margin-top:1rem;">{{ mentor.bio }}</p>{% endif %}
             <div class="b-cta-row" style="margin-top:1rem;">
-                <a class="b-btn b-btn--sm" href="{{ url_for('mentors_hub') }}">← All mentors</a>
+                <a class="b-btn b-btn--sm" href="{{ url_for('mentors.mentors_hub') }}">← All mentors</a>
                 {% if mentor.linkedin_url %}<a class="b-btn b-btn--sm" href="{{ mentor.linkedin_url }}" target="_blank" rel="noopener">LinkedIn</a>{% endif %}
             </div>
         </div>

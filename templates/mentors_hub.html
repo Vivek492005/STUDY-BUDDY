@@ -15,7 +15,7 @@
             <h1>Learn from people <span class="b-grad">who've walked the path</span>.</h1>
             <p class="b-lede">Book a seat in a mentor's office hour, arrive with a real question, and leave with action notes. Attending a session earns <strong>+30 XP</strong>; sharing feedback earns <strong>+10 XP</strong>.</p>
             <div class="b-cta-row" style="margin-top:1rem;">
-                <a class="b-btn b-btn--primary" href="{{ url_for('mentor_apply_form') }}">Become a mentor</a>
+                <a class="b-btn b-btn--primary" href="{{ url_for('mentors.mentor_apply_form') }}">Become a mentor</a>
             </div>
         </div>
     </div>
@@ -24,9 +24,9 @@
 {# ---------- Path filter ---------- #}
 <section class="b-section" aria-label="Filter by path">
     <div class="b-cta-row">
-        <a class="b-btn b-btn--sm {% if not path_filter %}b-btn--primary{% endif %}" href="{{ url_for('mentors_hub') }}">All paths</a>
+        <a class="b-btn b-btn--sm {% if not path_filter %}b-btn--primary{% endif %}" href="{{ url_for('mentors.mentors_hub') }}">All paths</a>
         {% for key, label in paths %}
-        <a class="b-btn b-btn--sm {% if path_filter == key %}b-btn--primary{% endif %}" href="{{ url_for('mentors_hub', path=key) }}">{{ label }}</a>
+        <a class="b-btn b-btn--sm {% if path_filter == key %}b-btn--primary{% endif %}" href="{{ url_for('mentors.mentors_hub', path=key) }}">{{ label }}</a>
         {% endfor %}
     </div>
 </section>
@@ -52,13 +52,13 @@
             </div>
             <p style="color:var(--b-muted);font-size:.9rem;margin:.8rem 0 0;">{{ m.bio[:180] }}{% if m.bio and m.bio|length > 180 %}…{% endif %}</p>
             <div class="b-cta-row" style="margin-top:1rem;">
-                <a class="b-btn b-btn--sm" href="{{ url_for('mentor_profile', mentor_id=m.id) }}">View profile</a>
+                <a class="b-btn b-btn--sm" href="{{ url_for('mentors.mentor_profile', mentor_id=m.id) }}">View profile</a>
             </div>
         </article>
         {% endfor %}
     </div>
     {% else %}
-    <div class="b-card b-reveal"><p style="color:var(--b-muted);margin:0;">No mentors listed for this path yet. <a href="{{ url_for('mentor_apply_form') }}">Apply to become one</a>.</p></div>
+    <div class="b-card b-reveal"><p style="color:var(--b-muted);margin:0;">No mentors listed for this path yet. <a href="{{ url_for('mentors.mentor_apply_form') }}">Apply to become one</a>.</p></div>
     {% endif %}
 </section>
 
@@ -75,7 +75,7 @@
             <p style="font-size:.9rem;margin:.4rem 0;">{{ oh.scheduled_at.strftime('%a, %b %d · %I:%M %p') }} · {{ oh.duration_min }} min</p>
             <p style="font-size:.86rem;color:var(--b-muted);margin:.2rem 0 0;">Seats: {{ oh.bookings.filter_by(status='booked').count() + oh.bookings.filter_by(status='attended').count() }} / {{ oh.capacity }}{% if oh.status == 'full' %} — <strong>FULL</strong>{% endif %}</p>
             <div class="b-cta-row" style="margin-top:1rem;">
-                <a class="b-btn b-btn--sm b-btn--primary" href="{{ url_for('mentor_profile', mentor_id=oh.mentor_id) }}">Book a seat</a>
+                <a class="b-btn b-btn--sm b-btn--primary" href="{{ url_for('mentors.mentor_profile', mentor_id=oh.mentor_id) }}">Book a seat</a>
             </div>
         </article>
         {% endfor %}
@@ -96,7 +96,7 @@
             <h3 style="margin:.6rem 0 .2rem;font-size:1rem;">{{ b.session.topic }}</h3>
             <p style="color:var(--b-muted);font-size:.88rem;margin:.2rem 0;">{{ b.session.mentor.name }} · {{ b.session.scheduled_at.strftime('%a, %b %d · %I:%M %p') }}</p>
             <div class="b-cta-row" style="margin-top:1rem;">
-                <a class="b-btn b-btn--sm" href="{{ url_for('mentor_profile', mentor_id=b.session.mentor_id) }}">Open</a>
+                <a class="b-btn b-btn--sm" href="{{ url_for('mentors.mentor_profile', mentor_id=b.session.mentor_id) }}">Open</a>
             </div>
         </article>
         {% endfor %}
