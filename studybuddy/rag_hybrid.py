@@ -43,8 +43,8 @@ from studybuddy.pdf_qa import retrieve as lexical_retrieve
 
 #: Pinned Gemini embedding model + dims (changing either requires
 #: re-embedding: vector spaces are NOT compatible across models).
-GEMINI_EMBEDDING_MODEL = "models/text-embedding-004"
-GEMINI_EMBEDDING_DIMS = 768
+GEMINI_EMBEDDING_MODEL = "models/gemini-embedding-001"
+GEMINI_EMBEDDING_DIMS = 3072
 
 #: Texts per embedding API call (free-tier RPM is the binding constraint).
 EMBED_BATCH_SIZE = 32
@@ -86,7 +86,7 @@ class Embedder(abc.ABC):
 
 
 class GeminiEmbedder(Embedder):
-    """Gemini embedding API (pinned model, 768 dims).
+    """Gemini embedding API (pinned model, 3072 dims).
 
     The API key is read from ``GEMINI_API_KEY`` on every call and never
     stored or logged. Calls are batched; failures raise ``RuntimeError``

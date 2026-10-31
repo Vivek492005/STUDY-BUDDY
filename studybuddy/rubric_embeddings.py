@@ -37,7 +37,7 @@ from __future__ import annotations
 import math
 import os
 
-EMBEDDING_MODEL = "text-embedding-004"
+EMBEDDING_MODEL = "gemini-embedding-001"
 _FLAG_ENV = "RUBRIC_EMBEDDINGS"
 
 
