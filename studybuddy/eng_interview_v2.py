@@ -155,7 +155,12 @@ def semantic_similarity(a, b, embed=None):
     """
     if embed is not None:
         try:
-            return max(0.0, min(1.0, float(_cosine_vec(list(embed(a)), list(embed(b))))))
+            from studybuddy.rubric_embeddings import (
+                calibrated_embedding_similarity)
+            va, vb = embed(a), embed(b)
+            if va and vb:
+                return calibrated_embedding_similarity(a, b, va, vb)
+            raise ValueError("embed returned None")
         except Exception:
             pass  # fall through to the improved TF-IDF fallback
         candidates = _sentences(b) + [b or ""]

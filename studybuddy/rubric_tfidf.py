@@ -144,6 +144,39 @@ def _cosine_from_counters(ca: Counter, cb: Counter) -> float:
     return max(0.0, min(1.0, dot / (na * nb)))
 
 
+def unigram_recall(a_text: str | None, b_text: str | None) -> float:
+    """Fraction of a's content tokens appearing in b (order-blind).
+
+    Used by the embedding scramble guard: high unigram recall + low
+    bigram recall = same words, shuffled order (keyword salad).
+    """
+    a_toks = tokenize(a_text)
+    b_toks = set(tokenize(b_text))
+    if not a_toks:
+        return 0.0
+    return sum(1 for t in a_toks if t in b_toks) / len(a_toks)
+
+
+def ngram_order_recall(a_text: str | None, b_text: str | None,
+                       n: int = 2) -> float:
+    """Fraction of a's n-grams appearing in b (order-sensitive).
+
+    Scrambled text keeps its unigrams but loses n-gram overlap, so this
+    drops toward 0 for word salad while staying high for coherent
+    paraphrases of the same phrasing. Returns 1.0 when a has no n-grams
+    (too short to judge order).
+    """
+    a_toks = tokenize(a_text)
+    b_toks = tokenize(b_text)
+    if len(a_toks) < n:
+        return 1.0
+    a_ng = ["_".join(a_toks[i:i + n]) for i in range(len(a_toks) - n + 1)]
+    b_ng = set("_".join(b_toks[i:i + n]) for i in range(len(b_toks) - n + 1))
+    if not a_ng:
+        return 1.0
+    return sum(1 for g in a_ng if g in b_ng) / len(a_ng)
+
+
 def improved_tfidf_cosine(a_text: str | None, b_text: str | None) -> float:
     """Improved lexical TF-IDF cosine similarity in [0, 1].
 

@@ -28,6 +28,7 @@ sys.path.insert(0, str(ROOT / "tests"))
 
 from studybuddy.mock_interview import _key_point_similarity  # noqa: E402
 from studybuddy.rubric_embeddings import (  # noqa: E402
+    calibrated_embedding_similarity,
     cosine_vectors,
     gemini_embed,
     memoized_embed,
@@ -53,8 +54,8 @@ def main() -> int:
           "format only, not real semantics.")
     print()
     print(f"{'pair':<20} {'judgment':<15} {'legacy':>7} {'improved':>9} "
-          f"{'mocked':>8} {'live':>10}")
-    print("-" * 92)
+          f"{'mocked':>8} {'live':>10} {'calibrated':>10}")
+    print("-" * 104)
     for pair in PAIRS:
         legacy, _ = _key_point_similarity(
             [pair["key_point"]], pair["candidate"])
@@ -64,15 +65,19 @@ def main() -> int:
         va, vb = _stub_embed(pair["key_point"]), _stub_embed(pair["candidate"])
         mocked = f"{cosine_vectors(va, vb):.4f}"
         live_str = "n/a"
+        cal_str = "n/a"
         if live:
             ea = embed(pair["key_point"])
             eb = embed(pair["candidate"])
             if ea and eb:
-                live_str = f"{cosine_vectors(ea, eb):.4f}"
+                live_raw = cosine_vectors(ea, eb)
+                live_str = f"{live_raw:.4f}"
+                cal_str = (f"{calibrated_embedding_similarity(pair['key_point'], pair['candidate'], ea, eb):.4f}")
             else:
                 live_str = "failed"
+                cal_str = "failed"
         print(f"{pair['id']:<20} {pair['judgment']:<15} {legacy:>7.4f} "
-              f"{improved:>9.4f} {mocked:>8} {live_str:>10}")
+              f"{improved:>9.4f} {mocked:>8} {live_str:>10} {cal_str:>10}")
     print()
     print("Judgments are human labels from the calibration file. Legacy and")
     print("improved TF-IDF are deterministic. Live Gemini numbers appear")

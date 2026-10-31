@@ -372,3 +372,45 @@ def test_v2_improved_fallback_on_embed_failure():
     improved = semantic_similarity(
         scr["key_point"], scr["candidate"], embed=_failing_embed)
     assert improved != legacy_recall
+
+
+def test_calibrated_cosine_baseline_shift():
+    """calibrated_cosine: random baseline (~0.50) maps to 0, 1.0 stays 1."""
+    from studybuddy.rubric_embeddings import calibrated_cosine
+    # Vectors with cosine exactly at/below baseline -> 0
+    va = [1.0, 0.0]
+    vb = [1.0, 1.0]  # cosine = 1/sqrt(2) ~= 0.7071
+    assert calibrated_cosine(va, vb) == round((0.7071 - 0.50) / 0.50, 4)
+    # Orthogonal vectors (cosine 0) -> 0
+    assert calibrated_cosine([1.0, 0.0], [0.0, 1.0]) == 0.0
+    # Identical vectors -> 1.0
+    assert calibrated_cosine([1.0, 2.0], [1.0, 2.0]) == 1.0
+    # Empty vectors -> 0.0 (never raises)
+    assert calibrated_cosine([], [1.0]) == 0.0
+
+
+def test_calibrated_embedding_similarity_scramble_guard():
+    """Severe word salad (high unigram, ~zero bigram recall) is scaled
+    down; mild reorderings and paraphrases are unaffected."""
+    from studybuddy.rubric_embeddings import calibrated_embedding_similarity
+    va = [1.0] * 8
+    vb = [0.95] * 8  # raw cosine ~1.0 -> calibrated 1.0
+    kp = "Cache results to avoid repeated computation"
+    severe = "computation repeated avoid to results Cache"
+    got = calibrated_embedding_similarity(kp, severe, va, vb)
+    assert got < 0.40, f"severe scramble should be penalized, got {got}"
+    # Paraphrase (low unigram overlap) must NOT trigger the guard
+    para = "Store outputs so you do not recompute them"
+    got_para = calibrated_embedding_similarity(kp, para, va, vb)
+    assert got_para == 1.0, f"paraphrase wrongly penalized: {got_para}"
+
+
+def test_ngram_helpers():
+    """unigram_recall / ngram_order_recall behave as documented."""
+    from studybuddy.rubric_tfidf import ngram_order_recall, unigram_recall
+    a = "quick brown fox jumps"
+    assert unigram_recall(a, "quick brown fox") == 0.75
+    assert ngram_order_recall(a, "quick brown fox runs") > 0.5
+    assert ngram_order_recall(a, "fox brown quick jumps") == 0.0
+    assert ngram_order_recall("hi", "hi there") == 1.0  # too short: 1.0
+    assert unigram_recall("", "x") == 0.0

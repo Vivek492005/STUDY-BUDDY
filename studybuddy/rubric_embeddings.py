@@ -40,6 +40,12 @@ import os
 EMBEDDING_MODEL = "gemini-embedding-001"
 _FLAG_ENV = "RUBRIC_EMBEDDINGS"
 
+#: Random-pair baseline for gemini-embedding-001 cosine similarity.
+#: Measured 2026-10-31: unrelated calibration pairs score ~0.50, not 0.
+#: Raw cosines live in a compressed range, so calibrated_cosine() maps
+#: [baseline, 1.0] -> [0.0, 1.0] to make scores mean what they look like.
+EMBEDDING_RANDOM_BASELINE = 0.50
+
 
 def embeddings_enabled() -> bool:
     """True only when the RUBRIC_EMBEDDINGS flag is on (default OFF).
@@ -68,6 +74,55 @@ def cosine_vectors(va, vb) -> float:
     if na == 0.0 or nb == 0.0:
         return 0.0
     return max(0.0, min(1.0, dot / (na * nb)))
+
+
+def calibrated_cosine(va, vb,
+                      baseline: float = EMBEDDING_RANDOM_BASELINE) -> float:
+    """Embedding cosine shifted so the random-pair baseline maps to 0.
+
+    Raw embedding cosines live in a compressed range (unrelated texts
+    score ~0.50 on gemini-embedding-001, not 0). This linearly maps
+    [baseline, 1.0] -> [0.0, 1.0], clamping at-baseline-or-below to 0.
+    Makes scores mean what they look like: 0 = nothing in common.
+    """
+    raw = cosine_vectors(va, vb)
+    if raw <= baseline:
+        return 0.0
+    return round((raw - baseline) / (1.0 - baseline), 4)
+
+
+def calibrated_embedding_similarity(a_text: str | None,
+                                    b_text: str | None,
+                                    va, vb) -> float:
+    """Grading-ready similarity from embedding vectors + texts.
+
+    Two corrections on top of raw cosine (see calibration 2026-10-31):
+
+    1. Baseline shift (calibrated_cosine): unrelated pairs score ~0.50
+       raw, so shift the scale to make 0 mean "nothing in common".
+    2. Scramble guard: embeddings are order-blind — a shuffled
+       word-salad scores 0.84 raw. When unigram overlap is high but
+       bigram recall is low (same words, shuffled order), it's keyword
+       salad: scale the score down. Paraphrases (low unigram overlap)
+       are unaffected by the guard.
+
+    Returns a score in [0, 1]. Deterministic; never raises.
+    """
+    cal = calibrated_cosine(va, vb)
+    if cal <= 0.50:
+        return cal
+    try:
+        from studybuddy.rubric_tfidf import (ngram_order_recall,
+                                             unigram_recall)
+        uni = unigram_recall(a_text, b_text)
+        order = ngram_order_recall(a_text, b_text)
+    except Exception:
+        return cal
+    if uni > 0.60 and order < 0.30:
+        # Same words, shuffled: keyword salad. Scale down in proportion
+        # to incoherence (order=0 -> 0.25x, order=0.30 -> 1.0x).
+        cal = cal * (0.25 + 0.75 * (order / 0.30))
+    return round(max(0.0, min(1.0, cal)), 4)
 
 
 def gemini_embed(text: str) -> list[float] | None:

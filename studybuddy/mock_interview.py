@@ -28,7 +28,7 @@ import re
 from collections import Counter, defaultdict
 from typing import Any
 
-from studybuddy.rubric_embeddings import cosine_vectors
+from studybuddy.rubric_embeddings import calibrated_embedding_similarity
 from studybuddy.rubric_tfidf import improved_key_point_similarity
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -284,7 +284,8 @@ def _key_point_similarity_with_signal(
                     if not kp_vec:
                         failed = True
                         break
-                    sims.append(round(cosine_vectors(ans_vec, kp_vec), 4))
+                    sims.append(calibrated_embedding_similarity(
+                        kp, answer, kp_vec, ans_vec))
                 if not failed and sims:
                     return sum(sims) / len(sims), sims, "embeddings"
         except Exception:
