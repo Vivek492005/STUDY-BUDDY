@@ -17,7 +17,7 @@
             <li><a href="{{ url_for('interview_home') }}">Mock Interviews <span>{{ interviews|length }} sessions</span></a></li>
             <li><a href="{{ url_for('dsa.dsa_home') }}">DSA Practice <span>Solve</span></a></li>
             <li><a href="{{ url_for('research_home') }}">Research Hub <span>Open</span></a></li>
-            <li><a href="{{ url_for('tracker_board') }}">Application Tracker <span>{{ tracker_stats.total if tracker_stats else 0 }} tracked</span></a></li>
+            <li><a href="{{ url_for('career.tracker_board') }}">Application Tracker <span>{{ tracker_stats.total if tracker_stats else 0 }} tracked</span></a></li>
             <li><a href="{{ url_for('learn.learn_hub') }}">Learn Hub <span>Open</span></a></li>
         </ul>
     </aside>
@@ -152,14 +152,14 @@
 </div>
 {% if tracker_stats and tracker_stats.total %}
 <div class="b-bento">
-    <a class="b-card b-card--lite b-reveal" href="{{ url_for('tracker_board') }}" style="text-decoration:none;">
+    <a class="b-card b-card--lite b-reveal" href="{{ url_for('career.tracker_board') }}" style="text-decoration:none;">
         <div style="font-weight:600;margin-bottom:.3rem;">{{ tracker_stats.total }} applications tracked</div>
         <div style="color:var(--b-muted);font-size:.82rem;margin-bottom:.6rem;">Response rate {{ tracker_stats.response_rate }}%</div>
         <span class="b-tag">Open board</span>
     </a>
 </div>
 {% else %}
-<div class="b-card b-reveal"><p style="color:var(--b-muted);">No applications tracked yet. <a href="{{ url_for('tracker_board') }}" style="color:var(--b-a3);">Open the Kanban board</a> and add your first application.</p></div>
+<div class="b-card b-reveal"><p style="color:var(--b-muted);">No applications tracked yet. <a href="{{ url_for('career.tracker_board') }}" style="color:var(--b-a3);">Open the Kanban board</a> and add your first application.</p></div>
 {% endif %}
 
 <div class="b-sec-head b-reveal" style="margin-top:2.5rem;">
@@ -169,7 +169,7 @@
 {% if assessments %}
 <div class="b-bento">
     {% for a in assessments %}
-    <a class="b-card b-card--lite b-reveal" href="{{ url_for('view_assessment', assessment_id=a.id) }}" style="text-decoration:none;">
+    <a class="b-card b-card--lite b-reveal" href="{{ url_for('career.view_assessment', assessment_id=a.id) }}" style="text-decoration:none;">
         <div style="font-weight:600;margin-bottom:.3rem;">Career discovery result</div>
         <div style="color:var(--b-muted);font-size:.82rem;margin-bottom:.6rem;">{{ a.created_at.strftime('%d %b %Y, %I:%M %p') }}</div>
         <span class="b-tag">View matches</span>
@@ -177,7 +177,7 @@
     {% endfor %}
 </div>
 {% else %}
-<div class="b-card b-reveal"><p style="color:var(--b-muted);">No assessments yet. <a href="{{ url_for('assessment_quiz') }}" style="color:var(--b-a3);">Take the career-discovery quiz</a> and your results will appear here.</p></div>
+<div class="b-card b-reveal"><p style="color:var(--b-muted);">No assessments yet. <a href="{{ url_for('career.assessment_quiz') }}" style="color:var(--b-a3);">Take the career-discovery quiz</a> and your results will appear here.</p></div>
 {% endif %}
 
 <div class="b-sec-head b-reveal" style="margin-top:2.5rem;">

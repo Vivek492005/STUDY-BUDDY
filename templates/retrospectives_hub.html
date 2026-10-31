@@ -51,7 +51,7 @@
             <h1>Turn rejections into <span class="b-grad">experiments</span>.</h1>
             <p class="b-lede">Compare your conversion by role, stage, and source. Every suggestion below is framed as a hypothesis — observed patterns are yours, causes are guesses, and the next step is always a test.</p>
             <div class="b-cta-row">
-                <a class="b-btn b-btn--primary" href="{{ url_for('tracker_board') }}">Open application tracker</a>
+                <a class="b-btn b-btn--primary" href="{{ url_for('career.tracker_board') }}">Open application tracker</a>
                 {% if total_retros == 0 %}
                 <span class="b-pill">Log one retrospective to unlock your first insight</span>
                 {% endif %}
@@ -85,7 +85,7 @@
             <span style="color:var(--b-muted);font-size:.85rem;">Rejections are outcomes to learn from, not funnel drop-offs. Reflect on one below.</span>
         </div>
         {% if funnel.total == 0 %}
-        <p style="color:var(--b-muted);margin-top:1rem;">No applications tracked yet — <a href="{{ url_for('tracker_board') }}">add some in the tracker</a> and this funnel will come alive.</p>
+        <p style="color:var(--b-muted);margin-top:1rem;">No applications tracked yet — <a href="{{ url_for('career.tracker_board') }}">add some in the tracker</a> and this funnel will come alive.</p>
         {% endif %}
     </div>
 </section>
