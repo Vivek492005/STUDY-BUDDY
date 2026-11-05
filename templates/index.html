@@ -214,7 +214,7 @@
                   for (i = 0; i < days.length; i++) {
                     var dd = days[i];
                     var a = dd.active || 0, q = dd.quizzes || 0, s = dd.dsa || 0;
-                    var h = Math.round((a / max) * 84);
+                    var h = Math.round((a / max) * 54);
                     var tip = dd.label + ' — ' + a + ' active · ' + q + ' quizzes · ' + s + ' DSA solved';
                     /* Weekday in <em> so narrow screens can drop it (CSS)
                        while the full label stays in the tooltip + text. */
