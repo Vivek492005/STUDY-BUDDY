@@ -54,6 +54,7 @@ tags:
   - name: career
   - name: mentors
   - name: salary
+  - name: traction
 paths:
   # ---------------------------------------------------------------- practice
   /api/companies:
@@ -576,6 +577,43 @@ paths:
   # ------------------------------------------------- public surface, added
   # 2026-10-28 (audit fix): the remaining public /api/* paths from
   # tests/route_policy.yaml. x-response-keys probed from live handlers.
+  /api/traction:
+    get:
+      tags: [traction]
+      summary: Live traction metrics from real platform data
+      x-flask-path: /api/traction
+      x-auth: public
+      x-response-keys: [active_today, active_week, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, generated_at, today_label, degraded]
+      responses:
+        '200':
+          description: Aggregate traction counts (60s server-side cache; never errors — a DB failure returns last-good numbers or honest zeros with degraded=true)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [active_today, active_week, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, generated_at, today_label, degraded]
+                properties:
+                  active_today: {type: integer}
+                  active_today_delta: {type: integer}
+                  active_week: {type: integer}
+                  total_users: {type: integer}
+                  sessions_today: {type: integer}
+                  sessions_today_delta: {type: integer}
+                  quizzes_today: {type: integer}
+                  quizzes_today_delta: {type: integer}
+                  quizzes_total: {type: integer}
+                  dsa_today: {type: integer}
+                  dsa_today_delta: {type: integer}
+                  dsa_total: {type: integer}
+                  interviews_today: {type: integer}
+                  interviews_today_delta: {type: integer}
+                  interviews_total: {type: integer}
+                  resumes_today: {type: integer}
+                  resumes_today_delta: {type: integer}
+                  resumes_total: {type: integer}
+                  generated_at: {type: string}
+                  today_label: {type: string}
+                  degraded: {type: boolean}
   /api/career/freshness:
     get:
       tags: [career]

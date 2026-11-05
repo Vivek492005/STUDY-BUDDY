@@ -291,6 +291,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 # Import logic from Resume Analyzer components
 import studybuddy.mentor_health as mentor_health_mod
 import studybuddy.momentum as momentum_mod
+import studybuddy.traction as traction_mod
 import studybuddy.retrospective_data as retro_data
 from models.ats_scorer import calculate_ats_score
 from models.resume_feedback import generate_feedback, get_overall_summary
@@ -486,6 +487,36 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
+class TractionEvent(db.Model):
+    """One privacy-safe traction event (live dashboard tracker).
+
+    Append-only. Stores event type + timestamp + user id ONLY — no IP,
+    no user agent, no PII. Currently only ``session`` events exist:
+    a successful login, or a logged-in user's first landing-page /
+    dashboard visit of the day (remember-me sessions). Aggregate COUNTs
+    over this table power "active users" and "sessions today" in
+    studybuddy/traction.py.
+    """
+    __tablename__ = "traction_event"
+    id = db.Column(db.Integer, primary_key=True)
+    event_type = db.Column(db.String(30), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True,
+                        index=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False, index=True)
+
+    __table_args__ = (
+        db.Index("ix_traction_event_type_created",
+                 "event_type", "created_at"),
+        db.Index("ix_traction_event_user_created",
+                 "user_id", "created_at"),
+    )
+
+    user = db.relationship("User", backref=db.backref("traction_events",
+                                                      lazy="dynamic",
+                                                      cascade="all, delete-orphan"))
+
+
 class PasswordResetToken(db.Model):
     """Single-use password reset token (SEC-09). Stores hash, not the token."""
     id = db.Column(db.Integer, primary_key=True)
@@ -508,7 +539,8 @@ class ResumeAnalysis(db.Model):
     # Cleaned resume text (truncated) so Wave-1 JD matching can reuse the
     # latest saved analysis without a re-upload.
     resume_text = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False, index=True)
 
     user = db.relationship("User", backref=db.backref("analyses", lazy="dynamic",
                                                      cascade="all, delete-orphan"))
@@ -737,7 +769,8 @@ class InterviewSession(db.Model):
     answers_json = db.Column(db.JSON)    # [{question_id, answer, scoring, feedback}]
     total_score = db.Column(db.Float)
     ai_powered = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False, index=True)
 
     user = db.relationship("User", backref=db.backref("interview_sessions", lazy="dynamic",
                                                       cascade="all, delete-orphan"))
@@ -763,9 +796,11 @@ class DSAProgress(db.Model):
     status = db.Column(db.String(20), default="attempted", nullable=False)  # attempted|solved|stuck
     hints_used = db.Column(db.Integer, default=0, nullable=False)
     code = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False, index=True)
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
-                           onupdate=lambda: datetime.now(UTC), nullable=False)
+                           onupdate=lambda: datetime.now(UTC), nullable=False,
+                           index=True)
 
     __table_args__ = (db.UniqueConstraint("user_id", "problem_id", name="uq_dsa_user_problem"),)
 
@@ -847,7 +882,8 @@ class QuizAttempt(db.Model):
     summary_json = db.Column(db.JSON)     # score + topic/difficulty analytics
     started_at = db.Column(db.DateTime, nullable=False)  # server timestamp
     submitted_at = db.Column(db.DateTime)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
+                           nullable=False, index=True)
 
     user = db.relationship("User", backref=db.backref("quiz_attempts", lazy="dynamic",
                                                       cascade="all, delete-orphan"))
@@ -2237,6 +2273,37 @@ def _momentum_hook(user_id, event_type):
                       event_type)
 
 
+def _traction_session_hook(user_id):
+    """Record a traction 'session' event after a successful login.
+
+    Defensive by design (100%-working law): never raises — a tracking
+    failure must never break login. Follows the _momentum_hook pattern.
+    """
+    try:
+        traction_mod.record_session_event(user_id)
+    except Exception:
+        log.exception("Traction session hook failed (non-fatal)")
+
+
+def _traction_rate_key():
+    """Rate-limit key for /api/traction.
+
+    Per-user when logged in; per-IP for anonymous visitors. The limit is
+    deliberately generous (6000/hour ≈ 100 simultaneous viewers per IP
+    polling every 60s) so a shared campus NAT can never lock out real
+    users — and even a 429 is harmless: the frontend keeps the last good
+    numbers and shows "updating…".
+    """
+    try:
+        if current_user.is_authenticated:
+            return f"traction-user:{current_user.id}"
+    except Exception:
+        pass
+    from flask_limiter.util import get_remote_address
+
+    return get_remote_address()
+
+
 def _career_hook(user_id, action, ref_id):
     """Phase 4 per-ref career XP hook (same never-raises contract as
     _momentum_hook). Called AFTER the handler's own commit succeeds."""
@@ -3583,6 +3650,14 @@ def register_routes(app):
         module-cached, so this costs nothing per request) — never
         hardcoded. Stale landing numbers were a 2026-10-24 eval finding.
         """
+        # Live Traction Tracker: record a session event for logged-in
+        # visitors (at most one per user per day). Defensive: never let
+        # tracking break the landing page.
+        if current_user.is_authenticated:
+            try:
+                traction_mod.ensure_daily_session_event(current_user.id)
+            except Exception:
+                log.exception("Traction daily session event failed (non-fatal)")
         return render_template(
             'index.html',
             num_interview=interview_hub_data()["total_questions"],
@@ -3863,6 +3938,7 @@ def register_routes(app):
                 return redirect(url_for('auth.login'))
             _rotate_session_on_login()
             login_user(user, remember=True)
+            _traction_session_hook(user.id)
             flash('Welcome{}!'.format(
                 f', {user.name}' if is_new else f' back, {user.name}'),
                 'success')
@@ -5727,6 +5803,13 @@ def register_routes(app):
         except Exception:
             log.exception("Momentum widget failed (non-fatal)")
             momentum_widget = None
+        # Live Traction Tracker: record a session event for remember-me
+        # users visiting the dashboard (at most one per user per day).
+        # Defensive: never let tracking break the dashboard.
+        try:
+            traction_mod.ensure_daily_session_event(current_user.id)
+        except Exception:
+            log.exception("Traction daily session event failed (non-fatal)")
         return render_template('history.html', analyses=analyses, goals=goals,
                                jd_matches=jd_matches, rewrites=rewrites,
                                cover_docs=cover_docs, linkedin_reports=linkedin_reports,
@@ -5739,6 +5822,23 @@ def register_routes(app):
                                cert_plans=cert_plans, cert_names=cert_names,
                                momentum_widget=momentum_widget,
                                star_competencies=dict((c[0], c[1]) for c in COMPETENCIES))
+
+    # ---------- LIVE TRACTION TRACKER ----------
+    # PUBLIC endpoint: the tracker lives on the public landing page, so
+    # logged-out visitors poll it too. No PII in the response (aggregate
+    # counts only), so no auth is needed.
+    @app.route('/api/traction')
+    @limiter.limit("6000 per hour", key_func=_traction_rate_key)
+    def api_traction():
+        """Live traction metrics — real DB counts, 60s server-side cache.
+
+        Fail-open by design (100%-working law): traction.get_traction()
+        never raises — on any error it returns the last good payload or
+        honest zeros — so this endpoint never 500s for any user, under
+        any condition. Rate limit is generous (6000/hour per key) so a
+        real user polling every 60s can never be locked out.
+        """
+        return jsonify(traction_mod.get_traction())
 
     # ---------- INDIA SALARY EXPLORER (Wave 1 #8) ----------
     @app.route('/salary')

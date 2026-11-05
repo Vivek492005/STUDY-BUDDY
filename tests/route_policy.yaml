@@ -277,6 +277,7 @@
 "/api/tracker/offers/compare": auth
 "/api/tracker/referrals": auth
 "/api/tracker/referrals/<int:ref_id>": auth
+"/api/traction": public
 "/try": public
 "/ultimate/lab": auth
 "/ultimate/paths/<path_id>": auth

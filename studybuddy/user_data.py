@@ -92,6 +92,7 @@ USER_ID_MODELS = [
     ("LabPathProgress", "lab_path_progress"),
     ("BenchmarkContribution", "benchmark_contributions"),
     ("StreakState", "streak_states"),
+    ("TractionEvent", "traction_events"),
     ("LeagueMember", "league_members"),
     ("LeagueResult", "league_results"),
     ("QuestProgress", "quest_progress"),

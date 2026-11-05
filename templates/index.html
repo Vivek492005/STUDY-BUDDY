@@ -23,7 +23,22 @@
     <!-- UX-01 global mobile-overflow guard (audit fix, 2026-10-28):
          same shared guard as templates/base.html — this template does
          not extend base, so it carries its own copy. -->
-    <style>img, table, video, iframe, embed, object{max-width:100%}pre{max-width:100%;overflow-x:auto}html, body{overflow-x:clip}</style>
+    <style>img, table, video, iframe, embed, object{max-width:100%}pre{max-width:100%;overflow-x:auto}html, body{overflow-x:clip}
+    /* Live Traction Tracker (landing strip): header row + pulsing LIVE dot.
+       The .sb-stat cells reuse the existing strip language and its
+       opposite-sweep hover (cursor.css) unchanged; these rules only fix
+       the 8-cell grid (row-end borders, row divider) and the sub-lines. */
+    .sb-traction-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:56px;font-family:var(--sb-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sb-muted-dark)}
+    .sb-traction-head + .sb-stats{margin-top:12px}
+    .sb-traction-live{display:inline-flex;align-items:center;gap:.45rem;color:var(--sb-ink);font-weight:700}
+    .sb-traction-dot{width:9px;height:9px;border-radius:50%;background:var(--b-ok,#34d399);animation:traction-pulse 1.6s ease-in-out infinite}
+    @keyframes traction-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+    .sb-traction-note{color:var(--sb-muted-dark);font-size:.82rem;margin:.7rem 0 0}
+    .sb-stats .sb-stat:nth-child(4n){border-right:0}
+    .sb-stat .sb-stat-sub{font-size:.78rem}
+    @media (min-width:901px){.sb-stats .sb-stat:nth-child(-n+4){border-bottom:1px solid #d8d6cc}}
+    @media (max-width:520px){.sb-stats{grid-template-columns:repeat(2,1fr)}.sb-stats .sb-stat:nth-child(2n+1){border-right:1px solid #d8d6cc}.sb-stats .sb-stat:nth-child(n+7){border-bottom:0}}
+    @media (prefers-reduced-motion:reduce){.sb-traction-dot{animation:none}}</style>
 </head>
 <body class="sb-editorial">
     <a class="skip-link" href="#main-content" style="position:absolute;left:-9999px;top:0;background:#fff;color:#000;padding:.75rem 1.25rem;z-index:9999;font-weight:700;">{{ _("Skip to main content") }}</a>
@@ -63,15 +78,95 @@
             </div>
             <div class="sb-trust">
                 <div>
-                    <p class="sb-trust-t"><strong>{{ num_interview }}</strong> interview questions · <strong>{{ num_quiz }}</strong> quiz questions · <strong>{{ num_dsa }}</strong> DSA problems — free &amp; open source</p>
+                    <p class="sb-trust-t"><b>{{ num_interview }}</b> interview questions · <b>{{ num_aptitude }}</b> aptitude questions · <b>{{ num_quiz }}</b> quiz questions · <b>{{ num_dsa }}</b> DSA problems — free &amp; open source</p>
                 </div>
             </div>
-            <div class="sb-stats" aria-label="Question and problem library">
-                <div class="sb-stat"><b>{{ num_interview }}</b><span>interview questions</span></div>
-                <div class="sb-stat"><b>{{ num_aptitude }}</b><span>aptitude questions</span></div>
-                <div class="sb-stat"><b>{{ num_quiz }}</b><span>skill quiz questions</span></div>
-                <div class="sb-stat"><b>{{ num_dsa }}</b><span>DSA problems</span></div>
+            <div class="sb-traction-head">
+                <span class="sb-traction-live"><span class="sb-traction-dot" aria-hidden="true"></span>LIVE · Real usage, right now</span>
+                <span class="sb-traction-status" id="traction-status">Updating…</span>
             </div>
+            <div class="sb-stats" id="traction-grid" aria-label="Live traction">
+                <div class="sb-stat"><b id="tr-active-today">0</b><span>active users today</span><span class="sb-stat-sub" id="tr-active-today-sub"></span></div>
+                <div class="sb-stat"><b id="tr-active-week">0</b><span>active users this week</span><span class="sb-stat-sub">last 7 days</span></div>
+                <div class="sb-stat"><b id="tr-total-users">0</b><span>registered users</span><span class="sb-stat-sub">all time</span></div>
+                <div class="sb-stat"><b id="tr-sessions-today">0</b><span>sessions today</span><span class="sb-stat-sub" id="tr-sessions-today-sub"></span></div>
+                <div class="sb-stat"><b id="tr-quizzes-total">0</b><span>quizzes attempted</span><span class="sb-stat-sub" id="tr-quizzes-sub"></span></div>
+                <div class="sb-stat"><b id="tr-dsa-total">0</b><span>DSA problems solved</span><span class="sb-stat-sub" id="tr-dsa-sub"></span></div>
+                <div class="sb-stat"><b id="tr-interviews-total">0</b><span>mock interviews done</span><span class="sb-stat-sub" id="tr-interviews-sub"></span></div>
+                <div class="sb-stat"><b id="tr-resumes-total">0</b><span>resumes analysed</span><span class="sb-stat-sub" id="tr-resumes-sub"></span></div>
+            </div>
+            <p class="sb-traction-note" id="traction-note">Today · 12:00 AM IST onwards · Counts from the platform's own database</p>
+            <script nonce="{{ csp_nonce() }}">
+            /* Live Traction Tracker: fetch /api/traction on load, poll every
+               60s. Fail-open by design (100%-working law): on ANY failure the
+               last good numbers stay visible and the status reads
+               "Updating…"; on first-load failure the honest 0s stay. This
+               script never throws — a tracker failure can never break the
+               landing page. Count-up animates on change; reduced motion
+               sets numbers instantly. */
+            (function () {
+              try {
+                var grid = document.getElementById('traction-grid');
+                if (!grid) return;
+                var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                var statusEl = document.getElementById('traction-status');
+                var noteEl = document.getElementById('traction-note');
+                function el(id) { return document.getElementById(id); }
+                function currentVal(node) {
+                  if (!node) return 0;
+                  var v = parseInt((node.textContent || '0').replace(/[^0-9-]/g, ''), 10);
+                  return isNaN(v) ? 0 : v;
+                }
+                function animate(node, to) {
+                  if (!node) return;
+                  if (reduce || currentVal(node) === to) { node.textContent = String(to); return; }
+                  var from = currentVal(node), t0 = null, dur = 800;
+                  function step(t) {
+                    if (!t0) t0 = t;
+                    var p = Math.min((t - t0) / dur, 1);
+                    node.textContent = String(Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))));
+                    if (p < 1) requestAnimationFrame(step);
+                  }
+                  requestAnimationFrame(step);
+                }
+                function delta(d) {
+                  if (d > 0) return '+' + d + ' vs yesterday';
+                  if (d < 0) return d + ' vs yesterday';
+                  return 'same as yesterday';
+                }
+                function setText(id, s) { var n = el(id); if (n) n.textContent = s; }
+                function apply(d) {
+                  animate(el('tr-active-today'), d.active_today || 0);
+                  setText('tr-active-today-sub', delta(d.active_today_delta || 0));
+                  animate(el('tr-active-week'), d.active_week || 0);
+                  animate(el('tr-total-users'), d.total_users || 0);
+                  animate(el('tr-sessions-today'), d.sessions_today || 0);
+                  setText('tr-sessions-today-sub', delta(d.sessions_today_delta || 0));
+                  animate(el('tr-quizzes-total'), d.quizzes_total || 0);
+                  setText('tr-quizzes-sub', (d.quizzes_today || 0) + ' today · ' + delta(d.quizzes_today_delta || 0));
+                  animate(el('tr-dsa-total'), d.dsa_total || 0);
+                  setText('tr-dsa-sub', (d.dsa_today || 0) + ' today · ' + delta(d.dsa_today_delta || 0));
+                  animate(el('tr-interviews-total'), d.interviews_total || 0);
+                  setText('tr-interviews-sub', (d.interviews_today || 0) + ' today · ' + delta(d.interviews_today_delta || 0));
+                  animate(el('tr-resumes-total'), d.resumes_total || 0);
+                  setText('tr-resumes-sub', (d.resumes_today || 0) + ' today · ' + delta(d.resumes_today_delta || 0));
+                  if (noteEl) noteEl.textContent = (d.today_label || 'Today · 12:00 AM IST onwards') + ' · Counts from the platform’s own database';
+                  if (statusEl) {
+                    try { statusEl.textContent = 'Updated ' + new Date(d.generated_at || Date.now()).toLocaleTimeString(); }
+                    catch (e) { statusEl.textContent = 'Updated just now'; }
+                  }
+                }
+                function tick() {
+                  fetch('/api/traction', {credentials: 'same-origin', headers: {'Accept': 'application/json'}})
+                    .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+                    .then(function (d) { apply(d); })
+                    .catch(function () { if (statusEl) statusEl.textContent = 'Updating…'; });
+                }
+                tick();
+                setInterval(tick, 60000);
+              } catch (e) { /* never break the landing page */ }
+            })();
+            </script>
         </section>
 
         <!-- Kinetic ticker — decorative; the tool list below is the accessible version. -->

@@ -100,6 +100,14 @@ def login():
             login_user(user, remember=bool(request.form.get('remember')))
             # SEC-14: audit log (hashed id, no email/password)
             log_security_event("login_success", user_id=user.id)
+            # Live Traction Tracker: every login is a session start.
+            # Never raises; a tracking failure must never break login.
+            try:
+                from studybuddy.traction import record_session_event
+
+                record_session_event(user.id)
+            except Exception:
+                pass
             flash(f'Welcome back, {user.name}!', 'success')
             nxt = request.args.get('next') or request.form.get('next')
             return redirect(nxt if is_safe_next(nxt) else url_for('dashboard'))

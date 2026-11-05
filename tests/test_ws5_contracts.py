@@ -96,9 +96,9 @@ def test_spec_well_formed():
     spec = _spec()
     ops = list(_operations(spec))
     # 24 paths as of 2026-10-19 + 9 public paths added 2026-10-28
-    # (audit fix: the spec now covers the full public /api/* surface).
-    assert len(spec["paths"]) == 33, \
-        f"expected 33 /api/* paths, got {len(spec['paths'])}"
+    # (audit fix: the spec now covers the full public /api/* surface)
+    # + /api/traction (live traction tracker, 2026-11-05).
+    assert len(spec["paths"]) == 34, f"expected 34 /api/* paths, got {len(spec['paths'])}"
     for path, method, op in ops:
         assert path.startswith("/api/"), path
         assert op.get("x-flask-path"), f"{method} {path}: missing x-flask-path"
