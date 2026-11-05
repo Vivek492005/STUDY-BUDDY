@@ -31,17 +31,17 @@
        inner content stays on the site grid. Tiles keep their
        opposite-sweep hover, inverted (paper flood on ink) per the site's
        own light→ink / dark→paper rule. */
-    .sb-traction-showcase{margin:56px calc(50% - 50vw) 0;background:var(--sb-ink);color:#fff;border-top:3px solid var(--sb-lime)}
-    .sb-traction-showcase-in{max-width:var(--sb-max);margin:0 auto;padding:52px 22px 48px}
-    .sb-traction-slogan{font-family:var(--sb-display);font-weight:800;text-transform:uppercase;line-height:.95;font-size:clamp(2rem,4.5vw,3.4rem);margin:0 0 20px;color:#fff}
+    .sb-traction-showcase{margin:40px calc(50% - 50vw) 0;background:var(--sb-ink);color:#fff;border-top:3px solid var(--sb-lime)}
+    .sb-traction-showcase-in{max-width:var(--sb-max);margin:0 auto;padding:32px 22px 28px}
+    .sb-traction-slogan{font-family:var(--sb-display);font-weight:800;text-transform:uppercase;line-height:.95;font-size:clamp(1.35rem,2.8vw,1.9rem);margin:0 0 14px;color:#fff}
     .sb-traction-slogan span{color:var(--sb-lime)}
     .sb-traction-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;font-family:var(--sb-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sb-muted-light)}
     .sb-traction-live{display:inline-flex;align-items:center;gap:.45rem;color:#fff;font-weight:700}
     .sb-traction-dot{width:9px;height:9px;border-radius:50%;background:var(--b-ok,#34d399);animation:traction-pulse 1.6s ease-in-out infinite}
     @keyframes traction-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
-    .sb-traction-showcase .sb-stats{margin-top:28px;border-color:#2a2a2a}
-    .sb-traction-showcase .sb-stat{border-color:#2a2a2a}
-    .sb-traction-showcase .sb-stat b{color:#fff}
+    .sb-traction-showcase .sb-stats{margin-top:20px;border-color:#2a2a2a}
+    .sb-traction-showcase .sb-stat{border-color:#2a2a2a;padding:16px 16px 16px 0}
+    .sb-traction-showcase .sb-stat b{color:#fff;font-size:1.9rem}
     .sb-traction-showcase .sb-stat span{color:var(--sb-muted-light)}
     body.sb-editorial .sb-traction-showcase .sb-stats{border-color:#2a2a2a}
     body.sb-editorial .sb-traction-showcase .sb-stat{border-color:#2a2a2a}
@@ -58,12 +58,12 @@
     @media (max-width:520px){.sb-stats{grid-template-columns:repeat(2,1fr)}.sb-stats .sb-stat:nth-child(2n+1){border-right:1px solid #d8d6cc}.sb-stats .sb-stat:nth-child(n+7){border-bottom:0}}
     @media (max-width:520px){body.sb-editorial .sb-traction-showcase .sb-stats .sb-stat:nth-child(2n+1){border-right-color:#2a2a2a}}
     /* Analytics row: growth callouts + 7-day trend bars (all real data). */
-    .sb-traction-analytics{margin-top:36px;border-top:1px solid #2a2a2a;padding-top:28px;display:grid;grid-template-columns:230px 1fr;gap:36px}
-    .sb-traction-growth{display:flex;flex-direction:column;gap:24px}
-    .sb-traction-callout b{display:block;font-family:var(--sb-display);font-size:2.4rem;font-weight:800;line-height:1;color:var(--sb-lime)}
+    .sb-traction-analytics{margin-top:24px;border-top:1px solid #2a2a2a;padding-top:20px;display:grid;grid-template-columns:230px 1fr;gap:28px}
+    .sb-traction-growth{display:flex;flex-direction:column;gap:18px}
+    .sb-traction-callout b{display:block;font-family:var(--sb-display);font-size:1.7rem;font-weight:800;line-height:1;color:var(--sb-lime)}
     .sb-traction-callout span{display:block;font-size:.85rem;color:var(--sb-muted-light);margin-top:6px}
     .sb-traction-trend-title{font-family:var(--sb-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sb-muted-light);margin:0 0 14px}
-    .sb-traction-bars{display:flex;align-items:flex-end;gap:10px;height:128px}
+    .sb-traction-bars{display:flex;align-items:flex-end;gap:10px;height:96px}
     .sb-traction-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;min-width:0}
     .sb-traction-bar b{font-size:.85rem;color:#fff;line-height:1}
     .sb-traction-bar i{display:block;width:100%;max-width:44px;background:var(--sb-lime);border-radius:2px 2px 0 0}
