@@ -3,6 +3,12 @@
 flask==3.1.3
 python-dotenv==1.2.4
 google-genai==2.31.0
+# DEPLOY-FIX (2026-11-05): pin google-auth directly. google-genai needs
+# google-auth[requests]>=2.56.0,<3.0.0 (a range); Render's pip 23.2.1 in
+# --require-hashes mode resolves the range to the newest wheel (2.62.1,
+# released 2026-11-03) and then errors because a range is not pinned
+# with ==. Pinning 2.62.1 makes the pin match what the resolver picks.
+google-auth==2.62.1
 pypdf==6.21.4
 python-docx==1.2.0
 gunicorn==26.2.0

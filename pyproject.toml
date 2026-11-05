@@ -23,6 +23,7 @@ dependencies = [
     "Authlib==1.9.1",
     "requests",
     "google-api-python-client",
+    "google-auth==2.62.1",
     "google-auth-httplib2",
     "google-auth-oauthlib",
     "flask-wtf",
