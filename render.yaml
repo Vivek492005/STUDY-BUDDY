@@ -29,7 +29,17 @@ services:
         fromDatabase:
           name: acra-db
           property: connectionString
-    buildCommand: python scripts/write_version.py && pip install --require-hashes -r requirements.txt
+    # DEPLOY-FIX (2026-11-05): upgrade pip BEFORE the hashed install.
+    # Render's base image ships pip 23.2.1, whose --require-hashes
+    # resolver chokes on google-genai's transitive range dep
+    # google-auth[requests]>=2.56.0,<3.0.0: it fetches the newest
+    # matching wheel from the index (2.62.1, released 2026-11-03) and
+    # then errors because a range is not pinned with ==. New pip
+    # resolves the pinned google-auth==2.62.0 correctly (verified
+    # locally: pip 23.2.1 reproduces the exact Render error, pip 26.3
+    # dry-run passes). Keep write_version.py FIRST (test lock in
+    # test_version_build_stamp.py).
+    buildCommand: python scripts/write_version.py && python -m pip install --upgrade pip && pip install --require-hashes -r requirements.txt
     # Worker/timeout settings live ONLY in gunicorn.conf.py (audit fix,
     # 2026-10-28 — previously this line said 2 workers / 120s while the
     # conf file said 1 worker / 60s, and the live server ran the
