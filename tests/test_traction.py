@@ -32,6 +32,9 @@ EXPECTED_KEYS = {
     "active_today",
     "active_today_delta",
     "active_week",
+    "active_week_delta",
+    "new_users_week",
+    "daily",
     "total_users",
     "sessions_today",
     "sessions_today_delta",
@@ -51,6 +54,25 @@ EXPECTED_KEYS = {
     "today_label",
     "degraded",
 }
+
+# Scalar int keys (everything in EXPECTED_KEYS except the daily series,
+# generated_at, today_label, degraded).
+INT_KEYS = EXPECTED_KEYS - {"daily", "generated_at", "today_label", "degraded"}
+
+DAILY_KEYS = {"date", "label", "active", "quizzes", "dsa"}
+
+
+def _assert_daily_zeros(data):
+    """Daily series: 7 entries, honest zeros, IST day labels present."""
+    daily = data["daily"]
+    assert isinstance(daily, list) and len(daily) == 7
+    for entry in daily:
+        assert DAILY_KEYS <= set(entry.keys())
+        assert entry["active"] == 0
+        assert entry["quizzes"] == 0
+        assert entry["dsa"] == 0
+        assert isinstance(entry["date"], str) and entry["date"]
+        assert isinstance(entry["label"], str) and entry["label"]
 
 
 def _make_user(email, name="Test User"):
@@ -148,9 +170,10 @@ def test_endpoint_is_public_and_shaped(client):
     assert resp.status_code == 200
     data = resp.get_json()
     assert EXPECTED_KEYS <= set(data.keys())
-    for key in EXPECTED_KEYS - {"generated_at", "today_label", "degraded"}:
+    for key in INT_KEYS:
         assert isinstance(data[key], int), key
         assert data[key] >= 0, key
+    _assert_daily_zeros(data)
     assert data["degraded"] is False
     assert data["today_label"] == "Today · 12:00 AM IST onwards"
 
@@ -160,8 +183,9 @@ def test_endpoint_zero_data_shows_zero(app):
     with app.app_context():
         traction_mod.clear_traction_cache()
         data = traction_mod.compute_traction(now=FIXED_NOW)
-    for key in EXPECTED_KEYS - {"generated_at", "today_label", "degraded"}:
+    for key in INT_KEYS:
         assert data[key] == 0, key
+    _assert_daily_zeros(data)
     assert data["degraded"] is False
 
 
@@ -175,6 +199,13 @@ def test_landing_page_renders_tracker(client):
     assert 'id="tr-active-today"' in html
     assert 'id="tr-quizzes-total"' in html
     assert "Today · 12:00 AM IST onwards" in html
+    # Growth showcase (2026-11-05): slogan + analytics row.
+    assert "sb-traction-showcase" in html
+    assert "Real students. Real growth." in html
+    assert "Every day." in html
+    assert 'id="traction-trend"' in html
+    assert 'id="tr-new-users-week"' in html
+    assert 'id="tr-active-week-delta"' in html
 
 
 def test_dashboard_has_no_tracker(client):
@@ -230,6 +261,109 @@ def test_endpoint_reflects_seeded_data(app, client):
     assert data["active_today"] == 1
     assert data["quizzes_total"] == 2
     assert data["interviews_total"] == 1
+
+
+# ---------- analytics: 7-day trend + growth callouts ----------
+
+
+def test_daily_series_with_seeded_data(app):
+    """7 IST days, oldest first; today/yesterday real, older days zero."""
+    with app.app_context():
+        traction_mod.clear_traction_cache()
+        _seed_traction_data()
+        data = traction_mod.compute_traction(now=FIXED_NOW)
+    daily = data["daily"]
+    assert isinstance(daily, list) and len(daily) == 7
+    assert [e["date"] for e in daily] == [
+        "2026-10-30",
+        "2026-10-31",
+        "2026-11-01",
+        "2026-11-02",
+        "2026-11-03",
+        "2026-11-04",
+        "2026-11-05",
+    ]
+    # FIXED_NOW = 2026-11-05 10:30 UTC = 16:00 IST (Thursday).
+    assert daily[-1] == {
+        "date": "2026-11-05",
+        "label": "Thu 5 Nov",
+        "active": 1,
+        "quizzes": 1,
+        "dsa": 1,
+    }
+    # Yesterday: u2 (session + quiz + DSA) and u3 (DSA attempt) active.
+    assert daily[-2] == {
+        "date": "2026-11-04",
+        "label": "Wed 4 Nov",
+        "active": 2,
+        "quizzes": 1,
+        "dsa": 1,
+    }
+    for entry in daily[:-2]:
+        assert entry["active"] == 0
+        assert entry["quizzes"] == 0
+        assert entry["dsa"] == 0
+
+
+def test_growth_fields_with_seeded_data(app):
+    """new_users_week counts signups in the rolling 7 days; the
+    week-over-week delta compares active_week with the prior 7 days."""
+    with app.app_context():
+        traction_mod.clear_traction_cache()
+        bounds, (u1, u2, u3) = _seed_traction_data()
+        today = bounds["today_start"] + timedelta(hours=2)
+        yesterday = bounds["yesterday_start"] + timedelta(hours=2)
+        # Pin signups to FIXED_NOW-relative days (_make_user otherwise
+        # stamps real-now, which drifts from FIXED_NOW).
+        db.session.execute(db.update(User).where(User.id == u1.id).values(created_at=today))
+        db.session.execute(db.update(User).where(User.id == u2.id).values(created_at=yesterday))
+        # A user from 10 days ago: in total_users, NOT in the week.
+        u4 = _make_user("u4@example.com", "User Four")
+        db.session.execute(
+            db.update(User)
+            .where(User.id == u4.id)
+            .values(created_at=FIXED_NOW - timedelta(days=10))
+        )
+        db.session.commit()
+        data = traction_mod.compute_traction(now=FIXED_NOW)
+    assert data["total_users"] == 4
+    assert data["new_users_week"] == 3
+    # Prior 7 days had no activity at all → delta == active_week.
+    assert data["active_week"] == 3
+    assert data["active_week_delta"] == 3
+
+
+def test_endpoint_includes_analytics_fields(app, client):
+    """New analytics fields ride the same public endpoint (shape + the
+    relational invariants that hold whatever day the suite runs)."""
+    with app.app_context():
+        traction_mod.clear_traction_cache()
+        _seed_traction_data()
+        # Pin signups to real-now-relative days so the week count holds
+        # on any run date (the endpoint computes with real now).
+        now = datetime.now(UTC).replace(tzinfo=None)
+        for email, when in [
+            ("u1@example.com", now),
+            ("u2@example.com", now - timedelta(days=1)),
+            ("u3@example.com", now - timedelta(days=1)),
+        ]:
+            user = User.query.filter_by(email=email).first()
+            db.session.execute(db.update(User).where(User.id == user.id).values(created_at=when))
+        db.session.commit()
+    resp = client.get("/api/traction")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["new_users_week"] == 3
+    # No seeded activity predates the fixture window, so the prior
+    # week's actives are 0 and the delta equals active_week.
+    assert data["active_week_delta"] == data["active_week"]
+    daily = data["daily"]
+    assert isinstance(daily, list) and len(daily) == 7
+    for entry in daily:
+        assert DAILY_KEYS <= set(entry.keys())
+        assert entry["active"] >= 0
+        assert entry["quizzes"] >= 0
+        assert entry["dsa"] >= 0
 
 
 # ---------- session event recording ----------
@@ -298,8 +432,9 @@ def test_fail_open_cold_cache_returns_zeros(app, monkeypatch):
         monkeypatch.setattr(traction_mod, "compute_traction", _boom)
         data = traction_mod.get_traction(now=FIXED_NOW)
     assert data["degraded"] is True
-    for key in EXPECTED_KEYS - {"generated_at", "today_label", "degraded"}:
+    for key in INT_KEYS:
         assert data[key] == 0, key
+    _assert_daily_zeros(data)
 
 
 def test_fail_open_warm_cache_returns_last_good(app, monkeypatch):

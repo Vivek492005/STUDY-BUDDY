@@ -583,7 +583,7 @@ paths:
       summary: Live traction metrics from real platform data
       x-flask-path: /api/traction
       x-auth: public
-      x-response-keys: [active_today, active_week, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, generated_at, today_label, degraded]
+      x-response-keys: [active_today, active_week, active_week_delta, new_users_week, daily, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, generated_at, today_label, degraded]
       responses:
         '200':
           description: Aggregate traction counts (60s server-side cache; never errors — a DB failure returns last-good numbers or honest zeros with degraded=true)
@@ -591,11 +591,25 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [active_today, active_week, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, generated_at, today_label, degraded]
+                required: [active_today, active_week, active_week_delta, new_users_week, daily, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, generated_at, today_label, degraded]
                 properties:
                   active_today: {type: integer}
                   active_today_delta: {type: integer}
                   active_week: {type: integer}
+                  active_week_delta: {type: integer, description: "Active users this week minus active users in the prior 7 days (real COUNTs; 0 when flat)."}
+                  new_users_week: {type: integer, description: "Users created in the rolling last 7 days (real User.created_at COUNT)."}
+                  daily:
+                    type: array
+                    description: "Per-day activity for the last 7 IST calendar days, oldest first. Honest zeros when a day has no activity."
+                    items:
+                      type: object
+                      required: [date, label, active, quizzes, dsa]
+                      properties:
+                        date: {type: string, description: "IST calendar date, YYYY-MM-DD."}
+                        label: {type: string, description: "Short IST day label, e.g. Thu 5 Nov."}
+                        active: {type: integer, description: "Distinct active users that IST day."}
+                        quizzes: {type: integer, description: "Submitted quizzes that IST day."}
+                        dsa: {type: integer, description: "DSA problems solved that IST day."}
                   total_users: {type: integer}
                   sessions_today: {type: integer}
                   sessions_today_delta: {type: integer}

@@ -24,20 +24,54 @@
          same shared guard as templates/base.html — this template does
          not extend base, so it carries its own copy. -->
     <style>img, table, video, iframe, embed, object{max-width:100%}pre{max-width:100%;overflow-x:auto}html, body{overflow-x:clip}
-    /* Live Traction Tracker (landing strip): header row + pulsing LIVE dot.
-       The .sb-stat cells reuse the existing strip language and its
-       opposite-sweep hover (cursor.css) unchanged; these rules only fix
-       the 8-cell grid (row-end borders, row divider) and the sub-lines. */
-    .sb-traction-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:56px;font-family:var(--sb-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sb-muted-dark)}
-    .sb-traction-head + .sb-stats{margin-top:12px}
-    .sb-traction-live{display:inline-flex;align-items:center;gap:.45rem;color:var(--sb-ink);font-weight:700}
+    /* Live Traction Tracker — growth showcase (2026-11-05). The tracker is
+       the project's growth showcase, so it gets an inverted ink band that
+       STANDS OUT from the light page — an explicit override of the BLEND
+       rule for this section only (Vivek). Full-bleed via negative margins;
+       inner content stays on the site grid. Tiles keep their
+       opposite-sweep hover, inverted (paper flood on ink) per the site's
+       own light→ink / dark→paper rule. */
+    .sb-traction-showcase{margin:56px calc(50% - 50vw) 0;background:var(--sb-ink);color:#fff;border-top:3px solid var(--sb-lime)}
+    .sb-traction-showcase-in{max-width:var(--sb-max);margin:0 auto;padding:52px 22px 48px}
+    .sb-traction-slogan{font-family:var(--sb-display);font-weight:800;text-transform:uppercase;line-height:.95;font-size:clamp(2rem,4.5vw,3.4rem);margin:0 0 20px;color:#fff}
+    .sb-traction-slogan span{color:var(--sb-lime)}
+    .sb-traction-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;font-family:var(--sb-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sb-muted-light)}
+    .sb-traction-live{display:inline-flex;align-items:center;gap:.45rem;color:#fff;font-weight:700}
     .sb-traction-dot{width:9px;height:9px;border-radius:50%;background:var(--b-ok,#34d399);animation:traction-pulse 1.6s ease-in-out infinite}
     @keyframes traction-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
-    .sb-traction-note{color:var(--sb-muted-dark);font-size:.82rem;margin:.7rem 0 0}
+    .sb-traction-showcase .sb-stats{margin-top:28px;border-color:#2a2a2a}
+    .sb-traction-showcase .sb-stat{border-color:#2a2a2a}
+    .sb-traction-showcase .sb-stat b{color:#fff}
+    .sb-traction-showcase .sb-stat span{color:var(--sb-muted-light)}
+    body.sb-editorial .sb-traction-showcase .sb-stats{border-color:#2a2a2a}
+    body.sb-editorial .sb-traction-showcase .sb-stat{border-color:#2a2a2a}
+    body.sb-editorial .sb-traction-showcase .sb-stat b{color:#fff}
+    body.sb-editorial .sb-traction-showcase .sb-stat span{color:var(--sb-muted-light)}
+    body.sb-editorial .sb-traction-showcase .sb-stats .sb-stat:nth-child(-n+4){border-bottom-color:#2a2a2a}
+    body.sb-editorial .sb-traction-showcase .sb-stat::before{background:var(--sb-paper)}
+    body.sb-editorial .sb-traction-showcase .sb-stat:hover b{color:var(--sb-ink)}
+    body.sb-editorial .sb-traction-showcase .sb-stat:hover span{color:var(--sb-muted-dark)}
+    .sb-traction-note{color:var(--sb-muted-light);font-size:.82rem;margin:.7rem 0 0}
     .sb-stats .sb-stat:nth-child(4n){border-right:0}
     .sb-stat .sb-stat-sub{font-size:.78rem}
     @media (min-width:901px){.sb-stats .sb-stat:nth-child(-n+4){border-bottom:1px solid #d8d6cc}}
     @media (max-width:520px){.sb-stats{grid-template-columns:repeat(2,1fr)}.sb-stats .sb-stat:nth-child(2n+1){border-right:1px solid #d8d6cc}.sb-stats .sb-stat:nth-child(n+7){border-bottom:0}}
+    @media (max-width:520px){body.sb-editorial .sb-traction-showcase .sb-stats .sb-stat:nth-child(2n+1){border-right-color:#2a2a2a}}
+    /* Analytics row: growth callouts + 7-day trend bars (all real data). */
+    .sb-traction-analytics{margin-top:36px;border-top:1px solid #2a2a2a;padding-top:28px;display:grid;grid-template-columns:230px 1fr;gap:36px}
+    .sb-traction-growth{display:flex;flex-direction:column;gap:24px}
+    .sb-traction-callout b{display:block;font-family:var(--sb-display);font-size:2.4rem;font-weight:800;line-height:1;color:var(--sb-lime)}
+    .sb-traction-callout span{display:block;font-size:.85rem;color:var(--sb-muted-light);margin-top:6px}
+    .sb-traction-trend-title{font-family:var(--sb-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sb-muted-light);margin:0 0 14px}
+    .sb-traction-bars{display:flex;align-items:flex-end;gap:10px;height:128px}
+    .sb-traction-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;min-width:0}
+    .sb-traction-bar b{font-size:.85rem;color:#fff;line-height:1}
+    .sb-traction-bar i{display:block;width:100%;max-width:44px;background:var(--sb-lime);border-radius:2px 2px 0 0}
+    .sb-traction-bar span{font-size:.68rem;color:var(--sb-muted-light);white-space:nowrap}
+    .sb-traction-bar span em{font-style:normal}
+    @media (max-width:520px){.sb-traction-bars{gap:6px}.sb-traction-bar span em{display:none}}
+    .sb-traction-trend-note{font-size:.78rem;color:var(--sb-muted-light);margin:12px 0 0}
+    @media (max-width:900px){.sb-traction-analytics{grid-template-columns:1fr;gap:28px}}
     @media (prefers-reduced-motion:reduce){.sb-traction-dot{animation:none}}</style>
 </head>
 <body class="sb-editorial">
@@ -81,6 +115,9 @@
                     <p class="sb-trust-t"><b>{{ num_interview }}</b> interview questions · <b>{{ num_aptitude }}</b> aptitude questions · <b>{{ num_quiz }}</b> quiz questions · <b>{{ num_dsa }}</b> DSA problems — free &amp; open source</p>
                 </div>
             </div>
+            <div class="sb-traction-showcase">
+              <div class="sb-traction-showcase-in">
+            <h2 class="sb-traction-slogan">Real students. Real growth. <span>Every day.</span></h2>
             <div class="sb-traction-head">
                 <span class="sb-traction-live"><span class="sb-traction-dot" aria-hidden="true"></span>LIVE · Real usage, right now</span>
                 <span class="sb-traction-status" id="traction-status">Updating…</span>
@@ -95,7 +132,20 @@
                 <div class="sb-stat"><b id="tr-interviews-total">0</b><span>mock interviews done</span><span class="sb-stat-sub" id="tr-interviews-sub"></span></div>
                 <div class="sb-stat"><b id="tr-resumes-total">0</b><span>resumes analysed</span><span class="sb-stat-sub" id="tr-resumes-sub"></span></div>
             </div>
+            <div class="sb-traction-analytics" id="traction-analytics">
+                <div class="sb-traction-growth">
+                    <div class="sb-traction-callout"><b id="tr-new-users-week">0</b><span>new users this week</span></div>
+                    <div class="sb-traction-callout"><b id="tr-active-week-delta">0</b><span>active users vs prior week</span></div>
+                </div>
+                <div class="sb-traction-trend">
+                    <p class="sb-traction-trend-title">Active users · last 7 days</p>
+                    <div class="sb-traction-bars" id="traction-trend" role="img" aria-label="Active users per day, last 7 days"></div>
+                    <p class="sb-traction-trend-note">Bars: active users per day · hover a day for quizzes &amp; DSA</p>
+                </div>
+            </div>
             <p class="sb-traction-note" id="traction-note">Today · 12:00 AM IST onwards · Counts from the platform's own database</p>
+              </div>
+            </div>
             <script nonce="{{ csp_nonce() }}">
             /* Live Traction Tracker: fetch /api/traction on load, poll every
                60s. Fail-open by design (100%-working law): on ANY failure the
@@ -135,6 +185,46 @@
                   return 'same as yesterday';
                 }
                 function setText(id, s) { var n = el(id); if (n) n.textContent = s; }
+                /* 7-day trend bars. Values come from the API (ints + server
+                   day labels, no user input); heights are max-normalised.
+                   renderTrend(null) draws honest zero bars with client-side
+                   IST labels — used before the first fetch resolves and
+                   whenever the payload has no daily series (e.g. a stale
+                   pre-showcase response during a rolling deploy). */
+                function last7Labels() {
+                  var out = [];
+                  try {
+                    var fmt = new Intl.DateTimeFormat('en-GB', {timeZone: 'Asia/Kolkata', weekday: 'short', day: 'numeric', month: 'short'});
+                    for (var i = 6; i >= 0; i--) {
+                      var parts = fmt.formatToParts(new Date(Date.now() - i * 864e5));
+                      var get = function (t) { for (var j = 0; j < parts.length; j++) if (parts[j].type === t) return parts[j].value; return ''; };
+                      out.push({date: '', label: get('weekday') + ' ' + get('day') + ' ' + get('month')});
+                    }
+                  } catch (e) { for (var k = 0; k < 7; k++) out.push({date: '', label: ''}); }
+                  return out;
+                }
+                function renderTrend(daily) {
+                  var box = el('traction-trend');
+                  if (!box) return;
+                  var days = (daily && daily.length === 7) ? daily : null;
+                  if (!days) days = last7Labels().map(function (l) { return {date: l.date, label: l.label, active: 0, quizzes: 0, dsa: 0}; });
+                  var max = 1, i;
+                  for (i = 0; i < days.length; i++) if ((days[i].active || 0) > max) max = days[i].active;
+                  var html = '';
+                  for (i = 0; i < days.length; i++) {
+                    var dd = days[i];
+                    var a = dd.active || 0, q = dd.quizzes || 0, s = dd.dsa || 0;
+                    var h = Math.round((a / max) * 84);
+                    var tip = dd.label + ' — ' + a + ' active · ' + q + ' quizzes · ' + s + ' DSA solved';
+                    /* Weekday in <em> so narrow screens can drop it (CSS)
+                       while the full label stays in the tooltip + text. */
+                    var sp = dd.label.indexOf(' ');
+                    var wd = sp > 0 ? dd.label.slice(0, sp) : '';
+                    var rest = sp > 0 ? dd.label.slice(sp + 1) : dd.label;
+                    html += '<div class="sb-traction-bar" title="' + tip + '"><b>' + a + '</b><i style="height:' + h + 'px"></i><span><em>' + wd + '</em> ' + rest + '</span></div>';
+                  }
+                  box.innerHTML = html;
+                }
                 function apply(d) {
                   animate(el('tr-active-today'), d.active_today || 0);
                   setText('tr-active-today-sub', delta(d.active_today_delta || 0));
@@ -151,6 +241,15 @@
                   animate(el('tr-resumes-total'), d.resumes_total || 0);
                   setText('tr-resumes-sub', (d.resumes_today || 0) + ' today · ' + delta(d.resumes_today_delta || 0));
                   if (noteEl) noteEl.textContent = (d.today_label || 'Today · 12:00 AM IST onwards') + ' · Counts from the platform’s own database';
+                  /* Analytics (growth callouts + 7-day trend). Wrapped so a
+                     bad daily series can never break the 8 tiles above. */
+                  try {
+                    var nw = d.new_users_week || 0;
+                    setText('tr-new-users-week', nw > 0 ? '+' + nw : '0');
+                    var awd = (typeof d.active_week_delta === 'number') ? d.active_week_delta : 0;
+                    setText('tr-active-week-delta', awd > 0 ? '+' + awd : String(awd));
+                    renderTrend(d.daily);
+                  } catch (e) { /* analytics only; tiles already applied */ }
                   if (statusEl) {
                     try { statusEl.textContent = 'Updated ' + new Date(d.generated_at || Date.now()).toLocaleTimeString(); }
                     catch (e) { statusEl.textContent = 'Updated just now'; }
@@ -162,6 +261,7 @@
                     .then(function (d) { apply(d); })
                     .catch(function () { if (statusEl) statusEl.textContent = 'Updating…'; });
                 }
+                renderTrend(null);
                 tick();
                 setInterval(tick, 60000);
               } catch (e) { /* never break the landing page */ }

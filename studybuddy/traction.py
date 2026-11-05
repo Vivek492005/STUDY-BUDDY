@@ -71,20 +71,50 @@ def _window_bounds(now: datetime | None = None) -> dict:
     now_ist = now.astimezone(IST)
     today_ist = now_ist.replace(hour=0, minute=0, second=0, microsecond=0)
     yesterday_ist = today_ist - timedelta(days=1)
+    week_start = (now - timedelta(days=7)).replace(tzinfo=None)
+    # Seven IST calendar days ending today, oldest first — the daily
+    # trend series. Labels are IST day labels ("Thu 5 Nov").
+    day_bounds = []
+    for i in range(6, -1, -1):
+        day_start_ist = today_ist - timedelta(days=i)
+        day_end_ist = day_start_ist + timedelta(days=1)
+        day_bounds.append(
+            {
+                "date": day_start_ist.date().isoformat(),
+                "label": (
+                    f"{day_start_ist.strftime('%a')} {day_start_ist.day} "
+                    f"{day_start_ist.strftime('%b')}"
+                ),
+                "start": day_start_ist.astimezone(UTC).replace(tzinfo=None),
+                "end": day_end_ist.astimezone(UTC).replace(tzinfo=None),
+            }
+        )
     return {
         "now": now,
         "today_start": today_ist.astimezone(UTC).replace(tzinfo=None),
         "yesterday_start": yesterday_ist.astimezone(UTC).replace(tzinfo=None),
-        "week_start": (now - timedelta(days=7)).replace(tzinfo=None),
+        "week_start": week_start,
+        # The 7 days before the rolling week — for the week-over-week
+        # active-user change (active_week vs prior 7 days).
+        "prior_week_start": (now - timedelta(days=14)).replace(tzinfo=None),
+        "prior_week_end": week_start,
+        "day_bounds": day_bounds,
     }
 
 
-def _zeros_payload() -> dict:
+def _zeros_payload(now: datetime | None = None) -> dict:
     """Honest all-zero payload, same shape as a real one."""
+    bounds = _window_bounds(now)
     return {
         "active_today": 0,
         "active_today_delta": 0,
         "active_week": 0,
+        "active_week_delta": 0,
+        "new_users_week": 0,
+        "daily": [
+            {"date": d["date"], "label": d["label"], "active": 0, "quizzes": 0, "dsa": 0}
+            for d in bounds["day_bounds"]
+        ],
         "total_users": 0,
         "sessions_today": 0,
         "sessions_today_delta": 0,
@@ -288,8 +318,22 @@ def compute_traction(now: datetime | None = None) -> dict:
         AptitudeAttempt,
         week_start,
     )
+    # Week-over-week: active users in the 7 days BEFORE the rolling week.
+    active_prior_week = _active_users(
+        db,
+        TractionEvent,
+        QuizAttempt,
+        DSAProgress,
+        InterviewSession,
+        ResumeAnalysis,
+        AptitudeAttempt,
+        bounds["prior_week_start"],
+        bounds["prior_week_end"],
+    )
 
     total_users = _count(db.session.query(User.id))
+    # New signups in the rolling last 7 days (real User.created_at).
+    new_users_week = _count(db.session.query(User.id).filter(User.created_at >= week_start))
 
     sessions_today = _count(
         _in_window(
@@ -339,10 +383,45 @@ def compute_traction(now: datetime | None = None) -> dict:
     )
     resumes_total = _count(resumes)
 
+    # 7-day trend, one real COUNT per metric per IST day. Reuses the same
+    # windowed queries as the headline metrics — no new tables, no
+    # dialect-specific SQL. Seven days x (1 UNION + 2 counts); the 60s
+    # cache bounds the cost, and every query hits indexed columns.
+    daily = []
+    for day in bounds["day_bounds"]:
+        daily.append(
+            {
+                "date": day["date"],
+                "label": day["label"],
+                "active": _active_users(
+                    db,
+                    TractionEvent,
+                    QuizAttempt,
+                    DSAProgress,
+                    InterviewSession,
+                    ResumeAnalysis,
+                    AptitudeAttempt,
+                    day["start"],
+                    day["end"],
+                ),
+                "quizzes": _count(
+                    _in_window(
+                        submitted_quizzes, QuizAttempt.submitted_at, day["start"], day["end"]
+                    )
+                ),
+                "dsa": _count(
+                    _in_window(solved_dsa, DSAProgress.updated_at, day["start"], day["end"])
+                ),
+            }
+        )
+
     return {
         "active_today": active_today,
         "active_today_delta": active_today - active_yesterday,
         "active_week": active_week,
+        "active_week_delta": active_week - active_prior_week,
+        "new_users_week": new_users_week,
+        "daily": daily,
         "total_users": total_users,
         "sessions_today": sessions_today,
         "sessions_today_delta": sessions_today - sessions_yesterday,
@@ -392,7 +471,7 @@ def get_traction(now: datetime | None = None) -> dict:
                 return stale
         except Exception:
             pass
-        return _zeros_payload()
+        return _zeros_payload(now=now)
     try:
         with _cache_lock:
             _cache["at"] = time.monotonic()
