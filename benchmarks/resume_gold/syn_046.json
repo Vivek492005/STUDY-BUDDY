@@ -1,0 +1,19 @@
+{
+  "id": "syn_046",
+  "text": "Tanvi D'Souza\ntanvi.dsouza46@example.com\nAspiring developer seeking opportunities.\nTableau, Linux",
+  "labels": {
+    "name": "Tanvi D'Souza",
+    "email": "tanvi.dsouza46@example.com",
+    "phone": "",
+    "skills": [
+      "Tableau",
+      "Linux"
+    ],
+    "role": "Analytics Engineer",
+    "role_key": "data-analyst"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
+}

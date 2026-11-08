@@ -1,0 +1,21 @@
+{
+  "id": "syn_093",
+  "text": "Rahul Shetty\nrahul.shetty93@example.com\n\nEXPERIENCE\nSite Reliability Engineer, AppWorks, 2024\n- Built Kubernetes clusters.\n\nSKILLS\nGit, Ansible, PowerShell, Terraform",
+  "labels": {
+    "name": "Rahul Shetty",
+    "email": "rahul.shetty93@example.com",
+    "phone": "",
+    "skills": [
+      "Git",
+      "Ansible",
+      "PowerShell",
+      "Terraform"
+    ],
+    "role": "Site Reliability Engineer",
+    "role_key": "devops"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
+}

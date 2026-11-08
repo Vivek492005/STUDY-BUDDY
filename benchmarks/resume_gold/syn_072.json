@@ -1,0 +1,31 @@
+{
+  "id": "syn_072",
+  "text": "Gaurav Trivedi\n\ngaurav.trivedi72@example.com | +91 96554 34486 | linkedin.com/in/gauravtrivedi\n\nSummary\nSDET with 8 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSDET, DataNest, 2019 - Present\n- Automated API testing with PyTest, covering 8 endpoints\n- Wrote JUnit tests that raised coverage from 60 percent to 20 percent\n- Created Cypress end-to-end tests for checkout flows used by 100000 users\n- Built Selenium test suites that caught 30 percent of regressions before release\nSDET, DataWorks, 2017 - 2019\n- Wrote JUnit tests that raised coverage from 35 percent to 30 percent\n- Built Selenium test suites that caught 30 percent of regressions before release\n- Filed and tracked 9 defects through triage to closure\n\nSKILLS\nJenkins, JavaScript, Linux, PyTest, Cypress, Docker, Python, JIRA, JUnit, CI/CD, Git, SQL, Jest, Bash\n\nEDUCATION\nB.Com, Delhi University, 2016\n\nPROJECTS\n- Wrote a bug-bash checklist adopted by the QA team.\n- Created a load-testing script with 10 virtual users.\n- Built a test automation framework for a demo web app.",
+  "labels": {
+    "name": "Gaurav Trivedi",
+    "email": "gaurav.trivedi72@example.com",
+    "phone": "+91 96554 34486",
+    "skills": [
+      "Jenkins",
+      "JavaScript",
+      "Linux",
+      "PyTest",
+      "Cypress",
+      "Docker",
+      "Python",
+      "JIRA",
+      "JUnit",
+      "CI/CD",
+      "Git",
+      "SQL",
+      "Jest",
+      "Bash"
+    ],
+    "role": "SDET",
+    "role_key": "qa"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 8,
+  "expected_band": "strong"
+}

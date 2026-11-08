@@ -1,0 +1,27 @@
+{
+  "id": "syn_048",
+  "text": "Tanvi Khan\n\ntanvi.khan48@example.com | +91 98285 40947 | linkedin.com/in/tanvikhan\n\nSummary\nBig Data Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBig Data Engineer, AppWorks, 2019 - Present\n- Built batch and streaming pipelines in Python processing data for 300 users daily\n- Automated data quality checks that resolved bad data before it reached reports\n- Optimized Spark jobs that reduced processing time by 45 percent\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 15 percent\nBig Data Engineer, SoftServe, 2017 - 2019\n- Automated data quality checks that resolved bad data before it reached reports\n- Built Kafka consumers that ingested 11 events per second\n- Created monitoring for pipeline health that alerted teams within minutes\n\nSKILLS\nSQL, Scala, Hadoop, MySQL, PostgreSQL, Docker, Linux, Redis, Kubernetes, Apache Spark\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2019\n\nPROJECTS\n- Data pipeline portfolio project ingesting public datasets with daily refreshed charts.\n- Created an ELT framework for small teams.\n- Built a log aggregation pipeline with Kafka and Spark.",
+  "labels": {
+    "name": "Tanvi Khan",
+    "email": "tanvi.khan48@example.com",
+    "phone": "+91 98285 40947",
+    "skills": [
+      "SQL",
+      "Scala",
+      "Hadoop",
+      "MySQL",
+      "PostgreSQL",
+      "Docker",
+      "Linux",
+      "Redis",
+      "Kubernetes",
+      "Apache Spark"
+    ],
+    "role": "Big Data Engineer",
+    "role_key": "data-engineer"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 5,
+  "expected_band": "strong"
+}

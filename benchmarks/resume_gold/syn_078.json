@@ -1,0 +1,25 @@
+{
+  "id": "syn_078",
+  "text": "Imran Kaur\n\nimran.kaur78@example.com | +91 84110 30885\n\nSummary\nRecent computer science graduate with strong project experience in sdet work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, CloudForge, 2024 - 2025\n- Built a test data generator that unblocked 3 teams\n- Built Selenium test suites that caught 40 percent of regressions before release\n\nSKILLS\nPyTest, Selenium, SQL, Cypress, Python, Linux, Jest, JIRA\n\nEDUCATION\nMCA, IGNOU, 2025",
+  "labels": {
+    "name": "Imran Kaur",
+    "email": "imran.kaur78@example.com",
+    "phone": "+91 84110 30885",
+    "skills": [
+      "PyTest",
+      "Selenium",
+      "SQL",
+      "Cypress",
+      "Python",
+      "Linux",
+      "Jest",
+      "JIRA"
+    ],
+    "role": "SDET",
+    "role_key": "qa"
+  },
+  "quality": "average",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "average"
+}

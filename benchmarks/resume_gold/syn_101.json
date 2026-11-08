@@ -1,0 +1,22 @@
+{
+  "id": "syn_101",
+  "text": "Kavya Joshi\n\nkavya.joshi101@example.com | +91 98520 84055\n\nSummary\nAndroid Developer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAndroid Developer, InsightLabs, 2023 - Present\n- Built an Android app with Kotlin downloaded by 10000 users\n- Set up CI/CD for mobile builds that cut release time by 40 percent\nAndroid Developer, CloudNine, 2022 - 2023\n- Redesigned onboarding that improved activation by 45 percent\n- Optimized app startup time by 10 percent\n\nSKILLS\nSQLite, Flutter, Swift, Figma, Git\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2022",
+  "labels": {
+    "name": "Kavya Joshi",
+    "email": "kavya.joshi101@example.com",
+    "phone": "+91 98520 84055",
+    "skills": [
+      "SQLite",
+      "Flutter",
+      "Swift",
+      "Figma",
+      "Git"
+    ],
+    "role": "Android Developer",
+    "role_key": "mobile"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "average"
+}

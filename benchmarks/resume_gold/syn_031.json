@@ -1,18 +1,23 @@
 {
   "id": "syn_031",
-  "text": "Sana Iqbal\nsana.iqbal31@example.com | +91 9930451287 | github.com/sanaiqbal\n\nOBJECTIVE\nFinal-year B.Sc. student seeking a first role in web development.\n\nEDUCATION\nB.Sc. Computer Science, 2026 (expected)\n\nPROJECTS\n- Attendance tracker web app (HTML, CSS, JavaScript)\n- Library catalogue CLI in Python with SQLite storage\n\nSKILLS\nHTML, CSS, JavaScript, Python, SQLite, Git\n",
+  "text": "Varun Patel\n\nvarun.patel31@example.com | +91 75720 47056\n\nSummary\nFull-Stack Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nFull-Stack Engineer, StartupXYZ, 2020 - Present\n- Optimized database queries and caching, cutting page load by 15 percent\n- Built admin dashboards in React that saved the support team 10 hours a week\n\nSKILLS\nNode.js, MongoDB, Jest, TypeScript, JavaScript, HTML\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2019",
   "labels": {
-    "name": "Sana Iqbal",
-    "email": "sana.iqbal31@example.com",
-    "phone": "+91 9930451287",
+    "name": "Varun Patel",
+    "email": "varun.patel31@example.com",
+    "phone": "+91 75720 47056",
     "skills": [
-      "HTML",
-      "CSS",
+      "Node.js",
+      "MongoDB",
+      "Jest",
+      "TypeScript",
       "JavaScript",
-      "Python",
-      "SQLite",
-      "Git"
+      "HTML"
     ],
-    "role": "Web Developer"
-  }
+    "role": "Full-Stack Engineer",
+    "role_key": "fullstack"
+  },
+  "quality": "average",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "average"
 }

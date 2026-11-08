@@ -1,0 +1,707 @@
+[
+  {
+    "id": "jd_001",
+    "role": "backend",
+    "level": "junior",
+    "title": "Junior Backend Engineer",
+    "company": "TechMahindra Digital",
+    "text": "Junior Backend Engineer\nTechMahindra Digital | Bengaluru, India (Hybrid)\n\nAbout the role\nWe build the APIs and services that power millions of daily transactions for our fintech platform. We are hiring a junior backend engineer with 0-2 years of experience.\n\nWhat you'll do\n- Design and build REST APIs and background services in Python and Django\n- Model data in PostgreSQL and optimise slow queries with proper indexing\n- Cache hot paths with Redis and keep p95 latency under 200 ms\n- Write unit and integration tests and review pull requests in Git\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- Python\n- Django\n- PostgreSQL\n- Git\n- SQL\n- Strong problem-solving skills and clear communication\n- Nice to have: Kafka, Terraform, GraphQL\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "Django",
+      "PostgreSQL",
+      "Git",
+      "SQL"
+    ],
+    "nice_to_have_skills": [
+      "Kafka",
+      "Terraform",
+      "GraphQL"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_000",
+    "mismatched_resume_id": "syn_012"
+  },
+  {
+    "id": "jd_002",
+    "role": "backend",
+    "level": "mid",
+    "title": "Backend Engineer",
+    "company": "NexaSoft Solutions",
+    "text": "Backend Engineer\nNexaSoft Solutions | Bengaluru, India (Hybrid)\n\nAbout the role\nWe build the APIs and services that power millions of daily transactions for our fintech platform. We are hiring a backend engineer with 2-4 years of experience.\n\nWhat you'll do\n- Design and build REST APIs and background services in Python and Django\n- Model data in PostgreSQL and optimise slow queries with proper indexing\n- Cache hot paths with Redis and keep p95 latency under 200 ms\n- Write unit and integration tests and review pull requests in Git\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- Python\n- Django\n- PostgreSQL\n- Docker\n- Redis\n- Git\n- Strong problem-solving skills and clear communication\n- Nice to have: Kafka, Terraform, GraphQL\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "Django",
+      "PostgreSQL",
+      "Docker",
+      "Redis",
+      "Git"
+    ],
+    "nice_to_have_skills": [
+      "Kafka",
+      "Terraform",
+      "GraphQL"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_000",
+    "mismatched_resume_id": "syn_039"
+  },
+  {
+    "id": "jd_003",
+    "role": "backend",
+    "level": "senior",
+    "title": "Senior Backend Engineer",
+    "company": "CloudNine Labs",
+    "text": "Senior Backend Engineer\nCloudNine Labs | Bengaluru, India (Hybrid)\n\nAbout the role\nWe build the APIs and services that power millions of daily transactions for our fintech platform. We are hiring a senior backend engineer with 5+ years of experience.\n\nWhat you'll do\n- Design and build REST APIs and background services in Python and Django\n- Model data in PostgreSQL and optimise slow queries with proper indexing\n- Cache hot paths with Redis and keep p95 latency under 200 ms\n- Write unit and integration tests and review pull requests in Git\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- Python\n- Django\n- PostgreSQL\n- Docker\n- AWS\n- Kubernetes\n- Redis\n- Strong problem-solving skills and clear communication\n- Nice to have: Kafka, Terraform, GraphQL\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "Django",
+      "PostgreSQL",
+      "Docker",
+      "AWS",
+      "Kubernetes",
+      "Redis"
+    ],
+    "nice_to_have_skills": [
+      "Kafka",
+      "Terraform",
+      "GraphQL"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_002",
+    "mismatched_resume_id": "syn_012"
+  },
+  {
+    "id": "jd_004",
+    "role": "frontend",
+    "level": "junior",
+    "title": "Junior Frontend Developer",
+    "company": "BrightStack Technologies",
+    "text": "Junior Frontend Developer\nBrightStack Technologies | Bengaluru, India (Hybrid)\n\nAbout the role\nWe craft the web experiences our customers use every day, from dashboards to checkout flows. We are hiring a junior frontend developer with 0-2 years of experience.\n\nWhat you'll do\n- Build responsive interfaces in React and TypeScript\n- Turn Figma designs into pixel-accurate HTML and CSS with Tailwind CSS\n- Own the component library and keep it accessible and tested with Jest\n- Optimise bundle size and Core Web Vitals for every release\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- JavaScript\n- React\n- HTML\n- CSS\n- Git\n- Strong problem-solving skills and clear communication\n- Nice to have: Svelte, Vue, Node.js\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "JavaScript",
+      "React",
+      "HTML",
+      "CSS",
+      "Git"
+    ],
+    "nice_to_have_skills": [
+      "Svelte",
+      "Vue",
+      "Node.js"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_013",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_005",
+    "role": "frontend",
+    "level": "mid",
+    "title": "Frontend Developer",
+    "company": "DataWorks India",
+    "text": "Frontend Developer\nDataWorks India | Bengaluru, India (Hybrid)\n\nAbout the role\nWe craft the web experiences our customers use every day, from dashboards to checkout flows. We are hiring a frontend developer with 2-4 years of experience.\n\nWhat you'll do\n- Build responsive interfaces in React and TypeScript\n- Turn Figma designs into pixel-accurate HTML and CSS with Tailwind CSS\n- Own the component library and keep it accessible and tested with Jest\n- Optimise bundle size and Core Web Vitals for every release\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- JavaScript\n- TypeScript\n- React\n- Tailwind CSS\n- Jest\n- Git\n- Strong problem-solving skills and clear communication\n- Nice to have: Svelte, Vue, Node.js\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "JavaScript",
+      "TypeScript",
+      "React",
+      "Tailwind CSS",
+      "Jest",
+      "Git"
+    ],
+    "nice_to_have_skills": [
+      "Svelte",
+      "Vue",
+      "Node.js"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_013",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_006",
+    "role": "frontend",
+    "level": "senior",
+    "title": "Senior Frontend Engineer",
+    "company": "PixelForge Systems",
+    "text": "Senior Frontend Engineer\nPixelForge Systems | Bengaluru, India (Hybrid)\n\nAbout the role\nWe craft the web experiences our customers use every day, from dashboards to checkout flows. We are hiring a senior frontend engineer with 5+ years of experience.\n\nWhat you'll do\n- Build responsive interfaces in React and TypeScript\n- Turn Figma designs into pixel-accurate HTML and CSS with Tailwind CSS\n- Own the component library and keep it accessible and tested with Jest\n- Optimise bundle size and Core Web Vitals for every release\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- JavaScript\n- TypeScript\n- React\n- Next.js\n- Cypress\n- Figma\n- Strong problem-solving skills and clear communication\n- Nice to have: Svelte, Vue, Node.js\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "JavaScript",
+      "TypeScript",
+      "React",
+      "Next.js",
+      "Cypress",
+      "Figma"
+    ],
+    "nice_to_have_skills": [
+      "Svelte",
+      "Vue",
+      "Node.js"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_013",
+    "mismatched_resume_id": "syn_000"
+  },
+  {
+    "id": "jd_007",
+    "role": "fullstack",
+    "level": "junior",
+    "title": "Junior Full-Stack Developer",
+    "company": "QuantumLeap Analytics",
+    "text": "Junior Full-Stack Developer\nQuantumLeap Analytics | Bengaluru, India (Hybrid)\n\nAbout the role\nWe own features end to end, from the React interface down to the Node.js services and the database. We are hiring a junior full-stack developer with 0-2 years of experience.\n\nWhat you'll do\n- Ship full features across React, Node.js and Express\n- Design schemas in PostgreSQL and MongoDB for new product areas\n- Containerise services with Docker and ship through CI/CD pipelines\n- Debug production issues across the stack and own the fix\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- JavaScript\n- React\n- Node.js\n- Git\n- SQL\n- Strong problem-solving skills and clear communication\n- Nice to have: TypeScript, GraphQL, Redis\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Git",
+      "SQL"
+    ],
+    "nice_to_have_skills": [
+      "TypeScript",
+      "GraphQL",
+      "Redis"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_024",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_008",
+    "role": "fullstack",
+    "level": "mid",
+    "title": "Full-Stack Developer",
+    "company": "SecureNet Infosystems",
+    "text": "Full-Stack Developer\nSecureNet Infosystems | Bengaluru, India (Hybrid)\n\nAbout the role\nWe own features end to end, from the React interface down to the Node.js services and the database. We are hiring a full-stack developer with 2-4 years of experience.\n\nWhat you'll do\n- Ship full features across React, Node.js and Express\n- Design schemas in PostgreSQL and MongoDB for new product areas\n- Containerise services with Docker and ship through CI/CD pipelines\n- Debug production issues across the stack and own the fix\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- JavaScript\n- React\n- Node.js\n- Express\n- PostgreSQL\n- Docker\n- Strong problem-solving skills and clear communication\n- Nice to have: TypeScript, GraphQL, Redis\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Express",
+      "PostgreSQL",
+      "Docker"
+    ],
+    "nice_to_have_skills": [
+      "TypeScript",
+      "GraphQL",
+      "Redis"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_024",
+    "mismatched_resume_id": "syn_038"
+  },
+  {
+    "id": "jd_009",
+    "role": "fullstack",
+    "level": "senior",
+    "title": "Senior Full-Stack Engineer",
+    "company": "AgileMind Labs",
+    "text": "Senior Full-Stack Engineer\nAgileMind Labs | Bengaluru, India (Hybrid)\n\nAbout the role\nWe own features end to end, from the React interface down to the Node.js services and the database. We are hiring a senior full-stack engineer with 5+ years of experience.\n\nWhat you'll do\n- Ship full features across React, Node.js and Express\n- Design schemas in PostgreSQL and MongoDB for new product areas\n- Containerise services with Docker and ship through CI/CD pipelines\n- Debug production issues across the stack and own the fix\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- JavaScript\n- React\n- Node.js\n- Next.js\n- AWS\n- Kubernetes\n- MongoDB\n- Strong problem-solving skills and clear communication\n- Nice to have: TypeScript, GraphQL, Redis\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "JavaScript",
+      "React",
+      "Node.js",
+      "Next.js",
+      "AWS",
+      "Kubernetes",
+      "MongoDB"
+    ],
+    "nice_to_have_skills": [
+      "TypeScript",
+      "GraphQL",
+      "Redis"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_027",
+    "mismatched_resume_id": "syn_000"
+  },
+  {
+    "id": "jd_010",
+    "role": "data-analyst",
+    "level": "junior",
+    "title": "Junior Data Analyst",
+    "company": "NextGen Robotics",
+    "text": "Junior Data Analyst\nNextGen Robotics | Bengaluru, India (Hybrid)\n\nAbout the role\nWe turn raw product and sales data into the dashboards and analyses that drive weekly business decisions. We are hiring a junior data analyst with 0-2 years of experience.\n\nWhat you'll do\n- Write SQL queries against our warehouse to answer business questions\n- Build and maintain dashboards in Tableau and Power BI\n- Clean and explore data in Python with Pandas and NumPy\n- Present findings to stakeholders with clear Excel summaries\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- SQL\n- Excel\n- Python\n- Tableau\n- Strong problem-solving skills and clear communication\n- Nice to have: Apache Spark, Statistics, JIRA\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "SQL",
+      "Excel",
+      "Python",
+      "Tableau"
+    ],
+    "nice_to_have_skills": [
+      "Apache Spark",
+      "Statistics",
+      "JIRA"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_036",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_011",
+    "role": "data-analyst",
+    "level": "mid",
+    "title": "Data Analyst",
+    "company": "TechMahindra Digital",
+    "text": "Data Analyst\nTechMahindra Digital | Bengaluru, India (Hybrid)\n\nAbout the role\nWe turn raw product and sales data into the dashboards and analyses that drive weekly business decisions. We are hiring a data analyst with 2-4 years of experience.\n\nWhat you'll do\n- Write SQL queries against our warehouse to answer business questions\n- Build and maintain dashboards in Tableau and Power BI\n- Clean and explore data in Python with Pandas and NumPy\n- Present findings to stakeholders with clear Excel summaries\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- SQL\n- Python\n- Pandas\n- Tableau\n- Power BI\n- Excel\n- Strong problem-solving skills and clear communication\n- Nice to have: Apache Spark, Statistics, JIRA\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "SQL",
+      "Python",
+      "Pandas",
+      "Tableau",
+      "Power BI",
+      "Excel"
+    ],
+    "nice_to_have_skills": [
+      "Apache Spark",
+      "Statistics",
+      "JIRA"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_036",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_012",
+    "role": "data-analyst",
+    "level": "senior",
+    "title": "Senior Data Analyst",
+    "company": "NexaSoft Solutions",
+    "text": "Senior Data Analyst\nNexaSoft Solutions | Bengaluru, India (Hybrid)\n\nAbout the role\nWe turn raw product and sales data into the dashboards and analyses that drive weekly business decisions. We are hiring a senior data analyst with 5+ years of experience.\n\nWhat you'll do\n- Write SQL queries against our warehouse to answer business questions\n- Build and maintain dashboards in Tableau and Power BI\n- Clean and explore data in Python with Pandas and NumPy\n- Present findings to stakeholders with clear Excel summaries\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- SQL\n- Python\n- Pandas\n- NumPy\n- Tableau\n- Power BI\n- R\n- Strong problem-solving skills and clear communication\n- Nice to have: Apache Spark, Statistics, JIRA\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "SQL",
+      "Python",
+      "Pandas",
+      "NumPy",
+      "Tableau",
+      "Power BI",
+      "R"
+    ],
+    "nice_to_have_skills": [
+      "Apache Spark",
+      "Statistics",
+      "JIRA"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_036",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_013",
+    "role": "data-engineer",
+    "level": "junior",
+    "title": "Junior Data Engineer",
+    "company": "CloudNine Labs",
+    "text": "Junior Data Engineer\nCloudNine Labs | Bengaluru, India (Hybrid)\n\nAbout the role\nWe build the pipelines that move terabytes of data from our products into the warehouse every day. We are hiring a junior data engineer with 0-2 years of experience.\n\nWhat you'll do\n- Build batch and streaming pipelines in Python with Apache Spark\n- Orchestrate workflows with Airflow and monitor them in production\n- Stream events through Kafka into PostgreSQL and the warehouse\n- Containerise pipeline jobs with Docker and deploy on AWS\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- Python\n- SQL\n- PostgreSQL\n- Git\n- Strong problem-solving skills and clear communication\n- Nice to have: Terraform, Scala, Hadoop\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "SQL",
+      "PostgreSQL",
+      "Git"
+    ],
+    "nice_to_have_skills": [
+      "Terraform",
+      "Scala",
+      "Hadoop"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_049",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_014",
+    "role": "data-engineer",
+    "level": "mid",
+    "title": "Data Engineer",
+    "company": "BrightStack Technologies",
+    "text": "Data Engineer\nBrightStack Technologies | Bengaluru, India (Hybrid)\n\nAbout the role\nWe build the pipelines that move terabytes of data from our products into the warehouse every day. We are hiring a data engineer with 2-4 years of experience.\n\nWhat you'll do\n- Build batch and streaming pipelines in Python with Apache Spark\n- Orchestrate workflows with Airflow and monitor them in production\n- Stream events through Kafka into PostgreSQL and the warehouse\n- Containerise pipeline jobs with Docker and deploy on AWS\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- Python\n- SQL\n- Apache Spark\n- Airflow\n- Docker\n- Strong problem-solving skills and clear communication\n- Nice to have: Terraform, Scala, Hadoop\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "SQL",
+      "Apache Spark",
+      "Airflow",
+      "Docker"
+    ],
+    "nice_to_have_skills": [
+      "Terraform",
+      "Scala",
+      "Hadoop"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_049",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_015",
+    "role": "data-engineer",
+    "level": "senior",
+    "title": "Senior Data Engineer",
+    "company": "DataWorks India",
+    "text": "Senior Data Engineer\nDataWorks India | Bengaluru, India (Hybrid)\n\nAbout the role\nWe build the pipelines that move terabytes of data from our products into the warehouse every day. We are hiring a senior data engineer with 5+ years of experience.\n\nWhat you'll do\n- Build batch and streaming pipelines in Python with Apache Spark\n- Orchestrate workflows with Airflow and monitor them in production\n- Stream events through Kafka into PostgreSQL and the warehouse\n- Containerise pipeline jobs with Docker and deploy on AWS\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- Python\n- Apache Spark\n- Airflow\n- Kafka\n- AWS\n- Kubernetes\n- Strong problem-solving skills and clear communication\n- Nice to have: Terraform, Scala, Hadoop\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "Apache Spark",
+      "Airflow",
+      "Kafka",
+      "AWS",
+      "Kubernetes"
+    ],
+    "nice_to_have_skills": [
+      "Terraform",
+      "Scala",
+      "Hadoop"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_048",
+    "mismatched_resume_id": "syn_012"
+  },
+  {
+    "id": "jd_016",
+    "role": "ml-engineer",
+    "level": "junior",
+    "title": "Junior ML Engineer",
+    "company": "PixelForge Systems",
+    "text": "Junior ML Engineer\nPixelForge Systems | Bengaluru, India (Hybrid)\n\nAbout the role\nWe ship machine learning into production: recommendations, ranking and language features used by millions. We are hiring a junior ml engineer with 0-2 years of experience.\n\nWhat you'll do\n- Train and evaluate models with PyTorch, TensorFlow and Scikit-learn\n- Prepare features and datasets in Python with Pandas and NumPy\n- Serve models behind APIs and monitor them with Hugging Face tooling\n- Prototype retrieval and agent flows with LangChain\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- Python\n- Scikit-learn\n- Pandas\n- NumPy\n- SQL\n- Strong problem-solving skills and clear communication\n- Nice to have: Kubernetes, Keras, MLOps\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "Scikit-learn",
+      "Pandas",
+      "NumPy",
+      "SQL"
+    ],
+    "nice_to_have_skills": [
+      "Kubernetes",
+      "Keras",
+      "MLOps"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_061",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_017",
+    "role": "ml-engineer",
+    "level": "mid",
+    "title": "Machine Learning Engineer",
+    "company": "QuantumLeap Analytics",
+    "text": "Machine Learning Engineer\nQuantumLeap Analytics | Bengaluru, India (Hybrid)\n\nAbout the role\nWe ship machine learning into production: recommendations, ranking and language features used by millions. We are hiring a machine learning engineer with 2-4 years of experience.\n\nWhat you'll do\n- Train and evaluate models with PyTorch, TensorFlow and Scikit-learn\n- Prepare features and datasets in Python with Pandas and NumPy\n- Serve models behind APIs and monitor them with Hugging Face tooling\n- Prototype retrieval and agent flows with LangChain\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- Python\n- PyTorch\n- TensorFlow\n- Scikit-learn\n- Hugging Face\n- Strong problem-solving skills and clear communication\n- Nice to have: Kubernetes, Keras, MLOps\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "PyTorch",
+      "TensorFlow",
+      "Scikit-learn",
+      "Hugging Face"
+    ],
+    "nice_to_have_skills": [
+      "Kubernetes",
+      "Keras",
+      "MLOps"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_063",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_018",
+    "role": "ml-engineer",
+    "level": "senior",
+    "title": "Senior ML Engineer",
+    "company": "SecureNet Infosystems",
+    "text": "Senior ML Engineer\nSecureNet Infosystems | Bengaluru, India (Hybrid)\n\nAbout the role\nWe ship machine learning into production: recommendations, ranking and language features used by millions. We are hiring a senior ml engineer with 5+ years of experience.\n\nWhat you'll do\n- Train and evaluate models with PyTorch, TensorFlow and Scikit-learn\n- Prepare features and datasets in Python with Pandas and NumPy\n- Serve models behind APIs and monitor them with Hugging Face tooling\n- Prototype retrieval and agent flows with LangChain\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- Python\n- PyTorch\n- TensorFlow\n- Hugging Face\n- LangChain\n- Docker\n- AWS\n- Strong problem-solving skills and clear communication\n- Nice to have: Kubernetes, Keras, MLOps\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "PyTorch",
+      "TensorFlow",
+      "Hugging Face",
+      "LangChain",
+      "Docker",
+      "AWS"
+    ],
+    "nice_to_have_skills": [
+      "Kubernetes",
+      "Keras",
+      "MLOps"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_061",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_019",
+    "role": "qa",
+    "level": "junior",
+    "title": "Junior QA Engineer",
+    "company": "AgileMind Labs",
+    "text": "Junior QA Engineer\nAgileMind Labs | Bengaluru, India (Hybrid)\n\nAbout the role\nWe own quality end to end: test strategy, automation and release sign-off for every product team. We are hiring a junior qa engineer with 0-2 years of experience.\n\nWhat you'll do\n- Write automated tests in Java with Selenium, JUnit and PyTest\n- Run end-to-end suites with Cypress and Jest and triage failures\n- File and track defects in JIRA and verify fixes before release\n- Drive test coverage up through CI/CD with Jenkins\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- Java\n- Selenium\n- JIRA\n- Git\n- Strong problem-solving skills and clear communication\n- Nice to have: Cypress, Postman, SQL\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Java",
+      "Selenium",
+      "JIRA",
+      "Git"
+    ],
+    "nice_to_have_skills": [
+      "Cypress",
+      "Postman",
+      "SQL"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_075",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_020",
+    "role": "qa",
+    "level": "mid",
+    "title": "QA Engineer",
+    "company": "NextGen Robotics",
+    "text": "QA Engineer\nNextGen Robotics | Bengaluru, India (Hybrid)\n\nAbout the role\nWe own quality end to end: test strategy, automation and release sign-off for every product team. We are hiring a qa engineer with 2-4 years of experience.\n\nWhat you'll do\n- Write automated tests in Java with Selenium, JUnit and PyTest\n- Run end-to-end suites with Cypress and Jest and triage failures\n- File and track defects in JIRA and verify fixes before release\n- Drive test coverage up through CI/CD with Jenkins\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- Java\n- Selenium\n- PyTest\n- JUnit\n- Cypress\n- JIRA\n- Strong problem-solving skills and clear communication\n- Nice to have: Cypress, Postman, SQL\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Java",
+      "Selenium",
+      "PyTest",
+      "JUnit",
+      "Cypress",
+      "JIRA"
+    ],
+    "nice_to_have_skills": [
+      "Cypress",
+      "Postman",
+      "SQL"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_074",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_021",
+    "role": "qa",
+    "level": "senior",
+    "title": "Senior QA Engineer",
+    "company": "TechMahindra Digital",
+    "text": "Senior QA Engineer\nTechMahindra Digital | Bengaluru, India (Hybrid)\n\nAbout the role\nWe own quality end to end: test strategy, automation and release sign-off for every product team. We are hiring a senior qa engineer with 5+ years of experience.\n\nWhat you'll do\n- Write automated tests in Java with Selenium, JUnit and PyTest\n- Run end-to-end suites with Cypress and Jest and triage failures\n- File and track defects in JIRA and verify fixes before release\n- Drive test coverage up through CI/CD with Jenkins\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- Java\n- Selenium\n- PyTest\n- Jenkins\n- CI/CD\n- Python\n- Strong problem-solving skills and clear communication\n- Nice to have: Cypress, Postman, SQL\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Java",
+      "Selenium",
+      "PyTest",
+      "Jenkins",
+      "CI/CD",
+      "Python"
+    ],
+    "nice_to_have_skills": [
+      "Cypress",
+      "Postman",
+      "SQL"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_072",
+    "mismatched_resume_id": "syn_012"
+  },
+  {
+    "id": "jd_022",
+    "role": "devops",
+    "level": "junior",
+    "title": "Junior DevOps Engineer",
+    "company": "NexaSoft Solutions",
+    "text": "Junior DevOps Engineer\nNexaSoft Solutions | Bengaluru, India (Hybrid)\n\nAbout the role\nWe run the platform everything else deploys on: clusters, pipelines and observability for 40+ services. We are hiring a junior devops engineer with 0-2 years of experience.\n\nWhat you'll do\n- Run Kubernetes clusters and Docker workloads across AWS\n- Write infrastructure as code with Terraform and shell scripts in Bash\n- Own CI/CD pipelines in Jenkins and GitHub Actions\n- Harden Linux hosts, manage secrets and keep on-call runbooks current\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- Linux\n- Bash\n- Docker\n- Git\n- Strong problem-solving skills and clear communication\n- Nice to have: Azure, Ansible, Prometheus\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Linux",
+      "Bash",
+      "Docker",
+      "Git"
+    ],
+    "nice_to_have_skills": [
+      "Azure",
+      "Ansible",
+      "Prometheus"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_085",
+    "mismatched_resume_id": "syn_097"
+  },
+  {
+    "id": "jd_023",
+    "role": "devops",
+    "level": "mid",
+    "title": "DevOps Engineer",
+    "company": "CloudNine Labs",
+    "text": "DevOps Engineer\nCloudNine Labs | Bengaluru, India (Hybrid)\n\nAbout the role\nWe run the platform everything else deploys on: clusters, pipelines and observability for 40+ services. We are hiring a devops engineer with 2-4 years of experience.\n\nWhat you'll do\n- Run Kubernetes clusters and Docker workloads across AWS\n- Write infrastructure as code with Terraform and shell scripts in Bash\n- Own CI/CD pipelines in Jenkins and GitHub Actions\n- Harden Linux hosts, manage secrets and keep on-call runbooks current\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- Docker\n- Kubernetes\n- Jenkins\n- CI/CD\n- Linux\n- Strong problem-solving skills and clear communication\n- Nice to have: Azure, Ansible, Prometheus\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Docker",
+      "Kubernetes",
+      "Jenkins",
+      "CI/CD",
+      "Linux"
+    ],
+    "nice_to_have_skills": [
+      "Azure",
+      "Ansible",
+      "Prometheus"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_087",
+    "mismatched_resume_id": "syn_012"
+  },
+  {
+    "id": "jd_024",
+    "role": "devops",
+    "level": "senior",
+    "title": "Senior DevOps Engineer",
+    "company": "BrightStack Technologies",
+    "text": "Senior DevOps Engineer\nBrightStack Technologies | Bengaluru, India (Hybrid)\n\nAbout the role\nWe run the platform everything else deploys on: clusters, pipelines and observability for 40+ services. We are hiring a senior devops engineer with 5+ years of experience.\n\nWhat you'll do\n- Run Kubernetes clusters and Docker workloads across AWS\n- Write infrastructure as code with Terraform and shell scripts in Bash\n- Own CI/CD pipelines in Jenkins and GitHub Actions\n- Harden Linux hosts, manage secrets and keep on-call runbooks current\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- Docker\n- Kubernetes\n- AWS\n- Terraform\n- Jenkins\n- GCP\n- Strong problem-solving skills and clear communication\n- Nice to have: Azure, Ansible, Prometheus\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Docker",
+      "Kubernetes",
+      "AWS",
+      "Terraform",
+      "Jenkins",
+      "GCP"
+    ],
+    "nice_to_have_skills": [
+      "Azure",
+      "Ansible",
+      "Prometheus"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_086",
+    "mismatched_resume_id": "syn_012"
+  },
+  {
+    "id": "jd_025",
+    "role": "mobile",
+    "level": "junior",
+    "title": "Junior Android Developer",
+    "company": "DataWorks India",
+    "text": "Junior Android Developer\nDataWorks India | Bengaluru, India (Hybrid)\n\nAbout the role\nWe build the Android and iOS apps our customers open every morning, used by over a million people. We are hiring a junior android developer with 0-2 years of experience.\n\nWhat you'll do\n- Build native Android features in Kotlin and Java\n- Ship cross-platform screens in Flutter and Dart\n- Integrate Firebase for auth, push and analytics\n- Own the release train and keep crash rates near zero\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- Kotlin\n- Java\n- Android Development\n- Git\n- Strong problem-solving skills and clear communication\n- Nice to have: React Native, Swift, Figma\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Kotlin",
+      "Java",
+      "Android Development",
+      "Git"
+    ],
+    "nice_to_have_skills": [
+      "React Native",
+      "Swift",
+      "Figma"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_098",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_026",
+    "role": "mobile",
+    "level": "mid",
+    "title": "Mobile Developer",
+    "company": "PixelForge Systems",
+    "text": "Mobile Developer\nPixelForge Systems | Bengaluru, India (Hybrid)\n\nAbout the role\nWe build the Android and iOS apps our customers open every morning, used by over a million people. We are hiring a mobile developer with 2-4 years of experience.\n\nWhat you'll do\n- Build native Android features in Kotlin and Java\n- Ship cross-platform screens in Flutter and Dart\n- Integrate Firebase for auth, push and analytics\n- Own the release train and keep crash rates near zero\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- Kotlin\n- Flutter\n- Dart\n- Firebase\n- Android Development\n- Strong problem-solving skills and clear communication\n- Nice to have: React Native, Swift, Figma\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Kotlin",
+      "Flutter",
+      "Dart",
+      "Firebase",
+      "Android Development"
+    ],
+    "nice_to_have_skills": [
+      "React Native",
+      "Swift",
+      "Figma"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_097",
+    "mismatched_resume_id": "syn_000"
+  },
+  {
+    "id": "jd_027",
+    "role": "mobile",
+    "level": "senior",
+    "title": "Senior Mobile Engineer",
+    "company": "QuantumLeap Analytics",
+    "text": "Senior Mobile Engineer\nQuantumLeap Analytics | Bengaluru, India (Hybrid)\n\nAbout the role\nWe build the Android and iOS apps our customers open every morning, used by over a million people. We are hiring a senior mobile engineer with 5+ years of experience.\n\nWhat you'll do\n- Build native Android features in Kotlin and Java\n- Ship cross-platform screens in Flutter and Dart\n- Integrate Firebase for auth, push and analytics\n- Own the release train and keep crash rates near zero\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- Kotlin\n- Swift\n- Flutter\n- iOS Development\n- Firebase\n- CI/CD\n- Strong problem-solving skills and clear communication\n- Nice to have: React Native, Swift, Figma\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Kotlin",
+      "Swift",
+      "Flutter",
+      "iOS Development",
+      "Firebase",
+      "CI/CD"
+    ],
+    "nice_to_have_skills": [
+      "React Native",
+      "Swift",
+      "Figma"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_097",
+    "mismatched_resume_id": "syn_000"
+  },
+  {
+    "id": "jd_028",
+    "role": "fresher",
+    "level": "junior",
+    "title": "Graduate Engineer Trainee",
+    "company": "SecureNet Infosystems",
+    "text": "Graduate Engineer Trainee\nSecureNet Infosystems | Bengaluru, India (Hybrid)\n\nAbout the role\nOur graduate programme turns strong fundamentals into production engineering through mentoring and real projects. We are hiring a graduate engineer trainee with 0-2 years of experience.\n\nWhat you'll do\n- Write clean code in Python and Java and review it with mentors\n- Query data with SQL and build small features in HTML and CSS\n- Fix bugs, write tests and learn Git workflows on real services\n- Present your project work to the team every sprint\n\nWhat we're looking for\n- 0-2 years of relevant experience\n- Hands-on experience with:\n- Python\n- Java\n- SQL\n- Git\n- HTML\n- Strong problem-solving skills and clear communication\n- Nice to have: JavaScript, React, Docker\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "Java",
+      "SQL",
+      "Git",
+      "HTML"
+    ],
+    "nice_to_have_skills": [
+      "JavaScript",
+      "React",
+      "Docker"
+    ],
+    "experience_years_min": 0,
+    "matched_resume_id": "syn_110",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_029",
+    "role": "fresher",
+    "level": "mid",
+    "title": "Associate Software Engineer",
+    "company": "AgileMind Labs",
+    "text": "Associate Software Engineer\nAgileMind Labs | Bengaluru, India (Hybrid)\n\nAbout the role\nOur graduate programme turns strong fundamentals into production engineering through mentoring and real projects. We are hiring a associate software engineer with 2-4 years of experience.\n\nWhat you'll do\n- Write clean code in Python and Java and review it with mentors\n- Query data with SQL and build small features in HTML and CSS\n- Fix bugs, write tests and learn Git workflows on real services\n- Present your project work to the team every sprint\n\nWhat we're looking for\n- 2-4 years of relevant experience\n- Hands-on experience with:\n- Python\n- Java\n- JavaScript\n- React\n- SQL\n- Git\n- Strong problem-solving skills and clear communication\n- Nice to have: JavaScript, React, Docker\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "Java",
+      "JavaScript",
+      "React",
+      "SQL",
+      "Git"
+    ],
+    "nice_to_have_skills": [
+      "JavaScript",
+      "React",
+      "Docker"
+    ],
+    "experience_years_min": 2,
+    "matched_resume_id": "syn_108",
+    "mismatched_resume_id": "syn_001"
+  },
+  {
+    "id": "jd_030",
+    "role": "fresher",
+    "level": "senior",
+    "title": "Software Engineer",
+    "company": "NextGen Robotics",
+    "text": "Software Engineer\nNextGen Robotics | Bengaluru, India (Hybrid)\n\nAbout the role\nOur graduate programme turns strong fundamentals into production engineering through mentoring and real projects. We are hiring a software engineer with 5+ years of experience.\n\nWhat you'll do\n- Write clean code in Python and Java and review it with mentors\n- Query data with SQL and build small features in HTML and CSS\n- Fix bugs, write tests and learn Git workflows on real services\n- Present your project work to the team every sprint\n\nWhat we're looking for\n- 5+ years of relevant experience\n- Hands-on experience with:\n- Python\n- Java\n- Django\n- PostgreSQL\n- AWS\n- Docker\n- Strong problem-solving skills and clear communication\n- Nice to have: JavaScript, React, Docker\n\nWe offer a competitive salary, health insurance, learning budget and flexible hours.",
+    "must_have_skills": [
+      "Python",
+      "Java",
+      "Django",
+      "PostgreSQL",
+      "AWS",
+      "Docker"
+    ],
+    "nice_to_have_skills": [
+      "JavaScript",
+      "React",
+      "Docker"
+    ],
+    "experience_years_min": 5,
+    "matched_resume_id": "syn_108",
+    "mismatched_resume_id": "syn_012"
+  }
+]

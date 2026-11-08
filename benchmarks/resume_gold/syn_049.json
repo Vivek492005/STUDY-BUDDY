@@ -1,0 +1,27 @@
+{
+  "id": "syn_049",
+  "text": "Aarav Nair\n\naarav.nair49@example.com | +91 73129 80807 | linkedin.com/in/aaravnair\n\nSummary\nBig Data Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBig Data Engineer, TechCorp, 2019 - Present\n- Built batch and streaming pipelines in Python processing data for 5000 users daily\n- Optimized Spark jobs that reduced processing time by 10 percent\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 20 percent\n- Managed a migration from MySQL to PostgreSQL that improved query speed\nBig Data Engineer, NexaTech, 2017 - 2019\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n- Built batch and streaming pipelines in Python processing data for 10000 users daily\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 50 percent\n\nSKILLS\nPostgreSQL, Kafka, Linux, Scala, Hadoop, AWS, Docker, SQL, Bash, Apache Spark\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2015\n\nPROJECTS\n- Data pipeline portfolio project ingesting public datasets with daily refreshed charts.\n- Created an ELT framework for small teams.\n- Built a log aggregation pipeline with Kafka and Spark.",
+  "labels": {
+    "name": "Aarav Nair",
+    "email": "aarav.nair49@example.com",
+    "phone": "+91 73129 80807",
+    "skills": [
+      "PostgreSQL",
+      "Kafka",
+      "Linux",
+      "Scala",
+      "Hadoop",
+      "AWS",
+      "Docker",
+      "SQL",
+      "Bash",
+      "Apache Spark"
+    ],
+    "role": "Big Data Engineer",
+    "role_key": "data-engineer"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "strong"
+}

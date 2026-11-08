@@ -1,0 +1,27 @@
+{
+  "id": "syn_038",
+  "text": "Amit Chopra\n\namit.chopra38@example.com | +91 84090 41300 | linkedin.com/in/amitchopra\n\nSummary\nAnalytics Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAnalytics Engineer, CodeCraft, 2023 - Present\n- Presented insights to leadership that shaped pricing decisions\n- Built a churn analysis that identified 40 percent of at-risk customers\n- Designed PostgreSQL queries that cut dashboard load time by 20 percent\n- Automated data quality checks that caught bad data before it reached reports\nSoftware Engineering Intern, DataSystems, 2022 - 2023\n- Built a churn analysis that identified 50 percent of at-risk customers\n- Created Tableau dashboards and Power BI reports used by 11 business teams\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 35 percent\n\nSKILLS\nPandas, Python, Bash, Git, SQL, Excel, MySQL, Hadoop, NumPy, Tableau\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2023\n\nPROJECTS\n- Built a sales forecasting dashboard for a retail dataset.\n- Created a KPI tracker for a student club with 300 members.\n- Data analysis project on public datasets with charts and a written report.",
+  "labels": {
+    "name": "Amit Chopra",
+    "email": "amit.chopra38@example.com",
+    "phone": "+91 84090 41300",
+    "skills": [
+      "Pandas",
+      "Python",
+      "Bash",
+      "Git",
+      "SQL",
+      "Excel",
+      "MySQL",
+      "Hadoop",
+      "NumPy",
+      "Tableau"
+    ],
+    "role": "Analytics Engineer",
+    "role_key": "data-analyst"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "strong"
+}

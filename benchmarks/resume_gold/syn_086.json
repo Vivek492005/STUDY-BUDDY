@@ -1,0 +1,28 @@
+{
+  "id": "syn_086",
+  "text": "Sana Iyer\n\nsana.iyer86@example.com | +91 69700 39579 | linkedin.com/in/sanaiyer\n\nSummary\nPlatform Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nPlatform Engineer, InnovateLabs, 2023 - Present\n- Created runbooks that cut onboarding time for on-call engineers\n- Built a GitLab CI template adopted by 12 teams\n- Implemented monitoring and alerting that resolved incidents 20 percent faster\n- Automated infrastructure with Terraform across 2 AWS accounts\nSoftware Engineering Intern, CodeCraft, 2022 - 2023\n- Designed CI/CD pipelines that cut deploy time by 45 percent\n- Implemented monitoring and alerting that resolved incidents 45 percent faster\n- Created runbooks that cut onboarding time for on-call engineers\n\nSKILLS\nBash, Linux, GCP, PowerShell, Docker, Kubernetes, GitHub, Ansible, Azure, CI/CD, Python\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2021\n\nPROJECTS\n- Created a Terraform module for static site hosting.\n- Built a home lab Kubernetes cluster with monitoring.\n- Wrote a deployment dashboard for 8 services.",
+  "labels": {
+    "name": "Sana Iyer",
+    "email": "sana.iyer86@example.com",
+    "phone": "+91 69700 39579",
+    "skills": [
+      "Bash",
+      "Linux",
+      "GCP",
+      "PowerShell",
+      "Docker",
+      "Kubernetes",
+      "GitHub",
+      "Ansible",
+      "Azure",
+      "CI/CD",
+      "Python"
+    ],
+    "role": "Platform Engineer",
+    "role_key": "devops"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "strong"
+}

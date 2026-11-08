@@ -1,0 +1,24 @@
+{
+  "id": "syn_055",
+  "text": "Maya D'Souza\n\nmaya.dsouza55@example.com | +91 81744 38903\n\nSummary\nBig Data Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBig Data Engineer, TechCorp, 2020 - Present\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 20 percent\n\nSKILLS\nDocker, Hadoop, SQL, Python, Kafka, Airflow, PostgreSQL\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2018",
+  "labels": {
+    "name": "Maya D'Souza",
+    "email": "maya.dsouza55@example.com",
+    "phone": "+91 81744 38903",
+    "skills": [
+      "Docker",
+      "Hadoop",
+      "SQL",
+      "Python",
+      "Kafka",
+      "Airflow",
+      "PostgreSQL"
+    ],
+    "role": "Big Data Engineer",
+    "role_key": "data-engineer"
+  },
+  "quality": "average",
+  "level": "senior",
+  "experience_years": 7,
+  "expected_band": "average"
+}

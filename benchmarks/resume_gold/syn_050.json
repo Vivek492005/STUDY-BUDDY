@@ -1,0 +1,29 @@
+{
+  "id": "syn_050",
+  "text": "Sneha Bose\n\nsneha.bose50@example.com | +91 97984 99928 | linkedin.com/in/snehabose\n\nSummary\nData Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nData Engineer, CloudNine, 2023 - Present\n- Built Kafka consumers that ingested 4 events per second\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 30 percent\n- Built batch and streaming pipelines in Python processing data for 300000 users daily\nSoftware Engineering Intern, ZenithSoft, 2022 - 2023\n- Built Kafka consumers that ingested 10 events per second\n- Automated data quality checks that resolved bad data before it reached reports\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n\nSKILLS\nLinux, AWS, Docker, Airflow, SQL, Git, Redis, MySQL, Scala, Bash, Kubernetes, Kafka\n\nEDUCATION\nB.Sc Computer Science, Delhi University, 2023\n\nPROJECTS\n- Built a log aggregation pipeline with Kafka and Spark.\n- Created an ELT framework for small teams.\n- Data pipeline portfolio project ingesting public datasets with daily refreshed charts.",
+  "labels": {
+    "name": "Sneha Bose",
+    "email": "sneha.bose50@example.com",
+    "phone": "+91 97984 99928",
+    "skills": [
+      "Linux",
+      "AWS",
+      "Docker",
+      "Airflow",
+      "SQL",
+      "Git",
+      "Redis",
+      "MySQL",
+      "Scala",
+      "Bash",
+      "Kubernetes",
+      "Kafka"
+    ],
+    "role": "Data Engineer",
+    "role_key": "data-engineer"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "strong"
+}

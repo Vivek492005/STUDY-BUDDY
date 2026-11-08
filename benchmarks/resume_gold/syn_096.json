@@ -1,0 +1,30 @@
+{
+  "id": "syn_096",
+  "text": "Rohan Rao\n\nrohan.rao96@example.com | +91 94839 80747 | linkedin.com/in/rohanrao\n\nSummary\nAndroid Developer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nAndroid Developer, DataNest, 2019 - Present\n- Implemented offline sync with Firebase that worked without connectivity\n- Redesigned onboarding that improved activation by 35 percent\n- Integrated GraphQL APIs for real-time features\n- Optimized app startup time by 60 percent\nAndroid Developer, InsightLabs, 2017 - 2019\n- Integrated GraphQL APIs for real-time features\n- Developed an iOS app with Swift that reached a 20 rating on the App Store\n- Created a Flutter app that shipped on Android and iOS from one codebase\n\nSKILLS\nAndroid Development, Git, iOS Development, Dart, Kotlin, Flutter, Java, SQLite, GraphQL, Firebase, SQL, Swift, Figma\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2017\n\nPROJECTS\n- Published a habit-tracking app on the Play Store.\n- Created a fitness tracker with offline support.\n- Built a campus event app with Flutter used by 10000 students.",
+  "labels": {
+    "name": "Rohan Rao",
+    "email": "rohan.rao96@example.com",
+    "phone": "+91 94839 80747",
+    "skills": [
+      "Android Development",
+      "Git",
+      "iOS Development",
+      "Dart",
+      "Kotlin",
+      "Flutter",
+      "Java",
+      "SQLite",
+      "GraphQL",
+      "Firebase",
+      "SQL",
+      "Swift",
+      "Figma"
+    ],
+    "role": "Android Developer",
+    "role_key": "mobile"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 5,
+  "expected_band": "strong"
+}

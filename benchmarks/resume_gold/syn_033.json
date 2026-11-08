@@ -1,17 +1,22 @@
 {
   "id": "syn_033",
-  "text": "Mar\u00eda Jos\u00e9 Fern\u00e1ndez L\u00f3pez\nmj.fernandez33@example.com | +34 612 345 789 | Madrid, Spain\n\nPROFESSIONAL SUMMARY\nMarketing Specialist with 3 years of experience in digital campaigns for retail brands in Spain and Latin America.\n\nSKILLS\nSEO, Google Analytics, Content Marketing, Social Media, Copywriting\n\nEXPERIENCE\nMarketing Specialist \u2014 TiendaMedia (2022\u2013Present)\n- Grew organic traffic 55% year over year\n- Ran bilingual ES/EN campaign calendars\n\nEDUCATION\nGrado en Marketing, 2021\n",
+  "text": "Neha Malhotra\nneha.malhotra33@example.com\n\nEXPERIENCE\nFull Stack Developer, TechNova, 2024\n- Shipped a real-time notification system.\n\nSKILLS\nPython, MongoDB, JavaScript, Django, Next.js",
   "labels": {
-    "name": "Mar\u00eda Jos\u00e9 Fern\u00e1ndez L\u00f3pez",
-    "email": "mj.fernandez33@example.com",
-    "phone": "+34 612 345 789",
+    "name": "Neha Malhotra",
+    "email": "neha.malhotra33@example.com",
+    "phone": "",
     "skills": [
-      "SEO",
-      "Google Analytics",
-      "Content Marketing",
-      "Social Media",
-      "Copywriting"
+      "Python",
+      "MongoDB",
+      "JavaScript",
+      "Django",
+      "Next.js"
     ],
-    "role": "Marketing Specialist"
-  }
+    "role": "Full Stack Developer",
+    "role_key": "fullstack"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
 }

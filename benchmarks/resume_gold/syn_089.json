@@ -1,0 +1,23 @@
+{
+  "id": "syn_089",
+  "text": "Tanvi Pillai\n\ntanvi.pillai89@example.com | +91 74590 27507\n\nSummary\nSite Reliability Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSite Reliability Engineer, ZenithSoft, 2023 - Present\n- Automated backups and disaster recovery drills for production databases\n- Created runbooks that cut onboarding time for on-call engineers\nSite Reliability Engineer, SoftServe, 2022 - 2023\n- Built a GitLab CI template adopted by 10 teams\n- Automated backups and disaster recovery drills for production databases\n\nSKILLS\nGit, AWS, GitLab, Ansible, GitLab CI, Python\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2021",
+  "labels": {
+    "name": "Tanvi Pillai",
+    "email": "tanvi.pillai89@example.com",
+    "phone": "+91 74590 27507",
+    "skills": [
+      "Git",
+      "AWS",
+      "GitLab",
+      "Ansible",
+      "GitLab CI",
+      "Python"
+    ],
+    "role": "Site Reliability Engineer",
+    "role_key": "devops"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "average"
+}

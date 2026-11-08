@@ -1,0 +1,22 @@
+{
+  "id": "syn_077",
+  "text": "Imran Bhat\n\nimran.bhat77@example.com | +91 86658 62260\n\nSummary\nQuality Assurance Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nQuality Assurance Engineer, AppWorks, 2023 - Present\n- Wrote JUnit tests that raised coverage from 45 percent to 15 percent\n- Automated API testing with PyTest, covering 6 endpoints\nQuality Assurance Engineer, InnovateLabs, 2022 - 2023\n- Built a test data generator that unblocked 4 teams\n- Automated API testing with PyTest, covering 3 endpoints\n\nSKILLS\nSQL, JUnit, Jenkins, JIRA, CI/CD\n\nEDUCATION\nB.E. Information Technology, Pune University, 2021",
+  "labels": {
+    "name": "Imran Bhat",
+    "email": "imran.bhat77@example.com",
+    "phone": "+91 86658 62260",
+    "skills": [
+      "SQL",
+      "JUnit",
+      "Jenkins",
+      "JIRA",
+      "CI/CD"
+    ],
+    "role": "Quality Assurance Engineer",
+    "role_key": "qa"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "average"
+}

@@ -1,19 +1,20 @@
 {
   "id": "syn_008",
-  "text": "Arjun Singh\narjun.singh8@example.com | +91 9843101783 | linkedin.com/in/arjunsingh\n\nPROFESSIONAL SUMMARY\nFrontend Developer with 1 years of experience building scalable applications.\n\nSKILLS\nNode.js, AWS, Docker, SQL, React, Machine Learning, Java\n\nEXPERIENCE\nFrontend Developer \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Anika Mehta\nanika.mehta8@example.com\n\nEXPERIENCE\nSoftware Engineer, DesignStudio, 2024\n- Implemented Redis caching.\n\nSKILLS\nJava, Bash, Node.js",
   "labels": {
-    "name": "Arjun Singh",
-    "email": "arjun.singh8@example.com",
-    "phone": "+91 9843101783",
+    "name": "Anika Mehta",
+    "email": "anika.mehta8@example.com",
+    "phone": "",
     "skills": [
-      "Node.js",
-      "AWS",
-      "Docker",
-      "SQL",
-      "React",
-      "Machine Learning",
-      "Java"
+      "Java",
+      "Bash",
+      "Node.js"
     ],
-    "role": "Frontend Developer"
-  }
+    "role": "Software Engineer",
+    "role_key": "backend"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "weak"
 }

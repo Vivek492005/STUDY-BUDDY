@@ -1,16 +1,20 @@
 {
   "id": "syn_011",
-  "text": "Sneha Singh\nsneha.singh11@example.com | +91 9860185867 | linkedin.com/in/snehasingh\n\nPROFESSIONAL SUMMARY\nData Analyst with 3 years of experience building scalable applications.\n\nSKILLS\nNode.js, Docker, Git, Python\n\nEXPERIENCE\nData Analyst \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Shreya Kulkarni\nshreya.kulkarni11@example.com | +91 61152 70068\n\nSKILLS\nPython, SQL, Docker\n\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.",
   "labels": {
-    "name": "Sneha Singh",
-    "email": "sneha.singh11@example.com",
-    "phone": "+91 9860185867",
+    "name": "Shreya Kulkarni",
+    "email": "shreya.kulkarni11@example.com",
+    "phone": "+91 61152 70068",
     "skills": [
-      "Node.js",
-      "Docker",
-      "Git",
-      "Python"
+      "Python",
+      "SQL",
+      "Docker"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Backend Engineer",
+    "role_key": "backend"
+  },
+  "quality": "gaming",
+  "level": "junior",
+  "experience_years": 0,
+  "expected_band": null
 }

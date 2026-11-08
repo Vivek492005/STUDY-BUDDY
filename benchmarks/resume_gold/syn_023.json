@@ -1,19 +1,20 @@
 {
   "id": "syn_023",
-  "text": "Sneha Reddy\nsneha.reddy23@example.com | +91 9842035886 | linkedin.com/in/snehareddy\n\nPROFESSIONAL SUMMARY\nFrontend Developer with 4 years of experience building scalable applications.\n\nSKILLS\nReact, TypeScript, Machine Learning, Git, Docker, AWS, Python\n\nEXPERIENCE\nFrontend Developer \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Simran Saxena\nsimran.saxena23@example.com | +91 62375 94246\n\nSKILLS\nReact, JavaScript, CSS\n\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.",
   "labels": {
-    "name": "Sneha Reddy",
-    "email": "sneha.reddy23@example.com",
-    "phone": "+91 9842035886",
+    "name": "Simran Saxena",
+    "email": "simran.saxena23@example.com",
+    "phone": "+91 62375 94246",
     "skills": [
       "React",
-      "TypeScript",
-      "Machine Learning",
-      "Git",
-      "Docker",
-      "AWS",
-      "Python"
+      "JavaScript",
+      "CSS"
     ],
-    "role": "Frontend Developer"
-  }
+    "role": "Frontend Engineer",
+    "role_key": "frontend"
+  },
+  "quality": "gaming",
+  "level": "junior",
+  "experience_years": 0,
+  "expected_band": null
 }

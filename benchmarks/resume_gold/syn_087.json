@@ -1,0 +1,29 @@
+{
+  "id": "syn_087",
+  "text": "Varun Trivedi\n\nvarun.trivedi87@example.com | +91 61151 49110 | linkedin.com/in/varuntrivedi\n\nSummary\nRecent computer science graduate with strong project experience in platform engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, InsightLabs, 2023 - 2025\n- Built a GitLab CI template adopted by 6 teams\n- Built Kubernetes clusters that served 1000 users with 99.9 percent uptime\n- Migrated 3 services to containers, reducing infrastructure costs by 35 percent\n- Implemented monitoring and alerting that resolved incidents 20 percent faster\nSoftware Engineering Intern, PixelWorks, 2022 - 2023\n- Built a GitLab CI template adopted by 4 teams\n- Created runbooks that cut onboarding time for on-call engineers\n- Designed CI/CD pipelines that cut deploy time by 10 percent\n\nSKILLS\nBash, Jenkins, AWS, Ansible, Linux, PowerShell, Python, GitLab, Terraform, Kubernetes, Azure, GitHub\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2024\n\nPROJECTS\n- Built a home lab Kubernetes cluster with monitoring.\n- Wrote a deployment dashboard for 9 services.\n- Created a Terraform module for static site hosting.",
+  "labels": {
+    "name": "Varun Trivedi",
+    "email": "varun.trivedi87@example.com",
+    "phone": "+91 61151 49110",
+    "skills": [
+      "Bash",
+      "Jenkins",
+      "AWS",
+      "Ansible",
+      "Linux",
+      "PowerShell",
+      "Python",
+      "GitLab",
+      "Terraform",
+      "Kubernetes",
+      "Azure",
+      "GitHub"
+    ],
+    "role": "Platform Engineer",
+    "role_key": "devops"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
+}

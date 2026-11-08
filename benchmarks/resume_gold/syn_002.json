@@ -1,18 +1,27 @@
 {
   "id": "syn_002",
-  "text": "Arjun Sharma\narjun.sharma2@example.com | +91 9831429110 | linkedin.com/in/arjunsharma\n\nPROFESSIONAL SUMMARY\nBackend Developer with 1 years of experience building scalable applications.\n\nSKILLS\nMachine Learning, React, SQL, Docker, JavaScript, Python\n\nEXPERIENCE\nBackend Developer \u2014 InnovateLabs (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Pooja Singh\n\npooja.singh2@example.com | +91 76155 37869 | linkedin.com/in/poojasingh\n\nSummary\nBackend Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nBackend Engineer, PixelWorks, 2023 - Present\n- Developed REST APIs with Flask and FastAPI for a logistics platform used by 100000 clients\n- Designed a PostgreSQL schema migration that cut query latency by 30 percent\n- Led a team of 11 engineers through design reviews and on-call rotations\n- Built monitoring dashboards that resolved incidents 40 percent faster\nSoftware Engineering Intern, NexaTech, 2022 - 2023\n- Led a team of 4 engineers through design reviews and on-call rotations\n- Implemented Redis caching that reduced database load by 50 percent\n- Designed a PostgreSQL schema migration that cut query latency by 45 percent\n\nSKILLS\nJava, Flask, FastAPI, PostgreSQL, Git, Docker, Bash, MySQL, SQL, Kafka\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2023\n\nPROJECTS\n- Built a personal analytics dashboard tracking fitness data for 300 users.\n- Created a URL shortener service with rate limiting and analytics.\n- Open-source contributor to a task queue library used by 100000 developers.",
   "labels": {
-    "name": "Arjun Sharma",
-    "email": "arjun.sharma2@example.com",
-    "phone": "+91 9831429110",
+    "name": "Pooja Singh",
+    "email": "pooja.singh2@example.com",
+    "phone": "+91 76155 37869",
     "skills": [
-      "Machine Learning",
-      "React",
-      "SQL",
+      "Java",
+      "Flask",
+      "FastAPI",
+      "PostgreSQL",
+      "Git",
       "Docker",
-      "JavaScript",
-      "Python"
+      "Bash",
+      "MySQL",
+      "SQL",
+      "Kafka"
     ],
-    "role": "Backend Developer"
-  }
+    "role": "Backend Engineer",
+    "role_key": "backend"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "strong"
 }

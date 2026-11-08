@@ -1,17 +1,23 @@
 {
   "id": "syn_016",
-  "text": "Sneha Singh\nsneha.singh16@example.com | +91 9886644106 | linkedin.com/in/snehasingh\n\nPROFESSIONAL SUMMARY\nBackend Developer with 3 years of experience building scalable applications.\n\nSKILLS\nGit, AWS, SQL, JavaScript, Java\n\nEXPERIENCE\nBackend Developer \u2014 InnovateLabs (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Karan Das\n\nkaran.das16@example.com | +91 93851 90676\n\nSummary\nUI Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nUI Engineer, AppWorks, 2023 - Present\n- Led accessibility improvements that resolved 5 audit issues\n- Implemented GraphQL data layers that reduced page load times by 40 percent\nUI Engineer, TechCorp, 2022 - 2023\n- Delivered a checkout redesign used by 50000 users\n- Optimized bundle sizes and raised Lighthouse scores by 45 points across flagship pages\n\nSKILLS\nBootstrap, Svelte, Node.js, Next.js, Cypress, React\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2021",
   "labels": {
-    "name": "Sneha Singh",
-    "email": "sneha.singh16@example.com",
-    "phone": "+91 9886644106",
+    "name": "Karan Das",
+    "email": "karan.das16@example.com",
+    "phone": "+91 93851 90676",
     "skills": [
-      "Git",
-      "AWS",
-      "SQL",
-      "JavaScript",
-      "Java"
+      "Bootstrap",
+      "Svelte",
+      "Node.js",
+      "Next.js",
+      "Cypress",
+      "React"
     ],
-    "role": "Backend Developer"
-  }
+    "role": "UI Engineer",
+    "role_key": "frontend"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "average"
 }

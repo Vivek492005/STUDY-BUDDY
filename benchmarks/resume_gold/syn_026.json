@@ -1,18 +1,28 @@
 {
   "id": "syn_026",
-  "text": "Arjun Gupta\narjun.gupta26@example.com | +91 9856020613 | linkedin.com/in/arjungupta\n\nPROFESSIONAL SUMMARY\nData Analyst with 3 years of experience building scalable applications.\n\nSKILLS\nJava, Git, Machine Learning, Python, JavaScript, Docker\n\nEXPERIENCE\nData Analyst \u2014 InnovateLabs (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Pooja Pillai\n\npooja.pillai26@example.com | +91 98616 67091 | linkedin.com/in/poojapillai\n\nSummary\nFull-Stack Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nFull-Stack Engineer, StartupXYZ, 2023 - Present\n- Shipped a real-time notification system with Node.js and Redis\n- Optimized database queries and caching, cutting page load by 60 percent\n- Developed REST and GraphQL APIs that powered mobile and web clients\n- Led the migration from a monolith to services, improving deploy frequency\nSoftware Engineering Intern, CloudNine, 2022 - 2023\n- Led the migration from a monolith to services, improving deploy frequency\n- Implemented authentication and payment flows used by 50000 customers\n- Built an e-commerce platform with React and Django serving 5000 users\n\nSKILLS\nNext.js, Flask, Git, MongoDB, AWS, Node.js, Docker, CSS, Express, HTML, Python\n\nEDUCATION\nB.Com, Delhi University, 2022\n\nPROJECTS\n- Task manager app with authentication and reminders.\n- E-commerce clone with cart, search, and checkout flows.\n- Chat application with real-time messaging for 1000 users.",
   "labels": {
-    "name": "Arjun Gupta",
-    "email": "arjun.gupta26@example.com",
-    "phone": "+91 9856020613",
+    "name": "Pooja Pillai",
+    "email": "pooja.pillai26@example.com",
+    "phone": "+91 98616 67091",
     "skills": [
-      "Java",
+      "Next.js",
+      "Flask",
       "Git",
-      "Machine Learning",
-      "Python",
-      "JavaScript",
-      "Docker"
+      "MongoDB",
+      "AWS",
+      "Node.js",
+      "Docker",
+      "CSS",
+      "Express",
+      "HTML",
+      "Python"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Full-Stack Engineer",
+    "role_key": "fullstack"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "strong"
 }

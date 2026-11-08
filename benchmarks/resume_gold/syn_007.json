@@ -1,17 +1,23 @@
 {
   "id": "syn_007",
-  "text": "Kavya Khan\nkavya.khan7@example.com | +91 9845935572 | linkedin.com/in/kavyakhan\n\nPROFESSIONAL SUMMARY\nSoftware Engineer with 2 years of experience building scalable applications.\n\nSKILLS\nNode.js, Docker, SQL, Git, AWS\n\nEXPERIENCE\nSoftware Engineer \u2014 InnovateLabs (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Kiran Gupta\n\nkiran.gupta7@example.com | +91 69856 11934\n\nSummary\nSoftware Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSoftware Engineer, CodeCraft, 2020 - Present\n- Built monitoring dashboards that resolved incidents 40 percent faster\n- Designed a PostgreSQL schema migration that cut query latency by 10 percent\n\nSKILLS\nSQL, Python, Bash, Redis, Kafka, FastAPI\n\nEDUCATION\nB.Sc Computer Science, Delhi University, 2019",
   "labels": {
-    "name": "Kavya Khan",
-    "email": "kavya.khan7@example.com",
-    "phone": "+91 9845935572",
+    "name": "Kiran Gupta",
+    "email": "kiran.gupta7@example.com",
+    "phone": "+91 69856 11934",
     "skills": [
-      "Node.js",
-      "Docker",
       "SQL",
-      "Git",
-      "AWS"
+      "Python",
+      "Bash",
+      "Redis",
+      "Kafka",
+      "FastAPI"
     ],
-    "role": "Software Engineer"
-  }
+    "role": "Software Engineer",
+    "role_key": "backend"
+  },
+  "quality": "average",
+  "level": "senior",
+  "experience_years": 5,
+  "expected_band": "average"
 }

@@ -1,18 +1,28 @@
 {
   "id": "syn_024",
-  "text": "Priya Patel\npriya.patel24@example.com | +91 9882160068 | linkedin.com/in/priyapatel\n\nPROFESSIONAL SUMMARY\nData Analyst with 4 years of experience building scalable applications.\n\nSKILLS\nReact, Docker, JavaScript, SQL, TypeScript, MongoDB\n\nEXPERIENCE\nData Analyst \u2014 DataSystems (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Aditya Bhat\n\naditya.bhat24@example.com | +91 93977 16590 | linkedin.com/in/adityabhat\n\nSummary\nSoftware Engineer with 8 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSoftware Engineer, WebScale, 2019 - Present\n- Automated CI/CD pipelines that reduced release errors by 40 percent\n- Implemented authentication and payment flows used by 2000 customers\n- Optimized database queries and caching, cutting page load by 15 percent\n- Led the migration from a monolith to services, improving deploy frequency\nSoftware Engineer, PixelWorks, 2017 - 2019\n- Built admin dashboards in React that saved the support team 10 hours a week\n- Built an e-commerce platform with React and Django serving 200 users\n- Automated CI/CD pipelines that reduced release errors by 35 percent\n\nSKILLS\nTypeScript, JavaScript, Python, PostgreSQL, Flask, SQL, CSS, Docker, Jest, React, Git\n\nEDUCATION\nB.Com, Delhi University, 2017\n\nPROJECTS\n- Chat application with real-time messaging for 50000 users.\n- E-commerce clone with cart, search, and checkout flows.\n- Task manager app with authentication and reminders.",
   "labels": {
-    "name": "Priya Patel",
-    "email": "priya.patel24@example.com",
-    "phone": "+91 9882160068",
+    "name": "Aditya Bhat",
+    "email": "aditya.bhat24@example.com",
+    "phone": "+91 93977 16590",
     "skills": [
-      "React",
-      "Docker",
-      "JavaScript",
-      "SQL",
       "TypeScript",
-      "MongoDB"
+      "JavaScript",
+      "Python",
+      "PostgreSQL",
+      "Flask",
+      "SQL",
+      "CSS",
+      "Docker",
+      "Jest",
+      "React",
+      "Git"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Software Engineer",
+    "role_key": "fullstack"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 8,
+  "expected_band": "strong"
 }

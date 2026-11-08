@@ -1,0 +1,24 @@
+{
+  "id": "syn_103",
+  "text": "Arjun Verma\n\narjun.verma103@example.com | +91 74939 84277\n\nSummary\nFlutter Developer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nFlutter Developer, DesignStudio, 2020 - Present\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Redesigned onboarding that improved activation by 15 percent\n\nSKILLS\nKotlin, Swift, Git, Android Development, SQLite, Java, iOS Development\n\nEDUCATION\nMCA, IGNOU, 2019",
+  "labels": {
+    "name": "Arjun Verma",
+    "email": "arjun.verma103@example.com",
+    "phone": "+91 74939 84277",
+    "skills": [
+      "Kotlin",
+      "Swift",
+      "Git",
+      "Android Development",
+      "SQLite",
+      "Java",
+      "iOS Development"
+    ],
+    "role": "Flutter Developer",
+    "role_key": "mobile"
+  },
+  "quality": "average",
+  "level": "senior",
+  "experience_years": 7,
+  "expected_band": "average"
+}

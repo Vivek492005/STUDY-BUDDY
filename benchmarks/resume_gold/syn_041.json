@@ -1,0 +1,23 @@
+{
+  "id": "syn_041",
+  "text": "Rohit Joshi\n\nrohit.joshi41@example.com | +91 85837 12875\n\nSummary\nAnalytics Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAnalytics Engineer, TechCorp, 2023 - Present\n- Created Tableau dashboards and Power BI reports used by 9 business teams\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\nAnalytics Engineer, TechNova, 2022 - 2023\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Automated data quality checks that caught bad data before it reached reports\n\nSKILLS\nAirflow, Tableau, Hadoop, Pandas, Apache Spark, Power BI\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2023",
+  "labels": {
+    "name": "Rohit Joshi",
+    "email": "rohit.joshi41@example.com",
+    "phone": "+91 85837 12875",
+    "skills": [
+      "Airflow",
+      "Tableau",
+      "Hadoop",
+      "Pandas",
+      "Apache Spark",
+      "Power BI"
+    ],
+    "role": "Analytics Engineer",
+    "role_key": "data-analyst"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "average"
+}

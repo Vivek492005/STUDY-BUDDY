@@ -1,0 +1,29 @@
+{
+  "id": "syn_108",
+  "text": "Suresh Agarwal\n\nsuresh.agarwal108@example.com | +91 66315 60493 | linkedin.com/in/sureshagarwal\n\nSummary\nSoftware Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSoftware Engineer, Northwind, 2019 - Present\n- Developed a dashboard feature in React that displayed sales data\n- Fixed frontend bugs and wrote documentation for a component library\n- Created a REST API with Flask for a college project\n- Implemented a pathfinding visualizer in JavaScript\nSoftware Engineer, CloudNine, 2017 - 2019\n- Created a REST API with Flask for a college project\n- Implemented a pathfinding visualizer in JavaScript\n- Contributed to an open-source project by fixing 6 issues\n\nSKILLS\nGit, CSS, JavaScript, Java, C, HTML, TypeScript, Django, Flask, SQL, Python, C++\n\nEDUCATION\nMCA, IGNOU, 2016\n\nPROJECTS\n- Task manager app with authentication and reminders.\n- E-commerce clone with React and Flask, demoed to 300000 users.\n- Chat application with real-time messaging using websockets.",
+  "labels": {
+    "name": "Suresh Agarwal",
+    "email": "suresh.agarwal108@example.com",
+    "phone": "+91 66315 60493",
+    "skills": [
+      "Git",
+      "CSS",
+      "JavaScript",
+      "Java",
+      "C",
+      "HTML",
+      "TypeScript",
+      "Django",
+      "Flask",
+      "SQL",
+      "Python",
+      "C++"
+    ],
+    "role": "Software Engineer",
+    "role_key": "fresher"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 7,
+  "expected_band": "strong"
+}

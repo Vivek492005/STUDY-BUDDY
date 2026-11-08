@@ -1,17 +1,19 @@
 {
   "id": "syn_034",
-  "text": "VIKRAM  NAIR\nvikram.nair34@example.com\n+91 98470 22113\n\nPROFESSIONAL SUMMA\nRY\nSupport Engineer with 4 years of experi\nence in troubleshooting SaaS products an\nd handling escalations.\n\nSKILLS\nZendesk, Jira, SQL,\nCustomer Support, Troubleshoo\nting\n\nEXPERIENCE\nSupport Engineer \u2014 HelpDeskly\n(2021\u2013Present)\n- Resolved 95% of tickets within SLA\n\nEDUCATION\nBCA, 2020\n",
+  "text": "Isha Saxena\nisha.saxena34@example.com\nAspiring developer seeking opportunities.\nGit, SQL",
   "labels": {
-    "name": "Vikram Nair",
-    "email": "vikram.nair34@example.com",
-    "phone": "+91 98470 22113",
+    "name": "Isha Saxena",
+    "email": "isha.saxena34@example.com",
+    "phone": "",
     "skills": [
-      "Zendesk",
-      "Jira",
-      "SQL",
-      "Customer Support",
-      "Troubleshooting"
+      "Git",
+      "SQL"
     ],
-    "role": "Support Engineer"
-  }
+    "role": "Software Engineer",
+    "role_key": "fullstack"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
 }

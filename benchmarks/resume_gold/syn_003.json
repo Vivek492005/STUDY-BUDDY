@@ -1,16 +1,31 @@
 {
   "id": "syn_003",
-  "text": "Kavya Reddy\nkavya.reddy3@example.com | +91 9891030736 | linkedin.com/in/kavyareddy\n\nPROFESSIONAL SUMMARY\nFrontend Developer with 1 years of experience building scalable applications.\n\nSKILLS\nMongoDB, Git, Java, JavaScript\n\nEXPERIENCE\nFrontend Developer \u2014 InnovateLabs (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Lakshmi Gupta\n\nlakshmi.gupta3@example.com | +91 88123 30730 | linkedin.com/in/lakshmigupta\n\nSummary\nRecent computer science graduate with strong project experience in backend developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, DataNest, 2023 - 2025\n- Designed a PostgreSQL schema migration that cut query latency by 50 percent\n- Led a team of 11 engineers through design reviews and on-call rotations\n- Optimized slow SQL queries and improved checkout throughput by 25 percent\n- Implemented Redis caching that reduced database load by 20 percent\nSoftware Engineering Intern, BrightSoft, 2022 - 2023\n- Optimized slow SQL queries and improved checkout throughput by 50 percent\n- Led a team of 10 engineers through design reviews and on-call rotations\n- Designed a PostgreSQL schema migration that cut query latency by 10 percent\n\nSKILLS\nKubernetes, Node.js, Python, Flask, AWS, Kafka, Git, SQL, FastAPI, Go, CI/CD, Bash, Java, Docker\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2025\n\nPROJECTS\n- Created a URL shortener service with rate limiting and analytics.\n- Built a personal analytics dashboard tracking fitness data for 100000 users.\n- Open-source contributor to a task queue library used by 500 developers.",
   "labels": {
-    "name": "Kavya Reddy",
-    "email": "kavya.reddy3@example.com",
-    "phone": "+91 9891030736",
+    "name": "Lakshmi Gupta",
+    "email": "lakshmi.gupta3@example.com",
+    "phone": "+91 88123 30730",
     "skills": [
-      "MongoDB",
+      "Kubernetes",
+      "Node.js",
+      "Python",
+      "Flask",
+      "AWS",
+      "Kafka",
       "Git",
+      "SQL",
+      "FastAPI",
+      "Go",
+      "CI/CD",
+      "Bash",
       "Java",
-      "JavaScript"
+      "Docker"
     ],
-    "role": "Frontend Developer"
-  }
+    "role": "Backend Developer",
+    "role_key": "backend"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
 }

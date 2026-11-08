@@ -1,0 +1,22 @@
+{
+  "id": "syn_114",
+  "text": "Imran Khan\n\nimran.khan114@example.com | +91 92867 44387\n\nSummary\nRecent computer science graduate with strong project experience in associate software engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, DesignStudio, 2024 - 2025\n- Created a REST API with Flask for a college project\n- Fixed frontend bugs and wrote documentation for a component library\n\nSKILLS\nReact, TypeScript, CSS, Django, JavaScript\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2025",
+  "labels": {
+    "name": "Imran Khan",
+    "email": "imran.khan114@example.com",
+    "phone": "+91 92867 44387",
+    "skills": [
+      "React",
+      "TypeScript",
+      "CSS",
+      "Django",
+      "JavaScript"
+    ],
+    "role": "Associate Software Engineer",
+    "role_key": "fresher"
+  },
+  "quality": "average",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "average"
+}

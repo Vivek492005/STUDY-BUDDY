@@ -1,0 +1,22 @@
+{
+  "id": "syn_091",
+  "text": "Nisha Malhotra\n\nnisha.malhotra91@example.com | +91 67487 43352\n\nSummary\nDevOps Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nDevOps Engineer, TechNova, 2020 - Present\n- Automated infrastructure with Terraform across 7 AWS accounts\n- Implemented monitoring and alerting that resolved incidents 15 percent faster\n\nSKILLS\nAWS, PowerShell, Docker, GCP, Jenkins\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2016",
+  "labels": {
+    "name": "Nisha Malhotra",
+    "email": "nisha.malhotra91@example.com",
+    "phone": "+91 67487 43352",
+    "skills": [
+      "AWS",
+      "PowerShell",
+      "Docker",
+      "GCP",
+      "Jenkins"
+    ],
+    "role": "DevOps Engineer",
+    "role_key": "devops"
+  },
+  "quality": "average",
+  "level": "senior",
+  "experience_years": 7,
+  "expected_band": "average"
+}

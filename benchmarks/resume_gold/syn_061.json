@@ -1,0 +1,31 @@
+{
+  "id": "syn_061",
+  "text": "Rohan Patel\n\nrohan.patel61@example.com | +91 85703 20057 | linkedin.com/in/rohanpatel\n\nSummary\nAI Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nAI Engineer, PixelWorks, 2019 - Present\n- Built a recommendation model with PyTorch that increased click-through by 35 percent\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 60 percent\n- Built an evaluation harness that caught 45 percent of regressions before release\n- Deployed a TensorFlow classification service serving 100000 requests daily\nAI Engineer, TechNova, 2017 - 2019\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 15 percent\n- Built a recommendation model with PyTorch that increased click-through by 35 percent\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 15 percent\n\nSKILLS\nNumPy, TensorFlow, AWS, PostgreSQL, FastAPI, Docker, Apache Spark, Kubernetes, PyTorch, LangChain, Bash, Pandas, Scikit-learn, SQL\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2017\n\nPROJECTS\n- Built a sentiment analysis API with FastAPI.\n- Image classifier with reasonable accuracy on a public dataset.\n- Created a movie recommendation system with collaborative filtering.",
+  "labels": {
+    "name": "Rohan Patel",
+    "email": "rohan.patel61@example.com",
+    "phone": "+91 85703 20057",
+    "skills": [
+      "NumPy",
+      "TensorFlow",
+      "AWS",
+      "PostgreSQL",
+      "FastAPI",
+      "Docker",
+      "Apache Spark",
+      "Kubernetes",
+      "PyTorch",
+      "LangChain",
+      "Bash",
+      "Pandas",
+      "Scikit-learn",
+      "SQL"
+    ],
+    "role": "AI Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 5,
+  "expected_band": "strong"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "syn_082",
+  "text": "Lakshmi Menon\nlakshmi.menon82@example.com\nAspiring developer seeking opportunities.\nLinux, Cypress",
+  "labels": {
+    "name": "Lakshmi Menon",
+    "email": "lakshmi.menon82@example.com",
+    "phone": "",
+    "skills": [
+      "Linux",
+      "Cypress"
+    ],
+    "role": "QA Engineer",
+    "role_key": "qa"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
+}

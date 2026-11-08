@@ -1,0 +1,27 @@
+{
+  "id": "syn_085",
+  "text": "Sana Nair\n\nsana.nair85@example.com | +91 84684 49008 | linkedin.com/in/sananair\n\nSummary\nSite Reliability Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSite Reliability Engineer, DesignStudio, 2019 - Present\n- Created runbooks that cut onboarding time for on-call engineers\n- Migrated 6 services to containers, reducing infrastructure costs by 15 percent\n- Built a GitLab CI template adopted by 11 teams\n- Designed CI/CD pipelines that cut deploy time by 50 percent\nSite Reliability Engineer, CloudForge, 2017 - 2019\n- Automated backups and disaster recovery drills for production databases\n- Implemented monitoring and alerting that resolved incidents 20 percent faster\n- Designed CI/CD pipelines that cut deploy time by 30 percent\n\nSKILLS\nBash, AWS, Terraform, Git, Linux, GCP, GitHub, Azure, Ansible, Python\n\nEDUCATION\nMCA, IGNOU, 2019\n\nPROJECTS\n- Wrote a deployment dashboard for 3 services.\n- Created a Terraform module for static site hosting.\n- Built a home lab Kubernetes cluster with monitoring.",
+  "labels": {
+    "name": "Sana Nair",
+    "email": "sana.nair85@example.com",
+    "phone": "+91 84684 49008",
+    "skills": [
+      "Bash",
+      "AWS",
+      "Terraform",
+      "Git",
+      "Linux",
+      "GCP",
+      "GitHub",
+      "Azure",
+      "Ansible",
+      "Python"
+    ],
+    "role": "Site Reliability Engineer",
+    "role_key": "devops"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "strong"
+}

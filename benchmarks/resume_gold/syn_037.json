@@ -1,0 +1,31 @@
+{
+  "id": "syn_037",
+  "text": "Kiran Das\n\nkiran.das37@example.com | +91 64681 24871 | linkedin.com/in/kirandas\n\nSummary\nBusiness Analyst with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBusiness Analyst, CloudForge, 2019 - Present\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Designed PostgreSQL queries that cut dashboard load time by 25 percent\n- Automated data quality checks that caught bad data before it reached reports\n- Presented insights to leadership that shaped pricing decisions\nBusiness Analyst, InsightLabs, 2017 - 2019\n- Built a churn analysis that identified 40 percent of at-risk customers\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 25 percent\n\nSKILLS\nPower BI, Linux, Python, NumPy, MySQL, PostgreSQL, Bash, Scala, SQL, Excel, Hadoop, Airflow, Tableau, Git\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2019\n\nPROJECTS\n- Built a sales forecasting dashboard for a retail dataset.\n- Created a KPI tracker for a student club with 5000 members.\n- Data analysis project on public datasets with charts and a written report.",
+  "labels": {
+    "name": "Kiran Das",
+    "email": "kiran.das37@example.com",
+    "phone": "+91 64681 24871",
+    "skills": [
+      "Power BI",
+      "Linux",
+      "Python",
+      "NumPy",
+      "MySQL",
+      "PostgreSQL",
+      "Bash",
+      "Scala",
+      "SQL",
+      "Excel",
+      "Hadoop",
+      "Airflow",
+      "Tableau",
+      "Git"
+    ],
+    "role": "Business Analyst",
+    "role_key": "data-analyst"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 5,
+  "expected_band": "strong"
+}

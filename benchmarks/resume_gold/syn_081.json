@@ -1,0 +1,22 @@
+{
+  "id": "syn_081",
+  "text": "Aditya Kapoor\naditya.kapoor81@example.com\n\nEXPERIENCE\nSDET, ZenithSoft, 2024\n- Reduced manual regression time by 60 percent.\n\nSKILLS\nJest, Cypress, SQL, CI/CD, JavaScript",
+  "labels": {
+    "name": "Aditya Kapoor",
+    "email": "aditya.kapoor81@example.com",
+    "phone": "",
+    "skills": [
+      "Jest",
+      "Cypress",
+      "SQL",
+      "CI/CD",
+      "JavaScript"
+    ],
+    "role": "SDET",
+    "role_key": "qa"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
+}

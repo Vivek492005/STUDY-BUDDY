@@ -1,0 +1,23 @@
+{
+  "id": "syn_100",
+  "text": "Anika Sharma\n\nanika.sharma100@example.com | +91 69719 82305\n\nSummary\nFlutter Developer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nFlutter Developer, DataNest, 2023 - Present\n- Optimized app startup time by 50 percent\n- Built an Android app with Kotlin downloaded by 10000 users\nFlutter Developer, DataWorks, 2022 - 2023\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Built an Android app with Kotlin downloaded by 300 users\n\nSKILLS\nAndroid Development, GraphQL, Firebase, SQL, iOS Development, Java\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2022",
+  "labels": {
+    "name": "Anika Sharma",
+    "email": "anika.sharma100@example.com",
+    "phone": "+91 69719 82305",
+    "skills": [
+      "Android Development",
+      "GraphQL",
+      "Firebase",
+      "SQL",
+      "iOS Development",
+      "Java"
+    ],
+    "role": "Flutter Developer",
+    "role_key": "mobile"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "average"
+}

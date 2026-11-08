@@ -1,0 +1,31 @@
+{
+  "id": "syn_084",
+  "text": "Manish Fernandez\n\nmanish.fernandez84@example.com | +91 71841 86483 | linkedin.com/in/manishfernandez\n\nSummary\nSite Reliability Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSite Reliability Engineer, NexaTech, 2019 - Present\n- Automated infrastructure with Terraform across 5 AWS accounts\n- Migrated 2 services to containers, reducing infrastructure costs by 45 percent\n- Created runbooks that cut onboarding time for on-call engineers\n- Built a GitLab CI template adopted by 7 teams\nSite Reliability Engineer, StartupXYZ, 2017 - 2019\n- Automated backups and disaster recovery drills for production databases\n- Built Kubernetes clusters that served 1000 users with 99.9 percent uptime\n- Implemented monitoring and alerting that resolved incidents 40 percent faster\n\nSKILLS\nPowerShell, Kubernetes, Python, AWS, GitLab, Azure, CI/CD, Terraform, Git, Jenkins, GitHub, Ansible, GitLab CI, Linux\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2016\n\nPROJECTS\n- Wrote a deployment dashboard for 11 services.\n- Created a Terraform module for static site hosting.\n- Built a home lab Kubernetes cluster with monitoring.",
+  "labels": {
+    "name": "Manish Fernandez",
+    "email": "manish.fernandez84@example.com",
+    "phone": "+91 71841 86483",
+    "skills": [
+      "PowerShell",
+      "Kubernetes",
+      "Python",
+      "AWS",
+      "GitLab",
+      "Azure",
+      "CI/CD",
+      "Terraform",
+      "Git",
+      "Jenkins",
+      "GitHub",
+      "Ansible",
+      "GitLab CI",
+      "Linux"
+    ],
+    "role": "Site Reliability Engineer",
+    "role_key": "devops"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "strong"
+}

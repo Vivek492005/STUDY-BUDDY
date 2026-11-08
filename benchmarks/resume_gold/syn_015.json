@@ -1,17 +1,28 @@
 {
   "id": "syn_015",
-  "text": "Sneha Sharma\nsneha.sharma15@example.com | +91 9819528530 | linkedin.com/in/snehasharma\n\nPROFESSIONAL SUMMARY\nSoftware Engineer with 4 years of experience building scalable applications.\n\nSKILLS\nJavaScript, Python, Docker, MongoDB, SQL\n\nEXPERIENCE\nSoftware Engineer \u2014 CloudNine (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Simran Nair\n\nsimran.nair15@example.com | +91 62776 88193 | linkedin.com/in/simrannair\n\nSummary\nRecent computer science graduate with strong project experience in frontend engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, CodeCraft, 2023 - 2025\n- Designed responsive interfaces with HTML, CSS, and Tailwind CSS that improved mobile conversion by 30 percent\n- Optimized bundle sizes and raised Lighthouse scores by 10 points across flagship pages\n- Led accessibility improvements that resolved 8 audit issues\n- Built marketing sites with Vue and Angular for retail clients\nSoftware Engineering Intern, DataNest, 2022 - 2023\n- Built a React and TypeScript component library adopted by 12 product teams\n- Led accessibility improvements that resolved 12 audit issues\n- Created Figma-to-code workflows that improved designer handoff speed\n\nSKILLS\nCypress, GraphQL, TypeScript, Jest, HTML, Git, Node.js, Next.js, Vue, Figma, Svelte\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2024\n\nPROJECTS\n- Open-source contributor to a charting library.\n- Built a real-time dashboard with WebSocket updates.\n- Personal portfolio site with interactive demos, visited by 2000 users.",
   "labels": {
-    "name": "Sneha Sharma",
-    "email": "sneha.sharma15@example.com",
-    "phone": "+91 9819528530",
+    "name": "Simran Nair",
+    "email": "simran.nair15@example.com",
+    "phone": "+91 62776 88193",
     "skills": [
-      "JavaScript",
-      "Python",
-      "Docker",
-      "MongoDB",
-      "SQL"
+      "Cypress",
+      "GraphQL",
+      "TypeScript",
+      "Jest",
+      "HTML",
+      "Git",
+      "Node.js",
+      "Next.js",
+      "Vue",
+      "Figma",
+      "Svelte"
     ],
-    "role": "Software Engineer"
-  }
+    "role": "Frontend Engineer",
+    "role_key": "frontend"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
 }

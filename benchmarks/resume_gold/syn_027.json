@@ -1,18 +1,30 @@
 {
   "id": "syn_027",
-  "text": "Aarav Sharma\naarav.sharma27@example.com | +91 9854769200 | linkedin.com/in/aaravsharma\n\nPROFESSIONAL SUMMARY\nData Analyst with 2 years of experience building scalable applications.\n\nSKILLS\nReact, Git, Java, AWS, Python, TypeScript\n\nEXPERIENCE\nData Analyst \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Anika Agarwal\n\nanika.agarwal27@example.com | +91 78800 94659 | linkedin.com/in/anikaagarwal\n\nSummary\nRecent computer science graduate with strong project experience in full-stack engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, TechCorp, 2023 - 2025\n- Shipped a real-time notification system with Node.js and Redis\n- Developed REST and GraphQL APIs that powered mobile and web clients\n- Optimized database queries and caching, cutting page load by 30 percent\n- Led the migration from a monolith to services, improving deploy frequency\nSoftware Engineering Intern, CloudNine, 2022 - 2023\n- Automated CI/CD pipelines that reduced release errors by 50 percent\n- Optimized database queries and caching, cutting page load by 35 percent\n- Shipped a real-time notification system with Node.js and Redis\n\nSKILLS\nCSS, AWS, Git, Express, MongoDB, Node.js, HTML, React, JavaScript, GraphQL, Django, Jest, TypeScript\n\nEDUCATION\nB.Com, Delhi University, 2025\n\nPROJECTS\n- E-commerce clone with cart, search, and checkout flows.\n- Task manager app with authentication and reminders.\n- Chat application with real-time messaging for 2000 users.",
   "labels": {
-    "name": "Aarav Sharma",
-    "email": "aarav.sharma27@example.com",
-    "phone": "+91 9854769200",
+    "name": "Anika Agarwal",
+    "email": "anika.agarwal27@example.com",
+    "phone": "+91 78800 94659",
     "skills": [
-      "React",
-      "Git",
-      "Java",
+      "CSS",
       "AWS",
-      "Python",
+      "Git",
+      "Express",
+      "MongoDB",
+      "Node.js",
+      "HTML",
+      "React",
+      "JavaScript",
+      "GraphQL",
+      "Django",
+      "Jest",
       "TypeScript"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Full-Stack Engineer",
+    "role_key": "fullstack"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
 }

@@ -1,0 +1,20 @@
+{
+  "id": "syn_116",
+  "text": "Isha Agarwal\nisha.agarwal116@example.com\n\nEXPERIENCE\nSoftware Engineer, DesignStudio, 2024\n- Built a campus event app.\n\nSKILLS\nC++, CSS, Django",
+  "labels": {
+    "name": "Isha Agarwal",
+    "email": "isha.agarwal116@example.com",
+    "phone": "",
+    "skills": [
+      "C++",
+      "CSS",
+      "Django"
+    ],
+    "role": "Software Engineer",
+    "role_key": "fresher"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "weak"
+}

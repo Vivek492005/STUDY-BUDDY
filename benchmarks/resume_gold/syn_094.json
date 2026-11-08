@@ -1,0 +1,19 @@
+{
+  "id": "syn_094",
+  "text": "ROHAN  NAMBIAR\nrohan.nambiar94@example.com\nAspiring developer seeking opportunities.\nAWS, Azure",
+  "labels": {
+    "name": "Rohan Nambiar",
+    "email": "rohan.nambiar94@example.com",
+    "phone": "",
+    "skills": [
+      "AWS",
+      "Azure"
+    ],
+    "role": "DevOps Engineer",
+    "role_key": "devops"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
+}

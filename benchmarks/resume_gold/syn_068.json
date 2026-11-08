@@ -1,0 +1,20 @@
+{
+  "id": "syn_068",
+  "text": "Suresh Nambiar\nsuresh.nambiar68@example.com\n\nEXPERIENCE\nAI Engineer, TechNova, 2024\n- Designed a feature pipeline.\n\nSKILLS\nGit, Pandas, TensorFlow",
+  "labels": {
+    "name": "Suresh Nambiar",
+    "email": "suresh.nambiar68@example.com",
+    "phone": "",
+    "skills": [
+      "Git",
+      "Pandas",
+      "TensorFlow"
+    ],
+    "role": "AI Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "weak"
+}

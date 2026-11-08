@@ -1,17 +1,28 @@
 {
   "id": "syn_001",
-  "text": "Priya Gupta\npriya.gupta1@example.com | +91 9841227216 | linkedin.com/in/priyagupta\n\nPROFESSIONAL SUMMARY\nSoftware Engineer with 5 years of experience building scalable applications.\n\nSKILLS\nMongoDB, TypeScript, Java, AWS, SQL\n\nEXPERIENCE\nSoftware Engineer \u2014 InnovateLabs (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Zaid Gupta\n\nzaid.gupta1@example.com | +91 92291 82357 | linkedin.com/in/zaidgupta\n\nSummary\nBackend Developer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBackend Developer, CloudNine, 2019 - Present\n- Automated deployment pipelines with Docker and Kubernetes, cutting release time by 25 percent\n- Led a team of 3 engineers through design reviews and on-call rotations\n- Implemented Redis caching that reduced database load by 40 percent\n- Built a payment service in Python and Django serving 2000 users daily with 99.9 percent availability\nBackend Developer, DataSystems, 2017 - 2019\n- Built monitoring dashboards that resolved incidents 20 percent faster\n- Optimized slow SQL queries and improved checkout throughput by 35 percent\n- Implemented Redis caching that reduced database load by 35 percent\n\nSKILLS\nRedis, Django, PostgreSQL, MongoDB, CI/CD, Go, MySQL, FastAPI, Kubernetes, Bash, Flask\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2018\n\nPROJECTS\n- Created a URL shortener service with rate limiting and analytics.\n- Built a personal analytics dashboard tracking fitness data for 1000 users.\n- Open-source contributor to a task queue library used by 200 developers.",
   "labels": {
-    "name": "Priya Gupta",
-    "email": "priya.gupta1@example.com",
-    "phone": "+91 9841227216",
+    "name": "Zaid Gupta",
+    "email": "zaid.gupta1@example.com",
+    "phone": "+91 92291 82357",
     "skills": [
+      "Redis",
+      "Django",
+      "PostgreSQL",
       "MongoDB",
-      "TypeScript",
-      "Java",
-      "AWS",
-      "SQL"
+      "CI/CD",
+      "Go",
+      "MySQL",
+      "FastAPI",
+      "Kubernetes",
+      "Bash",
+      "Flask"
     ],
-    "role": "Software Engineer"
-  }
+    "role": "Backend Developer",
+    "role_key": "backend"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 7,
+  "expected_band": "strong"
 }

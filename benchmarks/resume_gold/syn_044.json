@@ -1,0 +1,20 @@
+{
+  "id": "syn_044",
+  "text": "Manish Saxena\nmanish.saxena44@example.com\n\nEXPERIENCE\nAnalytics Engineer, CloudForge, 2024\n- Analyzed sales data.\n\nSKILLS\nSQL, Apache Spark, Bash",
+  "labels": {
+    "name": "Manish Saxena",
+    "email": "manish.saxena44@example.com",
+    "phone": "",
+    "skills": [
+      "SQL",
+      "Apache Spark",
+      "Bash"
+    ],
+    "role": "Analytics Engineer",
+    "role_key": "data-analyst"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "weak"
+}

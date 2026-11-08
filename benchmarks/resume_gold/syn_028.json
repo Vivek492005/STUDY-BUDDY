@@ -1,19 +1,25 @@
 {
   "id": "syn_028",
-  "text": "Aarav Reddy\naarav.reddy28@example.com | +91 9888183110 | linkedin.com/in/aaravreddy\n\nPROFESSIONAL SUMMARY\nData Analyst with 1 years of experience building scalable applications.\n\nSKILLS\nReact, Python, Machine Learning, Docker, TypeScript, MongoDB, JavaScript\n\nEXPERIENCE\nData Analyst \u2014 DataSystems (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Vikram Shetty\n\nvikram.shetty28@example.com | +91 75853 39816\n\nSummary\nSoftware Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSoftware Engineer, TechCorp, 2023 - Present\n- Implemented authentication and payment flows used by 200 customers\n- Built admin dashboards in React that saved the support team 2 hours a week\nSoftware Engineer, AppWorks, 2022 - 2023\n- Shipped a real-time notification system with Node.js and Redis\n- Automated CI/CD pipelines that reduced release errors by 20 percent\n\nSKILLS\nReact, Python, Docker, Next.js, HTML, PostgreSQL, Django, TypeScript\n\nEDUCATION\nB.Tech Computer Science, Indian Institute of Technology Delhi, 2022",
   "labels": {
-    "name": "Aarav Reddy",
-    "email": "aarav.reddy28@example.com",
-    "phone": "+91 9888183110",
+    "name": "Vikram Shetty",
+    "email": "vikram.shetty28@example.com",
+    "phone": "+91 75853 39816",
     "skills": [
       "React",
       "Python",
-      "Machine Learning",
       "Docker",
-      "TypeScript",
-      "MongoDB",
-      "JavaScript"
+      "Next.js",
+      "HTML",
+      "PostgreSQL",
+      "Django",
+      "TypeScript"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Software Engineer",
+    "role_key": "fullstack"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "average"
 }

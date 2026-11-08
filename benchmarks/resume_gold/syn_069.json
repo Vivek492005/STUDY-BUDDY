@@ -1,0 +1,21 @@
+{
+  "id": "syn_069",
+  "text": "Shreya Kapoor\nshreya.kapoor69@example.com\n\nEXPERIENCE\nMachine Learning Engineer, DataSystems, 2024\n- Optimized model inference latency by 50 percent.\n\nSKILLS\nSQL, TensorFlow, LangChain, Hugging Face",
+  "labels": {
+    "name": "Shreya Kapoor",
+    "email": "shreya.kapoor69@example.com",
+    "phone": "",
+    "skills": [
+      "SQL",
+      "TensorFlow",
+      "LangChain",
+      "Hugging Face"
+    ],
+    "role": "Machine Learning Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
+}

@@ -1,17 +1,23 @@
 {
   "id": "syn_030",
-  "text": "Arjun Mehta\narjun.mehta30@example.com\n+91 9812045673\nSKILLS\nEXPERIENCE\nPython, SQL\nData Analyst \u2014 RetailMetrics (2021\u2013Present)\nTableau, Excel\n- Built weekly sales dashboards for 40+ stores\nPower BI\n- Automated KPI reporting, saving 6 hrs/week\nEDUCATION\nB.Com Statistics, 2020\n",
+  "text": "Nisha Bhat\n\nnisha.bhat30@example.com | +91 96003 84531\n\nSummary\nRecent computer science graduate with strong project experience in full-stack engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, InnovateLabs, 2024 - 2025\n- Optimized database queries and caching, cutting page load by 15 percent\n- Implemented authentication and payment flows used by 500 customers\n\nSKILLS\nDjango, CSS, TypeScript, Jest, Python, Flask\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2025",
   "labels": {
-    "name": "Arjun Mehta",
-    "email": "arjun.mehta30@example.com",
-    "phone": "+91 9812045673",
+    "name": "Nisha Bhat",
+    "email": "nisha.bhat30@example.com",
+    "phone": "+91 96003 84531",
     "skills": [
+      "Django",
+      "CSS",
+      "TypeScript",
+      "Jest",
       "Python",
-      "SQL",
-      "Tableau",
-      "Excel",
-      "Power BI"
+      "Flask"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Full-Stack Engineer",
+    "role_key": "fullstack"
+  },
+  "quality": "average",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "average"
 }

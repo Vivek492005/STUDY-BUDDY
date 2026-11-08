@@ -1,17 +1,28 @@
 {
   "id": "syn_013",
-  "text": "Ananya Singh\nananya.singh13@example.com | +91 9845575298 | linkedin.com/in/ananyasingh\n\nPROFESSIONAL SUMMARY\nBackend Developer with 5 years of experience building scalable applications.\n\nSKILLS\nJava, SQL, Machine Learning, AWS, Docker\n\nEXPERIENCE\nBackend Developer \u2014 InnovateLabs (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Neha Shetty\n\nneha.shetty13@example.com | +91 81722 10464 | linkedin.com/in/nehashetty\n\nSummary\nFrontend Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nFrontend Engineer, BrightSoft, 2019 - Present\n- Created Figma-to-code workflows that improved designer handoff speed\n- Led accessibility improvements that resolved 3 audit issues\n- Built a React and TypeScript component library adopted by 4 product teams\n- Delivered a checkout redesign used by 100000 users\nFrontend Engineer, PixelWorks, 2017 - 2019\n- Built a React and TypeScript component library adopted by 11 product teams\n- Created Figma-to-code workflows that improved designer handoff speed\n- Implemented GraphQL data layers that reduced page load times by 50 percent\n\nSKILLS\nGraphQL, Vue, JavaScript, Svelte, HTML, Next.js, Node.js, Angular, Git, TypeScript, React\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2016\n\nPROJECTS\n- Built a real-time dashboard with WebSocket updates.\n- Open-source contributor to a charting library.\n- Personal portfolio site with interactive demos, visited by 1000 users.",
   "labels": {
-    "name": "Ananya Singh",
-    "email": "ananya.singh13@example.com",
-    "phone": "+91 9845575298",
+    "name": "Neha Shetty",
+    "email": "neha.shetty13@example.com",
+    "phone": "+91 81722 10464",
     "skills": [
-      "Java",
-      "SQL",
-      "Machine Learning",
-      "AWS",
-      "Docker"
+      "GraphQL",
+      "Vue",
+      "JavaScript",
+      "Svelte",
+      "HTML",
+      "Next.js",
+      "Node.js",
+      "Angular",
+      "Git",
+      "TypeScript",
+      "React"
     ],
-    "role": "Backend Developer"
-  }
+    "role": "Frontend Engineer",
+    "role_key": "frontend"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "strong"
 }

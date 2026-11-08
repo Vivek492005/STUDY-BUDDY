@@ -1,0 +1,19 @@
+{
+  "id": "syn_106",
+  "text": "Nisha Chopra\nnisha.chopra106@example.com\nAspiring developer seeking opportunities.\nSwift, Flutter",
+  "labels": {
+    "name": "Nisha Chopra",
+    "email": "nisha.chopra106@example.com",
+    "phone": "",
+    "skills": [
+      "Swift",
+      "Flutter"
+    ],
+    "role": "Android Developer",
+    "role_key": "mobile"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
+}

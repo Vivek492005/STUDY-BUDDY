@@ -1,0 +1,20 @@
+{
+  "id": "syn_104",
+  "text": "Ritu Chatterjee\n\nEXPERIENCE\niOS Developer, CloudForge, 2024\n- Redesigned onboarding.\n\nSKILLS\nAndroid Development, Java, SQL",
+  "labels": {
+    "name": "Ritu Chatterjee",
+    "email": "",
+    "phone": "",
+    "skills": [
+      "Android Development",
+      "Java",
+      "SQL"
+    ],
+    "role": "iOS Developer",
+    "role_key": "mobile"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "weak"
+}

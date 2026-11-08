@@ -1,9 +1,30 @@
 {
-  "n_questions": 8,
+  "n_questions": 56,
+  "n_docs": 8,
+  "n_answerable": 48,
+  "n_unanswerable": 8,
   "recall@1": 1.0,
   "recall@3": 1.0,
   "recall@5": 1.0,
   "mrr": 1.0,
-  "abstention_accuracy": 1.0,
-  "citation_validity": 1.0
+  "answer_accuracy": 1.0,
+  "abstention_accuracy": 0.625,
+  "citation_validity": 1.0,
+  "failures": [
+    {
+      "question": "What is the capital of Mars?",
+      "kind": "abstain",
+      "answer": "Here is what the document says: \"Mars has two small moons, Phobos and Deimos.\" [doc, p.1] \"erseverance rover landed on Mars in February 2021.\" [doc, p.1] \"The Perseverance rover landed on Mars in Febr"
+    },
+    {
+      "question": "In which year was Shakespeare born?",
+      "kind": "abstain",
+      "answer": "Here is what the document says: \"Renewable energy adoption grew 12 percent last year.\" [doc, p.1] \"Inflation measures how fast prices rise over a year.\" [doc, p.1] \"Inflation measures how fast prices "
+    },
+    {
+      "question": "How do dolphins communicate?",
+      "kind": "abstain",
+      "answer": "Here is what the document says: \"Inflation measures how fast prices rise over a year.\" [doc, p.1] \"Inflation measures how fast prices rise over a year.\" [doc, p.1] \"Inflation measures how fast prices "
+    }
+  ]
 }

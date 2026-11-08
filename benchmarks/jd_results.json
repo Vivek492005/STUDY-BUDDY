@@ -1,0 +1,2666 @@
+{
+  "n_jds": 30,
+  "must_have_recall_mean": 1.0,
+  "must_have_recall_min": 1.0,
+  "matched_score_mean": 52.7,
+  "mismatched_score_mean": 33.2,
+  "separation_mean": 19.5,
+  "ranking_accuracy": 1.0,
+  "per_jd": [
+    {
+      "id": "jd_001",
+      "role": "backend",
+      "level": "junior",
+      "title": "Junior Backend Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "Django",
+        "PostgreSQL",
+        "Git",
+        "SQL"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_000",
+      "matched_score": 52.0,
+      "mismatched_resume_id": "syn_012",
+      "mismatched_score": 33.7,
+      "separation": 18.3,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 10.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 16,
+          "total": 60,
+          "details": "16/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 16.3,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 7,
+          "total": 15,
+          "details": "7/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~5 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 4.0,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 6,
+          "total": 60,
+          "details": "6/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 4.7,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 2,
+          "total": 15,
+          "details": "2/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_002",
+      "role": "backend",
+      "level": "mid",
+      "title": "Backend Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "Django",
+        "PostgreSQL",
+        "Docker",
+        "Redis",
+        "Git"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_000",
+      "matched_score": 52.0,
+      "mismatched_resume_id": "syn_039",
+      "mismatched_score": 17.0,
+      "separation": 35.0,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 10.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 16,
+          "total": 60,
+          "details": "16/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 16.3,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 7,
+          "total": 15,
+          "details": "7/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~5 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 4.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 7,
+          "total": 60,
+          "details": "7/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 2.3,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 1,
+          "total": 15,
+          "details": "1/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 0.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~0 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_003",
+      "role": "backend",
+      "level": "senior",
+      "title": "Senior Backend Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "Django",
+        "PostgreSQL",
+        "Docker",
+        "AWS",
+        "Kubernetes",
+        "Redis"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_002",
+      "matched_score": 40.7,
+      "mismatched_resume_id": "syn_012",
+      "mismatched_score": 33.8,
+      "separation": 6.9,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 9.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 14,
+          "total": 60,
+          "details": "14/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 12.4,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 6,
+          "total": 17,
+          "details": "6/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 9.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~3 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 4.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 7,
+          "total": 60,
+          "details": "7/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 4.1,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 2,
+          "total": 17,
+          "details": "2/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_004",
+      "role": "frontend",
+      "level": "junior",
+      "title": "Junior Frontend Developer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "JavaScript",
+        "React",
+        "HTML",
+        "CSS",
+        "Git"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_013",
+      "matched_score": 52.2,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 28.3,
+      "separation": 23.9,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 8.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 13,
+          "total": 60,
+          "details": "13/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 18.5,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 17,
+          "details": "9/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~6 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 3.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 5,
+          "total": 60,
+          "details": "5/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 0.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 0,
+          "total": 17,
+          "details": "0/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_005",
+      "role": "frontend",
+      "level": "mid",
+      "title": "Frontend Developer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Tailwind CSS",
+        "Jest",
+        "Git"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_013",
+      "matched_score": 53.5,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 29.0,
+      "separation": 24.5,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 10.0,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 15,
+          "total": 60,
+          "details": "15/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 18.5,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 17,
+          "details": "9/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~6 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 4.0,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 6,
+          "total": 60,
+          "details": "6/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 0.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 0,
+          "total": 17,
+          "details": "0/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_006",
+      "role": "frontend",
+      "level": "senior",
+      "title": "Senior Frontend Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Next.js",
+        "Cypress",
+        "Figma"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_013",
+      "matched_score": 53.2,
+      "mismatched_resume_id": "syn_000",
+      "mismatched_score": 30.3,
+      "separation": 22.9,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 10.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 16,
+          "total": 60,
+          "details": "16/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 17.5,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 18,
+          "details": "9/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~6 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 5.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 8,
+          "total": 60,
+          "details": "8/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 0.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 0,
+          "total": 18,
+          "details": "0/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~5 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_007",
+      "role": "fullstack",
+      "level": "junior",
+      "title": "Junior Full-Stack Developer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "JavaScript",
+        "React",
+        "Node.js",
+        "Git",
+        "SQL"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_024",
+      "matched_score": 49.2,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 45.3,
+      "separation": 3.9,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 8.6,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 12,
+          "total": 56,
+          "details": "12/56 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 15.6,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 8,
+          "total": 18,
+          "details": "8/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~8 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 8.6,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 12,
+          "total": 56,
+          "details": "12/56 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 11.7,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 6,
+          "total": 18,
+          "details": "6/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_008",
+      "role": "fullstack",
+      "level": "mid",
+      "title": "Full-Stack Developer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "JavaScript",
+        "React",
+        "Node.js",
+        "Express",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_024",
+      "matched_score": 45.6,
+      "mismatched_resume_id": "syn_038",
+      "mismatched_score": 22.0,
+      "separation": 23.6,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 7.5,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 10,
+          "total": 53,
+          "details": "10/53 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 13.1,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 6,
+          "total": 16,
+          "details": "6/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~8 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 2.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 3,
+          "total": 53,
+          "details": "3/53 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 2.2,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 1,
+          "total": 16,
+          "details": "1/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 7.5,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~2 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_009",
+      "role": "fullstack",
+      "level": "senior",
+      "title": "Senior Full-Stack Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "JavaScript",
+        "React",
+        "Node.js",
+        "Next.js",
+        "AWS",
+        "Kubernetes",
+        "MongoDB"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_027",
+      "matched_score": 42.0,
+      "mismatched_resume_id": "syn_000",
+      "mismatched_score": 38.8,
+      "separation": 3.2,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 13.6,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 19,
+          "total": 56,
+          "details": "19/56 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 18.4,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 10,
+          "total": 19,
+          "details": "10/19 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 0.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~0 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 6.4,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 9,
+          "total": 56,
+          "details": "9/56 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 7.4,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 4,
+          "total": 19,
+          "details": "4/19 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~5 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_010",
+      "role": "data-analyst",
+      "level": "junior",
+      "title": "Junior Data Analyst",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "SQL",
+        "Excel",
+        "Python",
+        "Tableau"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_036",
+      "matched_score": 58.4,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 35.2,
+      "separation": 23.2,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 12.4,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 18,
+          "total": 58,
+          "details": "18/58 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 21.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 15,
+          "details": "9/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 5.5,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 8,
+          "total": 58,
+          "details": "8/58 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 4.7,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 2,
+          "total": 15,
+          "details": "2/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_011",
+      "role": "data-analyst",
+      "level": "mid",
+      "title": "Data Analyst",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "SQL",
+        "Python",
+        "Pandas",
+        "Tableau",
+        "Power BI",
+        "Excel"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_036",
+      "matched_score": 58.6,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 35.3,
+      "separation": 23.3,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 12.6,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 18,
+          "total": 57,
+          "details": "18/57 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 21.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 15,
+          "details": "9/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 5.6,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 8,
+          "total": 57,
+          "details": "8/57 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 4.7,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 2,
+          "total": 15,
+          "details": "2/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_012",
+      "role": "data-analyst",
+      "level": "senior",
+      "title": "Senior Data Analyst",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "SQL",
+        "Python",
+        "Pandas",
+        "NumPy",
+        "Tableau",
+        "Power BI",
+        "R"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_036",
+      "matched_score": 57.3,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 35.0,
+      "separation": 22.3,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 12.6,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 18,
+          "total": 57,
+          "details": "18/57 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 19.7,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 16,
+          "details": "9/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 5.6,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 8,
+          "total": 57,
+          "details": "8/57 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 4.4,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 2,
+          "total": 16,
+          "details": "2/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_013",
+      "role": "data-engineer",
+      "level": "junior",
+      "title": "Junior Data Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "SQL",
+        "PostgreSQL",
+        "Git"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_049",
+      "matched_score": 60.8,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 41.5,
+      "separation": 19.3,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 15.2,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 22,
+          "total": 58,
+          "details": "22/58 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 20.6,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 10,
+          "total": 17,
+          "details": "10/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~6 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 8.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 12,
+          "total": 58,
+          "details": "12/58 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 8.2,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 4,
+          "total": 17,
+          "details": "4/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_014",
+      "role": "data-engineer",
+      "level": "mid",
+      "title": "Data Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "SQL",
+        "Apache Spark",
+        "Airflow",
+        "Docker"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_049",
+      "matched_score": 62.6,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 41.7,
+      "separation": 20.9,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 15.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 22,
+          "total": 56,
+          "details": "22/56 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 21.9,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 10,
+          "total": 16,
+          "details": "10/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~6 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 7.9,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 11,
+          "total": 56,
+          "details": "11/56 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 8.8,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 4,
+          "total": 16,
+          "details": "4/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_015",
+      "role": "data-engineer",
+      "level": "senior",
+      "title": "Senior Data Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "Apache Spark",
+        "Airflow",
+        "Kafka",
+        "AWS",
+        "Kubernetes"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_048",
+      "matched_score": 62.2,
+      "mismatched_resume_id": "syn_012",
+      "mismatched_score": 28.6,
+      "separation": 33.6,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 17.5,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 24,
+          "total": 55,
+          "details": "24/55 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 19.7,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 16,
+          "details": "9/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~5 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 3.6,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 5,
+          "total": 55,
+          "details": "5/55 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 0.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 0,
+          "total": 16,
+          "details": "0/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_016",
+      "role": "ml-engineer",
+      "level": "junior",
+      "title": "Junior ML Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "Scikit-learn",
+        "Pandas",
+        "NumPy",
+        "SQL"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_061",
+      "matched_score": 50.3,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 34.5,
+      "separation": 15.8,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 8.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 13,
+          "total": 60,
+          "details": "13/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 16.6,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 19,
+          "details": "9/19 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~5 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 4.0,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 6,
+          "total": 60,
+          "details": "6/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 5.5,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 3,
+          "total": 19,
+          "details": "3/19 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_017",
+      "role": "ml-engineer",
+      "level": "mid",
+      "title": "Machine Learning Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "PyTorch",
+        "TensorFlow",
+        "Scikit-learn",
+        "Hugging Face"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_063",
+      "matched_score": 38.3,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 33.0,
+      "separation": 5.3,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 10.8,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 16,
+          "total": 59,
+          "details": "16/59 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 17.5,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 18,
+          "details": "9/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 0.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~0 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 4.1,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 6,
+          "total": 59,
+          "details": "6/59 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 3.9,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 2,
+          "total": 18,
+          "details": "2/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_018",
+      "role": "ml-engineer",
+      "level": "senior",
+      "title": "Senior ML Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "PyTorch",
+        "TensorFlow",
+        "Hugging Face",
+        "LangChain",
+        "Docker",
+        "AWS"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_061",
+      "matched_score": 51.2,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 33.5,
+      "separation": 17.7,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 8.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 13,
+          "total": 60,
+          "details": "13/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 17.5,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 10,
+          "total": 20,
+          "details": "10/20 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~5 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 3.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 5,
+          "total": 60,
+          "details": "5/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 5.2,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 3,
+          "total": 20,
+          "details": "3/20 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_019",
+      "role": "qa",
+      "level": "junior",
+      "title": "Junior QA Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Java",
+        "Selenium",
+        "JIRA",
+        "Git"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_075",
+      "matched_score": 45.0,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 33.2,
+      "separation": 11.8,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 12.4,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 18,
+          "total": 58,
+          "details": "18/58 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 22.6,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 11,
+          "total": 17,
+          "details": "11/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 0.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~0 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 4.1,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 6,
+          "total": 58,
+          "details": "6/58 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 4.1,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 2,
+          "total": 17,
+          "details": "2/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_020",
+      "role": "qa",
+      "level": "mid",
+      "title": "QA Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Java",
+        "Selenium",
+        "PyTest",
+        "JUnit",
+        "Cypress",
+        "JIRA"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_074",
+      "matched_score": 51.5,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 33.7,
+      "separation": 17.8,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 12.1,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 17,
+          "total": 56,
+          "details": "17/56 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 21.9,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 10,
+          "total": 16,
+          "details": "10/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 7.5,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~2 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 4.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 6,
+          "total": 56,
+          "details": "6/56 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 4.4,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 2,
+          "total": 16,
+          "details": "2/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_021",
+      "role": "qa",
+      "level": "senior",
+      "title": "Senior QA Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Java",
+        "Selenium",
+        "PyTest",
+        "Jenkins",
+        "CI/CD",
+        "Python"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_072",
+      "matched_score": 64.4,
+      "mismatched_resume_id": "syn_012",
+      "mismatched_score": 29.9,
+      "separation": 34.5,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 16.8,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 24,
+          "total": 57,
+          "details": "24/57 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 22.6,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 11,
+          "total": 17,
+          "details": "11/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~8 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 2.8,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 4,
+          "total": 57,
+          "details": "4/57 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 2.1,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 1,
+          "total": 17,
+          "details": "1/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_022",
+      "role": "devops",
+      "level": "junior",
+      "title": "Junior DevOps Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Linux",
+        "Bash",
+        "Docker",
+        "Git"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_085",
+      "matched_score": 55.7,
+      "mismatched_resume_id": "syn_097",
+      "mismatched_score": 26.3,
+      "separation": 29.4,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 11.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 17,
+          "total": 60,
+          "details": "17/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 19.4,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 10,
+          "total": 18,
+          "details": "10/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~6 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 1.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 2,
+          "total": 60,
+          "details": "2/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 0.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 0,
+          "total": 18,
+          "details": "0/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~6 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_023",
+      "role": "devops",
+      "level": "mid",
+      "title": "DevOps Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Docker",
+        "Kubernetes",
+        "Jenkins",
+        "CI/CD",
+        "Linux"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_087",
+      "matched_score": 44.2,
+      "mismatched_resume_id": "syn_012",
+      "mismatched_score": 27.7,
+      "separation": 16.5,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 13.6,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 20,
+          "total": 59,
+          "details": "20/59 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 20.6,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 10,
+          "total": 17,
+          "details": "10/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 0.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~0 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 2.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 4,
+          "total": 59,
+          "details": "4/59 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 0.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 0,
+          "total": 17,
+          "details": "0/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_024",
+      "role": "devops",
+      "level": "senior",
+      "title": "Senior DevOps Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Docker",
+        "Kubernetes",
+        "AWS",
+        "Terraform",
+        "Jenkins",
+        "GCP"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_086",
+      "matched_score": 50.7,
+      "mismatched_resume_id": "syn_012",
+      "mismatched_score": 27.0,
+      "separation": 23.7,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 13.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 20,
+          "total": 60,
+          "details": "20/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 21.4,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 11,
+          "total": 18,
+          "details": "11/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 6.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~2 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 2.0,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 3,
+          "total": 60,
+          "details": "3/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 0.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 0,
+          "total": 18,
+          "details": "0/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_025",
+      "role": "mobile",
+      "level": "junior",
+      "title": "Junior Android Developer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Kotlin",
+        "Java",
+        "Android Development",
+        "Git"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_098",
+      "matched_score": 56.3,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 28.3,
+      "separation": 28.0,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 10.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 16,
+          "total": 60,
+          "details": "16/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 20.6,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 10,
+          "total": 17,
+          "details": "10/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~2 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 3.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 5,
+          "total": 60,
+          "details": "5/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 0.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 0,
+          "total": 17,
+          "details": "0/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_026",
+      "role": "mobile",
+      "level": "mid",
+      "title": "Mobile Developer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Kotlin",
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "Android Development"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_097",
+      "matched_score": 52.5,
+      "mismatched_resume_id": "syn_000",
+      "mismatched_score": 32.5,
+      "separation": 20.0,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 10.0,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 15,
+          "total": 60,
+          "details": "15/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 17.5,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 8,
+          "total": 16,
+          "details": "8/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~6 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 5.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 8,
+          "total": 60,
+          "details": "8/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 2.2,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 1,
+          "total": 16,
+          "details": "1/16 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~5 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_027",
+      "role": "mobile",
+      "level": "senior",
+      "title": "Senior Mobile Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Kotlin",
+        "Swift",
+        "Flutter",
+        "iOS Development",
+        "Firebase",
+        "CI/CD"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_097",
+      "matched_score": 51.0,
+      "mismatched_resume_id": "syn_000",
+      "mismatched_score": 31.8,
+      "separation": 19.2,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 9.5,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 14,
+          "total": 59,
+          "details": "14/59 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 16.5,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 8,
+          "total": 17,
+          "details": "8/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~6 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 4.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 7,
+          "total": 59,
+          "details": "7/59 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 2.1,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 1,
+          "total": 17,
+          "details": "1/17 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~5 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_028",
+      "role": "fresher",
+      "level": "junior",
+      "title": "Graduate Engineer Trainee",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "Java",
+        "SQL",
+        "Git",
+        "HTML"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_110",
+      "matched_score": 54.0,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 42.3,
+      "separation": 11.7,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 12.7,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 19,
+          "total": 60,
+          "details": "19/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 16.3,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 7,
+          "total": 15,
+          "details": "7/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~3 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 8.0,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 12,
+          "total": 60,
+          "details": "12/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 9.3,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 4,
+          "total": 15,
+          "details": "4/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 2 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_029",
+      "role": "fresher",
+      "level": "mid",
+      "title": "Associate Software Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "Java",
+        "JavaScript",
+        "React",
+        "SQL",
+        "Git"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_108",
+      "matched_score": 59.3,
+      "mismatched_resume_id": "syn_001",
+      "mismatched_score": 42.3,
+      "separation": 17.0,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 13.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 20,
+          "total": 60,
+          "details": "20/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 21.0,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 9,
+          "total": 15,
+          "details": "9/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 8.0,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 12,
+          "total": 60,
+          "details": "12/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 9.3,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 4,
+          "total": 15,
+          "details": "4/15 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 4 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    },
+    {
+      "id": "jd_030",
+      "role": "fresher",
+      "level": "senior",
+      "title": "Software Engineer",
+      "must_have_recall": 1.0,
+      "must_have_found": [
+        "Python",
+        "Java",
+        "Django",
+        "PostgreSQL",
+        "AWS",
+        "Docker"
+      ],
+      "must_have_missing": [],
+      "matched_resume_id": "syn_108",
+      "matched_score": 57.7,
+      "mismatched_resume_id": "syn_012",
+      "mismatched_score": 46.0,
+      "separation": 11.7,
+      "matched_breakdown": {
+        "keyword_coverage": {
+          "score": 13.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 20,
+          "total": 60,
+          "details": "20/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 19.4,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 10,
+          "total": 18,
+          "details": "10/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      },
+      "mismatched_breakdown": {
+        "keyword_coverage": {
+          "score": 9.3,
+          "max": 40,
+          "label": "Keyword Coverage",
+          "matched": 14,
+          "total": 60,
+          "details": "14/60 JD keywords appear in your resume."
+        },
+        "skills_hit_rate": {
+          "score": 11.7,
+          "max": 35,
+          "label": "Required-Skills Hit Rate",
+          "matched": 6,
+          "total": 18,
+          "details": "6/18 skills the JD asks for are on your resume."
+        },
+        "experience_alignment": {
+          "score": 15.0,
+          "max": 15,
+          "label": "Experience Alignment",
+          "matched": null,
+          "total": null,
+          "details": "Resume shows ~7 yr vs 5 yr required."
+        },
+        "ats_friendliness": {
+          "score": 10.0,
+          "max": 10,
+          "label": "ATS Friendliness",
+          "matched": null,
+          "total": null,
+          "details": "Sections found: summary, education, experience, skills; contact: email/phone."
+        }
+      }
+    }
+  ]
+}

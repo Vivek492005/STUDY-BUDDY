@@ -1,0 +1,19 @@
+{
+  "id": "syn_118",
+  "text": "Pooja Iyer\npooja.iyer118@example.com\nAspiring developer seeking opportunities.\nMongoDB, C",
+  "labels": {
+    "name": "Pooja Iyer",
+    "email": "pooja.iyer118@example.com",
+    "phone": "",
+    "skills": [
+      "MongoDB",
+      "C"
+    ],
+    "role": "Associate Software Engineer",
+    "role_key": "fresher"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
+}

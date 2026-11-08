@@ -1,0 +1,21 @@
+{
+  "id": "syn_105",
+  "text": "Kavya Chatterjee\nkavya.chatterjee105@example.com\n\nEXPERIENCE\nMobile Developer, NexaTech, 2024\n- Built an Android app.\n\nSKILLS\nSQLite, Dart, Flutter, Git",
+  "labels": {
+    "name": "Kavya Chatterjee",
+    "email": "kavya.chatterjee105@example.com",
+    "phone": "",
+    "skills": [
+      "SQLite",
+      "Dart",
+      "Flutter",
+      "Git"
+    ],
+    "role": "Mobile Developer",
+    "role_key": "mobile"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
+}

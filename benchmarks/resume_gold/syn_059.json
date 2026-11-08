@@ -1,0 +1,20 @@
+{
+  "id": "syn_059",
+  "text": "Kavya Rao\nkavya.rao59@example.com | +91 86562 39041\n\nSKILLS\nPython, SQL, Apache Spark\n\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.",
+  "labels": {
+    "name": "Kavya Rao",
+    "email": "kavya.rao59@example.com",
+    "phone": "+91 86562 39041",
+    "skills": [
+      "Python",
+      "SQL",
+      "Apache Spark"
+    ],
+    "role": "Big Data Engineer",
+    "role_key": "data-engineer"
+  },
+  "quality": "gaming",
+  "level": "junior",
+  "experience_years": 0,
+  "expected_band": null
+}

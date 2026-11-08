@@ -1,0 +1,23 @@
+{
+  "id": "syn_042",
+  "text": "Aditya Fernandez\n\naditya.fernandez42@example.com | +91 61645 50492\n\nSummary\nRecent computer science graduate with strong project experience in business analyst work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, SoftServe, 2024 - 2025\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 35 percent\n- Built automated Excel reports that saved analysts 8 hours every week\n\nSKILLS\nMySQL, Excel, Scala, Bash, PostgreSQL, Linux\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2025",
+  "labels": {
+    "name": "Aditya Fernandez",
+    "email": "aditya.fernandez42@example.com",
+    "phone": "+91 61645 50492",
+    "skills": [
+      "MySQL",
+      "Excel",
+      "Scala",
+      "Bash",
+      "PostgreSQL",
+      "Linux"
+    ],
+    "role": "Business Analyst",
+    "role_key": "data-analyst"
+  },
+  "quality": "average",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "average"
+}

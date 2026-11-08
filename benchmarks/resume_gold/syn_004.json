@@ -1,16 +1,23 @@
 {
   "id": "syn_004",
-  "text": "Arjun Reddy\narjun.reddy4@example.com | +91 9887490893 | linkedin.com/in/arjunreddy\n\nPROFESSIONAL SUMMARY\nData Analyst with 2 years of experience building scalable applications.\n\nSKILLS\nPython, TypeScript, SQL, Machine Learning\n\nEXPERIENCE\nData Analyst \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Kiran Reddy\n\nkiran.reddy4@example.com | +91 89645 89507\n\nSummary\nBackend Developer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nBackend Developer, WebScale, 2023 - Present\n- Led a team of 12 engineers through design reviews and on-call rotations\n- Optimized slow SQL queries and improved checkout throughput by 35 percent\nBackend Developer, InsightLabs, 2022 - 2023\n- Built monitoring dashboards that resolved incidents 45 percent faster\n- Developed REST APIs with Flask and FastAPI for a logistics platform used by 300 clients\n\nSKILLS\nMongoDB, Django, Kubernetes, Python, Bash, Docker\n\nEDUCATION\nB.E. Information Technology, Pune University, 2021",
   "labels": {
-    "name": "Arjun Reddy",
-    "email": "arjun.reddy4@example.com",
-    "phone": "+91 9887490893",
+    "name": "Kiran Reddy",
+    "email": "kiran.reddy4@example.com",
+    "phone": "+91 89645 89507",
     "skills": [
+      "MongoDB",
+      "Django",
+      "Kubernetes",
       "Python",
-      "TypeScript",
-      "SQL",
-      "Machine Learning"
+      "Bash",
+      "Docker"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Backend Developer",
+    "role_key": "backend"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "average"
 }

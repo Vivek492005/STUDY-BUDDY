@@ -1,0 +1,30 @@
+{
+  "id": "syn_060",
+  "text": "Nikhil Singh\n\nnikhil.singh60@example.com | +91 69693 76840 | linkedin.com/in/nikhilsingh\n\nSummary\nMachine Learning Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nMachine Learning Engineer, NexaTech, 2019 - Present\n- Deployed a TensorFlow classification service serving 500 requests daily\n- Presented model results to product teams and shaped the roadmap\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 60 percent\n- Optimized model inference latency by 20 percent with batching and caching\nMachine Learning Engineer, StartupXYZ, 2017 - 2019\n- Deployed a TensorFlow classification service serving 50000 requests daily\n- Presented model results to product teams and shaped the roadmap\n- Created a LangChain agent prototype that answered support questions\n\nSKILLS\nLangChain, PostgreSQL, Git, FastAPI, PyTorch, AWS, TensorFlow, Apache Spark, Bash, Pandas, Kubernetes, Python, Hugging Face\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2018\n\nPROJECTS\n- Created a movie recommendation system with collaborative filtering.\n- Image classifier with reasonable accuracy on a public dataset.\n- Built a sentiment analysis API with FastAPI.",
+  "labels": {
+    "name": "Nikhil Singh",
+    "email": "nikhil.singh60@example.com",
+    "phone": "+91 69693 76840",
+    "skills": [
+      "LangChain",
+      "PostgreSQL",
+      "Git",
+      "FastAPI",
+      "PyTorch",
+      "AWS",
+      "TensorFlow",
+      "Apache Spark",
+      "Bash",
+      "Pandas",
+      "Kubernetes",
+      "Python",
+      "Hugging Face"
+    ],
+    "role": "Machine Learning Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 7,
+  "expected_band": "strong"
+}

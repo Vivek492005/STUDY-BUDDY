@@ -1,0 +1,27 @@
+{
+  "id": "syn_097",
+  "text": "Amit Reddy\n\namit.reddy97@example.com | +91 94948 39536 | linkedin.com/in/amitreddy\n\nSummary\niOS Developer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\niOS Developer, DataSystems, 2019 - Present\n- Redesigned onboarding that improved activation by 20 percent\n- Implemented offline sync with Firebase that worked without connectivity\n- Optimized app startup time by 40 percent\n- Integrated GraphQL APIs for real-time features\niOS Developer, AppWorks, 2017 - 2019\n- Implemented offline sync with Firebase that worked without connectivity\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Developed an iOS app with Swift that reached a 35 rating on the App Store\n\nSKILLS\nFigma, Java, Swift, SQL, Android Development, Kotlin, Flutter, Firebase, iOS Development, GraphQL\n\nEDUCATION\nB.E. Information Technology, Pune University, 2017\n\nPROJECTS\n- Built a campus event app with Flutter used by 50000 students.\n- Published a habit-tracking app on the Play Store.\n- Created a fitness tracker with offline support.",
+  "labels": {
+    "name": "Amit Reddy",
+    "email": "amit.reddy97@example.com",
+    "phone": "+91 94948 39536",
+    "skills": [
+      "Figma",
+      "Java",
+      "Swift",
+      "SQL",
+      "Android Development",
+      "Kotlin",
+      "Flutter",
+      "Firebase",
+      "iOS Development",
+      "GraphQL"
+    ],
+    "role": "iOS Developer",
+    "role_key": "mobile"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "strong"
+}

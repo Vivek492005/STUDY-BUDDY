@@ -1,0 +1,24 @@
+{
+  "id": "syn_113",
+  "text": "Isha Fernandez\n\nisha.fernandez113@example.com | +91 97481 13826\n\nSummary\nAssociate Software Engineer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAssociate Software Engineer, PixelWorks, 2023 - Present\n- Created a REST API with Flask for a college project\n- Developed a dashboard feature in React that displayed sales data\nAssociate Software Engineer, TechNova, 2022 - 2023\n- Built a campus event app with Flask and SQLite used by 1000 students\n- Built a library management web app used by 1000 students\n\nSKILLS\nC, MongoDB, TypeScript, Java, Django, C++, Node.js\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2022",
+  "labels": {
+    "name": "Isha Fernandez",
+    "email": "isha.fernandez113@example.com",
+    "phone": "+91 97481 13826",
+    "skills": [
+      "C",
+      "MongoDB",
+      "TypeScript",
+      "Java",
+      "Django",
+      "C++",
+      "Node.js"
+    ],
+    "role": "Associate Software Engineer",
+    "role_key": "fresher"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "average"
+}

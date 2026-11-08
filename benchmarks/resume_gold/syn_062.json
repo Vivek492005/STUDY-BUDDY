@@ -1,0 +1,31 @@
+{
+  "id": "syn_062",
+  "text": "Vikram Agarwal\n\nvikram.agarwal62@example.com | +91 95655 43029 | linkedin.com/in/vikramagarwal\n\nSummary\nAI Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAI Engineer, CloudNine, 2023 - Present\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 20 percent\n- Presented model results to product teams and shaped the roadmap\n- Optimized model inference latency by 60 percent with batching and caching\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 15 percent\nSoftware Engineering Intern, TechNova, 2022 - 2023\n- Built an evaluation harness that caught 35 percent of regressions before release\n- Presented model results to product teams and shaped the roadmap\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 20 percent\n\nSKILLS\nPyTorch, Apache Spark, FastAPI, Bash, Python, NumPy, Pandas, LangChain, Scikit-learn, Hugging Face, AWS, Git, TensorFlow, SQL\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2023\n\nPROJECTS\n- Image classifier with reasonable accuracy on a public dataset.\n- Created a movie recommendation system with collaborative filtering.\n- Built a sentiment analysis API with FastAPI.",
+  "labels": {
+    "name": "Vikram Agarwal",
+    "email": "vikram.agarwal62@example.com",
+    "phone": "+91 95655 43029",
+    "skills": [
+      "PyTorch",
+      "Apache Spark",
+      "FastAPI",
+      "Bash",
+      "Python",
+      "NumPy",
+      "Pandas",
+      "LangChain",
+      "Scikit-learn",
+      "Hugging Face",
+      "AWS",
+      "Git",
+      "TensorFlow",
+      "SQL"
+    ],
+    "role": "AI Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "strong"
+}

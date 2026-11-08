@@ -1,0 +1,23 @@
+{
+  "id": "syn_079",
+  "text": "Varun Agarwal\n\nvarun.agarwal79@example.com | +91 62761 66482\n\nSummary\nQuality Assurance Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nQuality Assurance Engineer, SoftServe, 2020 - Present\n- Wrote JUnit tests that raised coverage from 40 percent to 10 percent\n- Built Selenium test suites that caught 60 percent of regressions before release\n\nSKILLS\nLinux, Git, Jest, Java, JUnit, CI/CD\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2019",
+  "labels": {
+    "name": "Varun Agarwal",
+    "email": "varun.agarwal79@example.com",
+    "phone": "+91 62761 66482",
+    "skills": [
+      "Linux",
+      "Git",
+      "Jest",
+      "Java",
+      "JUnit",
+      "CI/CD"
+    ],
+    "role": "Quality Assurance Engineer",
+    "role_key": "qa"
+  },
+  "quality": "average",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "average"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "syn_098",
+  "text": "Nisha Kaur\n\nnisha.kaur98@example.com | +91 64470 34906 | linkedin.com/in/nishakaur\n\nSummary\nMobile Developer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nMobile Developer, ZenithSoft, 2023 - Present\n- Redesigned onboarding that improved activation by 30 percent\n- Developed an iOS app with Swift that reached a 40 rating on the App Store\n- Optimized app startup time by 45 percent\n- Created a Flutter app that shipped on Android and iOS from one codebase\nSoftware Engineering Intern, WebScale, 2022 - 2023\n- Integrated GraphQL APIs for real-time features\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Redesigned onboarding that improved activation by 35 percent\n\nSKILLS\nFigma, GraphQL, Swift, SQLite, Java, Android Development, Flutter, Git, Firebase, Kotlin, SQL, iOS Development, Dart\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2021\n\nPROJECTS\n- Built a campus event app with Flutter used by 2000 students.\n- Created a fitness tracker with offline support.\n- Published a habit-tracking app on the Play Store.",
+  "labels": {
+    "name": "Nisha Kaur",
+    "email": "nisha.kaur98@example.com",
+    "phone": "+91 64470 34906",
+    "skills": [
+      "Figma",
+      "GraphQL",
+      "Swift",
+      "SQLite",
+      "Java",
+      "Android Development",
+      "Flutter",
+      "Git",
+      "Firebase",
+      "Kotlin",
+      "SQL",
+      "iOS Development",
+      "Dart"
+    ],
+    "role": "Mobile Developer",
+    "role_key": "mobile"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "strong"
+}

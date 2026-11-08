@@ -1,10 +1,10 @@
 {
-  "n_items": 10,
+  "n_items": 120,
   "parse_success_rate": 1.0,
   "field_accuracy": {
-    "name": 1.0,
+    "name": 0.9916666666666667,
     "email": 1.0,
-    "phone": 1.0
+    "phone": 0.9916666666666667
   },
   "skill_precision": 1.0,
   "skill_recall": 1.0,

@@ -1,0 +1,29 @@
+{
+  "id": "syn_111",
+  "text": "Tara Patel\n\ntara.patel111@example.com | +91 96432 66420 | linkedin.com/in/tarapatel\n\nSummary\nRecent computer science graduate with strong project experience in software engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, DataWorks, 2023 - 2025\n- Developed a dashboard feature in React that displayed sales data\n- Contributed to an open-source project by fixing 9 issues\n- Created a machine learning mini project that classified images\n- Created a REST API with Flask for a college project\nSoftware Engineering Intern, StartupXYZ, 2022 - 2023\n- Created a machine learning mini project that classified images\n- Contributed to an open-source project by fixing 9 issues\n- Built a campus event app with Flask and SQLite used by 300 students\n\nSKILLS\nHTML, Java, C++, MongoDB, JavaScript, React, Git, Django, SQL, C, Node.js, TypeScript\n\nEDUCATION\nB.Com, Delhi University, 2025\n\nPROJECTS\n- Task manager app with authentication and reminders.\n- Chat application with real-time messaging using websockets.\n- E-commerce clone with React and Flask, demoed to 50000 users.",
+  "labels": {
+    "name": "Tara Patel",
+    "email": "tara.patel111@example.com",
+    "phone": "+91 96432 66420",
+    "skills": [
+      "HTML",
+      "Java",
+      "C++",
+      "MongoDB",
+      "JavaScript",
+      "React",
+      "Git",
+      "Django",
+      "SQL",
+      "C",
+      "Node.js",
+      "TypeScript"
+    ],
+    "role": "Software Engineer",
+    "role_key": "fresher"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
+}

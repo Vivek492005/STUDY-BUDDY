@@ -1,0 +1,29 @@
+{
+  "id": "syn_109",
+  "text": "Shreya Gupta\n\nshreya.gupta109@example.com | +91 75991 10887 | linkedin.com/in/shreyagupta\n\nSummary\nJunior Developer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nJunior Developer, DesignStudio, 2019 - Present\n- Built a library management web app used by 500 students\n- Developed a dashboard feature in React that displayed sales data\n- Contributed to an open-source project by fixing 6 issues\n- Fixed frontend bugs and wrote documentation for a component library\nJunior Developer, PixelWorks, 2017 - 2019\n- Built a library management web app used by 1000 students\n- Fixed frontend bugs and wrote documentation for a component library\n- Contributed to an open-source project by fixing 9 issues\n\nSKILLS\nJavaScript, HTML, React, Git, Flask, CSS, SQL, C, Node.js, TypeScript, C++, Django\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2016\n\nPROJECTS\n- E-commerce clone with React and Flask, demoed to 300000 users.\n- Task manager app with authentication and reminders.\n- Data analysis project on public datasets with charts.",
+  "labels": {
+    "name": "Shreya Gupta",
+    "email": "shreya.gupta109@example.com",
+    "phone": "+91 75991 10887",
+    "skills": [
+      "JavaScript",
+      "HTML",
+      "React",
+      "Git",
+      "Flask",
+      "CSS",
+      "SQL",
+      "C",
+      "Node.js",
+      "TypeScript",
+      "C++",
+      "Django"
+    ],
+    "role": "Junior Developer",
+    "role_key": "fresher"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 7,
+  "expected_band": "strong"
+}

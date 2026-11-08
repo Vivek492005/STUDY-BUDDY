@@ -1,0 +1,31 @@
+{
+  "id": "syn_036",
+  "text": "Anika Verma\n\nanika.verma36@example.com | +91 91601 69614 | linkedin.com/in/anikaverma\n\nSummary\nData Analyst with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nData Analyst, DesignStudio, 2019 - Present\n- Automated data quality checks that caught bad data before it reached reports\n- Built a churn analysis that identified 50 percent of at-risk customers\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Created Tableau dashboards and Power BI reports used by 9 business teams\nData Analyst, InnovateLabs, 2017 - 2019\n- Automated data quality checks that caught bad data before it reached reports\n- Created Tableau dashboards and Power BI reports used by 10 business teams\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 35 percent\n\nSKILLS\nNumPy, Hadoop, Git, Scala, SQL, Tableau, Power BI, Bash, Excel, Linux, Pandas, PostgreSQL, Airflow, Apache Spark\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2015\n\nPROJECTS\n- Created a KPI tracker for a student club with 2000 members.\n- Data analysis project on public datasets with charts and a written report.\n- Built a sales forecasting dashboard for a retail dataset.",
+  "labels": {
+    "name": "Anika Verma",
+    "email": "anika.verma36@example.com",
+    "phone": "+91 91601 69614",
+    "skills": [
+      "NumPy",
+      "Hadoop",
+      "Git",
+      "Scala",
+      "SQL",
+      "Tableau",
+      "Power BI",
+      "Bash",
+      "Excel",
+      "Linux",
+      "Pandas",
+      "PostgreSQL",
+      "Airflow",
+      "Apache Spark"
+    ],
+    "role": "Data Analyst",
+    "role_key": "data-analyst"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 7,
+  "expected_band": "strong"
+}

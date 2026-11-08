@@ -1,0 +1,21 @@
+{
+  "id": "syn_045",
+  "text": "Shreya Kaur\nshreya.kaur45@example.com | +34 612 345 789\n\nEXPERIENCE\nData Analyst, DataSystems, 2024\n- Built automated Excel reports.\n\nSKILLS\nNumPy, Python, Pandas, Tableau",
+  "labels": {
+    "name": "Shreya Kaur",
+    "email": "shreya.kaur45@example.com",
+    "phone": "+34 612 345 789",
+    "skills": [
+      "NumPy",
+      "Python",
+      "Pandas",
+      "Tableau"
+    ],
+    "role": "Data Analyst",
+    "role_key": "data-analyst"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
+}

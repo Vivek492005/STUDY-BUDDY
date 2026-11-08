@@ -1,0 +1,31 @@
+{
+  "id": "syn_051",
+  "text": "Vikram Kulkarni\n\nvikram.kulkarni51@example.com | +91 96120 97177 | linkedin.com/in/vikramkulkarni\n\nSummary\nRecent computer science graduate with strong project experience in big data engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, CloudForge, 2023 - 2025\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 40 percent\n- Created monitoring for pipeline health that alerted teams within minutes\n- Built batch and streaming pipelines in Python processing data for 300 users daily\n- Built Kafka consumers that ingested 7 events per second\nSoftware Engineering Intern, CloudNine, 2022 - 2023\n- Optimized Spark jobs that reduced processing time by 60 percent\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n- Built batch and streaming pipelines in Python processing data for 100000 users daily\n\nSKILLS\nKubernetes, Redis, SQL, Airflow, Hadoop, Linux, Scala, Python, Apache Spark, Kafka, PostgreSQL, Git, AWS, Docker\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2025\n\nPROJECTS\n- Created an ELT framework for small teams.\n- Data pipeline portfolio project ingesting public datasets with daily refreshed charts.\n- Built a log aggregation pipeline with Kafka and Spark.",
+  "labels": {
+    "name": "Vikram Kulkarni",
+    "email": "vikram.kulkarni51@example.com",
+    "phone": "+91 96120 97177",
+    "skills": [
+      "Kubernetes",
+      "Redis",
+      "SQL",
+      "Airflow",
+      "Hadoop",
+      "Linux",
+      "Scala",
+      "Python",
+      "Apache Spark",
+      "Kafka",
+      "PostgreSQL",
+      "Git",
+      "AWS",
+      "Docker"
+    ],
+    "role": "Big Data Engineer",
+    "role_key": "data-engineer"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
+}

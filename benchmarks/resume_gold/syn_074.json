@@ -1,0 +1,31 @@
+{
+  "id": "syn_074",
+  "text": "Arjun Chopra\n\narjun.chopra74@example.com | +91 78292 21506 | linkedin.com/in/arjunchopra\n\nSummary\nTest Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nTest Engineer, AppWorks, 2023 - Present\n- Reduced manual regression time by 35 percent with automation\n- Designed a CI/CD quality gate that blocked 10 bad deploys a month\n- Automated API testing with PyTest, covering 5 endpoints\n- Wrote JUnit tests that raised coverage from 15 percent to 25 percent\nSoftware Engineering Intern, ZenithSoft, 2022 - 2023\n- Designed a CI/CD quality gate that blocked 2 bad deploys a month\n- Automated API testing with PyTest, covering 7 endpoints\n- Created Cypress end-to-end tests for checkout flows used by 100000 users\n\nSKILLS\nLinux, PyTest, Docker, Git, JavaScript, SQL, Java, Bash, Jest, Selenium, Cypress, JUnit, CI/CD, Jenkins\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2021\n\nPROJECTS\n- Wrote a bug-bash checklist adopted by the QA team.\n- Built a test automation framework for a demo web app.\n- Created a load-testing script with 7 virtual users.",
+  "labels": {
+    "name": "Arjun Chopra",
+    "email": "arjun.chopra74@example.com",
+    "phone": "+91 78292 21506",
+    "skills": [
+      "Linux",
+      "PyTest",
+      "Docker",
+      "Git",
+      "JavaScript",
+      "SQL",
+      "Java",
+      "Bash",
+      "Jest",
+      "Selenium",
+      "Cypress",
+      "JUnit",
+      "CI/CD",
+      "Jenkins"
+    ],
+    "role": "Test Engineer",
+    "role_key": "qa"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "strong"
+}

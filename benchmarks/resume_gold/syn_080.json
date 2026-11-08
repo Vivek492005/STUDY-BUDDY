@@ -1,0 +1,20 @@
+{
+  "id": "syn_080",
+  "text": "Pooja Shetty\npooja.shetty80@example.com\n\nEXPERIENCE\nSDET, DesignStudio, 2024\n- Built Selenium test suites.\n\nSKILLS\nLinux, Docker, JavaScript",
+  "labels": {
+    "name": "Pooja Shetty",
+    "email": "pooja.shetty80@example.com",
+    "phone": "",
+    "skills": [
+      "Linux",
+      "Docker",
+      "JavaScript"
+    ],
+    "role": "SDET",
+    "role_key": "qa"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "weak"
+}

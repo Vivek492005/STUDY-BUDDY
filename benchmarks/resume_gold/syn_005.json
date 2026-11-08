@@ -1,18 +1,25 @@
 {
   "id": "syn_005",
-  "text": "Priya Khan\npriya.khan5@example.com | +91 9847308985 | linkedin.com/in/priyakhan\n\nPROFESSIONAL SUMMARY\nBackend Developer with 5 years of experience building scalable applications.\n\nSKILLS\nReact, Docker, TypeScript, SQL, Machine Learning, Node.js\n\nEXPERIENCE\nBackend Developer \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Arjun Kapoor\n\narjun.kapoor5@example.com | +91 64750 18834\n\nSummary\nSoftware Engineer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSoftware Engineer, DataNest, 2023 - Present\n- Developed REST APIs with Flask and FastAPI for a logistics platform used by 50000 clients\n- Optimized slow SQL queries and improved checkout throughput by 25 percent\nSoftware Engineer, StartupXYZ, 2022 - 2023\n- Implemented Redis caching that reduced database load by 60 percent\n- Optimized slow SQL queries and improved checkout throughput by 60 percent\n\nSKILLS\nMongoDB, Node.js, Git, MySQL, Flask, Java, Kubernetes, Go\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2022",
   "labels": {
-    "name": "Priya Khan",
-    "email": "priya.khan5@example.com",
-    "phone": "+91 9847308985",
+    "name": "Arjun Kapoor",
+    "email": "arjun.kapoor5@example.com",
+    "phone": "+91 64750 18834",
     "skills": [
-      "React",
-      "Docker",
-      "TypeScript",
-      "SQL",
-      "Machine Learning",
-      "Node.js"
+      "MongoDB",
+      "Node.js",
+      "Git",
+      "MySQL",
+      "Flask",
+      "Java",
+      "Kubernetes",
+      "Go"
     ],
-    "role": "Backend Developer"
-  }
+    "role": "Software Engineer",
+    "role_key": "backend"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "average"
 }

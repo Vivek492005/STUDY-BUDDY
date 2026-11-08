@@ -1,0 +1,25 @@
+{
+  "id": "syn_088",
+  "text": "Amit Iyer\n\namit.iyer88@example.com | +91 95374 53204\n\nSummary\nSite Reliability Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSite Reliability Engineer, TechNova, 2023 - Present\n- Migrated 7 services to containers, reducing infrastructure costs by 25 percent\n- Created runbooks that cut onboarding time for on-call engineers\nSite Reliability Engineer, TechCorp, 2022 - 2023\n- Automated infrastructure with Terraform across 3 AWS accounts\n- Created runbooks that cut onboarding time for on-call engineers\n\nSKILLS\nBash, Terraform, Jenkins, Linux, GitLab, Python, GCP, Kubernetes\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2022",
+  "labels": {
+    "name": "Amit Iyer",
+    "email": "amit.iyer88@example.com",
+    "phone": "+91 95374 53204",
+    "skills": [
+      "Bash",
+      "Terraform",
+      "Jenkins",
+      "Linux",
+      "GitLab",
+      "Python",
+      "GCP",
+      "Kubernetes"
+    ],
+    "role": "Site Reliability Engineer",
+    "role_key": "devops"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "average"
+}

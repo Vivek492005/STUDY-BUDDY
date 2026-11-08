@@ -1,0 +1,24 @@
+{
+  "id": "syn_043",
+  "text": "Nikhil Nair\n\nnikhil.nair43@example.com | +91 95835 54396\n\nSummary\nData Analyst with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nData Analyst, NexaTech, 2020 - Present\n- Automated data quality checks that caught bad data before it reached reports\n- Built a churn analysis that identified 50 percent of at-risk customers\n\nSKILLS\nExcel, Scala, MySQL, SQL, Power BI, Bash, Python\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2017",
+  "labels": {
+    "name": "Nikhil Nair",
+    "email": "nikhil.nair43@example.com",
+    "phone": "+91 95835 54396",
+    "skills": [
+      "Excel",
+      "Scala",
+      "MySQL",
+      "SQL",
+      "Power BI",
+      "Bash",
+      "Python"
+    ],
+    "role": "Data Analyst",
+    "role_key": "data-analyst"
+  },
+  "quality": "average",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "average"
+}

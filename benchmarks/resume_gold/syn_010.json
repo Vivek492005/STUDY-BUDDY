@@ -1,19 +1,19 @@
 {
   "id": "syn_010",
-  "text": "Arjun Reddy\narjun.reddy10@example.com | +91 9824972279 | linkedin.com/in/arjunreddy\n\nPROFESSIONAL SUMMARY\nFrontend Developer with 5 years of experience building scalable applications.\n\nSKILLS\nReact, Git, Python, Machine Learning, MongoDB, Java, Node.js\n\nEXPERIENCE\nFrontend Developer \u2014 CloudNine (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Divya D'Souza\ndivya.dsouza10@example.com\nAspiring developer seeking opportunities.\nFastAPI, Docker",
   "labels": {
-    "name": "Arjun Reddy",
-    "email": "arjun.reddy10@example.com",
-    "phone": "+91 9824972279",
+    "name": "Divya D'Souza",
+    "email": "divya.dsouza10@example.com",
+    "phone": "",
     "skills": [
-      "React",
-      "Git",
-      "Python",
-      "Machine Learning",
-      "MongoDB",
-      "Java",
-      "Node.js"
+      "FastAPI",
+      "Docker"
     ],
-    "role": "Frontend Developer"
-  }
+    "role": "Backend Developer",
+    "role_key": "backend"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
 }

@@ -1,0 +1,22 @@
+{
+  "id": "syn_054",
+  "text": "Sneha D'Souza\n\nsneha.dsouza54@example.com | +91 65458 68079\n\nSummary\nRecent computer science graduate with strong project experience in etl developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, ZenithSoft, 2024 - 2025\n- Created monitoring for pipeline health that alerted teams within minutes\n- Optimized Spark jobs that reduced processing time by 25 percent\n\nSKILLS\nGit, Airflow, SQL, Apache Spark, Kubernetes\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2025",
+  "labels": {
+    "name": "Sneha D'Souza",
+    "email": "sneha.dsouza54@example.com",
+    "phone": "+91 65458 68079",
+    "skills": [
+      "Git",
+      "Airflow",
+      "SQL",
+      "Apache Spark",
+      "Kubernetes"
+    ],
+    "role": "ETL Developer",
+    "role_key": "data-engineer"
+  },
+  "quality": "average",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "average"
+}

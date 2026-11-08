@@ -1,0 +1,31 @@
+{
+  "id": "syn_063",
+  "text": "Zaid Shetty\n\nzaid.shetty63@example.com | +91 66517 91006 | linkedin.com/in/zaidshetty\n\nSummary\nRecent computer science graduate with strong project experience in machine learning engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, BrightSoft, 2023 - 2025\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 40 percent\n- Created a LangChain agent prototype that answered support questions\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 35 percent\n- Built a recommendation model with PyTorch that increased click-through by 25 percent\nSoftware Engineering Intern, ZenithSoft, 2022 - 2023\n- Presented model results to product teams and shaped the roadmap\n- Built an evaluation harness that caught 45 percent of regressions before release\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 25 percent\n\nSKILLS\nAWS, Kubernetes, Flask, SQL, NumPy, Git, Hugging Face, LangChain, Bash, Pandas, FastAPI, Docker, TensorFlow, Apache Spark\n\nEDUCATION\nB.Tech Computer Science, Indian Institute of Technology Delhi, 2025\n\nPROJECTS\n- Created a movie recommendation system with collaborative filtering.\n- Image classifier with reasonable accuracy on a public dataset.\n- Built a sentiment analysis API with FastAPI.",
+  "labels": {
+    "name": "Zaid Shetty",
+    "email": "zaid.shetty63@example.com",
+    "phone": "+91 66517 91006",
+    "skills": [
+      "AWS",
+      "Kubernetes",
+      "Flask",
+      "SQL",
+      "NumPy",
+      "Git",
+      "Hugging Face",
+      "LangChain",
+      "Bash",
+      "Pandas",
+      "FastAPI",
+      "Docker",
+      "TensorFlow",
+      "Apache Spark"
+    ],
+    "role": "Machine Learning Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
+}

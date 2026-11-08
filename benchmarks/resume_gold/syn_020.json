@@ -1,19 +1,20 @@
 {
   "id": "syn_020",
-  "text": "Arjun Iyer\narjun.iyer20@example.com | +91 9848285503 | linkedin.com/in/arjuniyer\n\nPROFESSIONAL SUMMARY\nBackend Developer with 3 years of experience building scalable applications.\n\nSKILLS\nReact, SQL, Machine Learning, TypeScript, Python, Node.js, Docker\n\nEXPERIENCE\nBackend Developer \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Kavya Mehta\nkavya.mehta20@example.com\n\nEXPERIENCE\nUI Engineer, WebScale, 2024\n- Built a React and TypeScript component library adopted by 5 product teams.\n\nSKILLS\nReact, GraphQL, CSS",
   "labels": {
-    "name": "Arjun Iyer",
-    "email": "arjun.iyer20@example.com",
-    "phone": "+91 9848285503",
+    "name": "Kavya Mehta",
+    "email": "kavya.mehta20@example.com",
+    "phone": "",
     "skills": [
       "React",
-      "SQL",
-      "Machine Learning",
-      "TypeScript",
-      "Python",
-      "Node.js",
-      "Docker"
+      "GraphQL",
+      "CSS"
     ],
-    "role": "Backend Developer"
-  }
+    "role": "UI Engineer",
+    "role_key": "frontend"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "weak"
 }

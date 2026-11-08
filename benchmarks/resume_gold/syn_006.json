@@ -1,19 +1,23 @@
 {
   "id": "syn_006",
-  "text": "Rohan Gupta\nrohan.gupta6@example.com | +91 9831931511 | linkedin.com/in/rohangupta\n\nPROFESSIONAL SUMMARY\nBackend Developer with 1 years of experience building scalable applications.\n\nSKILLS\nMachine Learning, TypeScript, Java, SQL, Docker, AWS, Python\n\nEXPERIENCE\nBackend Developer \u2014 DataSystems (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Harsh Chopra\n\nharsh.chopra6@example.com | +91 62612 17944\n\nSummary\nRecent computer science graduate with strong project experience in backend developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, InnovateLabs, 2024 - 2025\n- Automated deployment pipelines with Docker and Kubernetes, cutting release time by 50 percent\n- Designed a PostgreSQL schema migration that cut query latency by 45 percent\n\nSKILLS\nGit, PostgreSQL, Redis, Kafka, MongoDB, Bash\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2025",
   "labels": {
-    "name": "Rohan Gupta",
-    "email": "rohan.gupta6@example.com",
-    "phone": "+91 9831931511",
+    "name": "Harsh Chopra",
+    "email": "harsh.chopra6@example.com",
+    "phone": "+91 62612 17944",
     "skills": [
-      "Machine Learning",
-      "TypeScript",
-      "Java",
-      "SQL",
-      "Docker",
-      "AWS",
-      "Python"
+      "Git",
+      "PostgreSQL",
+      "Redis",
+      "Kafka",
+      "MongoDB",
+      "Bash"
     ],
-    "role": "Backend Developer"
-  }
+    "role": "Backend Developer",
+    "role_key": "backend"
+  },
+  "quality": "average",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "average"
 }

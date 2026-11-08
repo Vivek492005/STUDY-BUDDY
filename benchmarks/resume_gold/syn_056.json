@@ -1,0 +1,20 @@
+{
+  "id": "syn_056",
+  "text": "Zaid Kapoor\nzaid.kapoor56@example.com\n\nEXPERIENCE\nETL Developer, CloudNine, 2024\n- Designed a PostgreSQL warehouse schema and Airflow workflows.\n\nSKILLS\nScala, Bash, Git",
+  "labels": {
+    "name": "Zaid Kapoor",
+    "email": "zaid.kapoor56@example.com",
+    "phone": "",
+    "skills": [
+      "Scala",
+      "Bash",
+      "Git"
+    ],
+    "role": "ETL Developer",
+    "role_key": "data-engineer"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "weak"
+}

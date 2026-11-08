@@ -1,16 +1,19 @@
 {
   "id": "syn_022",
-  "text": "Vikram Patel\nvikram.patel22@example.com | +91 9886460539 | linkedin.com/in/vikrampatel\n\nPROFESSIONAL SUMMARY\nData Analyst with 3 years of experience building scalable applications.\n\nSKILLS\nNode.js, JavaScript, AWS, Java\n\nEXPERIENCE\nData Analyst \u2014 CloudNine (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Lakshmi D'Souza\nlakshmi.dsouza22@example.com\nAspiring developer seeking opportunities.\nJavaScript, Node.js",
   "labels": {
-    "name": "Vikram Patel",
-    "email": "vikram.patel22@example.com",
-    "phone": "+91 9886460539",
+    "name": "Lakshmi D'Souza",
+    "email": "lakshmi.dsouza22@example.com",
+    "phone": "",
     "skills": [
-      "Node.js",
       "JavaScript",
-      "AWS",
-      "Java"
+      "Node.js"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Frontend Developer",
+    "role_key": "frontend"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
 }

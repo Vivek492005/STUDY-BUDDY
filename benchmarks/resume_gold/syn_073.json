@@ -1,0 +1,29 @@
+{
+  "id": "syn_073",
+  "text": "Priya Mehta\n\npriya.mehta73@example.com | +91 91570 26545 | linkedin.com/in/priyamehta\n\nSummary\nQA Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nQA Engineer, SoftServe, 2019 - Present\n- Built Selenium test suites that caught 35 percent of regressions before release\n- Reduced manual regression time by 35 percent with automation\n- Automated API testing with PyTest, covering 9 endpoints\n- Created Cypress end-to-end tests for checkout flows used by 300 users\nQA Engineer, Northwind, 2017 - 2019\n- Designed a CI/CD quality gate that blocked 8 bad deploys a month\n- Reduced manual regression time by 35 percent with automation\n- Built a test data generator that unblocked 12 teams\n\nSKILLS\nPyTest, Java, Python, Linux, JavaScript, JIRA, Git, JUnit, CI/CD, Docker, SQL, Selenium\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2016\n\nPROJECTS\n- Built a test automation framework for a demo web app.\n- Created a load-testing script with 5 virtual users.\n- Wrote a bug-bash checklist adopted by the QA team.",
+  "labels": {
+    "name": "Priya Mehta",
+    "email": "priya.mehta73@example.com",
+    "phone": "+91 91570 26545",
+    "skills": [
+      "PyTest",
+      "Java",
+      "Python",
+      "Linux",
+      "JavaScript",
+      "JIRA",
+      "Git",
+      "JUnit",
+      "CI/CD",
+      "Docker",
+      "SQL",
+      "Selenium"
+    ],
+    "role": "QA Engineer",
+    "role_key": "qa"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "strong"
+}

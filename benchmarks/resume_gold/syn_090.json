@@ -1,0 +1,25 @@
+{
+  "id": "syn_090",
+  "text": "Sneha Shetty\n\nsneha.shetty90@example.com | +91 79792 29641\n\nSummary\nRecent computer science graduate with strong project experience in devops engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, PixelWorks, 2024 - 2025\n- Implemented monitoring and alerting that resolved incidents 60 percent faster\n- Created runbooks that cut onboarding time for on-call engineers\n\nSKILLS\nAWS, GitLab CI, CI/CD, Docker, Git, Ansible, GitLab, Jenkins\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2024",
+  "labels": {
+    "name": "Sneha Shetty",
+    "email": "sneha.shetty90@example.com",
+    "phone": "+91 79792 29641",
+    "skills": [
+      "AWS",
+      "GitLab CI",
+      "CI/CD",
+      "Docker",
+      "Git",
+      "Ansible",
+      "GitLab",
+      "Jenkins"
+    ],
+    "role": "DevOps Engineer",
+    "role_key": "devops"
+  },
+  "quality": "average",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "average"
+}

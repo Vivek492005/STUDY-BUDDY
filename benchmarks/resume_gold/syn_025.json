@@ -1,16 +1,31 @@
 {
   "id": "syn_025",
-  "text": "Arjun Sharma\narjun.sharma25@example.com | +91 9899639081 | linkedin.com/in/arjunsharma\n\nPROFESSIONAL SUMMARY\nFrontend Developer with 3 years of experience building scalable applications.\n\nSKILLS\nReact, Machine Learning, JavaScript, Node.js\n\nEXPERIENCE\nFrontend Developer \u2014 DataSystems (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Tanvi Reddy\n\ntanvi.reddy25@example.com | +91 63683 50768 | linkedin.com/in/tanvireddy\n\nSummary\nFull Stack Developer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nFull Stack Developer, TechNova, 2019 - Present\n- Led the migration from a monolith to services, improving deploy frequency\n- Automated CI/CD pipelines that reduced release errors by 60 percent\n- Developed REST and GraphQL APIs that powered mobile and web clients\n- Built an e-commerce platform with React and Django serving 1000 users\nFull Stack Developer, Northwind, 2017 - 2019\n- Developed REST and GraphQL APIs that powered mobile and web clients\n- Automated CI/CD pipelines that reduced release errors by 60 percent\n- Implemented authentication and payment flows used by 300 customers\n\nSKILLS\nJavaScript, Git, CSS, SQL, Redis, Jest, MongoDB, AWS, Django, Python, Flask, PostgreSQL, Express, React\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2019\n\nPROJECTS\n- Chat application with real-time messaging for 10000 users.\n- Task manager app with authentication and reminders.\n- E-commerce clone with cart, search, and checkout flows.",
   "labels": {
-    "name": "Arjun Sharma",
-    "email": "arjun.sharma25@example.com",
-    "phone": "+91 9899639081",
+    "name": "Tanvi Reddy",
+    "email": "tanvi.reddy25@example.com",
+    "phone": "+91 63683 50768",
     "skills": [
-      "React",
-      "Machine Learning",
       "JavaScript",
-      "Node.js"
+      "Git",
+      "CSS",
+      "SQL",
+      "Redis",
+      "Jest",
+      "MongoDB",
+      "AWS",
+      "Django",
+      "Python",
+      "Flask",
+      "PostgreSQL",
+      "Express",
+      "React"
     ],
-    "role": "Frontend Developer"
-  }
+    "role": "Full Stack Developer",
+    "role_key": "fullstack"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 5,
+  "expected_band": "strong"
 }

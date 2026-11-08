@@ -1,0 +1,31 @@
+{
+  "id": "syn_075",
+  "text": "Gaurav Chopra\n\ngaurav.chopra75@example.com | +91 83102 82260 | linkedin.com/in/gauravchopra\n\nSummary\nRecent computer science graduate with strong project experience in quality assurance engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, DataNest, 2023 - 2025\n- Automated API testing with PyTest, covering 4 endpoints\n- Reduced manual regression time by 20 percent with automation\n- Built a test data generator that unblocked 7 teams\n- Designed a CI/CD quality gate that blocked 5 bad deploys a month\nSoftware Engineering Intern, DataSystems, 2022 - 2023\n- Wrote JUnit tests that raised coverage from 15 percent to 30 percent\n- Reduced manual regression time by 25 percent with automation\n- Designed a CI/CD quality gate that blocked 12 bad deploys a month\n\nSKILLS\nGit, JavaScript, Bash, Jest, SQL, JIRA, Java, Jenkins, CI/CD, Docker, JUnit, Linux, Cypress, PyTest\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2024\n\nPROJECTS\n- Wrote a bug-bash checklist adopted by the QA team.\n- Created a load-testing script with 2 virtual users.\n- Built a test automation framework for a demo web app.",
+  "labels": {
+    "name": "Gaurav Chopra",
+    "email": "gaurav.chopra75@example.com",
+    "phone": "+91 83102 82260",
+    "skills": [
+      "Git",
+      "JavaScript",
+      "Bash",
+      "Jest",
+      "SQL",
+      "JIRA",
+      "Java",
+      "Jenkins",
+      "CI/CD",
+      "Docker",
+      "JUnit",
+      "Linux",
+      "Cypress",
+      "PyTest"
+    ],
+    "role": "Quality Assurance Engineer",
+    "role_key": "qa"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
+}

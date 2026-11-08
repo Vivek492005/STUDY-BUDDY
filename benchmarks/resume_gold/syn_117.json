@@ -1,0 +1,21 @@
+{
+  "id": "syn_117",
+  "text": "Karan Shetty\nkaran.shetty117@example.com\n\nEXPERIENCE\nJunior Developer, CloudForge, 2024\n- Developed a dashboard feature in React.\n\nSKILLS\nMongoDB, C++, CSS, C",
+  "labels": {
+    "name": "Karan Shetty",
+    "email": "karan.shetty117@example.com",
+    "phone": "",
+    "skills": [
+      "MongoDB",
+      "C++",
+      "CSS",
+      "C"
+    ],
+    "role": "Junior Developer",
+    "role_key": "fresher"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
+}

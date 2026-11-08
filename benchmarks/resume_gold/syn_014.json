@@ -1,16 +1,28 @@
 {
   "id": "syn_014",
-  "text": "Ananya Patel\nananya.patel14@example.com | +91 9843273328 | linkedin.com/in/ananyapatel\n\nPROFESSIONAL SUMMARY\nData Analyst with 5 years of experience building scalable applications.\n\nSKILLS\nDocker, Python, Node.js, Java\n\nEXPERIENCE\nData Analyst \u2014 DataSystems (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Harsh Sharma\n\nharsh.sharma14@example.com | +91 76442 63964 | linkedin.com/in/harshsharma\n\nSummary\nUI Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nUI Engineer, BrightSoft, 2023 - Present\n- Created Figma-to-code workflows that improved designer handoff speed\n- Built marketing sites with Vue and Angular for retail clients\n- Built a React and TypeScript component library adopted by 5 product teams\n- Optimized bundle sizes and raised Lighthouse scores by 25 points across flagship pages\nSoftware Engineering Intern, InnovateLabs, 2022 - 2023\n- Built marketing sites with Vue and Angular for retail clients\n- Implemented GraphQL data layers that reduced page load times by 25 percent\n- Created Figma-to-code workflows that improved designer handoff speed\n\nSKILLS\nJavaScript, CSS, Svelte, HTML, Vue, TypeScript, Node.js, GraphQL, Figma, Next.js, Git\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2021\n\nPROJECTS\n- Built a real-time dashboard with WebSocket updates.\n- Open-source contributor to a charting library.\n- Personal portfolio site with interactive demos, visited by 300 users.",
   "labels": {
-    "name": "Ananya Patel",
-    "email": "ananya.patel14@example.com",
-    "phone": "+91 9843273328",
+    "name": "Harsh Sharma",
+    "email": "harsh.sharma14@example.com",
+    "phone": "+91 76442 63964",
     "skills": [
-      "Docker",
-      "Python",
+      "JavaScript",
+      "CSS",
+      "Svelte",
+      "HTML",
+      "Vue",
+      "TypeScript",
       "Node.js",
-      "Java"
+      "GraphQL",
+      "Figma",
+      "Next.js",
+      "Git"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "UI Engineer",
+    "role_key": "frontend"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "strong"
 }

@@ -1,0 +1,21 @@
+{
+  "id": "syn_057",
+  "text": "Imran Saxena\n\nEXPERIENCE\nBig Data Engineer, InnovateLabs, 2024\n- Built Kafka consumers.\n\nSKILLS\nPython, Hadoop, PostgreSQL, Scala",
+  "labels": {
+    "name": "Imran Saxena",
+    "email": "",
+    "phone": "",
+    "skills": [
+      "Python",
+      "Hadoop",
+      "PostgreSQL",
+      "Scala"
+    ],
+    "role": "Big Data Engineer",
+    "role_key": "data-engineer"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
+}

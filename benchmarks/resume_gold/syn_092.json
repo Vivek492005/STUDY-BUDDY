@@ -1,0 +1,20 @@
+{
+  "id": "syn_092",
+  "text": "Harsh Joshi\nharsh.joshi92@example.com\n\nEXPERIENCE\nSite Reliability Engineer, AppWorks, 2024\n- Designed CI/CD pipelines.\n\nSKILLS\nGCP, Python, Kubernetes",
+  "labels": {
+    "name": "Harsh Joshi",
+    "email": "harsh.joshi92@example.com",
+    "phone": "",
+    "skills": [
+      "GCP",
+      "Python",
+      "Kubernetes"
+    ],
+    "role": "Site Reliability Engineer",
+    "role_key": "devops"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "weak"
+}

@@ -1,17 +1,20 @@
 {
   "id": "syn_032",
-  "text": "Rohan Deshmukh\nrohan.deshmukh32@example.com | +91 9822017645\n\nCAREER CHANGE SUMMARY\nSchool mathematics teacher of 8 years transitioning into data analysis. Completed a data analytics certificate in 2025 and two freelance reporting projects for local businesses.\n\nSKILLS\nExcel, SQL, Python, Statistics, Data Visualisation\n\nEXPERIENCE\nMathematics Teacher \u2014 City High School (2017\u20132025)\n- Analysed cohort results each term to target revision support\n- Built the school's first marks-tracking spreadsheet system\n\nEDUCATION\nM.Sc. Mathematics, 2016\nData Analytics Certificate, 2025\n",
+  "text": "Rohit Kaur\nrohit.kaur32@example.com\n\nEXPERIENCE\nSoftware Engineer, Northwind, 2024\n- Built an e-commerce platform.\n\nSKILLS\nMongoDB, HTML, CSS",
   "labels": {
-    "name": "Rohan Deshmukh",
-    "email": "rohan.deshmukh32@example.com",
-    "phone": "+91 9822017645",
+    "name": "Rohit Kaur",
+    "email": "rohit.kaur32@example.com",
+    "phone": "",
     "skills": [
-      "Excel",
-      "SQL",
-      "Python",
-      "Statistics",
-      "Data Visualisation"
+      "MongoDB",
+      "HTML",
+      "CSS"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Software Engineer",
+    "role_key": "fullstack"
+  },
+  "quality": "weak",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "weak"
 }

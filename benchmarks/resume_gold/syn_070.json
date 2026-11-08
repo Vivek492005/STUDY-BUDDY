@@ -1,0 +1,19 @@
+{
+  "id": "syn_070",
+  "text": "Farhan Nair\nfarhan.nair70@example.com\nAspiring developer seeking opportunities.\nTensorFlow, Git",
+  "labels": {
+    "name": "Farhan Nair",
+    "email": "farhan.nair70@example.com",
+    "phone": "",
+    "skills": [
+      "TensorFlow",
+      "Git"
+    ],
+    "role": "ML Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
+}

@@ -1,0 +1,722 @@
+[
+  {
+    "id": "syn_000",
+    "label": "SYNTHETIC strong Software Engineer (senior)",
+    "text": "Ananya Sharma\n\nananya.sharma0@example.com | +91 85012 39256 | linkedin.com/in/ananyasharma\n\nSummary\nSoftware Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSoftware Engineer, TechNova, 2019 - Present\n- Built a payment service in Python and Django serving 1000 users daily with 99.9 percent availability\n- Built monitoring dashboards that resolved incidents 50 percent faster\n- Led a team of 11 engineers through design reviews and on-call rotations\n- Designed a PostgreSQL schema migration that cut query latency by 10 percent\nSoftware Engineer, CodeCraft, 2017 - 2019\n- Automated deployment pipelines with Docker and Kubernetes, cutting release time by 50 percent\n- Optimized slow SQL queries and improved checkout throughput by 40 percent\n- Led a team of 5 engineers through design reviews and on-call rotations\n\nSKILLS\nLinux, Redis, Python, PostgreSQL, Git, Go, FastAPI, Django, Flask, Kafka, Java, Docker, MySQL\n\nEDUCATION\nB.Tech Computer Science, Indian Institute of Technology Delhi, 2018\n\nPROJECTS\n- Open-source contributor to a task queue library used by 300000 developers.\n- Built a personal analytics dashboard tracking fitness data for 2000 users.\n- Created a URL shortener service with rate limiting and analytics.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_001",
+    "label": "SYNTHETIC strong Backend Developer (senior)",
+    "text": "Zaid Gupta\n\nzaid.gupta1@example.com | +91 92291 82357 | linkedin.com/in/zaidgupta\n\nSummary\nBackend Developer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBackend Developer, CloudNine, 2019 - Present\n- Automated deployment pipelines with Docker and Kubernetes, cutting release time by 25 percent\n- Led a team of 3 engineers through design reviews and on-call rotations\n- Implemented Redis caching that reduced database load by 40 percent\n- Built a payment service in Python and Django serving 2000 users daily with 99.9 percent availability\nBackend Developer, DataSystems, 2017 - 2019\n- Built monitoring dashboards that resolved incidents 20 percent faster\n- Optimized slow SQL queries and improved checkout throughput by 35 percent\n- Implemented Redis caching that reduced database load by 35 percent\n\nSKILLS\nRedis, Django, PostgreSQL, MongoDB, CI/CD, Go, MySQL, FastAPI, Kubernetes, Bash, Flask\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2018\n\nPROJECTS\n- Created a URL shortener service with rate limiting and analytics.\n- Built a personal analytics dashboard tracking fitness data for 1000 users.\n- Open-source contributor to a task queue library used by 200 developers.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_002",
+    "label": "SYNTHETIC strong Backend Engineer (junior)",
+    "text": "Pooja Singh\n\npooja.singh2@example.com | +91 76155 37869 | linkedin.com/in/poojasingh\n\nSummary\nBackend Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nBackend Engineer, PixelWorks, 2023 - Present\n- Developed REST APIs with Flask and FastAPI for a logistics platform used by 100000 clients\n- Designed a PostgreSQL schema migration that cut query latency by 30 percent\n- Led a team of 11 engineers through design reviews and on-call rotations\n- Built monitoring dashboards that resolved incidents 40 percent faster\nSoftware Engineering Intern, NexaTech, 2022 - 2023\n- Led a team of 4 engineers through design reviews and on-call rotations\n- Implemented Redis caching that reduced database load by 50 percent\n- Designed a PostgreSQL schema migration that cut query latency by 45 percent\n\nSKILLS\nJava, Flask, FastAPI, PostgreSQL, Git, Docker, Bash, MySQL, SQL, Kafka\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2023\n\nPROJECTS\n- Built a personal analytics dashboard tracking fitness data for 300 users.\n- Created a URL shortener service with rate limiting and analytics.\n- Open-source contributor to a task queue library used by 100000 developers.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_003",
+    "label": "SYNTHETIC strong Backend Developer (fresher)",
+    "text": "Lakshmi Gupta\n\nlakshmi.gupta3@example.com | +91 88123 30730 | linkedin.com/in/lakshmigupta\n\nSummary\nRecent computer science graduate with strong project experience in backend developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, DataNest, 2023 - 2025\n- Designed a PostgreSQL schema migration that cut query latency by 50 percent\n- Led a team of 11 engineers through design reviews and on-call rotations\n- Optimized slow SQL queries and improved checkout throughput by 25 percent\n- Implemented Redis caching that reduced database load by 20 percent\nSoftware Engineering Intern, BrightSoft, 2022 - 2023\n- Optimized slow SQL queries and improved checkout throughput by 50 percent\n- Led a team of 10 engineers through design reviews and on-call rotations\n- Designed a PostgreSQL schema migration that cut query latency by 10 percent\n\nSKILLS\nKubernetes, Node.js, Python, Flask, AWS, Kafka, Git, SQL, FastAPI, Go, CI/CD, Bash, Java, Docker\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2025\n\nPROJECTS\n- Created a URL shortener service with rate limiting and analytics.\n- Built a personal analytics dashboard tracking fitness data for 100000 users.\n- Open-source contributor to a task queue library used by 500 developers.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_004",
+    "label": "SYNTHETIC average Backend Developer (junior)",
+    "text": "Kiran Reddy\n\nkiran.reddy4@example.com | +91 89645 89507\n\nSummary\nBackend Developer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nBackend Developer, WebScale, 2023 - Present\n- Led a team of 12 engineers through design reviews and on-call rotations\n- Optimized slow SQL queries and improved checkout throughput by 35 percent\nBackend Developer, InsightLabs, 2022 - 2023\n- Built monitoring dashboards that resolved incidents 45 percent faster\n- Developed REST APIs with Flask and FastAPI for a logistics platform used by 300 clients\n\nSKILLS\nMongoDB, Django, Kubernetes, Python, Bash, Docker\n\nEDUCATION\nB.E. Information Technology, Pune University, 2021",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_005",
+    "label": "SYNTHETIC average Software Engineer (junior)",
+    "text": "Arjun Kapoor\n\narjun.kapoor5@example.com | +91 64750 18834\n\nSummary\nSoftware Engineer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSoftware Engineer, DataNest, 2023 - Present\n- Developed REST APIs with Flask and FastAPI for a logistics platform used by 50000 clients\n- Optimized slow SQL queries and improved checkout throughput by 25 percent\nSoftware Engineer, StartupXYZ, 2022 - 2023\n- Implemented Redis caching that reduced database load by 60 percent\n- Optimized slow SQL queries and improved checkout throughput by 60 percent\n\nSKILLS\nMongoDB, Node.js, Git, MySQL, Flask, Java, Kubernetes, Go\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2022",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_006",
+    "label": "SYNTHETIC average Backend Developer (fresher)",
+    "text": "Harsh Chopra\n\nharsh.chopra6@example.com | +91 62612 17944\n\nSummary\nRecent computer science graduate with strong project experience in backend developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, InnovateLabs, 2024 - 2025\n- Automated deployment pipelines with Docker and Kubernetes, cutting release time by 50 percent\n- Designed a PostgreSQL schema migration that cut query latency by 45 percent\n\nSKILLS\nGit, PostgreSQL, Redis, Kafka, MongoDB, Bash\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2025",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_007",
+    "label": "SYNTHETIC average Software Engineer (senior)",
+    "text": "Kiran Gupta\n\nkiran.gupta7@example.com | +91 69856 11934\n\nSummary\nSoftware Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSoftware Engineer, CodeCraft, 2020 - Present\n- Built monitoring dashboards that resolved incidents 40 percent faster\n- Designed a PostgreSQL schema migration that cut query latency by 10 percent\n\nSKILLS\nSQL, Python, Bash, Redis, Kafka, FastAPI\n\nEDUCATION\nB.Sc Computer Science, Delhi University, 2019",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_008",
+    "label": "SYNTHETIC weak Software Engineer (junior)",
+    "text": "Anika Mehta\nanika.mehta8@example.com\n\nEXPERIENCE\nSoftware Engineer, DesignStudio, 2024\n- Implemented Redis caching.\n\nSKILLS\nJava, Bash, Node.js",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_009",
+    "label": "SYNTHETIC weak Backend Engineer (fresher)",
+    "text": "Sneha Menon\nsneha.menon9@example.com\n\nEXPERIENCE\nBackend Engineer, StartupXYZ, 2024\n- Optimized slow SQL queries and improved checkout throughput by 30 percent.\n\nSKILLS\nFlask, Linux, MongoDB, Java",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_010",
+    "label": "SYNTHETIC thin Backend Developer (fresher)",
+    "text": "Divya D'Souza\ndivya.dsouza10@example.com\nAspiring developer seeking opportunities.\nFastAPI, Docker",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_011",
+    "label": "SYNTHETIC gaming Backend Engineer (junior)",
+    "text": "Shreya Kulkarni\nshreya.kulkarni11@example.com | +91 61152 70068\n\nSKILLS\nPython, SQL, Docker\n\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.\nDeveloped Python applications with SQL databases and Docker containers for cloud deployment.",
+    "expected_band": null
+  },
+  {
+    "id": "syn_012",
+    "label": "SYNTHETIC strong UI Engineer (senior)",
+    "text": "Rohit Gupta\n\nrohit.gupta12@example.com | +91 69808 37938 | linkedin.com/in/rohitgupta\n\nSummary\nUI Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nUI Engineer, SoftServe, 2019 - Present\n- Optimized bundle sizes and raised Lighthouse scores by 45 points across flagship pages\n- Implemented GraphQL data layers that reduced page load times by 50 percent\n- Created Figma-to-code workflows that improved designer handoff speed\n- Designed responsive interfaces with HTML, CSS, and Tailwind CSS that improved mobile conversion by 30 percent\nUI Engineer, CloudNine, 2017 - 2019\n- Built a React and TypeScript component library adopted by 6 product teams\n- Delivered a checkout redesign used by 300 users\n- Led accessibility improvements that resolved 4 audit issues\n\nSKILLS\nAngular, Bootstrap, Cypress, Figma, React, Vue, Next.js, Git, Svelte, HTML, TypeScript, Tailwind CSS\n\nEDUCATION\nB.Tech Computer Science, Indian Institute of Technology Delhi, 2015\n\nPROJECTS\n- Built a real-time dashboard with WebSocket updates.\n- Open-source contributor to a charting library.\n- Personal portfolio site with interactive demos, visited by 2000 users.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_013",
+    "label": "SYNTHETIC strong Frontend Engineer (senior)",
+    "text": "Neha Shetty\n\nneha.shetty13@example.com | +91 81722 10464 | linkedin.com/in/nehashetty\n\nSummary\nFrontend Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nFrontend Engineer, BrightSoft, 2019 - Present\n- Created Figma-to-code workflows that improved designer handoff speed\n- Led accessibility improvements that resolved 3 audit issues\n- Built a React and TypeScript component library adopted by 4 product teams\n- Delivered a checkout redesign used by 100000 users\nFrontend Engineer, PixelWorks, 2017 - 2019\n- Built a React and TypeScript component library adopted by 11 product teams\n- Created Figma-to-code workflows that improved designer handoff speed\n- Implemented GraphQL data layers that reduced page load times by 50 percent\n\nSKILLS\nGraphQL, Vue, JavaScript, Svelte, HTML, Next.js, Node.js, Angular, Git, TypeScript, React\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2016\n\nPROJECTS\n- Built a real-time dashboard with WebSocket updates.\n- Open-source contributor to a charting library.\n- Personal portfolio site with interactive demos, visited by 1000 users.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_014",
+    "label": "SYNTHETIC strong UI Engineer (junior)",
+    "text": "Harsh Sharma\n\nharsh.sharma14@example.com | +91 76442 63964 | linkedin.com/in/harshsharma\n\nSummary\nUI Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nUI Engineer, BrightSoft, 2023 - Present\n- Created Figma-to-code workflows that improved designer handoff speed\n- Built marketing sites with Vue and Angular for retail clients\n- Built a React and TypeScript component library adopted by 5 product teams\n- Optimized bundle sizes and raised Lighthouse scores by 25 points across flagship pages\nSoftware Engineering Intern, InnovateLabs, 2022 - 2023\n- Built marketing sites with Vue and Angular for retail clients\n- Implemented GraphQL data layers that reduced page load times by 25 percent\n- Created Figma-to-code workflows that improved designer handoff speed\n\nSKILLS\nJavaScript, CSS, Svelte, HTML, Vue, TypeScript, Node.js, GraphQL, Figma, Next.js, Git\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2021\n\nPROJECTS\n- Built a real-time dashboard with WebSocket updates.\n- Open-source contributor to a charting library.\n- Personal portfolio site with interactive demos, visited by 300 users.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_015",
+    "label": "SYNTHETIC strong Frontend Engineer (fresher)",
+    "text": "Simran Nair\n\nsimran.nair15@example.com | +91 62776 88193 | linkedin.com/in/simrannair\n\nSummary\nRecent computer science graduate with strong project experience in frontend engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, CodeCraft, 2023 - 2025\n- Designed responsive interfaces with HTML, CSS, and Tailwind CSS that improved mobile conversion by 30 percent\n- Optimized bundle sizes and raised Lighthouse scores by 10 points across flagship pages\n- Led accessibility improvements that resolved 8 audit issues\n- Built marketing sites with Vue and Angular for retail clients\nSoftware Engineering Intern, DataNest, 2022 - 2023\n- Built a React and TypeScript component library adopted by 12 product teams\n- Led accessibility improvements that resolved 12 audit issues\n- Created Figma-to-code workflows that improved designer handoff speed\n\nSKILLS\nCypress, GraphQL, TypeScript, Jest, HTML, Git, Node.js, Next.js, Vue, Figma, Svelte\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2024\n\nPROJECTS\n- Open-source contributor to a charting library.\n- Built a real-time dashboard with WebSocket updates.\n- Personal portfolio site with interactive demos, visited by 2000 users.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_016",
+    "label": "SYNTHETIC average UI Engineer (junior)",
+    "text": "Karan Das\n\nkaran.das16@example.com | +91 93851 90676\n\nSummary\nUI Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nUI Engineer, AppWorks, 2023 - Present\n- Led accessibility improvements that resolved 5 audit issues\n- Implemented GraphQL data layers that reduced page load times by 40 percent\nUI Engineer, TechCorp, 2022 - 2023\n- Delivered a checkout redesign used by 50000 users\n- Optimized bundle sizes and raised Lighthouse scores by 45 points across flagship pages\n\nSKILLS\nBootstrap, Svelte, Node.js, Next.js, Cypress, React\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2021",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_017",
+    "label": "SYNTHETIC average UI Engineer (junior)",
+    "text": "Varun Menon\n\nvarun.menon17@example.com | +91 82530 40784\n\nSummary\nUI Engineer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nUI Engineer, WebScale, 2023 - Present\n- Built a React and TypeScript component library adopted by 5 product teams\n- Built marketing sites with Vue and Angular for retail clients\nUI Engineer, NexaTech, 2022 - 2023\n- Built marketing sites with Vue and Angular for retail clients\n- Led accessibility improvements that resolved 3 audit issues\n\nSKILLS\nGraphQL, CSS, Cypress, Next.js, Svelte, Tailwind CSS, Node.js, Angular\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2023",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_018",
+    "label": "SYNTHETIC average Frontend Developer (fresher)",
+    "text": "Aarav Trivedi\n\naarav.trivedi18@example.com | +91 67965 38683\n\nSummary\nRecent computer science graduate with strong project experience in frontend developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, PixelWorks, 2024 - 2025\n- Optimized bundle sizes and raised Lighthouse scores by 15 points across flagship pages\n- Created Figma-to-code workflows that improved designer handoff speed\n\nSKILLS\nVue, Next.js, Jest, Figma, GraphQL, Git, HTML, Tailwind CSS\n\nEDUCATION\nMCA, IGNOU, 2025",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_019",
+    "label": "SYNTHETIC average Frontend Engineer (senior)",
+    "text": "Kiran Chopra\n\nkiran.chopra19@example.com | +91 78777 68991\n\nSummary\nFrontend Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nFrontend Engineer, DataWorks, 2020 - Present\n- Built marketing sites with Vue and Angular for retail clients\n- Delivered a checkout redesign used by 1000 users\n\nSKILLS\nNext.js, React, Cypress, Vue, Angular, GraphQL, HTML\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2019",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_020",
+    "label": "SYNTHETIC weak UI Engineer (junior)",
+    "text": "Kavya Mehta\nkavya.mehta20@example.com\n\nEXPERIENCE\nUI Engineer, WebScale, 2024\n- Built a React and TypeScript component library adopted by 5 product teams.\n\nSKILLS\nReact, GraphQL, CSS",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_021",
+    "label": "SYNTHETIC weak Frontend Developer (fresher)",
+    "text": "Harsh Rao\nharsh.rao21@example.com\n\nEXPERIENCE\nFrontend Developer, InsightLabs, 2024\n- Created Figma-to-code workflows.\n\nSKILLS\nGraphQL, Tailwind CSS, Svelte, Angular",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_022",
+    "label": "SYNTHETIC thin Frontend Developer (fresher)",
+    "text": "Lakshmi D'Souza\nlakshmi.dsouza22@example.com\nAspiring developer seeking opportunities.\nJavaScript, Node.js",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_023",
+    "label": "SYNTHETIC gaming Frontend Engineer (junior)",
+    "text": "Simran Saxena\nsimran.saxena23@example.com | +91 62375 94246\n\nSKILLS\nReact, JavaScript, CSS\n\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.\nBuilt React interfaces with JavaScript components and CSS styling for web applications.",
+    "expected_band": null
+  },
+  {
+    "id": "syn_024",
+    "label": "SYNTHETIC strong Software Engineer (senior)",
+    "text": "Aditya Bhat\n\naditya.bhat24@example.com | +91 93977 16590 | linkedin.com/in/adityabhat\n\nSummary\nSoftware Engineer with 8 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSoftware Engineer, WebScale, 2019 - Present\n- Automated CI/CD pipelines that reduced release errors by 40 percent\n- Implemented authentication and payment flows used by 2000 customers\n- Optimized database queries and caching, cutting page load by 15 percent\n- Led the migration from a monolith to services, improving deploy frequency\nSoftware Engineer, PixelWorks, 2017 - 2019\n- Built admin dashboards in React that saved the support team 10 hours a week\n- Built an e-commerce platform with React and Django serving 200 users\n- Automated CI/CD pipelines that reduced release errors by 35 percent\n\nSKILLS\nTypeScript, JavaScript, Python, PostgreSQL, Flask, SQL, CSS, Docker, Jest, React, Git\n\nEDUCATION\nB.Com, Delhi University, 2017\n\nPROJECTS\n- Chat application with real-time messaging for 50000 users.\n- E-commerce clone with cart, search, and checkout flows.\n- Task manager app with authentication and reminders.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_025",
+    "label": "SYNTHETIC strong Full Stack Developer (senior)",
+    "text": "Tanvi Reddy\n\ntanvi.reddy25@example.com | +91 63683 50768 | linkedin.com/in/tanvireddy\n\nSummary\nFull Stack Developer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nFull Stack Developer, TechNova, 2019 - Present\n- Led the migration from a monolith to services, improving deploy frequency\n- Automated CI/CD pipelines that reduced release errors by 60 percent\n- Developed REST and GraphQL APIs that powered mobile and web clients\n- Built an e-commerce platform with React and Django serving 1000 users\nFull Stack Developer, Northwind, 2017 - 2019\n- Developed REST and GraphQL APIs that powered mobile and web clients\n- Automated CI/CD pipelines that reduced release errors by 60 percent\n- Implemented authentication and payment flows used by 300 customers\n\nSKILLS\nJavaScript, Git, CSS, SQL, Redis, Jest, MongoDB, AWS, Django, Python, Flask, PostgreSQL, Express, React\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2019\n\nPROJECTS\n- Chat application with real-time messaging for 10000 users.\n- Task manager app with authentication and reminders.\n- E-commerce clone with cart, search, and checkout flows.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_026",
+    "label": "SYNTHETIC strong Full-Stack Engineer (junior)",
+    "text": "Pooja Pillai\n\npooja.pillai26@example.com | +91 98616 67091 | linkedin.com/in/poojapillai\n\nSummary\nFull-Stack Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nFull-Stack Engineer, StartupXYZ, 2023 - Present\n- Shipped a real-time notification system with Node.js and Redis\n- Optimized database queries and caching, cutting page load by 60 percent\n- Developed REST and GraphQL APIs that powered mobile and web clients\n- Led the migration from a monolith to services, improving deploy frequency\nSoftware Engineering Intern, CloudNine, 2022 - 2023\n- Led the migration from a monolith to services, improving deploy frequency\n- Implemented authentication and payment flows used by 50000 customers\n- Built an e-commerce platform with React and Django serving 5000 users\n\nSKILLS\nNext.js, Flask, Git, MongoDB, AWS, Node.js, Docker, CSS, Express, HTML, Python\n\nEDUCATION\nB.Com, Delhi University, 2022\n\nPROJECTS\n- Task manager app with authentication and reminders.\n- E-commerce clone with cart, search, and checkout flows.\n- Chat application with real-time messaging for 1000 users.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_027",
+    "label": "SYNTHETIC strong Full-Stack Engineer (fresher)",
+    "text": "Anika Agarwal\n\nanika.agarwal27@example.com | +91 78800 94659 | linkedin.com/in/anikaagarwal\n\nSummary\nRecent computer science graduate with strong project experience in full-stack engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, TechCorp, 2023 - 2025\n- Shipped a real-time notification system with Node.js and Redis\n- Developed REST and GraphQL APIs that powered mobile and web clients\n- Optimized database queries and caching, cutting page load by 30 percent\n- Led the migration from a monolith to services, improving deploy frequency\nSoftware Engineering Intern, CloudNine, 2022 - 2023\n- Automated CI/CD pipelines that reduced release errors by 50 percent\n- Optimized database queries and caching, cutting page load by 35 percent\n- Shipped a real-time notification system with Node.js and Redis\n\nSKILLS\nCSS, AWS, Git, Express, MongoDB, Node.js, HTML, React, JavaScript, GraphQL, Django, Jest, TypeScript\n\nEDUCATION\nB.Com, Delhi University, 2025\n\nPROJECTS\n- E-commerce clone with cart, search, and checkout flows.\n- Task manager app with authentication and reminders.\n- Chat application with real-time messaging for 2000 users.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_028",
+    "label": "SYNTHETIC average Software Engineer (junior)",
+    "text": "Vikram Shetty\n\nvikram.shetty28@example.com | +91 75853 39816\n\nSummary\nSoftware Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSoftware Engineer, TechCorp, 2023 - Present\n- Implemented authentication and payment flows used by 200 customers\n- Built admin dashboards in React that saved the support team 2 hours a week\nSoftware Engineer, AppWorks, 2022 - 2023\n- Shipped a real-time notification system with Node.js and Redis\n- Automated CI/CD pipelines that reduced release errors by 20 percent\n\nSKILLS\nReact, Python, Docker, Next.js, HTML, PostgreSQL, Django, TypeScript\n\nEDUCATION\nB.Tech Computer Science, Indian Institute of Technology Delhi, 2022",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_029",
+    "label": "SYNTHETIC average Full Stack Developer (junior)",
+    "text": "Farhan Gupta\n\nfarhan.gupta29@example.com | +91 67565 74454\n\nSummary\nFull Stack Developer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nFull Stack Developer, DataSystems, 2023 - Present\n- Implemented authentication and payment flows used by 300000 customers\n- Led the migration from a monolith to services, improving deploy frequency\nFull Stack Developer, NexaTech, 2022 - 2023\n- Shipped a real-time notification system with Node.js and Redis\n- Built an e-commerce platform with React and Django serving 1000 users\n\nSKILLS\nCSS, SQL, PostgreSQL, HTML, GraphQL\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2022",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_030",
+    "label": "SYNTHETIC average Full-Stack Engineer (fresher)",
+    "text": "Nisha Bhat\n\nnisha.bhat30@example.com | +91 96003 84531\n\nSummary\nRecent computer science graduate with strong project experience in full-stack engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, InnovateLabs, 2024 - 2025\n- Optimized database queries and caching, cutting page load by 15 percent\n- Implemented authentication and payment flows used by 500 customers\n\nSKILLS\nDjango, CSS, TypeScript, Jest, Python, Flask\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2025",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_031",
+    "label": "SYNTHETIC average Full-Stack Engineer (senior)",
+    "text": "Varun Patel\n\nvarun.patel31@example.com | +91 75720 47056\n\nSummary\nFull-Stack Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nFull-Stack Engineer, StartupXYZ, 2020 - Present\n- Optimized database queries and caching, cutting page load by 15 percent\n- Built admin dashboards in React that saved the support team 10 hours a week\n\nSKILLS\nNode.js, MongoDB, Jest, TypeScript, JavaScript, HTML\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2019",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_032",
+    "label": "SYNTHETIC weak Software Engineer (junior)",
+    "text": "Rohit Kaur\nrohit.kaur32@example.com\n\nEXPERIENCE\nSoftware Engineer, Northwind, 2024\n- Built an e-commerce platform.\n\nSKILLS\nMongoDB, HTML, CSS",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_033",
+    "label": "SYNTHETIC weak Full Stack Developer (fresher)",
+    "text": "Neha Malhotra\nneha.malhotra33@example.com\n\nEXPERIENCE\nFull Stack Developer, TechNova, 2024\n- Shipped a real-time notification system.\n\nSKILLS\nPython, MongoDB, JavaScript, Django, Next.js",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_034",
+    "label": "SYNTHETIC thin Software Engineer (fresher)",
+    "text": "Isha Saxena\nisha.saxena34@example.com\nAspiring developer seeking opportunities.\nGit, SQL",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_035",
+    "label": "SYNTHETIC gaming Software Engineer (junior)",
+    "text": "Lakshmi Kulkarni\nlakshmi.kulkarni35@example.com | +91 63634 53228\n\nSKILLS\nPython, React, SQL\n\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.\nDeveloped Python backends with React frontends and SQL databases for web applications.",
+    "expected_band": null
+  },
+  {
+    "id": "syn_036",
+    "label": "SYNTHETIC strong Data Analyst (senior)",
+    "text": "Anika Verma\n\nanika.verma36@example.com | +91 91601 69614 | linkedin.com/in/anikaverma\n\nSummary\nData Analyst with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nData Analyst, DesignStudio, 2019 - Present\n- Automated data quality checks that caught bad data before it reached reports\n- Built a churn analysis that identified 50 percent of at-risk customers\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Created Tableau dashboards and Power BI reports used by 9 business teams\nData Analyst, InnovateLabs, 2017 - 2019\n- Automated data quality checks that caught bad data before it reached reports\n- Created Tableau dashboards and Power BI reports used by 10 business teams\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 35 percent\n\nSKILLS\nNumPy, Hadoop, Git, Scala, SQL, Tableau, Power BI, Bash, Excel, Linux, Pandas, PostgreSQL, Airflow, Apache Spark\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2015\n\nPROJECTS\n- Created a KPI tracker for a student club with 2000 members.\n- Data analysis project on public datasets with charts and a written report.\n- Built a sales forecasting dashboard for a retail dataset.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_037",
+    "label": "SYNTHETIC strong Business Analyst (senior)",
+    "text": "Kiran Das\n\nkiran.das37@example.com | +91 64681 24871 | linkedin.com/in/kirandas\n\nSummary\nBusiness Analyst with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBusiness Analyst, CloudForge, 2019 - Present\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Designed PostgreSQL queries that cut dashboard load time by 25 percent\n- Automated data quality checks that caught bad data before it reached reports\n- Presented insights to leadership that shaped pricing decisions\nBusiness Analyst, InsightLabs, 2017 - 2019\n- Built a churn analysis that identified 40 percent of at-risk customers\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 25 percent\n\nSKILLS\nPower BI, Linux, Python, NumPy, MySQL, PostgreSQL, Bash, Scala, SQL, Excel, Hadoop, Airflow, Tableau, Git\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2019\n\nPROJECTS\n- Built a sales forecasting dashboard for a retail dataset.\n- Created a KPI tracker for a student club with 5000 members.\n- Data analysis project on public datasets with charts and a written report.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_038",
+    "label": "SYNTHETIC strong Analytics Engineer (junior)",
+    "text": "Amit Chopra\n\namit.chopra38@example.com | +91 84090 41300 | linkedin.com/in/amitchopra\n\nSummary\nAnalytics Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAnalytics Engineer, CodeCraft, 2023 - Present\n- Presented insights to leadership that shaped pricing decisions\n- Built a churn analysis that identified 40 percent of at-risk customers\n- Designed PostgreSQL queries that cut dashboard load time by 20 percent\n- Automated data quality checks that caught bad data before it reached reports\nSoftware Engineering Intern, DataSystems, 2022 - 2023\n- Built a churn analysis that identified 50 percent of at-risk customers\n- Created Tableau dashboards and Power BI reports used by 11 business teams\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 35 percent\n\nSKILLS\nPandas, Python, Bash, Git, SQL, Excel, MySQL, Hadoop, NumPy, Tableau\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2023\n\nPROJECTS\n- Built a sales forecasting dashboard for a retail dataset.\n- Created a KPI tracker for a student club with 300 members.\n- Data analysis project on public datasets with charts and a written report.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_039",
+    "label": "SYNTHETIC strong Data Analyst (fresher)",
+    "text": "Zaid Rao\n\nzaid.rao39@example.com | +91 88994 80912 | linkedin.com/in/zaidrao\n\nSummary\nRecent computer science graduate with strong project experience in data analyst work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, InsightLabs, 2023 - 2025\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 45 percent\n- Designed PostgreSQL queries that cut dashboard load time by 20 percent\n- Created Tableau dashboards and Power BI reports used by 6 business teams\n- Presented insights to leadership that shaped pricing decisions\nSoftware Engineering Intern, StartupXYZ, 2022 - 2023\n- Created Tableau dashboards and Power BI reports used by 2 business teams\n- Built a churn analysis that identified 30 percent of at-risk customers\n- Built automated Excel reports that saved analysts 7 hours every week\n\nSKILLS\nLinux, Excel, Tableau, Bash, MySQL, Apache Spark, Pandas, Hadoop, Scala, SQL, Power BI, NumPy\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2024\n\nPROJECTS\n- Created a KPI tracker for a student club with 300000 members.\n- Data analysis project on public datasets with charts and a written report.\n- Built a sales forecasting dashboard for a retail dataset.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_040",
+    "label": "SYNTHETIC average Analytics Engineer (junior)",
+    "text": "Shreya Fernandez\n\nshreya.fernandez40@example.com | +91 88529 43466\n\nSummary\nAnalytics Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAnalytics Engineer, InsightLabs, 2023 - Present\n- Built automated Excel reports that saved analysts 9 hours every week\n- Created Tableau dashboards and Power BI reports used by 7 business teams\nAnalytics Engineer, AppWorks, 2022 - 2023\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Presented insights to leadership that shaped pricing decisions\n\nSKILLS\nBash, Git, Linux, Power BI, Tableau, MySQL, Pandas, Python\n\nEDUCATION\nB.E. Information Technology, Pune University, 2022",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_041",
+    "label": "SYNTHETIC average Analytics Engineer (junior)",
+    "text": "Rohit Joshi\n\nrohit.joshi41@example.com | +91 85837 12875\n\nSummary\nAnalytics Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAnalytics Engineer, TechCorp, 2023 - Present\n- Created Tableau dashboards and Power BI reports used by 9 business teams\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\nAnalytics Engineer, TechNova, 2022 - 2023\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Automated data quality checks that caught bad data before it reached reports\n\nSKILLS\nAirflow, Tableau, Hadoop, Pandas, Apache Spark, Power BI\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2023",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_042",
+    "label": "SYNTHETIC average Business Analyst (fresher)",
+    "text": "Aditya Fernandez\n\naditya.fernandez42@example.com | +91 61645 50492\n\nSummary\nRecent computer science graduate with strong project experience in business analyst work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, SoftServe, 2024 - 2025\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 35 percent\n- Built automated Excel reports that saved analysts 8 hours every week\n\nSKILLS\nMySQL, Excel, Scala, Bash, PostgreSQL, Linux\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2025",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_043",
+    "label": "SYNTHETIC average Data Analyst (senior)",
+    "text": "Nikhil Nair\n\nnikhil.nair43@example.com | +91 95835 54396\n\nSummary\nData Analyst with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nData Analyst, NexaTech, 2020 - Present\n- Automated data quality checks that caught bad data before it reached reports\n- Built a churn analysis that identified 50 percent of at-risk customers\n\nSKILLS\nExcel, Scala, MySQL, SQL, Power BI, Bash, Python\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2017",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_044",
+    "label": "SYNTHETIC weak Analytics Engineer (junior)",
+    "text": "Manish Saxena\nmanish.saxena44@example.com\n\nEXPERIENCE\nAnalytics Engineer, CloudForge, 2024\n- Analyzed sales data.\n\nSKILLS\nSQL, Apache Spark, Bash",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_045",
+    "label": "SYNTHETIC weak Data Analyst (fresher)",
+    "text": "Shreya Kaur\nshreya.kaur45@example.com | +34 612 345 789\n\nEXPERIENCE\nData Analyst, DataSystems, 2024\n- Built automated Excel reports.\n\nSKILLS\nNumPy, Python, Pandas, Tableau",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_046",
+    "label": "SYNTHETIC thin Analytics Engineer (fresher)",
+    "text": "Tanvi D'Souza\ntanvi.dsouza46@example.com\nAspiring developer seeking opportunities.\nTableau, Linux",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_047",
+    "label": "SYNTHETIC gaming Analytics Engineer (junior)",
+    "text": "Anika Pillai\nanika.pillai47@example.com | +91 95583 14288\n\nSKILLS\nSQL, Tableau\n\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.\nAnalyzed sales data with SQL queries and Tableau dashboards for business reporting.",
+    "expected_band": null
+  },
+  {
+    "id": "syn_048",
+    "label": "SYNTHETIC strong Big Data Engineer (senior)",
+    "text": "Tanvi Khan\n\ntanvi.khan48@example.com | +91 98285 40947 | linkedin.com/in/tanvikhan\n\nSummary\nBig Data Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBig Data Engineer, AppWorks, 2019 - Present\n- Built batch and streaming pipelines in Python processing data for 300 users daily\n- Automated data quality checks that resolved bad data before it reached reports\n- Optimized Spark jobs that reduced processing time by 45 percent\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 15 percent\nBig Data Engineer, SoftServe, 2017 - 2019\n- Automated data quality checks that resolved bad data before it reached reports\n- Built Kafka consumers that ingested 11 events per second\n- Created monitoring for pipeline health that alerted teams within minutes\n\nSKILLS\nSQL, Scala, Hadoop, MySQL, PostgreSQL, Docker, Linux, Redis, Kubernetes, Apache Spark\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2019\n\nPROJECTS\n- Data pipeline portfolio project ingesting public datasets with daily refreshed charts.\n- Created an ELT framework for small teams.\n- Built a log aggregation pipeline with Kafka and Spark.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_049",
+    "label": "SYNTHETIC strong Big Data Engineer (senior)",
+    "text": "Aarav Nair\n\naarav.nair49@example.com | +91 73129 80807 | linkedin.com/in/aaravnair\n\nSummary\nBig Data Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBig Data Engineer, TechCorp, 2019 - Present\n- Built batch and streaming pipelines in Python processing data for 5000 users daily\n- Optimized Spark jobs that reduced processing time by 10 percent\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 20 percent\n- Managed a migration from MySQL to PostgreSQL that improved query speed\nBig Data Engineer, NexaTech, 2017 - 2019\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n- Built batch and streaming pipelines in Python processing data for 10000 users daily\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 50 percent\n\nSKILLS\nPostgreSQL, Kafka, Linux, Scala, Hadoop, AWS, Docker, SQL, Bash, Apache Spark\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2015\n\nPROJECTS\n- Data pipeline portfolio project ingesting public datasets with daily refreshed charts.\n- Created an ELT framework for small teams.\n- Built a log aggregation pipeline with Kafka and Spark.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_050",
+    "label": "SYNTHETIC strong Data Engineer (junior)",
+    "text": "Sneha Bose\n\nsneha.bose50@example.com | +91 97984 99928 | linkedin.com/in/snehabose\n\nSummary\nData Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nData Engineer, CloudNine, 2023 - Present\n- Built Kafka consumers that ingested 4 events per second\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 30 percent\n- Built batch and streaming pipelines in Python processing data for 300000 users daily\nSoftware Engineering Intern, ZenithSoft, 2022 - 2023\n- Built Kafka consumers that ingested 10 events per second\n- Automated data quality checks that resolved bad data before it reached reports\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n\nSKILLS\nLinux, AWS, Docker, Airflow, SQL, Git, Redis, MySQL, Scala, Bash, Kubernetes, Kafka\n\nEDUCATION\nB.Sc Computer Science, Delhi University, 2023\n\nPROJECTS\n- Built a log aggregation pipeline with Kafka and Spark.\n- Created an ELT framework for small teams.\n- Data pipeline portfolio project ingesting public datasets with daily refreshed charts.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_051",
+    "label": "SYNTHETIC strong Big Data Engineer (fresher)",
+    "text": "Vikram Kulkarni\n\nvikram.kulkarni51@example.com | +91 96120 97177 | linkedin.com/in/vikramkulkarni\n\nSummary\nRecent computer science graduate with strong project experience in big data engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, CloudForge, 2023 - 2025\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 40 percent\n- Created monitoring for pipeline health that alerted teams within minutes\n- Built batch and streaming pipelines in Python processing data for 300 users daily\n- Built Kafka consumers that ingested 7 events per second\nSoftware Engineering Intern, CloudNine, 2022 - 2023\n- Optimized Spark jobs that reduced processing time by 60 percent\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n- Built batch and streaming pipelines in Python processing data for 100000 users daily\n\nSKILLS\nKubernetes, Redis, SQL, Airflow, Hadoop, Linux, Scala, Python, Apache Spark, Kafka, PostgreSQL, Git, AWS, Docker\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2025\n\nPROJECTS\n- Created an ELT framework for small teams.\n- Data pipeline portfolio project ingesting public datasets with daily refreshed charts.\n- Built a log aggregation pipeline with Kafka and Spark.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_052",
+    "label": "SYNTHETIC average Big Data Engineer (junior)",
+    "text": "Rahul Bhat\n\nrahul.bhat52@example.com | +91 66736 82910\n\nSummary\nBig Data Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nBig Data Engineer, TechNova, 2023 - Present\n- Created monitoring for pipeline health that alerted teams within minutes\n- Mentored 10 analysts on SQL best practices\nBig Data Engineer, StartupXYZ, 2022 - 2023\n- Built batch and streaming pipelines in Python processing data for 2000 users daily\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n\nSKILLS\nHadoop, Apache Spark, Git, Scala, Linux\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2022",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_053",
+    "label": "SYNTHETIC average Data Engineer (junior)",
+    "text": "Aarav Reddy\n\naarav.reddy53@example.com | +91 77566 19120\n\nSummary\nData Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nData Engineer, TechCorp, 2023 - Present\n- Automated data quality checks that resolved bad data before it reached reports\n- Mentored 8 analysts on SQL best practices\nData Engineer, CloudNine, 2022 - 2023\n- Mentored 4 analysts on SQL best practices\n- Optimized Spark jobs that reduced processing time by 35 percent\n\nSKILLS\nKubernetes, Scala, Docker, Bash, SQL, Python, PostgreSQL\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2023",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_054",
+    "label": "SYNTHETIC average ETL Developer (fresher)",
+    "text": "Sneha D'Souza\n\nsneha.dsouza54@example.com | +91 65458 68079\n\nSummary\nRecent computer science graduate with strong project experience in etl developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, ZenithSoft, 2024 - 2025\n- Created monitoring for pipeline health that alerted teams within minutes\n- Optimized Spark jobs that reduced processing time by 25 percent\n\nSKILLS\nGit, Airflow, SQL, Apache Spark, Kubernetes\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2025",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_055",
+    "label": "SYNTHETIC average Big Data Engineer (senior)",
+    "text": "Maya D'Souza\n\nmaya.dsouza55@example.com | +91 81744 38903\n\nSummary\nBig Data Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nBig Data Engineer, TechCorp, 2020 - Present\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n- Designed a PostgreSQL warehouse schema and Airflow workflows that cut pipeline failures by 20 percent\n\nSKILLS\nDocker, Hadoop, SQL, Python, Kafka, Airflow, PostgreSQL\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2018",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_056",
+    "label": "SYNTHETIC weak ETL Developer (junior)",
+    "text": "Zaid Kapoor\nzaid.kapoor56@example.com\n\nEXPERIENCE\nETL Developer, CloudNine, 2024\n- Designed a PostgreSQL warehouse schema and Airflow workflows.\n\nSKILLS\nScala, Bash, Git",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_057",
+    "label": "SYNTHETIC weak Big Data Engineer (fresher)",
+    "text": "Imran Saxena\n\nEXPERIENCE\nBig Data Engineer, InnovateLabs, 2024\n- Built Kafka consumers.\n\nSKILLS\nPython, Hadoop, PostgreSQL, Scala",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_058",
+    "label": "SYNTHETIC thin ETL Developer (fresher)",
+    "text": "Kavya Das\nkavya.das58@example.com\nAspiring developer seeking opportunities.\nScala, AWS",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_059",
+    "label": "SYNTHETIC gaming Big Data Engineer (junior)",
+    "text": "Kavya Rao\nkavya.rao59@example.com | +91 86562 39041\n\nSKILLS\nPython, SQL, Apache Spark\n\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.\nBuilt Python pipelines with SQL warehouses and Spark jobs for data processing.",
+    "expected_band": null
+  },
+  {
+    "id": "syn_060",
+    "label": "SYNTHETIC strong Machine Learning Engineer (senior)",
+    "text": "Nikhil Singh\n\nnikhil.singh60@example.com | +91 69693 76840 | linkedin.com/in/nikhilsingh\n\nSummary\nMachine Learning Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nMachine Learning Engineer, NexaTech, 2019 - Present\n- Deployed a TensorFlow classification service serving 500 requests daily\n- Presented model results to product teams and shaped the roadmap\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 60 percent\n- Optimized model inference latency by 20 percent with batching and caching\nMachine Learning Engineer, StartupXYZ, 2017 - 2019\n- Deployed a TensorFlow classification service serving 50000 requests daily\n- Presented model results to product teams and shaped the roadmap\n- Created a LangChain agent prototype that answered support questions\n\nSKILLS\nLangChain, PostgreSQL, Git, FastAPI, PyTorch, AWS, TensorFlow, Apache Spark, Bash, Pandas, Kubernetes, Python, Hugging Face\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2018\n\nPROJECTS\n- Created a movie recommendation system with collaborative filtering.\n- Image classifier with reasonable accuracy on a public dataset.\n- Built a sentiment analysis API with FastAPI.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_061",
+    "label": "SYNTHETIC strong AI Engineer (senior)",
+    "text": "Rohan Patel\n\nrohan.patel61@example.com | +91 85703 20057 | linkedin.com/in/rohanpatel\n\nSummary\nAI Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nAI Engineer, PixelWorks, 2019 - Present\n- Built a recommendation model with PyTorch that increased click-through by 35 percent\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 60 percent\n- Built an evaluation harness that caught 45 percent of regressions before release\n- Deployed a TensorFlow classification service serving 100000 requests daily\nAI Engineer, TechNova, 2017 - 2019\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 15 percent\n- Built a recommendation model with PyTorch that increased click-through by 35 percent\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 15 percent\n\nSKILLS\nNumPy, TensorFlow, AWS, PostgreSQL, FastAPI, Docker, Apache Spark, Kubernetes, PyTorch, LangChain, Bash, Pandas, Scikit-learn, SQL\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2017\n\nPROJECTS\n- Built a sentiment analysis API with FastAPI.\n- Image classifier with reasonable accuracy on a public dataset.\n- Created a movie recommendation system with collaborative filtering.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_062",
+    "label": "SYNTHETIC strong AI Engineer (junior)",
+    "text": "Vikram Agarwal\n\nvikram.agarwal62@example.com | +91 95655 43029 | linkedin.com/in/vikramagarwal\n\nSummary\nAI Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAI Engineer, CloudNine, 2023 - Present\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 20 percent\n- Presented model results to product teams and shaped the roadmap\n- Optimized model inference latency by 60 percent with batching and caching\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 15 percent\nSoftware Engineering Intern, TechNova, 2022 - 2023\n- Built an evaluation harness that caught 35 percent of regressions before release\n- Presented model results to product teams and shaped the roadmap\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 20 percent\n\nSKILLS\nPyTorch, Apache Spark, FastAPI, Bash, Python, NumPy, Pandas, LangChain, Scikit-learn, Hugging Face, AWS, Git, TensorFlow, SQL\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2023\n\nPROJECTS\n- Image classifier with reasonable accuracy on a public dataset.\n- Created a movie recommendation system with collaborative filtering.\n- Built a sentiment analysis API with FastAPI.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_063",
+    "label": "SYNTHETIC strong Machine Learning Engineer (fresher)",
+    "text": "Zaid Shetty\n\nzaid.shetty63@example.com | +91 66517 91006 | linkedin.com/in/zaidshetty\n\nSummary\nRecent computer science graduate with strong project experience in machine learning engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, BrightSoft, 2023 - 2025\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 40 percent\n- Created a LangChain agent prototype that answered support questions\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 35 percent\n- Built a recommendation model with PyTorch that increased click-through by 25 percent\nSoftware Engineering Intern, ZenithSoft, 2022 - 2023\n- Presented model results to product teams and shaped the roadmap\n- Built an evaluation harness that caught 45 percent of regressions before release\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 25 percent\n\nSKILLS\nAWS, Kubernetes, Flask, SQL, NumPy, Git, Hugging Face, LangChain, Bash, Pandas, FastAPI, Docker, TensorFlow, Apache Spark\n\nEDUCATION\nB.Tech Computer Science, Indian Institute of Technology Delhi, 2025\n\nPROJECTS\n- Created a movie recommendation system with collaborative filtering.\n- Image classifier with reasonable accuracy on a public dataset.\n- Built a sentiment analysis API with FastAPI.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_064",
+    "label": "SYNTHETIC average ML Engineer (junior)",
+    "text": "Tanvi Agarwal\n\ntanvi.agarwal64@example.com | +91 69452 26341\n\nSummary\nML Engineer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nML Engineer, DataWorks, 2023 - Present\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 40 percent\n- Optimized model inference latency by 15 percent with batching and caching\nML Engineer, PixelWorks, 2022 - 2023\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 45 percent\n- Optimized model inference latency by 35 percent with batching and caching\n\nSKILLS\nApache Spark, TensorFlow, Linux, Bash, Scikit-learn\n\nEDUCATION\nB.Sc Computer Science, Delhi University, 2021",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_065",
+    "label": "SYNTHETIC average AI Engineer (junior)",
+    "text": "Tanvi Iyer\n\ntanvi.iyer65@example.com | +91 66221 22987\n\nSummary\nAI Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAI Engineer, NexaTech, 2023 - Present\n- Built a recommendation model with PyTorch that increased click-through by 45 percent\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 20 percent\nAI Engineer, ZenithSoft, 2022 - 2023\n- Presented model results to product teams and shaped the roadmap\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 60 percent\n\nSKILLS\nPyTorch, Python, Docker, SQL, Apache Spark\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2023",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_066",
+    "label": "SYNTHETIC average Machine Learning Engineer (fresher)",
+    "text": "Abhishek Menon\n\nabhishek.menon66@example.com | +91 92821 47762\n\nSummary\nRecent computer science graduate with strong project experience in machine learning engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, DataSystems, 2024 - 2025\n- Optimized model inference latency by 60 percent with batching and caching\n- Created a LangChain agent prototype that answered support questions\n\nSKILLS\nPyTorch, Scikit-learn, Flask, Python, Git, Docker, Kubernetes, Hugging Face\n\nEDUCATION\nB.Com, Delhi University, 2024",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_067",
+    "label": "SYNTHETIC average AI Engineer (senior)",
+    "text": "Varun Das\n\nvarun.das67@example.com | +91 66780 41531\n\nSummary\nAI Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nAI Engineer, CloudNine, 2020 - Present\n- Created a LangChain agent prototype that answered support questions\n- Built a recommendation model with PyTorch that increased click-through by 50 percent\n\nSKILLS\nLinux, Flask, TensorFlow, LangChain, NumPy\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2015",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_068",
+    "label": "SYNTHETIC weak AI Engineer (junior)",
+    "text": "Suresh Nambiar\nsuresh.nambiar68@example.com\n\nEXPERIENCE\nAI Engineer, TechNova, 2024\n- Designed a feature pipeline.\n\nSKILLS\nGit, Pandas, TensorFlow",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_069",
+    "label": "SYNTHETIC weak Machine Learning Engineer (fresher)",
+    "text": "Shreya Kapoor\nshreya.kapoor69@example.com\n\nEXPERIENCE\nMachine Learning Engineer, DataSystems, 2024\n- Optimized model inference latency by 50 percent.\n\nSKILLS\nSQL, TensorFlow, LangChain, Hugging Face",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_070",
+    "label": "SYNTHETIC thin ML Engineer (fresher)",
+    "text": "Farhan Nair\nfarhan.nair70@example.com\nAspiring developer seeking opportunities.\nTensorFlow, Git",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_071",
+    "label": "SYNTHETIC gaming AI Engineer (junior)",
+    "text": "Pooja Gupta\npooja.gupta71@example.com | +91 88159 62431\n\nSKILLS\nPython, TensorFlow, SQL\n\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.\nTrained Python models with TensorFlow frameworks and SQL datasets for predictions.",
+    "expected_band": null
+  },
+  {
+    "id": "syn_072",
+    "label": "SYNTHETIC strong SDET (senior)",
+    "text": "Gaurav Trivedi\n\ngaurav.trivedi72@example.com | +91 96554 34486 | linkedin.com/in/gauravtrivedi\n\nSummary\nSDET with 8 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSDET, DataNest, 2019 - Present\n- Automated API testing with PyTest, covering 8 endpoints\n- Wrote JUnit tests that raised coverage from 60 percent to 20 percent\n- Created Cypress end-to-end tests for checkout flows used by 100000 users\n- Built Selenium test suites that caught 30 percent of regressions before release\nSDET, DataWorks, 2017 - 2019\n- Wrote JUnit tests that raised coverage from 35 percent to 30 percent\n- Built Selenium test suites that caught 30 percent of regressions before release\n- Filed and tracked 9 defects through triage to closure\n\nSKILLS\nJenkins, JavaScript, Linux, PyTest, Cypress, Docker, Python, JIRA, JUnit, CI/CD, Git, SQL, Jest, Bash\n\nEDUCATION\nB.Com, Delhi University, 2016\n\nPROJECTS\n- Wrote a bug-bash checklist adopted by the QA team.\n- Created a load-testing script with 10 virtual users.\n- Built a test automation framework for a demo web app.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_073",
+    "label": "SYNTHETIC strong QA Engineer (senior)",
+    "text": "Priya Mehta\n\npriya.mehta73@example.com | +91 91570 26545 | linkedin.com/in/priyamehta\n\nSummary\nQA Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nQA Engineer, SoftServe, 2019 - Present\n- Built Selenium test suites that caught 35 percent of regressions before release\n- Reduced manual regression time by 35 percent with automation\n- Automated API testing with PyTest, covering 9 endpoints\n- Created Cypress end-to-end tests for checkout flows used by 300 users\nQA Engineer, Northwind, 2017 - 2019\n- Designed a CI/CD quality gate that blocked 8 bad deploys a month\n- Reduced manual regression time by 35 percent with automation\n- Built a test data generator that unblocked 12 teams\n\nSKILLS\nPyTest, Java, Python, Linux, JavaScript, JIRA, Git, JUnit, CI/CD, Docker, SQL, Selenium\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2016\n\nPROJECTS\n- Built a test automation framework for a demo web app.\n- Created a load-testing script with 5 virtual users.\n- Wrote a bug-bash checklist adopted by the QA team.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_074",
+    "label": "SYNTHETIC strong Test Engineer (junior)",
+    "text": "Arjun Chopra\n\narjun.chopra74@example.com | +91 78292 21506 | linkedin.com/in/arjunchopra\n\nSummary\nTest Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nTest Engineer, AppWorks, 2023 - Present\n- Reduced manual regression time by 35 percent with automation\n- Designed a CI/CD quality gate that blocked 10 bad deploys a month\n- Automated API testing with PyTest, covering 5 endpoints\n- Wrote JUnit tests that raised coverage from 15 percent to 25 percent\nSoftware Engineering Intern, ZenithSoft, 2022 - 2023\n- Designed a CI/CD quality gate that blocked 2 bad deploys a month\n- Automated API testing with PyTest, covering 7 endpoints\n- Created Cypress end-to-end tests for checkout flows used by 100000 users\n\nSKILLS\nLinux, PyTest, Docker, Git, JavaScript, SQL, Java, Bash, Jest, Selenium, Cypress, JUnit, CI/CD, Jenkins\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2021\n\nPROJECTS\n- Wrote a bug-bash checklist adopted by the QA team.\n- Built a test automation framework for a demo web app.\n- Created a load-testing script with 7 virtual users.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_075",
+    "label": "SYNTHETIC strong Quality Assurance Engineer (fresher)",
+    "text": "Gaurav Chopra\n\ngaurav.chopra75@example.com | +91 83102 82260 | linkedin.com/in/gauravchopra\n\nSummary\nRecent computer science graduate with strong project experience in quality assurance engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, DataNest, 2023 - 2025\n- Automated API testing with PyTest, covering 4 endpoints\n- Reduced manual regression time by 20 percent with automation\n- Built a test data generator that unblocked 7 teams\n- Designed a CI/CD quality gate that blocked 5 bad deploys a month\nSoftware Engineering Intern, DataSystems, 2022 - 2023\n- Wrote JUnit tests that raised coverage from 15 percent to 30 percent\n- Reduced manual regression time by 25 percent with automation\n- Designed a CI/CD quality gate that blocked 12 bad deploys a month\n\nSKILLS\nGit, JavaScript, Bash, Jest, SQL, JIRA, Java, Jenkins, CI/CD, Docker, JUnit, Linux, Cypress, PyTest\n\nEDUCATION\nB.Tech Computer Science, NIT Trichy, 2024\n\nPROJECTS\n- Wrote a bug-bash checklist adopted by the QA team.\n- Created a load-testing script with 2 virtual users.\n- Built a test automation framework for a demo web app.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_076",
+    "label": "SYNTHETIC average QA Engineer (junior)",
+    "text": "Rohit Nair\n\nrohit.nair76@example.com | +91 77825 91016\n\nSummary\nQA Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nQA Engineer, AppWorks, 2023 - Present\n- Reduced manual regression time by 25 percent with automation\n- Created Cypress end-to-end tests for checkout flows used by 10000 users\nQA Engineer, InsightLabs, 2022 - 2023\n- Reduced manual regression time by 15 percent with automation\n- Created Cypress end-to-end tests for checkout flows used by 200 users\n\nSKILLS\nCI/CD, JUnit, PyTest, Jenkins, Selenium, Cypress\n\nEDUCATION\nMCA, IGNOU, 2021",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_077",
+    "label": "SYNTHETIC average Quality Assurance Engineer (junior)",
+    "text": "Imran Bhat\n\nimran.bhat77@example.com | +91 86658 62260\n\nSummary\nQuality Assurance Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nQuality Assurance Engineer, AppWorks, 2023 - Present\n- Wrote JUnit tests that raised coverage from 45 percent to 15 percent\n- Automated API testing with PyTest, covering 6 endpoints\nQuality Assurance Engineer, InnovateLabs, 2022 - 2023\n- Built a test data generator that unblocked 4 teams\n- Automated API testing with PyTest, covering 3 endpoints\n\nSKILLS\nSQL, JUnit, Jenkins, JIRA, CI/CD\n\nEDUCATION\nB.E. Information Technology, Pune University, 2021",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_078",
+    "label": "SYNTHETIC average SDET (fresher)",
+    "text": "Imran Kaur\n\nimran.kaur78@example.com | +91 84110 30885\n\nSummary\nRecent computer science graduate with strong project experience in sdet work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, CloudForge, 2024 - 2025\n- Built a test data generator that unblocked 3 teams\n- Built Selenium test suites that caught 40 percent of regressions before release\n\nSKILLS\nPyTest, Selenium, SQL, Cypress, Python, Linux, Jest, JIRA\n\nEDUCATION\nMCA, IGNOU, 2025",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_079",
+    "label": "SYNTHETIC average Quality Assurance Engineer (senior)",
+    "text": "Varun Agarwal\n\nvarun.agarwal79@example.com | +91 62761 66482\n\nSummary\nQuality Assurance Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nQuality Assurance Engineer, SoftServe, 2020 - Present\n- Wrote JUnit tests that raised coverage from 40 percent to 10 percent\n- Built Selenium test suites that caught 60 percent of regressions before release\n\nSKILLS\nLinux, Git, Jest, Java, JUnit, CI/CD\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2019",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_080",
+    "label": "SYNTHETIC weak SDET (junior)",
+    "text": "Pooja Shetty\npooja.shetty80@example.com\n\nEXPERIENCE\nSDET, DesignStudio, 2024\n- Built Selenium test suites.\n\nSKILLS\nLinux, Docker, JavaScript",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_081",
+    "label": "SYNTHETIC weak SDET (fresher)",
+    "text": "Aditya Kapoor\naditya.kapoor81@example.com\n\nEXPERIENCE\nSDET, ZenithSoft, 2024\n- Reduced manual regression time by 60 percent.\n\nSKILLS\nJest, Cypress, SQL, CI/CD, JavaScript",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_082",
+    "label": "SYNTHETIC thin QA Engineer (fresher)",
+    "text": "Lakshmi Menon\nlakshmi.menon82@example.com\nAspiring developer seeking opportunities.\nLinux, Cypress",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_083",
+    "label": "SYNTHETIC gaming SDET (junior)",
+    "text": "Ananya Das\nananya.das83@example.com | +91 81436 88238\n\nSKILLS\nPython, Selenium, SQL\n\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.\nTested Python applications with Selenium scripts and SQL checks for quality assurance.",
+    "expected_band": null
+  },
+  {
+    "id": "syn_084",
+    "label": "SYNTHETIC strong Site Reliability Engineer (senior)",
+    "text": "Manish Fernandez\n\nmanish.fernandez84@example.com | +91 71841 86483 | linkedin.com/in/manishfernandez\n\nSummary\nSite Reliability Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSite Reliability Engineer, NexaTech, 2019 - Present\n- Automated infrastructure with Terraform across 5 AWS accounts\n- Migrated 2 services to containers, reducing infrastructure costs by 45 percent\n- Created runbooks that cut onboarding time for on-call engineers\n- Built a GitLab CI template adopted by 7 teams\nSite Reliability Engineer, StartupXYZ, 2017 - 2019\n- Automated backups and disaster recovery drills for production databases\n- Built Kubernetes clusters that served 1000 users with 99.9 percent uptime\n- Implemented monitoring and alerting that resolved incidents 40 percent faster\n\nSKILLS\nPowerShell, Kubernetes, Python, AWS, GitLab, Azure, CI/CD, Terraform, Git, Jenkins, GitHub, Ansible, GitLab CI, Linux\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2016\n\nPROJECTS\n- Wrote a deployment dashboard for 11 services.\n- Created a Terraform module for static site hosting.\n- Built a home lab Kubernetes cluster with monitoring.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_085",
+    "label": "SYNTHETIC strong Site Reliability Engineer (senior)",
+    "text": "Sana Nair\n\nsana.nair85@example.com | +91 84684 49008 | linkedin.com/in/sananair\n\nSummary\nSite Reliability Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSite Reliability Engineer, DesignStudio, 2019 - Present\n- Created runbooks that cut onboarding time for on-call engineers\n- Migrated 6 services to containers, reducing infrastructure costs by 15 percent\n- Built a GitLab CI template adopted by 11 teams\n- Designed CI/CD pipelines that cut deploy time by 50 percent\nSite Reliability Engineer, CloudForge, 2017 - 2019\n- Automated backups and disaster recovery drills for production databases\n- Implemented monitoring and alerting that resolved incidents 20 percent faster\n- Designed CI/CD pipelines that cut deploy time by 30 percent\n\nSKILLS\nBash, AWS, Terraform, Git, Linux, GCP, GitHub, Azure, Ansible, Python\n\nEDUCATION\nMCA, IGNOU, 2019\n\nPROJECTS\n- Wrote a deployment dashboard for 3 services.\n- Created a Terraform module for static site hosting.\n- Built a home lab Kubernetes cluster with monitoring.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_086",
+    "label": "SYNTHETIC strong Platform Engineer (junior)",
+    "text": "Sana Iyer\n\nsana.iyer86@example.com | +91 69700 39579 | linkedin.com/in/sanaiyer\n\nSummary\nPlatform Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nPlatform Engineer, InnovateLabs, 2023 - Present\n- Created runbooks that cut onboarding time for on-call engineers\n- Built a GitLab CI template adopted by 12 teams\n- Implemented monitoring and alerting that resolved incidents 20 percent faster\n- Automated infrastructure with Terraform across 2 AWS accounts\nSoftware Engineering Intern, CodeCraft, 2022 - 2023\n- Designed CI/CD pipelines that cut deploy time by 45 percent\n- Implemented monitoring and alerting that resolved incidents 45 percent faster\n- Created runbooks that cut onboarding time for on-call engineers\n\nSKILLS\nBash, Linux, GCP, PowerShell, Docker, Kubernetes, GitHub, Ansible, Azure, CI/CD, Python\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2021\n\nPROJECTS\n- Created a Terraform module for static site hosting.\n- Built a home lab Kubernetes cluster with monitoring.\n- Wrote a deployment dashboard for 8 services.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_087",
+    "label": "SYNTHETIC strong Platform Engineer (fresher)",
+    "text": "Varun Trivedi\n\nvarun.trivedi87@example.com | +91 61151 49110 | linkedin.com/in/varuntrivedi\n\nSummary\nRecent computer science graduate with strong project experience in platform engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, InsightLabs, 2023 - 2025\n- Built a GitLab CI template adopted by 6 teams\n- Built Kubernetes clusters that served 1000 users with 99.9 percent uptime\n- Migrated 3 services to containers, reducing infrastructure costs by 35 percent\n- Implemented monitoring and alerting that resolved incidents 20 percent faster\nSoftware Engineering Intern, PixelWorks, 2022 - 2023\n- Built a GitLab CI template adopted by 4 teams\n- Created runbooks that cut onboarding time for on-call engineers\n- Designed CI/CD pipelines that cut deploy time by 10 percent\n\nSKILLS\nBash, Jenkins, AWS, Ansible, Linux, PowerShell, Python, GitLab, Terraform, Kubernetes, Azure, GitHub\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2024\n\nPROJECTS\n- Built a home lab Kubernetes cluster with monitoring.\n- Wrote a deployment dashboard for 9 services.\n- Created a Terraform module for static site hosting.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_088",
+    "label": "SYNTHETIC average Site Reliability Engineer (junior)",
+    "text": "Amit Iyer\n\namit.iyer88@example.com | +91 95374 53204\n\nSummary\nSite Reliability Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSite Reliability Engineer, TechNova, 2023 - Present\n- Migrated 7 services to containers, reducing infrastructure costs by 25 percent\n- Created runbooks that cut onboarding time for on-call engineers\nSite Reliability Engineer, TechCorp, 2022 - 2023\n- Automated infrastructure with Terraform across 3 AWS accounts\n- Created runbooks that cut onboarding time for on-call engineers\n\nSKILLS\nBash, Terraform, Jenkins, Linux, GitLab, Python, GCP, Kubernetes\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2022",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_089",
+    "label": "SYNTHETIC average Site Reliability Engineer (junior)",
+    "text": "Tanvi Pillai\n\ntanvi.pillai89@example.com | +91 74590 27507\n\nSummary\nSite Reliability Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSite Reliability Engineer, ZenithSoft, 2023 - Present\n- Automated backups and disaster recovery drills for production databases\n- Created runbooks that cut onboarding time for on-call engineers\nSite Reliability Engineer, SoftServe, 2022 - 2023\n- Built a GitLab CI template adopted by 10 teams\n- Automated backups and disaster recovery drills for production databases\n\nSKILLS\nGit, AWS, GitLab, Ansible, GitLab CI, Python\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2021",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_090",
+    "label": "SYNTHETIC average DevOps Engineer (fresher)",
+    "text": "Sneha Shetty\n\nsneha.shetty90@example.com | +91 79792 29641\n\nSummary\nRecent computer science graduate with strong project experience in devops engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, PixelWorks, 2024 - 2025\n- Implemented monitoring and alerting that resolved incidents 60 percent faster\n- Created runbooks that cut onboarding time for on-call engineers\n\nSKILLS\nAWS, GitLab CI, CI/CD, Docker, Git, Ansible, GitLab, Jenkins\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2024",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_091",
+    "label": "SYNTHETIC average DevOps Engineer (senior)",
+    "text": "Nisha Malhotra\n\nnisha.malhotra91@example.com | +91 67487 43352\n\nSummary\nDevOps Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nDevOps Engineer, TechNova, 2020 - Present\n- Automated infrastructure with Terraform across 7 AWS accounts\n- Implemented monitoring and alerting that resolved incidents 15 percent faster\n\nSKILLS\nAWS, PowerShell, Docker, GCP, Jenkins\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2016",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_092",
+    "label": "SYNTHETIC weak Site Reliability Engineer (junior)",
+    "text": "Harsh Joshi\nharsh.joshi92@example.com\n\nEXPERIENCE\nSite Reliability Engineer, AppWorks, 2024\n- Designed CI/CD pipelines.\n\nSKILLS\nGCP, Python, Kubernetes",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_093",
+    "label": "SYNTHETIC weak Site Reliability Engineer (fresher)",
+    "text": "Rahul Shetty\nrahul.shetty93@example.com\n\nEXPERIENCE\nSite Reliability Engineer, AppWorks, 2024\n- Built Kubernetes clusters.\n\nSKILLS\nGit, Ansible, PowerShell, Terraform",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_094",
+    "label": "SYNTHETIC thin DevOps Engineer (fresher)",
+    "text": "ROHAN  NAMBIAR\nrohan.nambiar94@example.com\nAspiring developer seeking opportunities.\nAWS, Azure",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_095",
+    "label": "SYNTHETIC gaming Platform Engineer (junior)",
+    "text": "Abhishek Patel\nabhishek.patel95@example.com | +91 91797 42077\n\nSKILLS\nDocker, Kubernetes, AWS\n\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.\nDeployed Docker containers with Kubernetes clusters and AWS services for cloud infrastructure.",
+    "expected_band": null
+  },
+  {
+    "id": "syn_096",
+    "label": "SYNTHETIC strong Android Developer (senior)",
+    "text": "Rohan Rao\n\nrohan.rao96@example.com | +91 94839 80747 | linkedin.com/in/rohanrao\n\nSummary\nAndroid Developer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nAndroid Developer, DataNest, 2019 - Present\n- Implemented offline sync with Firebase that worked without connectivity\n- Redesigned onboarding that improved activation by 35 percent\n- Integrated GraphQL APIs for real-time features\n- Optimized app startup time by 60 percent\nAndroid Developer, InsightLabs, 2017 - 2019\n- Integrated GraphQL APIs for real-time features\n- Developed an iOS app with Swift that reached a 20 rating on the App Store\n- Created a Flutter app that shipped on Android and iOS from one codebase\n\nSKILLS\nAndroid Development, Git, iOS Development, Dart, Kotlin, Flutter, Java, SQLite, GraphQL, Firebase, SQL, Swift, Figma\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2017\n\nPROJECTS\n- Published a habit-tracking app on the Play Store.\n- Created a fitness tracker with offline support.\n- Built a campus event app with Flutter used by 10000 students.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_097",
+    "label": "SYNTHETIC strong iOS Developer (senior)",
+    "text": "Amit Reddy\n\namit.reddy97@example.com | +91 94948 39536 | linkedin.com/in/amitreddy\n\nSummary\niOS Developer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\niOS Developer, DataSystems, 2019 - Present\n- Redesigned onboarding that improved activation by 20 percent\n- Implemented offline sync with Firebase that worked without connectivity\n- Optimized app startup time by 40 percent\n- Integrated GraphQL APIs for real-time features\niOS Developer, AppWorks, 2017 - 2019\n- Implemented offline sync with Firebase that worked without connectivity\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Developed an iOS app with Swift that reached a 35 rating on the App Store\n\nSKILLS\nFigma, Java, Swift, SQL, Android Development, Kotlin, Flutter, Firebase, iOS Development, GraphQL\n\nEDUCATION\nB.E. Information Technology, Pune University, 2017\n\nPROJECTS\n- Built a campus event app with Flutter used by 50000 students.\n- Published a habit-tracking app on the Play Store.\n- Created a fitness tracker with offline support.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_098",
+    "label": "SYNTHETIC strong Mobile Developer (junior)",
+    "text": "Nisha Kaur\n\nnisha.kaur98@example.com | +91 64470 34906 | linkedin.com/in/nishakaur\n\nSummary\nMobile Developer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nMobile Developer, ZenithSoft, 2023 - Present\n- Redesigned onboarding that improved activation by 30 percent\n- Developed an iOS app with Swift that reached a 40 rating on the App Store\n- Optimized app startup time by 45 percent\n- Created a Flutter app that shipped on Android and iOS from one codebase\nSoftware Engineering Intern, WebScale, 2022 - 2023\n- Integrated GraphQL APIs for real-time features\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Redesigned onboarding that improved activation by 35 percent\n\nSKILLS\nFigma, GraphQL, Swift, SQLite, Java, Android Development, Flutter, Git, Firebase, Kotlin, SQL, iOS Development, Dart\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2021\n\nPROJECTS\n- Built a campus event app with Flutter used by 2000 students.\n- Created a fitness tracker with offline support.\n- Published a habit-tracking app on the Play Store.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_099",
+    "label": "SYNTHETIC strong iOS Developer (fresher)",
+    "text": "Lakshmi Iyer\n\nlakshmi.iyer99@example.com | +91 95026 75444 | linkedin.com/in/lakshmiiyer\n\nSummary\nRecent computer science graduate with strong project experience in ios developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, CloudForge, 2023 - 2025\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Integrated GraphQL APIs for real-time features\n- Set up CI/CD for mobile builds that cut release time by 20 percent\n- Developed an iOS app with Swift that reached a 50 rating on the App Store\nSoftware Engineering Intern, PixelWorks, 2022 - 2023\n- Set up CI/CD for mobile builds that cut release time by 10 percent\n- Developed an iOS app with Swift that reached a 50 rating on the App Store\n- Optimized app startup time by 10 percent\n\nSKILLS\nDart, Kotlin, SQLite, Git, Flutter, Android Development, GraphQL, Java, Swift, Firebase\n\nEDUCATION\nMCA, IGNOU, 2025\n\nPROJECTS\n- Built a campus event app with Flutter used by 200 students.\n- Created a fitness tracker with offline support.\n- Published a habit-tracking app on the Play Store.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_100",
+    "label": "SYNTHETIC average Flutter Developer (junior)",
+    "text": "Anika Sharma\n\nanika.sharma100@example.com | +91 69719 82305\n\nSummary\nFlutter Developer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nFlutter Developer, DataNest, 2023 - Present\n- Optimized app startup time by 50 percent\n- Built an Android app with Kotlin downloaded by 10000 users\nFlutter Developer, DataWorks, 2022 - 2023\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Built an Android app with Kotlin downloaded by 300 users\n\nSKILLS\nAndroid Development, GraphQL, Firebase, SQL, iOS Development, Java\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2022",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_101",
+    "label": "SYNTHETIC average Android Developer (junior)",
+    "text": "Kavya Joshi\n\nkavya.joshi101@example.com | +91 98520 84055\n\nSummary\nAndroid Developer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAndroid Developer, InsightLabs, 2023 - Present\n- Built an Android app with Kotlin downloaded by 10000 users\n- Set up CI/CD for mobile builds that cut release time by 40 percent\nAndroid Developer, CloudNine, 2022 - 2023\n- Redesigned onboarding that improved activation by 45 percent\n- Optimized app startup time by 10 percent\n\nSKILLS\nSQLite, Flutter, Swift, Figma, Git\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2022",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_102",
+    "label": "SYNTHETIC average Android Developer (fresher)",
+    "text": "Rohit Bhat\n\nrohit.bhat102@example.com | +91 69653 15577\n\nSummary\nRecent computer science graduate with strong project experience in android developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, TechNova, 2024 - 2025\n- Optimized app startup time by 15 percent\n- Built an Android app with Kotlin downloaded by 2000 users\n\nSKILLS\nFlutter, Java, Kotlin, Android Development, GraphQL\n\nEDUCATION\nB.Com, Delhi University, 2025",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_103",
+    "label": "SYNTHETIC average Flutter Developer (senior)",
+    "text": "Arjun Verma\n\narjun.verma103@example.com | +91 74939 84277\n\nSummary\nFlutter Developer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nFlutter Developer, DesignStudio, 2020 - Present\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Redesigned onboarding that improved activation by 15 percent\n\nSKILLS\nKotlin, Swift, Git, Android Development, SQLite, Java, iOS Development\n\nEDUCATION\nMCA, IGNOU, 2019",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_104",
+    "label": "SYNTHETIC weak iOS Developer (junior)",
+    "text": "Ritu Chatterjee\n\nEXPERIENCE\niOS Developer, CloudForge, 2024\n- Redesigned onboarding.\n\nSKILLS\nAndroid Development, Java, SQL",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_105",
+    "label": "SYNTHETIC weak Mobile Developer (fresher)",
+    "text": "Kavya Chatterjee\nkavya.chatterjee105@example.com\n\nEXPERIENCE\nMobile Developer, NexaTech, 2024\n- Built an Android app.\n\nSKILLS\nSQLite, Dart, Flutter, Git",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_106",
+    "label": "SYNTHETIC thin Android Developer (fresher)",
+    "text": "Nisha Chopra\nnisha.chopra106@example.com\nAspiring developer seeking opportunities.\nSwift, Flutter",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_107",
+    "label": "SYNTHETIC gaming Mobile Developer (junior)",
+    "text": "Neha Chopra\nneha.chopra107@example.com | +91 92692 13442\n\nSKILLS\nFlutter, Dart, Firebase\n\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.\nBuilt Flutter apps with Dart code and Firebase backends for mobile users.",
+    "expected_band": null
+  },
+  {
+    "id": "syn_108",
+    "label": "SYNTHETIC strong Software Engineer (senior)",
+    "text": "Suresh Agarwal\n\nsuresh.agarwal108@example.com | +91 66315 60493 | linkedin.com/in/sureshagarwal\n\nSummary\nSoftware Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSoftware Engineer, Northwind, 2019 - Present\n- Developed a dashboard feature in React that displayed sales data\n- Fixed frontend bugs and wrote documentation for a component library\n- Created a REST API with Flask for a college project\n- Implemented a pathfinding visualizer in JavaScript\nSoftware Engineer, CloudNine, 2017 - 2019\n- Created a REST API with Flask for a college project\n- Implemented a pathfinding visualizer in JavaScript\n- Contributed to an open-source project by fixing 6 issues\n\nSKILLS\nGit, CSS, JavaScript, Java, C, HTML, TypeScript, Django, Flask, SQL, Python, C++\n\nEDUCATION\nMCA, IGNOU, 2016\n\nPROJECTS\n- Task manager app with authentication and reminders.\n- E-commerce clone with React and Flask, demoed to 300000 users.\n- Chat application with real-time messaging using websockets.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_109",
+    "label": "SYNTHETIC strong Junior Developer (senior)",
+    "text": "Shreya Gupta\n\nshreya.gupta109@example.com | +91 75991 10887 | linkedin.com/in/shreyagupta\n\nSummary\nJunior Developer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nJunior Developer, DesignStudio, 2019 - Present\n- Built a library management web app used by 500 students\n- Developed a dashboard feature in React that displayed sales data\n- Contributed to an open-source project by fixing 6 issues\n- Fixed frontend bugs and wrote documentation for a component library\nJunior Developer, PixelWorks, 2017 - 2019\n- Built a library management web app used by 1000 students\n- Fixed frontend bugs and wrote documentation for a component library\n- Contributed to an open-source project by fixing 9 issues\n\nSKILLS\nJavaScript, HTML, React, Git, Flask, CSS, SQL, C, Node.js, TypeScript, C++, Django\n\nEDUCATION\nB.Sc Statistics, University of Mumbai, 2016\n\nPROJECTS\n- E-commerce clone with React and Flask, demoed to 300000 users.\n- Task manager app with authentication and reminders.\n- Data analysis project on public datasets with charts.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_110",
+    "label": "SYNTHETIC strong Junior Developer (junior)",
+    "text": "Kiran Sharma\n\nkiran.sharma110@example.com | +91 94434 67469 | linkedin.com/in/kiransharma\n\nSummary\nJunior Developer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nJunior Developer, CloudForge, 2023 - Present\n- Fixed frontend bugs and wrote documentation for a component library\n- Implemented a pathfinding visualizer in JavaScript\n- Created a machine learning mini project that classified images\n- Created a REST API with Flask for a college project\nSoftware Engineering Intern, NexaTech, 2022 - 2023\n- Created a REST API with Flask for a college project\n- Contributed to an open-source project by fixing 3 issues\n- Developed a dashboard feature in React that displayed sales data\n\nSKILLS\nDjango, CSS, TypeScript, HTML, Node.js, Flask, MongoDB, Python, C, JavaScript, Git, C++, SQL\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2023\n\nPROJECTS\n- Chat application with real-time messaging using websockets.\n- Task manager app with authentication and reminders.\n- Data analysis project on public datasets with charts.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_111",
+    "label": "SYNTHETIC strong Software Engineer (fresher)",
+    "text": "Tara Patel\n\ntara.patel111@example.com | +91 96432 66420 | linkedin.com/in/tarapatel\n\nSummary\nRecent computer science graduate with strong project experience in software engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, DataWorks, 2023 - 2025\n- Developed a dashboard feature in React that displayed sales data\n- Contributed to an open-source project by fixing 9 issues\n- Created a machine learning mini project that classified images\n- Created a REST API with Flask for a college project\nSoftware Engineering Intern, StartupXYZ, 2022 - 2023\n- Created a machine learning mini project that classified images\n- Contributed to an open-source project by fixing 9 issues\n- Built a campus event app with Flask and SQLite used by 300 students\n\nSKILLS\nHTML, Java, C++, MongoDB, JavaScript, React, Git, Django, SQL, C, Node.js, TypeScript\n\nEDUCATION\nB.Com, Delhi University, 2025\n\nPROJECTS\n- Task manager app with authentication and reminders.\n- Chat application with real-time messaging using websockets.\n- E-commerce clone with React and Flask, demoed to 50000 users.",
+    "expected_band": "strong"
+  },
+  {
+    "id": "syn_112",
+    "label": "SYNTHETIC average Software Engineer (junior)",
+    "text": "Imran Singh\n\nimran.singh112@example.com | +91 81732 25084\n\nSummary\nSoftware Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSoftware Engineer, InnovateLabs, 2023 - Present\n- Developed a dashboard feature in React that displayed sales data\n- Fixed frontend bugs and wrote documentation for a component library\nSoftware Engineer, BrightSoft, 2022 - 2023\n- Created a machine learning mini project that classified images\n- Fixed frontend bugs and wrote documentation for a component library\n\nSKILLS\nReact, Node.js, HTML, CSS, SQL, C\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2021",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_113",
+    "label": "SYNTHETIC average Associate Software Engineer (junior)",
+    "text": "Isha Fernandez\n\nisha.fernandez113@example.com | +91 97481 13826\n\nSummary\nAssociate Software Engineer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAssociate Software Engineer, PixelWorks, 2023 - Present\n- Created a REST API with Flask for a college project\n- Developed a dashboard feature in React that displayed sales data\nAssociate Software Engineer, TechNova, 2022 - 2023\n- Built a campus event app with Flask and SQLite used by 1000 students\n- Built a library management web app used by 1000 students\n\nSKILLS\nC, MongoDB, TypeScript, Java, Django, C++, Node.js\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2022",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_114",
+    "label": "SYNTHETIC average Associate Software Engineer (fresher)",
+    "text": "Imran Khan\n\nimran.khan114@example.com | +91 92867 44387\n\nSummary\nRecent computer science graduate with strong project experience in associate software engineer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, DesignStudio, 2024 - 2025\n- Created a REST API with Flask for a college project\n- Fixed frontend bugs and wrote documentation for a component library\n\nSKILLS\nReact, TypeScript, CSS, Django, JavaScript\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2025",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_115",
+    "label": "SYNTHETIC average Software Engineer (senior)",
+    "text": "Tara Saxena\n\ntara.saxena115@example.com | +91 63194 51049\n\nSummary\nSoftware Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSoftware Engineer, InnovateLabs, 2020 - Present\n- Built a library management web app used by 500 students\n- Contributed to an open-source project by fixing 10 issues\n\nSKILLS\nHTML, Django, JavaScript, C++, TypeScript, Flask, C, CSS\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2019",
+    "expected_band": "average"
+  },
+  {
+    "id": "syn_116",
+    "label": "SYNTHETIC weak Software Engineer (junior)",
+    "text": "Isha Agarwal\nisha.agarwal116@example.com\n\nEXPERIENCE\nSoftware Engineer, DesignStudio, 2024\n- Built a campus event app.\n\nSKILLS\nC++, CSS, Django",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_117",
+    "label": "SYNTHETIC weak Junior Developer (fresher)",
+    "text": "Karan Shetty\nkaran.shetty117@example.com\n\nEXPERIENCE\nJunior Developer, CloudForge, 2024\n- Developed a dashboard feature in React.\n\nSKILLS\nMongoDB, C++, CSS, C",
+    "expected_band": "weak"
+  },
+  {
+    "id": "syn_118",
+    "label": "SYNTHETIC thin Associate Software Engineer (fresher)",
+    "text": "Pooja Iyer\npooja.iyer118@example.com\nAspiring developer seeking opportunities.\nMongoDB, C",
+    "expected_band": "thin"
+  },
+  {
+    "id": "syn_119",
+    "label": "SYNTHETIC gaming Junior Developer (junior)",
+    "text": "Dev Gupta\ndev.gupta119@example.com | +91 65389 81186\n\nSKILLS\nPython, SQL, Git\n\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.\nDeveloped Python projects with SQL databases and Git version control for learning.",
+    "expected_band": null
+  }
+]

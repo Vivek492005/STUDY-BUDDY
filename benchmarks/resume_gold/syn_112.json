@@ -1,0 +1,23 @@
+{
+  "id": "syn_112",
+  "text": "Imran Singh\n\nimran.singh112@example.com | +91 81732 25084\n\nSummary\nSoftware Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nSoftware Engineer, InnovateLabs, 2023 - Present\n- Developed a dashboard feature in React that displayed sales data\n- Fixed frontend bugs and wrote documentation for a component library\nSoftware Engineer, BrightSoft, 2022 - 2023\n- Created a machine learning mini project that classified images\n- Fixed frontend bugs and wrote documentation for a component library\n\nSKILLS\nReact, Node.js, HTML, CSS, SQL, C\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2021",
+  "labels": {
+    "name": "Imran Singh",
+    "email": "imran.singh112@example.com",
+    "phone": "+91 81732 25084",
+    "skills": [
+      "React",
+      "Node.js",
+      "HTML",
+      "CSS",
+      "SQL",
+      "C"
+    ],
+    "role": "Software Engineer",
+    "role_key": "fresher"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "average"
+}

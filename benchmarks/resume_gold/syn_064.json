@@ -1,0 +1,22 @@
+{
+  "id": "syn_064",
+  "text": "Tanvi Agarwal\n\ntanvi.agarwal64@example.com | +91 69452 26341\n\nSummary\nML Engineer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nML Engineer, DataWorks, 2023 - Present\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 40 percent\n- Optimized model inference latency by 15 percent with batching and caching\nML Engineer, PixelWorks, 2022 - 2023\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 45 percent\n- Optimized model inference latency by 35 percent with batching and caching\n\nSKILLS\nApache Spark, TensorFlow, Linux, Bash, Scikit-learn\n\nEDUCATION\nB.Sc Computer Science, Delhi University, 2021",
+  "labels": {
+    "name": "Tanvi Agarwal",
+    "email": "tanvi.agarwal64@example.com",
+    "phone": "+91 69452 26341",
+    "skills": [
+      "Apache Spark",
+      "TensorFlow",
+      "Linux",
+      "Bash",
+      "Scikit-learn"
+    ],
+    "role": "ML Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "average"
+}

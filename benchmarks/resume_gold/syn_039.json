@@ -1,0 +1,29 @@
+{
+  "id": "syn_039",
+  "text": "Zaid Rao\n\nzaid.rao39@example.com | +91 88994 80912 | linkedin.com/in/zaidrao\n\nSummary\nRecent computer science graduate with strong project experience in data analyst work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, InsightLabs, 2023 - 2025\n- Analyzed sales data with SQL and presented findings that increased campaign performance by 45 percent\n- Designed PostgreSQL queries that cut dashboard load time by 20 percent\n- Created Tableau dashboards and Power BI reports used by 6 business teams\n- Presented insights to leadership that shaped pricing decisions\nSoftware Engineering Intern, StartupXYZ, 2022 - 2023\n- Created Tableau dashboards and Power BI reports used by 2 business teams\n- Built a churn analysis that identified 30 percent of at-risk customers\n- Built automated Excel reports that saved analysts 7 hours every week\n\nSKILLS\nLinux, Excel, Tableau, Bash, MySQL, Apache Spark, Pandas, Hadoop, Scala, SQL, Power BI, NumPy\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2024\n\nPROJECTS\n- Created a KPI tracker for a student club with 300000 members.\n- Data analysis project on public datasets with charts and a written report.\n- Built a sales forecasting dashboard for a retail dataset.",
+  "labels": {
+    "name": "Zaid Rao",
+    "email": "zaid.rao39@example.com",
+    "phone": "+91 88994 80912",
+    "skills": [
+      "Linux",
+      "Excel",
+      "Tableau",
+      "Bash",
+      "MySQL",
+      "Apache Spark",
+      "Pandas",
+      "Hadoop",
+      "Scala",
+      "SQL",
+      "Power BI",
+      "NumPy"
+    ],
+    "role": "Data Analyst",
+    "role_key": "data-analyst"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
+}

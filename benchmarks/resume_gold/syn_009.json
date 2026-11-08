@@ -1,19 +1,21 @@
 {
   "id": "syn_009",
-  "text": "Priya Singh\npriya.singh9@example.com | +91 9894214382 | linkedin.com/in/priyasingh\n\nPROFESSIONAL SUMMARY\nData Analyst with 1 years of experience building scalable applications.\n\nSKILLS\nNode.js, JavaScript, AWS, MongoDB, Git, Machine Learning, React\n\nEXPERIENCE\nData Analyst \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Sneha Menon\nsneha.menon9@example.com\n\nEXPERIENCE\nBackend Engineer, StartupXYZ, 2024\n- Optimized slow SQL queries and improved checkout throughput by 30 percent.\n\nSKILLS\nFlask, Linux, MongoDB, Java",
   "labels": {
-    "name": "Priya Singh",
-    "email": "priya.singh9@example.com",
-    "phone": "+91 9894214382",
+    "name": "Sneha Menon",
+    "email": "sneha.menon9@example.com",
+    "phone": "",
     "skills": [
-      "Node.js",
-      "JavaScript",
-      "AWS",
+      "Flask",
+      "Linux",
       "MongoDB",
-      "Git",
-      "Machine Learning",
-      "React"
+      "Java"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Backend Engineer",
+    "role_key": "backend"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
 }

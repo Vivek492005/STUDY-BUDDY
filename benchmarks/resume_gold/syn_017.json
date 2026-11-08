@@ -1,16 +1,25 @@
 {
   "id": "syn_017",
-  "text": "Vikram Khan\nvikram.khan17@example.com | +91 9872682989 | linkedin.com/in/vikramkhan\n\nPROFESSIONAL SUMMARY\nSoftware Engineer with 2 years of experience building scalable applications.\n\nSKILLS\nPython, AWS, Docker, JavaScript\n\nEXPERIENCE\nSoftware Engineer \u2014 DataSystems (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Varun Menon\n\nvarun.menon17@example.com | +91 82530 40784\n\nSummary\nUI Engineer with 1 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nUI Engineer, WebScale, 2023 - Present\n- Built a React and TypeScript component library adopted by 5 product teams\n- Built marketing sites with Vue and Angular for retail clients\nUI Engineer, NexaTech, 2022 - 2023\n- Built marketing sites with Vue and Angular for retail clients\n- Led accessibility improvements that resolved 3 audit issues\n\nSKILLS\nGraphQL, CSS, Cypress, Next.js, Svelte, Tailwind CSS, Node.js, Angular\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2023",
   "labels": {
-    "name": "Vikram Khan",
-    "email": "vikram.khan17@example.com",
-    "phone": "+91 9872682989",
+    "name": "Varun Menon",
+    "email": "varun.menon17@example.com",
+    "phone": "+91 82530 40784",
     "skills": [
-      "Python",
-      "AWS",
-      "Docker",
-      "JavaScript"
+      "GraphQL",
+      "CSS",
+      "Cypress",
+      "Next.js",
+      "Svelte",
+      "Tailwind CSS",
+      "Node.js",
+      "Angular"
     ],
-    "role": "Software Engineer"
-  }
+    "role": "UI Engineer",
+    "role_key": "frontend"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 1,
+  "expected_band": "average"
 }

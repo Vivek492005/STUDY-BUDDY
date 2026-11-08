@@ -1,0 +1,23 @@
+{
+  "id": "syn_076",
+  "text": "Rohit Nair\n\nrohit.nair76@example.com | +91 77825 91016\n\nSummary\nQA Engineer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nQA Engineer, AppWorks, 2023 - Present\n- Reduced manual regression time by 25 percent with automation\n- Created Cypress end-to-end tests for checkout flows used by 10000 users\nQA Engineer, InsightLabs, 2022 - 2023\n- Reduced manual regression time by 15 percent with automation\n- Created Cypress end-to-end tests for checkout flows used by 200 users\n\nSKILLS\nCI/CD, JUnit, PyTest, Jenkins, Selenium, Cypress\n\nEDUCATION\nMCA, IGNOU, 2021",
+  "labels": {
+    "name": "Rohit Nair",
+    "email": "rohit.nair76@example.com",
+    "phone": "+91 77825 91016",
+    "skills": [
+      "CI/CD",
+      "JUnit",
+      "PyTest",
+      "Jenkins",
+      "Selenium",
+      "Cypress"
+    ],
+    "role": "QA Engineer",
+    "role_key": "qa"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "average"
+}

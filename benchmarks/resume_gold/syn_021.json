@@ -1,17 +1,21 @@
 {
   "id": "syn_021",
-  "text": "Aarav Sharma\naarav.sharma21@example.com | +91 9888406989 | linkedin.com/in/aaravsharma\n\nPROFESSIONAL SUMMARY\nBackend Developer with 2 years of experience building scalable applications.\n\nSKILLS\nPython, Java, JavaScript, React, Node.js\n\nEXPERIENCE\nBackend Developer \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Harsh Rao\nharsh.rao21@example.com\n\nEXPERIENCE\nFrontend Developer, InsightLabs, 2024\n- Created Figma-to-code workflows.\n\nSKILLS\nGraphQL, Tailwind CSS, Svelte, Angular",
   "labels": {
-    "name": "Aarav Sharma",
-    "email": "aarav.sharma21@example.com",
-    "phone": "+91 9888406989",
+    "name": "Harsh Rao",
+    "email": "harsh.rao21@example.com",
+    "phone": "",
     "skills": [
-      "Python",
-      "Java",
-      "JavaScript",
-      "React",
-      "Node.js"
+      "GraphQL",
+      "Tailwind CSS",
+      "Svelte",
+      "Angular"
     ],
-    "role": "Backend Developer"
-  }
+    "role": "Frontend Developer",
+    "role_key": "frontend"
+  },
+  "quality": "weak",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "weak"
 }

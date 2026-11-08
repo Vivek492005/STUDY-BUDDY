@@ -1,0 +1,30 @@
+{
+  "id": "syn_110",
+  "text": "Kiran Sharma\n\nkiran.sharma110@example.com | +91 94434 67469 | linkedin.com/in/kiransharma\n\nSummary\nJunior Developer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nJunior Developer, CloudForge, 2023 - Present\n- Fixed frontend bugs and wrote documentation for a component library\n- Implemented a pathfinding visualizer in JavaScript\n- Created a machine learning mini project that classified images\n- Created a REST API with Flask for a college project\nSoftware Engineering Intern, NexaTech, 2022 - 2023\n- Created a REST API with Flask for a college project\n- Contributed to an open-source project by fixing 3 issues\n- Developed a dashboard feature in React that displayed sales data\n\nSKILLS\nDjango, CSS, TypeScript, HTML, Node.js, Flask, MongoDB, Python, C, JavaScript, Git, C++, SQL\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2023\n\nPROJECTS\n- Chat application with real-time messaging using websockets.\n- Task manager app with authentication and reminders.\n- Data analysis project on public datasets with charts.",
+  "labels": {
+    "name": "Kiran Sharma",
+    "email": "kiran.sharma110@example.com",
+    "phone": "+91 94434 67469",
+    "skills": [
+      "Django",
+      "CSS",
+      "TypeScript",
+      "HTML",
+      "Node.js",
+      "Flask",
+      "MongoDB",
+      "Python",
+      "C",
+      "JavaScript",
+      "Git",
+      "C++",
+      "SQL"
+    ],
+    "role": "Junior Developer",
+    "role_key": "fresher"
+  },
+  "quality": "strong",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "strong"
+}

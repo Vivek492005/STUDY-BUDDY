@@ -1,0 +1,22 @@
+{
+  "id": "syn_065",
+  "text": "Tanvi Iyer\n\ntanvi.iyer65@example.com | +91 66221 22987\n\nSummary\nAI Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAI Engineer, NexaTech, 2023 - Present\n- Built a recommendation model with PyTorch that increased click-through by 45 percent\n- Designed a feature pipeline with Pandas and Spark that cut training data prep by 20 percent\nAI Engineer, ZenithSoft, 2022 - 2023\n- Presented model results to product teams and shaped the roadmap\n- Fine-tuned a Hugging Face model that improved extraction accuracy by 60 percent\n\nSKILLS\nPyTorch, Python, Docker, SQL, Apache Spark\n\nEDUCATION\nB.Tech Computer Science, VIT Vellore, 2023",
+  "labels": {
+    "name": "Tanvi Iyer",
+    "email": "tanvi.iyer65@example.com",
+    "phone": "+91 66221 22987",
+    "skills": [
+      "PyTorch",
+      "Python",
+      "Docker",
+      "SQL",
+      "Apache Spark"
+    ],
+    "role": "AI Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "average"
+}

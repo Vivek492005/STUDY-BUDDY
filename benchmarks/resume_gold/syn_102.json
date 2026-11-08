@@ -1,0 +1,22 @@
+{
+  "id": "syn_102",
+  "text": "Rohit Bhat\n\nrohit.bhat102@example.com | +91 69653 15577\n\nSummary\nRecent computer science graduate with strong project experience in android developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, TechNova, 2024 - 2025\n- Optimized app startup time by 15 percent\n- Built an Android app with Kotlin downloaded by 2000 users\n\nSKILLS\nFlutter, Java, Kotlin, Android Development, GraphQL\n\nEDUCATION\nB.Com, Delhi University, 2025",
+  "labels": {
+    "name": "Rohit Bhat",
+    "email": "rohit.bhat102@example.com",
+    "phone": "+91 69653 15577",
+    "skills": [
+      "Flutter",
+      "Java",
+      "Kotlin",
+      "Android Development",
+      "GraphQL"
+    ],
+    "role": "Android Developer",
+    "role_key": "mobile"
+  },
+  "quality": "average",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "average"
+}

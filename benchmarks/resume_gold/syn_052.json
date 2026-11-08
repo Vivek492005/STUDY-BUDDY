@@ -1,0 +1,22 @@
+{
+  "id": "syn_052",
+  "text": "Rahul Bhat\n\nrahul.bhat52@example.com | +91 66736 82910\n\nSummary\nBig Data Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nBig Data Engineer, TechNova, 2023 - Present\n- Created monitoring for pipeline health that alerted teams within minutes\n- Mentored 10 analysts on SQL best practices\nBig Data Engineer, StartupXYZ, 2022 - 2023\n- Built batch and streaming pipelines in Python processing data for 2000 users daily\n- Managed a migration from MySQL to PostgreSQL that improved query speed\n\nSKILLS\nHadoop, Apache Spark, Git, Scala, Linux\n\nEDUCATION\nB.Sc Computer Science, University of Mumbai, 2022",
+  "labels": {
+    "name": "Rahul Bhat",
+    "email": "rahul.bhat52@example.com",
+    "phone": "+91 66736 82910",
+    "skills": [
+      "Hadoop",
+      "Apache Spark",
+      "Git",
+      "Scala",
+      "Linux"
+    ],
+    "role": "Big Data Engineer",
+    "role_key": "data-engineer"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "average"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "syn_067",
+  "text": "Varun Das\n\nvarun.das67@example.com | +91 66780 41531\n\nSummary\nAI Engineer with 6 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nAI Engineer, CloudNine, 2020 - Present\n- Created a LangChain agent prototype that answered support questions\n- Built a recommendation model with PyTorch that increased click-through by 50 percent\n\nSKILLS\nLinux, Flask, TensorFlow, LangChain, NumPy\n\nEDUCATION\nB.E. Computer Engineering, Mumbai University, 2015",
+  "labels": {
+    "name": "Varun Das",
+    "email": "varun.das67@example.com",
+    "phone": "+91 66780 41531",
+    "skills": [
+      "Linux",
+      "Flask",
+      "TensorFlow",
+      "LangChain",
+      "NumPy"
+    ],
+    "role": "AI Engineer",
+    "role_key": "ml-engineer"
+  },
+  "quality": "average",
+  "level": "senior",
+  "experience_years": 6,
+  "expected_band": "average"
+}

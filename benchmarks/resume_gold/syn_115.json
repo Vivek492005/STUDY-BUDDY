@@ -1,0 +1,25 @@
+{
+  "id": "syn_115",
+  "text": "Tara Saxena\n\ntara.saxena115@example.com | +91 63194 51049\n\nSummary\nSoftware Engineer with 5 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nSoftware Engineer, InnovateLabs, 2020 - Present\n- Built a library management web app used by 500 students\n- Contributed to an open-source project by fixing 10 issues\n\nSKILLS\nHTML, Django, JavaScript, C++, TypeScript, Flask, C, CSS\n\nEDUCATION\nM.Tech Computer Science, IIT Bombay, 2019",
+  "labels": {
+    "name": "Tara Saxena",
+    "email": "tara.saxena115@example.com",
+    "phone": "+91 63194 51049",
+    "skills": [
+      "HTML",
+      "Django",
+      "JavaScript",
+      "C++",
+      "TypeScript",
+      "Flask",
+      "C",
+      "CSS"
+    ],
+    "role": "Software Engineer",
+    "role_key": "fresher"
+  },
+  "quality": "average",
+  "level": "senior",
+  "experience_years": 5,
+  "expected_band": "average"
+}

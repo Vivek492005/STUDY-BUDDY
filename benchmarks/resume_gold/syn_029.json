@@ -1,17 +1,22 @@
 {
   "id": "syn_029",
-  "text": "Kavya Khan\nkavya.khan29@example.com | +91 9893303777 | linkedin.com/in/kavyakhan\n\nPROFESSIONAL SUMMARY\nData Analyst with 4 years of experience building scalable applications.\n\nSKILLS\nReact, MongoDB, AWS, Python, TypeScript\n\nEXPERIENCE\nData Analyst \u2014 CloudNine (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Farhan Gupta\n\nfarhan.gupta29@example.com | +91 67565 74454\n\nSummary\nFull Stack Developer with 3 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nFull Stack Developer, DataSystems, 2023 - Present\n- Implemented authentication and payment flows used by 300000 customers\n- Led the migration from a monolith to services, improving deploy frequency\nFull Stack Developer, NexaTech, 2022 - 2023\n- Shipped a real-time notification system with Node.js and Redis\n- Built an e-commerce platform with React and Django serving 1000 users\n\nSKILLS\nCSS, SQL, PostgreSQL, HTML, GraphQL\n\nEDUCATION\nB.Tech Computer Science, SRM University, 2022",
   "labels": {
-    "name": "Kavya Khan",
-    "email": "kavya.khan29@example.com",
-    "phone": "+91 9893303777",
+    "name": "Farhan Gupta",
+    "email": "farhan.gupta29@example.com",
+    "phone": "+91 67565 74454",
     "skills": [
-      "React",
-      "MongoDB",
-      "AWS",
-      "Python",
-      "TypeScript"
+      "CSS",
+      "SQL",
+      "PostgreSQL",
+      "HTML",
+      "GraphQL"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "Full Stack Developer",
+    "role_key": "fullstack"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 3,
+  "expected_band": "average"
 }

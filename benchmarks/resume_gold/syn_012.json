@@ -1,16 +1,29 @@
 {
   "id": "syn_012",
-  "text": "Arjun Gupta\narjun.gupta12@example.com | +91 9817774584 | linkedin.com/in/arjungupta\n\nPROFESSIONAL SUMMARY\nData Analyst with 2 years of experience building scalable applications.\n\nSKILLS\nJavaScript, Git, MongoDB, Java\n\nEXPERIENCE\nData Analyst \u2014 DataSystems (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Rohit Gupta\n\nrohit.gupta12@example.com | +91 69808 37938 | linkedin.com/in/rohitgupta\n\nSummary\nUI Engineer with 7 years of experience building reliable systems for high-traffic products. Specialized in clean code, mentoring engineers, and measurable impact.\n\nEXPERIENCE\nUI Engineer, SoftServe, 2019 - Present\n- Optimized bundle sizes and raised Lighthouse scores by 45 points across flagship pages\n- Implemented GraphQL data layers that reduced page load times by 50 percent\n- Created Figma-to-code workflows that improved designer handoff speed\n- Designed responsive interfaces with HTML, CSS, and Tailwind CSS that improved mobile conversion by 30 percent\nUI Engineer, CloudNine, 2017 - 2019\n- Built a React and TypeScript component library adopted by 6 product teams\n- Delivered a checkout redesign used by 300 users\n- Led accessibility improvements that resolved 4 audit issues\n\nSKILLS\nAngular, Bootstrap, Cypress, Figma, React, Vue, Next.js, Git, Svelte, HTML, TypeScript, Tailwind CSS\n\nEDUCATION\nB.Tech Computer Science, Indian Institute of Technology Delhi, 2015\n\nPROJECTS\n- Built a real-time dashboard with WebSocket updates.\n- Open-source contributor to a charting library.\n- Personal portfolio site with interactive demos, visited by 2000 users.",
   "labels": {
-    "name": "Arjun Gupta",
-    "email": "arjun.gupta12@example.com",
-    "phone": "+91 9817774584",
+    "name": "Rohit Gupta",
+    "email": "rohit.gupta12@example.com",
+    "phone": "+91 69808 37938",
     "skills": [
-      "JavaScript",
+      "Angular",
+      "Bootstrap",
+      "Cypress",
+      "Figma",
+      "React",
+      "Vue",
+      "Next.js",
       "Git",
-      "MongoDB",
-      "Java"
+      "Svelte",
+      "HTML",
+      "TypeScript",
+      "Tailwind CSS"
     ],
-    "role": "Data Analyst"
-  }
+    "role": "UI Engineer",
+    "role_key": "frontend"
+  },
+  "quality": "strong",
+  "level": "senior",
+  "experience_years": 7,
+  "expected_band": "strong"
 }

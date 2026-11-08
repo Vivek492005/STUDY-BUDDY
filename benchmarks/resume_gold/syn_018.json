@@ -1,17 +1,25 @@
 {
   "id": "syn_018",
-  "text": "Sneha Iyer\nsneha.iyer18@example.com | +91 9828814949 | linkedin.com/in/snehaiyer\n\nPROFESSIONAL SUMMARY\nBackend Developer with 1 years of experience building scalable applications.\n\nSKILLS\nMachine Learning, Git, SQL, JavaScript, TypeScript\n\nEXPERIENCE\nBackend Developer \u2014 TechCorp (2022\u2013Present)\n- Built microservices handling 10k req/s\n- Reduced latency by 40% through caching\n\nEDUCATION\nB.Tech Computer Science, 2021\n",
+  "text": "Aarav Trivedi\n\naarav.trivedi18@example.com | +91 67965 38683\n\nSummary\nRecent computer science graduate with strong project experience in frontend developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, PixelWorks, 2024 - 2025\n- Optimized bundle sizes and raised Lighthouse scores by 15 points across flagship pages\n- Created Figma-to-code workflows that improved designer handoff speed\n\nSKILLS\nVue, Next.js, Jest, Figma, GraphQL, Git, HTML, Tailwind CSS\n\nEDUCATION\nMCA, IGNOU, 2025",
   "labels": {
-    "name": "Sneha Iyer",
-    "email": "sneha.iyer18@example.com",
-    "phone": "+91 9828814949",
+    "name": "Aarav Trivedi",
+    "email": "aarav.trivedi18@example.com",
+    "phone": "+91 67965 38683",
     "skills": [
-      "Machine Learning",
+      "Vue",
+      "Next.js",
+      "Jest",
+      "Figma",
+      "GraphQL",
       "Git",
-      "SQL",
-      "JavaScript",
-      "TypeScript"
+      "HTML",
+      "Tailwind CSS"
     ],
-    "role": "Backend Developer"
-  }
+    "role": "Frontend Developer",
+    "role_key": "frontend"
+  },
+  "quality": "average",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "average"
 }

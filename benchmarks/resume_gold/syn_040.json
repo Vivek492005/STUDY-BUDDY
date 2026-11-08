@@ -1,0 +1,25 @@
+{
+  "id": "syn_040",
+  "text": "Shreya Fernandez\n\nshreya.fernandez40@example.com | +91 88529 43466\n\nSummary\nAnalytics Engineer with 2 years of experience working on web applications and internal tools. Looking to deepen technical skills and contribute to larger systems.\n\nEXPERIENCE\nAnalytics Engineer, InsightLabs, 2023 - Present\n- Built automated Excel reports that saved analysts 9 hours every week\n- Created Tableau dashboards and Power BI reports used by 7 business teams\nAnalytics Engineer, AppWorks, 2022 - 2023\n- Cleaned and modeled datasets with Python and Pandas for monthly reporting\n- Presented insights to leadership that shaped pricing decisions\n\nSKILLS\nBash, Git, Linux, Power BI, Tableau, MySQL, Pandas, Python\n\nEDUCATION\nB.E. Information Technology, Pune University, 2022",
+  "labels": {
+    "name": "Shreya Fernandez",
+    "email": "shreya.fernandez40@example.com",
+    "phone": "+91 88529 43466",
+    "skills": [
+      "Bash",
+      "Git",
+      "Linux",
+      "Power BI",
+      "Tableau",
+      "MySQL",
+      "Pandas",
+      "Python"
+    ],
+    "role": "Analytics Engineer",
+    "role_key": "data-analyst"
+  },
+  "quality": "average",
+  "level": "junior",
+  "experience_years": 2,
+  "expected_band": "average"
+}

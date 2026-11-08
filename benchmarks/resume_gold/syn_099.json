@@ -1,0 +1,27 @@
+{
+  "id": "syn_099",
+  "text": "Lakshmi Iyer\n\nlakshmi.iyer99@example.com | +91 95026 75444 | linkedin.com/in/lakshmiiyer\n\nSummary\nRecent computer science graduate with strong project experience in ios developer work. Eager to start a software engineering career and learn production practices.\n\nEXPERIENCE\nSoftware Engineering Intern, CloudForge, 2023 - 2025\n- Created a Flutter app that shipped on Android and iOS from one codebase\n- Integrated GraphQL APIs for real-time features\n- Set up CI/CD for mobile builds that cut release time by 20 percent\n- Developed an iOS app with Swift that reached a 50 rating on the App Store\nSoftware Engineering Intern, PixelWorks, 2022 - 2023\n- Set up CI/CD for mobile builds that cut release time by 10 percent\n- Developed an iOS app with Swift that reached a 50 rating on the App Store\n- Optimized app startup time by 10 percent\n\nSKILLS\nDart, Kotlin, SQLite, Git, Flutter, Android Development, GraphQL, Java, Swift, Firebase\n\nEDUCATION\nMCA, IGNOU, 2025\n\nPROJECTS\n- Built a campus event app with Flutter used by 200 students.\n- Created a fitness tracker with offline support.\n- Published a habit-tracking app on the Play Store.",
+  "labels": {
+    "name": "Lakshmi Iyer",
+    "email": "lakshmi.iyer99@example.com",
+    "phone": "+91 95026 75444",
+    "skills": [
+      "Dart",
+      "Kotlin",
+      "SQLite",
+      "Git",
+      "Flutter",
+      "Android Development",
+      "GraphQL",
+      "Java",
+      "Swift",
+      "Firebase"
+    ],
+    "role": "iOS Developer",
+    "role_key": "mobile"
+  },
+  "quality": "strong",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "strong"
+}

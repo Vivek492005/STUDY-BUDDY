@@ -1,0 +1,19 @@
+{
+  "id": "syn_058",
+  "text": "Kavya Das\nkavya.das58@example.com\nAspiring developer seeking opportunities.\nScala, AWS",
+  "labels": {
+    "name": "Kavya Das",
+    "email": "kavya.das58@example.com",
+    "phone": "",
+    "skills": [
+      "Scala",
+      "AWS"
+    ],
+    "role": "ETL Developer",
+    "role_key": "data-engineer"
+  },
+  "quality": "thin",
+  "level": "fresher",
+  "experience_years": 0,
+  "expected_band": "thin"
+}
