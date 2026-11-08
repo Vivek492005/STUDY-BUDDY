@@ -3813,8 +3813,6 @@ def register_routes(app):
             "User-agent: *",
             "Disallow: /api/",
             "Disallow: /account/",
-            "Disallow: /login",
-            "Disallow: /register",
             "Disallow: /logout",
             "Disallow: /verify-email",
             "Allow: /",
