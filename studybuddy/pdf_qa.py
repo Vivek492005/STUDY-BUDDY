@@ -851,6 +851,63 @@ def _claim_content_tokens(text: str) -> set[str]:
     return {t for t in _tokenize(text or "") if t not in _STOPWORDS and len(t) >= 3}
 
 
+def _flatten_claims(per_doc):
+    """(doc, claim) pairs from the per-doc answer shape, skipping
+    non-dict entries and claims without text."""
+    flat = []
+    for entry in per_doc:
+        doc = entry.get("doc") if isinstance(entry, dict) else None
+        for claim in (entry.get("claims") or []):
+            if isinstance(claim, dict) and claim.get("text"):
+                flat.append((doc, claim))
+    return flat
+
+
+def _claim_direction(toks):
+    """up/down when the tokens carry markers in exactly one direction."""
+    if toks & _UP_MARKERS and not (toks & _DOWN_MARKERS):
+        return "up"
+    if toks & _DOWN_MARKERS and not (toks & _UP_MARKERS):
+        return "down"
+    return None
+
+
+def _claims_opposed(dir_a, neg_a, dir_b, neg_b):
+    """Opposite directions, or a negation difference with a direction."""
+    return ((dir_a and dir_b and dir_a != dir_b)
+            or (neg_a != neg_b and (dir_a or dir_b)))
+
+
+def _contrast_flag(doc_a, claim_a, toks_a, dir_a, neg_a, doc_b, claim_b):
+    """The flag dict for one opposed claim pair, or None when the pair
+    shares too little vocabulary or does not oppose."""
+    toks_b = _claim_content_tokens(claim_b["text"])
+    if not toks_b:
+        return None
+    union = toks_a | toks_b
+    jaccard = len(toks_a & toks_b) / len(union) if union else 0.0
+    if jaccard < 0.25:
+        return None
+    dir_b = _claim_direction(toks_b)
+    neg_b = bool(toks_b & _NEGATIONS)
+    if not _claims_opposed(dir_a, neg_a, dir_b, neg_b):
+        return None
+    signal = f"{dir_a or 'stated'} vs {dir_b or 'stated'}"
+    if neg_a != neg_b:
+        signal += " (negation differs)"
+    return {
+        "docs": [doc_a, doc_b],
+        "signal": signal,
+        "shared_terms": sorted(toks_a & toks_b)[:5],
+        "claims": [
+            {"doc": doc_a, "text": claim_a["text"], "page": claim_a.get("page")},
+            {"doc": doc_b, "text": claim_b["text"], "page": claim_b.get("page")},
+        ],
+        "note": ("Possible contrast (keyword heuristic) — read both "
+                 "passages before concluding they disagree."),
+    }
+
+
 def detect_contrasts(per_doc: list[dict[str, Any]], max_flags: int = 3) -> list[dict[str, Any]]:
     """Flag possible disagreements between documents' claims.
 
@@ -864,12 +921,7 @@ def detect_contrasts(per_doc: list[dict[str, Any]], max_flags: int = 3) -> list[
     """
     if not isinstance(per_doc, list) or len(per_doc) < 2:
         return []
-    flat = []
-    for entry in per_doc:
-        doc = entry.get("doc") if isinstance(entry, dict) else None
-        for claim in (entry.get("claims") or []):
-            if isinstance(claim, dict) and claim.get("text"):
-                flat.append((doc, claim))
+    flat = _flatten_claims(per_doc)
     flags: list[dict[str, Any]] = []
     seen_pairs: set[tuple[str, str]] = set()
     for i in range(len(flat)):
@@ -879,9 +931,7 @@ def detect_contrasts(per_doc: list[dict[str, Any]], max_flags: int = 3) -> list[
         toks_a = _claim_content_tokens(claim_a["text"])
         if not toks_a:
             continue
-        dir_a = ("up" if toks_a & _UP_MARKERS and not (toks_a & _DOWN_MARKERS)
-                 else "down" if toks_a & _DOWN_MARKERS and not (toks_a & _UP_MARKERS)
-                 else None)
+        dir_a = _claim_direction(toks_a)
         neg_a = bool(toks_a & _NEGATIONS)
         for j in range(i + 1, len(flat)):
             doc_b, claim_b = flat[j]
@@ -890,34 +940,11 @@ def detect_contrasts(per_doc: list[dict[str, Any]], max_flags: int = 3) -> list[
             pair = tuple(sorted([str(doc_a), str(doc_b)]))
             if pair in seen_pairs:
                 continue
-            toks_b = _claim_content_tokens(claim_b["text"])
-            if not toks_b:
+            flag = _contrast_flag(doc_a, claim_a, toks_a, dir_a, neg_a,
+                                  doc_b, claim_b)
+            if flag is None:
                 continue
-            union = toks_a | toks_b
-            jaccard = len(toks_a & toks_b) / len(union) if union else 0.0
-            if jaccard < 0.25:
-                continue
-            dir_b = ("up" if toks_b & _UP_MARKERS and not (toks_b & _DOWN_MARKERS)
-                     else "down" if toks_b & _DOWN_MARKERS and not (toks_b & _UP_MARKERS)
-                     else None)
-            neg_b = bool(toks_b & _NEGATIONS)
-            opposed = (dir_a and dir_b and dir_a != dir_b) or (neg_a != neg_b and (dir_a or dir_b))
-            if not opposed:
-                continue
-            signal = f"{dir_a or 'stated'} vs {dir_b or 'stated'}"
-            if neg_a != neg_b:
-                signal += " (negation differs)"
-            flags.append({
-                "docs": [doc_a, doc_b],
-                "signal": signal,
-                "shared_terms": sorted(toks_a & toks_b)[:5],
-                "claims": [
-                    {"doc": doc_a, "text": claim_a["text"], "page": claim_a.get("page")},
-                    {"doc": doc_b, "text": claim_b["text"], "page": claim_b.get("page")},
-                ],
-                "note": ("Possible contrast (keyword heuristic) — read both "
-                         "passages before concluding they disagree."),
-            })
+            flags.append(flag)
             seen_pairs.add(pair)
     return flags
 

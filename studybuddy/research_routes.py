@@ -217,6 +217,25 @@ def study_import_graph(openalex_id):
         return jsonify({'error': graph['error']}), 502
     return jsonify(json_safe(graph))
 
+def _remove_quietly(filepath):
+    """Remove a file, ignoring missing-file/permission errors."""
+    try:
+        os.remove(filepath)
+    except OSError:
+        pass
+
+
+def _download_pdf_with_arxiv_fallback(pdf_url, filepath, arxiv_id):
+    """Download a PDF; if the source URL fails and an arXiv id is known,
+    retry against arXiv's own deterministic PDF URL. Returns bool."""
+    if arxiv_download_pdf(pdf_url, filepath):
+        return True
+    if not arxiv_id:
+        return False
+    return bool(arxiv_download_pdf(
+        f"https://arxiv.org/pdf/{arxiv_id}", filepath))
+
+
 def _fetch_pdf_into_library(pdf_url, title, arxiv_id, doi):
     """Download a PDF and store it as a StudyDoc for the current user.
 
@@ -232,20 +251,13 @@ def _fetch_pdf_into_library(pdf_url, title, arxiv_id, doi):
     filename = f"{uuid.uuid4().hex}.pdf"
     filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
     try:
-        downloaded = arxiv_download_pdf(pdf_url, filepath)
-        if not downloaded and arxiv_id:
-            # OpenAlex sometimes points at mirrors that block direct
-            # download; arXiv's own PDF URL is deterministic — try it.
-            downloaded = arxiv_download_pdf(
-                f"https://arxiv.org/pdf/{arxiv_id}", filepath)
+        downloaded = _download_pdf_with_arxiv_fallback(
+            pdf_url, filepath, arxiv_id)
         if not downloaded:
             return None, "download"
         pages = pdfqa_parse_pages(filepath)
         if not any((p or '').strip() for p in pages):
-            try:
-                os.remove(filepath)
-            except OSError:
-                pass
+            _remove_quietly(filepath)
             return None, "no-text"
         chunks = pdfqa_chunk_pages(pages)
         doc = StudyDoc(
@@ -263,10 +275,7 @@ def _fetch_pdf_into_library(pdf_url, title, arxiv_id, doi):
     except Exception:
         log.exception("Study import-PDF failed")
         db.session.rollback()
-        try:
-            os.remove(filepath)
-        except OSError:
-            pass
+        _remove_quietly(filepath)
         return None, "failed"
     return {'id': doc.id, 'title': doc.title, 'pages': doc.num_pages,
             'chunks': doc.num_chunks}, None
@@ -622,6 +631,23 @@ def litreview_home():
                                      'created': r.created_at.strftime('%Y-%m-%d')}
                                     for r in reviews])
 
+def _parse_review_selection(payload):
+    """Validate the lit-review request body.
+
+    Returns (doc_ids, title). Raises ValueError with the client-facing
+    message when the selection is invalid (not a list, fewer than 2
+    ids, or non-integer ids).
+    """
+    raw_ids = payload.get('doc_ids') or []
+    title = (payload.get('title') or '').strip()[:120]
+    if not isinstance(raw_ids, list) or len(raw_ids) < 2:
+        raise ValueError('Select at least 2 documents.')
+    try:
+        return [int(d) for d in raw_ids[:10]], title
+    except (TypeError, ValueError):
+        raise ValueError('Invalid document selection.')
+
+
 @research_bp.route('/research/api/review/generate', methods=['POST'])
 @limiter.limit("10 per hour")
 def litreview_generate():
@@ -633,14 +659,10 @@ def litreview_generate():
     JSON body: {"doc_ids": [int], "title": str}.
     CSRF via X-CSRFToken header (not exempt)."""
     payload = request.get_json(silent=True) or {}
-    raw_ids = payload.get('doc_ids') or []
-    title = (payload.get('title') or '').strip()[:120]
-    if not isinstance(raw_ids, list) or len(raw_ids) < 2:
-        return jsonify({'error': 'Select at least 2 documents.'}), 400
     try:
-        doc_ids = [int(d) for d in raw_ids[:10]]
-    except (TypeError, ValueError):
-        return jsonify({'error': 'Invalid document selection.'}), 400
+        doc_ids, title = _parse_review_selection(payload)
+    except ValueError as exc:
+        return jsonify({'error': str(exc)}), 400
     try:
         docs = StudyDoc.query.filter(
             StudyDoc.id.in_(doc_ids),
@@ -859,10 +881,49 @@ def flashcards_review(sid):
                            stats=fc_mastery_stats(fs.data or {}),
                            cards=enriched)
 
+def _mark_flashcard(fs, card_id, known):
+    """Mark one card known/unknown on a deck; returns (error, status).
+
+    error is None on success. Mutates fs.data in place (SM-2-lite
+    scheduling via fc_srs_update) and commits; raises on DB failure so
+    the caller can roll back and answer 500.
+    """
+    data = fs.data or {}
+    cards = {c.get('id') for c in data.get('cards') or []}
+    if card_id not in cards:
+        return 'Unknown card.', 400
+    progress = data.setdefault('progress', {})
+    entry = progress.setdefault(card_id, {'known': False, 'reviews': 0})
+    entry['known'] = known
+    entry['reviews'] = int(entry.get('reviews') or 0) + 1
+    # SM-2-lite: schedule the next review (ease/interval/due).
+    fc_srs_update(entry, known)
+    from sqlalchemy.orm.attributes import flag_modified
+    flag_modified(fs, 'data')
+    db.session.commit()
+    return None, None
+
+
+def _maybe_award_flashcard_xp(user_id, fs):
+    """Wave 5 #27: a finished review session (5+ card reviews on the
+    deck) earns XP. Idempotent per day, so marking more cards never
+    double-pays. Best-effort — never raises."""
+    from unified_app import _momentum_hook
+    try:
+        progress = (fs.data or {}).get('progress') or {}
+        total_reviews = sum(int((e or {}).get('reviews') or 0)
+                            for e in progress.values()
+                            if isinstance(e, dict))
+        if total_reviews >= 5:
+            _momentum_hook(user_id, 'flashcards_reviewed')
+    except Exception:
+        pass
+
+
 @research_bp.route('/research/api/flashcards/<int:sid>/progress', methods=['POST'])
 @limiter.limit("60 per hour")
 def flashcards_progress(sid):
-    from unified_app import FlashcardSet, _momentum_hook
+    from unified_app import FlashcardSet
     if not current_user.is_authenticated:
         return jsonify({'error': 'Please log in to continue.'}), 401
     """Mark a card known/unknown. JSON: {"card_id": str, "known": bool}."""
@@ -876,34 +937,14 @@ def flashcards_progress(sid):
                                           user_id=current_user.id).first()
         if not fs:
             return jsonify({'error': 'Deck not found.'}), 404
-        data = fs.data or {}
-        cards = {c.get('id') for c in data.get('cards') or []}
-        if card_id not in cards:
-            return jsonify({'error': 'Unknown card.'}), 400
-        progress = data.setdefault('progress', {})
-        entry = progress.setdefault(card_id, {'known': False, 'reviews': 0})
-        entry['known'] = known
-        entry['reviews'] = int(entry.get('reviews') or 0) + 1
-        # SM-2-lite: schedule the next review (ease/interval/due).
-        fc_srs_update(entry, known)
-        from sqlalchemy.orm.attributes import flag_modified
-        flag_modified(fs, 'data')
-        db.session.commit()
+        error, status = _mark_flashcard(fs, card_id, known)
+        if error:
+            return jsonify({'error': error}), status
     except Exception:
         log.exception("Flashcard progress failed")
         db.session.rollback()
         return jsonify({'error': 'Could not save progress.'}), 500
-    # Wave 5 #27: a finished review session (5+ card reviews on the deck)
-    # earns XP. Idempotent per day, so marking more cards never double-pays.
-    try:
-        _progress = (fs.data or {}).get('progress') or {}
-        _total_reviews = sum(int((e or {}).get('reviews') or 0)
-                             for e in _progress.values()
-                             if isinstance(e, dict))
-        if _total_reviews >= 5:
-            _momentum_hook(current_user.id, 'flashcards_reviewed')
-    except Exception:
-        pass
+    _maybe_award_flashcard_xp(current_user.id, fs)
     return jsonify({'success': True,
                     'stats': fc_mastery_stats(fs.data or {})})
 

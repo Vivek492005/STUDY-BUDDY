@@ -312,7 +312,7 @@ def test_eval3_rows_lines_subinput_answer_across_docs(client):
     assert "answer" in result
 
 
-def test_eval3_report_guided_json_and_integer_offer_odds(client):
+def test_eval3_report_structured_and_integer_offer_odds(client):
     result = _run(client, "jd/offer-odds", {
         "report": {"score": 72, "matched_skills": ["python"],
                    "missing_skills": ["docker"],
@@ -339,17 +339,20 @@ def test_eval3_form_schema_curated_shapes(client):
         "gestures", "audio", "attire"]
     assert by_name("peermocks/score-rubric")["scores"]["keys"] == [
         "clarity", "depth", "communication", "problem_solving", "behavioral"]
-    # No tool still needs raw JSON except the jd ATS-report paste fields.
+    # P1 (Eval 4): no tool still needs raw JSON — the last three (the jd
+    # ATS-report paste fields) got structured per-key editors; the
+    # nested breakdown/requirements are not read by those handlers.
     raw = [(tid, f["name"]) for tid, t in tools.items()
            for f in t["form"]["fields"]
            if f["kind"] in ("object", "json") and not f.get("keys")]
-    assert sorted(raw) == [
-        ("jd/keyword-plan", "report"),
-        ("jd/offer-odds", "report"),
-        ("jd/prescreen", "report")]
-    for tid, name in raw:
-        f = by_name(tid)[name]
-        assert f["example"] and f["hint"]
+    assert raw == []
+    _JD_KEYS = ["job_title", "score", "matched_keywords",
+                "missing_keywords", "matched_skills", "missing_skills",
+                "resume_experience_years"]
+    for tid in ("jd/prescreen", "jd/keyword-plan", "jd/offer-odds"):
+        assert by_name(tid)["report"]["keys"] == _JD_KEYS
+        assert by_name(tid)["report"]["key_types"]["score"] == "number"
+        assert by_name(tid)["report"]["key_types"]["matched_skills"] == "lines"
 
 
 def test_lab_page_ships_eval3_controls(client):

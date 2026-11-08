@@ -155,25 +155,23 @@ def _field_overrides():
     from studybuddy.communication_coach import _VIDEO_CHECKS
     from studybuddy.peer_mocks import _RUBRIC_DIMS
 
-    _JD_REPORT_HINT = ("Paste the Result JSON from the JD-Match Scoring "
-                       "tool — run it first, then use its Copy result button.")
-    _JD_REPORT_EXAMPLE = json.dumps(
-        {"score": 0, "matched_skills": [], "missing_skills": [],
-         "missing_keywords": []}, indent=2)
+    _JD_REPORT_HINT = ("Values come from the JD-Match Scoring tool — run "
+                       "it first, then copy each value below. Only the flat "
+                       "values are needed here; the nested breakdown is not "
+                       "read by these tools.")
     _CARD_KEYS = ["id", "question", "answer"]
     _CARD_TYPES = {"question": "textarea", "answer": "textarea"}
     _PAPER_KEYS = ["title", "abstract", "link"]
     _PAPER_TYPES = {"abstract": "textarea"}
 
     _FIELD_OVERRIDES_CACHE = {
-        # --- ATS report: a nested dict produced by another tool; the
-        # honest control is a guided JSON textarea with a real skeleton.
-        ("jd/prescreen", "report"): {
-            "hint": _JD_REPORT_HINT, "example": _JD_REPORT_EXAMPLE},
-        ("jd/keyword-plan", "report"): {
-            "hint": _JD_REPORT_HINT, "example": _JD_REPORT_EXAMPLE},
-        ("jd/offer-odds", "report"): {
-            "hint": _JD_REPORT_HINT, "example": _JD_REPORT_EXAMPLE},
+        # --- ATS report: structured per-key inputs now (P1, Eval 4). The
+        # report is a nested dict, but the handlers only read flat keys,
+        # so the object editor covers every value they use; the guided
+        # JSON textarea is gone.
+        ("jd/prescreen", "report"): {"hint": _JD_REPORT_HINT},
+        ("jd/keyword-plan", "report"): {"hint": _JD_REPORT_HINT},
+        ("jd/offer-odds", "report"): {"hint": _JD_REPORT_HINT},
         # Optional[int] renders as kind "json" (Union annotation); the
         # handler does int(applicants_estimate), so a number input is right.
         ("jd/offer-odds", "applicants_estimate"): {
@@ -256,7 +254,45 @@ def _field_overrides():
 # (tool_id, field_name) -> {"key_types": {key: type}, "key_labels": {...},
 # "keys": [...], "sub_keys": {...}, "key_sub_types": {...}}.
 # Key types: text | textarea | number | bool | lines | rows.
+# Flat top-level keys of the JD-Match report (score_jd_match return).
+# The nested "breakdown"/"requirements" are not read by the three JD
+# tools (prescreen reads matched_skills; keyword-plan reads
+# missing_keywords/missing_skills; offer-odds reads score), so the
+# structured object editor covers every value they actually use.
+_JD_REPORT_KEYS = ["job_title", "score", "matched_keywords",
+                   "missing_keywords", "matched_skills", "missing_skills",
+                   "resume_experience_years"]
+_JD_REPORT_LABELS = {
+    "job_title": "Job title",
+    "score": "Match score (0–100)",
+    "matched_keywords": "Matched keywords",
+    "missing_keywords": "Missing keywords",
+    "matched_skills": "Matched skills",
+    "missing_skills": "Missing skills",
+    "resume_experience_years": "Resume experience (years)",
+}
+_JD_REPORT_TYPES = {
+    "score": "number",
+    "matched_keywords": "lines",
+    "missing_keywords": "lines",
+    "matched_skills": "lines",
+    "missing_skills": "lines",
+    "resume_experience_years": "number",
+}
+
 _KEY_OVERRIDES = {
+    ("jd/prescreen", "report"): {
+        "keys": _JD_REPORT_KEYS,
+        "key_labels": _JD_REPORT_LABELS,
+        "key_types": _JD_REPORT_TYPES},
+    ("jd/keyword-plan", "report"): {
+        "keys": _JD_REPORT_KEYS,
+        "key_labels": _JD_REPORT_LABELS,
+        "key_types": _JD_REPORT_TYPES},
+    ("jd/offer-odds", "report"): {
+        "keys": _JD_REPORT_KEYS,
+        "key_labels": _JD_REPORT_LABELS,
+        "key_types": _JD_REPORT_TYPES},
     ("pdfqa/answer-across-docs", "docs"): {
         "key_types": {"chunks": "lines"}},
     ("pdfqa/qa-to-notes", "qa_pairs"): {
@@ -356,11 +392,18 @@ def _constraint(metadata, cls, attr):
     return None
 
 
-def _pydantic_form_fields(model, legacy_labels):
-    """One schema field per pydantic model field."""
-    from annotated_types import Ge, Le, MaxLen, MinLen
+def _find_before_validator(metadata):
+    """The BeforeValidator func of a field, if it has one."""
     from pydantic import BeforeValidator
 
+    for m in metadata:
+        if isinstance(m, BeforeValidator):
+            return m.func
+    return None
+
+
+def _kind_from_validator(validator):
+    """Form kind implied by a BeforeValidator, or None."""
     from studybuddy.labs_registry import (
         _as_json_list,
         _as_json_object,
@@ -370,44 +413,90 @@ def _pydantic_form_fields(model, legacy_labels):
         _as_legacy_number,
     )
 
+    if validator is _as_json_object:
+        return "object"
+    if validator is _as_json_list:
+        return "lines"
+    if validator is _as_json_value:
+        return "json"
+    if validator is _as_legacy_number:
+        return "number"
+    if validator is _as_legacy_bool:
+        return "boolean"
+    if validator is _as_legacy_date:
+        return "string"
+    return None
+
+
+def _kind_from_annotation(ann, origin, metadata):
+    """Form kind implied by the plain annotation (no validator)."""
+    from annotated_types import MaxLen
+
+    if ann is bool:
+        return "boolean"
+    if ann is int:
+        return "integer"
+    if ann is float:
+        return "number"
+    if ann is date:
+        return "string"
+    if ann is str:
+        maxlen = _constraint(metadata, MaxLen, "max_length")
+        return "text" if (maxlen is None or maxlen > 500) else "string"
+    if ann is list or origin is list:
+        return "lines"
+    if ann is dict or origin is dict:
+        return "object"
+    return "json"
+
+
+def _add_numeric_bounds(entry, metadata):
+    """ge/le -> min/max on integer/number fields."""
+    from annotated_types import Ge, Le
+
+    ge = _constraint(metadata, Ge, "ge")
+    le = _constraint(metadata, Le, "le")
+    if ge is not None:
+        entry["min"] = ge
+    if le is not None:
+        entry["max"] = le
+
+
+def _add_length_bounds(entry, metadata):
+    """MinLen/MaxLen -> min_length/max_length on string/text fields."""
+    from annotated_types import MaxLen, MinLen
+
+    minlen = _constraint(metadata, MinLen, "min_length")
+    maxlen = _constraint(metadata, MaxLen, "max_length")
+    if minlen is not None:
+        entry["min_length"] = minlen
+    if maxlen is not None:
+        entry["max_length"] = maxlen
+
+
+def _add_object_keys(entry, kind, label):
+    """Brace-parsed keys + example for object/json fields."""
+    keys = _brace_keys(label)
+    if not keys:
+        return
+    norm_keys, norm_labels = _normalize_keys(keys)
+    entry["keys"] = norm_keys
+    entry["key_labels"] = norm_labels
+    example = _example_for(kind, keys)
+    if example is not None:
+        entry["example"] = example
+
+
+def _pydantic_form_fields(model, legacy_labels):
+    """One schema field per pydantic model field."""
     fields = []
     for name, finfo in model.model_fields.items():
         ann = finfo.annotation
         origin = get_origin(ann)
-        validator = None
-        for m in finfo.metadata:
-            if isinstance(m, BeforeValidator):
-                validator = m.func
-                break
-        if validator is _as_json_object:
-            kind = "object"
-        elif validator is _as_json_list:
-            kind = "lines"
-        elif validator is _as_json_value:
-            kind = "json"
-        elif validator is _as_legacy_number:
-            kind = "number"
-        elif validator is _as_legacy_bool:
-            kind = "boolean"
-        elif validator is _as_legacy_date:
-            kind = "string"
-        elif ann is bool:
-            kind = "boolean"
-        elif ann is int:
-            kind = "integer"
-        elif ann is float:
-            kind = "number"
-        elif ann is date:
-            kind = "string"
-        elif ann is str:
-            maxlen = _constraint(finfo.metadata, MaxLen, "max_length")
-            kind = "text" if (maxlen is None or maxlen > 500) else "string"
-        elif ann is list or origin is list:
-            kind = "lines"
-        elif ann is dict or origin is dict:
-            kind = "object"
-        else:
-            kind = "json"
+        validator = _find_before_validator(finfo.metadata)
+        kind = _kind_from_validator(validator)
+        if kind is None:
+            kind = _kind_from_annotation(ann, origin, finfo.metadata)
         entry = {
             "name": name,
             "label": legacy_labels.get(name) or _humanize(name),
@@ -415,31 +504,14 @@ def _pydantic_form_fields(model, legacy_labels):
             "required": bool(finfo.is_required()),
         }
         if kind in ("integer", "number"):
-            ge = _constraint(finfo.metadata, Ge, "ge")
-            le = _constraint(finfo.metadata, Le, "le")
-            if ge is not None:
-                entry["min"] = ge
-            if le is not None:
-                entry["max"] = le
+            _add_numeric_bounds(entry, finfo.metadata)
         if kind in ("string", "text"):
-            minlen = _constraint(finfo.metadata, MinLen, "min_length")
-            maxlen = _constraint(finfo.metadata, MaxLen, "max_length")
-            if minlen is not None:
-                entry["min_length"] = minlen
-            if maxlen is not None:
-                entry["max_length"] = maxlen
+            _add_length_bounds(entry, finfo.metadata)
         default = finfo.default
         if isinstance(default, (str, int, float, bool)):
             entry["default"] = default
         if kind in ("object", "json"):
-            keys = _brace_keys(legacy_labels.get(name, ""))
-            if keys:
-                norm_keys, norm_labels = _normalize_keys(keys)
-                entry["keys"] = norm_keys
-                entry["key_labels"] = norm_labels
-                example = _example_for(kind, keys)
-                if example is not None:
-                    entry["example"] = example
+            _add_object_keys(entry, kind, legacy_labels.get(name, ""))
         if kind == "json":
             # Array-of-objects vs single-object: the label says which
             # ("JSON array of {...}" vs "JSON object {...}"). The renderer
@@ -454,6 +526,7 @@ def _pydantic_form_fields(model, legacy_labels):
             entry["options"] = [str(o) for o in extra["options"]]
         fields.append(entry)
     return fields
+
 
 
 def form_schema(tool):

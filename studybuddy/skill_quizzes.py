@@ -386,22 +386,19 @@ def grade_exam(
             "weak_topics": summary.get("weak_topics", [])}
 
 
-def weakness_drill(
-    skill: str,
-    past_results: dict[str, Any] | list[dict[str, Any]],
-    n: int = 10,
-    seed: int | None = None,
-) -> dict[str, Any]:
-    """Auto-generate a drill set targeting the user's weakest topics.
-
-    past_results: list of {question_id/topic, correct (bool)} or a grade_quiz
-    summary dict with weak_topics. Returns {questions, target_topics}.
-    """
+def _coerce_drill_n(n):
+    """Clamp the drill size to 3..20; non-numeric input means 10."""
     try:
         n = int(n)
     except (TypeError, ValueError):
         n = 10
-    n = max(3, min(20, n))
+    return max(3, min(20, n))
+
+
+def _extract_weak_topics(past_results):
+    """Weak topics from past results: a grade_quiz summary dict with
+    weak_topics, or a list of {topic/skill, correct} rows (wrong answers
+    ranked by count). Returns at most 5 cleaned topic names."""
     weak = []
     if isinstance(past_results, dict):
         weak = [str(t) for t in (past_results.get("weak_topics") or [])]
@@ -414,19 +411,21 @@ def weakness_drill(
                 t = str(r.get("topic") or r.get("skill") or "general")
                 wrong_topics[t] = wrong_topics.get(t, 0) + 1
         weak = sorted(wrong_topics, key=wrong_topics.get, reverse=True)
-    weak = [_clean10(t).strip() for t in weak if _clean10(t).strip()][:5]
+    return [_clean10(t).strip() for t in weak if _clean10(t).strip()][:5]
 
-    skill = _clean10(skill or "").strip()
-    if not skill:
-        raise ValueError("Skill is required.")
-    topics = [t[0] if isinstance(t, (list, tuple)) else str(t)
-              for t in skill_topics(skill)]
-    target = [t for t in topics if any(w.lower() in t.lower() or t.lower() in w.lower()
-                                       for w in weak)] if weak else []
+
+def _match_target_topics(topics, weak):
+    """Skill topics that overlap a weak topic (either direction)."""
+    if not weak:
+        return []
+    return [t for t in topics
+            if any(w.lower() in t.lower() or t.lower() in w.lower()
+                   for w in weak)]
+
+
+def _pick_drill_questions(skill, target, n, rng):
+    """Prefer weak topics; fill the rest with general skill questions."""
     questions = []
-    import random
-    rng = random.Random(seed)
-    # Prefer weak topics; fill the rest with general skill questions.
     if target:
         for t in target:
             # Bank rows carry a singular "topic" string — matching on a
@@ -441,7 +440,30 @@ def weakness_drill(
                 and q not in questions]
         rng.shuffle(rest)
         questions.extend(rest[: n - len(questions)])
-    questions = questions[:n]
+    return questions[:n]
+
+
+def weakness_drill(
+    skill: str,
+    past_results: dict[str, Any] | list[dict[str, Any]],
+    n: int = 10,
+    seed: int | None = None,
+) -> dict[str, Any]:
+    """Auto-generate a drill set targeting the user's weakest topics.
+
+    past_results: list of {question_id/topic, correct (bool)} or a grade_quiz
+    summary dict with weak_topics. Returns {questions, target_topics}.
+    """
+    n = _coerce_drill_n(n)
+    weak = _extract_weak_topics(past_results)
+    skill = _clean10(skill or "").strip()
+    if not skill:
+        raise ValueError("Skill is required.")
+    topics = [t[0] if isinstance(t, (list, tuple)) else str(t)
+              for t in skill_topics(skill)]
+    target = _match_target_topics(topics, weak)
+    rng = random.Random(seed)
+    questions = _pick_drill_questions(skill, target, n, rng)
     if not questions:
         raise ValueError(f"No questions available for skill '{skill}'.")
     return {"questions": [public_question(q) for q in questions],
