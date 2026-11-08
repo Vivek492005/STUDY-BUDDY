@@ -40,7 +40,6 @@ from flask import (
     jsonify,
     redirect,
     render_template,
-    render_template_string,
     request,
     session,
     url_for,
@@ -334,28 +333,9 @@ from studybuddy.aptitude_test import topics as aptitude_topics
 from studybuddy.aptitude_test import track_counts as aptitude_track_counts
 from studybuddy.aptitude_test import COMPANY_TESTS as APTITUDE_COMPANY_TESTS
 from studybuddy.aptitude_test import TRACKS as APTITUDE_TRACKS
-from studybuddy.arxiv_import import download_pdf as arxiv_download_pdf
-from studybuddy.arxiv_import import (
-    fetch_arxiv,
-    fetch_citation_graph,
-    fetch_doi,
-    normalize_metadata,
-    reading_queue,
-    recent_citations,
-    search_papers,
-    validate_arxiv_id,
-    validate_doi,
-)
 from studybuddy.bullet_rewriter import BULLET_MAX_CHARS, BULLET_MIN_CHARS, improve_bullet
 from studybuddy.career_assessment import rule_based_why
 from studybuddy.cert_guide import all_certs
-from studybuddy.citation_fmt import STYLES as CITATION_STYLES
-from studybuddy.citation_fmt import (
-    format_citation,
-    from_bibtex,
-    style_guide,
-    to_bibtex,
-)
 from studybuddy.communication_coach import (
     QUESTION_TYPES as COACH_QUESTION_TYPES,
 )
@@ -376,15 +356,6 @@ from studybuddy.cover_generator import (
 # routes to studybuddy/dsa_routes.py. Only a2z_problems is still used
 # here (landing-page DSA count below).
 from studybuddy.dsa_practice import a2z_problems
-from studybuddy.flashcards import generate_deck as fc_generate_deck
-from studybuddy.flashcards import grade_mcq as fc_grade_mcq
-from studybuddy.flashcards import mastery_stats as fc_mastery_stats
-from studybuddy.flashcards import (
-    card_due_state as fc_card_due_state,
-    due_count as fc_due_count,
-    srs_update as fc_srs_update,
-)
-from studybuddy.gap_finder import generate_gap_report as gf_generate_report
 from studybuddy.health_review import DIMENSIONS as HR_DIMENSIONS
 from studybuddy.health_review import current_month_key as hr_current_month_key
 from studybuddy.health_review import generate_review as hr_generate_review
@@ -401,9 +372,6 @@ from studybuddy.linkedin_grader import (
     grade_linkedin_profile,
     validate_linkedin_inputs,
 )
-from studybuddy.lit_review import generate_review as lr_generate_review
-from studybuddy.lit_review import review_to_html as lr_to_html
-from studybuddy.lit_review import review_to_markdown as lr_to_markdown
 from studybuddy.mock_interview import (
     generate_rule_based_feedback,
     interview_options,
@@ -415,8 +383,6 @@ from studybuddy.rubric_embeddings import get_rubric_embed
 from studybuddy.opportunities import TYPES as OPP_TYPES
 from studybuddy.opportunities import OpportunityDataError, list_opportunities, opp_exists
 from studybuddy.opportunities import get_meta as opp_meta
-from studybuddy.pdf_qa import chunk_pages as pdfqa_chunk_pages
-from studybuddy.pdf_qa import parse_pdf_pages as pdfqa_parse_pages
 from studybuddy.portfolio import unique_slug, validate_portfolio_payload
 from studybuddy.salary_data import SalaryDataError
 from studybuddy.salary_data import city_adjusted_median as salary_city_adjusted
@@ -3635,6 +3601,58 @@ def _rotate_session_on_login():
     session.clear()
 
 
+def _is_login_required_view(view_func):
+    """True when a view is wrapped by flask_login.login_required.
+
+    flask-login defines its wrapper in flask_login/utils.py; functools.wraps
+    copies __module__/__name__ from the view but keeps the wrapper's own
+    code object, so the __wrapped__ chain exposes it. (flask-limiter's
+    wrappers live under flask_limiter/, so they never match.)
+    """
+    seen = set()
+    func = view_func
+    while func is not None and id(func) not in seen:
+        seen.add(id(func))
+        code = getattr(func, "__code__", None)
+        if code is not None and code.co_filename.endswith(
+                "flask_login/utils.py"):
+            return True
+        func = getattr(func, "__wrapped__", None)
+    return False
+
+
+def _public_sitemap_urls(app, base):
+    """Absolute URLs for /sitemap.xml: public GET pages with no URL
+    variables. API/static/ops/auth endpoints and login-gated pages are
+    excluded — a sitemap listing pages a crawler cannot read is worse
+    than a short one. Derived from the live url_map, so new public
+    pages appear automatically."""
+    excluded = {"/health", "/healthz", "/readyz", "/version",
+                "/robots.txt", "/sitemap.xml", "/login", "/register",
+                "/logout", "/verify-email",
+                # Manually auth-gated (no @login_required decorator — the
+                # view itself answers 401 for anonymous users), so the
+                # decorator detector above cannot see them. The anonymous-
+                # 200 test in tests/test_seo.py pins this list: a new
+                # manually-gated page fails there until it is added here.
+                "/cover-docs", "/resume-versions",
+                "/resume-versions/performance"}
+    urls = []
+    for rule in app.url_map.iter_rules():
+        if "GET" not in (rule.methods or set()):
+            continue
+        path = str(rule.rule)
+        if "<" in path or path.startswith(("/api/", "/static/")):
+            continue
+        if path in excluded or path.startswith("/account/"):
+            continue
+        view = app.view_functions.get(rule.endpoint)
+        if view is not None and _is_login_required_view(view):
+            continue
+        urls.append(base.rstrip("/") + path)
+    return sorted(urls)
+
+
 def register_routes(app):
 
     # ---------- ULTIMATE LAB (91 power tools) ----------
@@ -3787,6 +3805,33 @@ def register_routes(app):
         if scores is not None:
             payload["benchmarks"] = scores
         return jsonify(payload)
+
+    # ---------- SEO: robots.txt + sitemap.xml (P1, Eval 4) ----------
+    @app.route('/robots.txt')
+    def robots_txt():
+        lines = [
+            "User-agent: *",
+            "Disallow: /api/",
+            "Disallow: /account/",
+            "Disallow: /login",
+            "Disallow: /register",
+            "Disallow: /logout",
+            "Disallow: /verify-email",
+            "Allow: /",
+            f"Sitemap: {request.url_root}sitemap.xml",
+        ]
+        return Response("\n".join(lines) + "\n", mimetype="text/plain")
+
+    @app.route('/sitemap.xml')
+    def sitemap_xml():
+        urls = _public_sitemap_urls(app, request.url_root)
+        body = ['<?xml version="1.0" encoding="UTF-8"?>',
+                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+        for loc in urls:
+            body.append(f"  <url><loc>{loc}</loc></url>")
+        body.append('</urlset>')
+        return Response("\n".join(body) + "\n",
+                        mimetype="application/xml")
 
     # ---------- AUTH (ARC-01) ----------
     # /register, /login, /logout now live in app/blueprints/auth_bp.py

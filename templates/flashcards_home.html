@@ -50,7 +50,7 @@
             <h3 style="margin:0;">Deck #{{ s.id }}</h3>
             <p style="color:var(--b-muted);font-size:.85rem;margin:0;">{{ s.created }}</p>
             <div class="b-cta-row" style="margin-top:auto;">
-                <a class="b-btn b-btn--primary b-btn--sm" href="{{ url_for('flashcards_review', sid=s.id) }}">Review</a>
+                <a class="b-btn b-btn--primary b-btn--sm" href="{{ url_for('research.flashcards_review', sid=s.id) }}">Review</a>
             </div>
         </article>
         {% else %}

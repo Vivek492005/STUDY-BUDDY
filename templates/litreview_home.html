@@ -60,7 +60,7 @@
             <h3 style="margin:0;">{{ r.title }}</h3>
             <p style="color:var(--b-muted);font-size:.85rem;margin:0;">{{ r.created }}</p>
             <div class="b-cta-row" style="margin-top:auto;">
-                <a class="b-btn b-btn--primary b-btn--sm" href="{{ url_for('litreview_view', rid=r.id) }}">Open</a>
+                <a class="b-btn b-btn--primary b-btn--sm" href="{{ url_for('research.litreview_view', rid=r.id) }}">Open</a>
                 <button class="b-btn b-btn--danger b-btn--sm lr-delete" type="button" data-id="{{ r.id }}">Delete</button>
             </div>
         </article>

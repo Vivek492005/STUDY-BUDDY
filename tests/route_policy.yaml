@@ -246,11 +246,13 @@
 "/review/<month_key>": auth
 "/review/api/regenerate": auth
 "/rewrite-bullet": auth
+"/robots.txt": public
 "/api/salary/curve": public
 "/api/salary/evaluate": auth
 "/api/salary/scripts": public
 "/salary": auth
 "/salary/data": auth
+"/sitemap.xml": public
 "/star": auth
 "/star/drafts": auth
 "/star/drafts/<int:draft_id>/delete": auth
