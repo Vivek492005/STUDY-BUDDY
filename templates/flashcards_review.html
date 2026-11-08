@@ -24,7 +24,7 @@
                 <button class="b-btn b-btn--primary b-magnet" id="fc-mode-cards" type="button">Flashcards</button>
                 <button class="b-btn b-btn--ghost b-magnet" id="fc-mode-quiz" type="button">Quiz mode</button>
                 <button class="b-btn b-btn--ghost b-magnet" id="fc-due-toggle" type="button" aria-pressed="false">Due only ({{ stats.due }})</button>
-                <a class="b-btn b-btn--ghost" href="{{ url_for('flashcards_home') }}">All decks</a>
+                <a class="b-btn b-btn--ghost" href="{{ url_for('research.flashcards_home') }}">All decks</a>
             </div>
             <p style="color:var(--b-muted);font-size:.85rem;margin:.6rem 0 0;">Reviews are scheduled with spaced repetition: known cards return later and later, missed cards come back tomorrow.</p>
         </div>

@@ -243,7 +243,7 @@
                 <div class="b-bento" style="margin-bottom:2rem;" aria-label="Your research">
                     <div class="b-card b-card--stat b-reveal"><div class="b-stat-num">{{ research_stats.docs }}</div><div class="b-stat-label">Papers in your library</div></div>
                     <div class="b-card b-card--stat b-reveal"><div class="b-stat-num">{{ research_stats.decks }}</div><div class="b-stat-label">Flashcard decks</div></div>
-                    <a class="b-card b-card--stat b-reveal" href="{{ url_for('flashcards_home') }}" style="text-decoration:none;color:inherit;"><div class="b-stat-num">{{ research_stats.due }}</div><div class="b-stat-label">Cards due for review →</div></a>
+                    <a class="b-card b-card--stat b-reveal" href="{{ url_for('research.flashcards_home') }}" style="text-decoration:none;color:inherit;"><div class="b-stat-num">{{ research_stats.due }}</div><div class="b-stat-label">Cards due for review →</div></a>
                     <div class="b-card b-card--stat b-reveal"><div class="b-stat-num">{{ research_stats.reviews }}</div><div class="b-stat-label">Literature reviews</div></div>
                     <div class="b-card b-card--stat b-reveal"><div class="b-stat-num">{{ research_stats.gap_reports }}</div><div class="b-stat-label">Gap reports</div></div>
                 </div>
@@ -254,27 +254,27 @@
                         <h3>PDF Q&amp;A Library</h3>
                         <p>Upload papers and ask questions — every answer cites the exact page it came from.</p>
                     </a>
-                    <a href="{{ url_for('study_import_page') }}" class="feature-card b-card b-card--feature b-reveal b-d1" style="text-decoration:none;color:inherit;">
+                    <a href="{{ url_for('research.study_import_page') }}" class="feature-card b-card b-card--feature b-reveal b-d1" style="text-decoration:none;color:inherit;">
                         <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 3"/></svg></div>
                         <h3>Paper Import &amp; Graph</h3>
                         <p>Import by arXiv ID or DOI, explore citation graphs, and pull PDFs into your library.</p>
                     </a>
-                    <a href="{{ url_for('cite_page') }}" class="feature-card b-card b-card--feature b-reveal b-d2" style="text-decoration:none;color:inherit;">
+                    <a href="{{ url_for('research.cite_page') }}" class="feature-card b-card b-card--feature b-reveal b-d2" style="text-decoration:none;color:inherit;">
                         <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></div>
                         <h3>Citation Formatter</h3>
                         <p>IEEE, APA, MLA, Vancouver, Chicago and BibTeX — verified against the official guides.</p>
                     </a>
-                    <a href="{{ url_for('litreview_home') }}" class="feature-card b-card b-card--feature b-reveal b-d3" style="text-decoration:none;color:inherit;">
+                    <a href="{{ url_for('research.litreview_home') }}" class="feature-card b-card b-card--feature b-reveal b-d3" style="text-decoration:none;color:inherit;">
                         <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2.4"/></svg></div>
                         <h3>Literature Reviews</h3>
                         <p>Turn 2+ papers into a structured review — themes, claims table, synthesis, all cited.</p>
                     </a>
-                    <a href="{{ url_for('gapfinder_home') }}" class="feature-card b-card b-card--feature b-reveal" style="text-decoration:none;color:inherit;">
+                    <a href="{{ url_for('research.gapfinder_home') }}" class="feature-card b-card b-card--feature b-reveal" style="text-decoration:none;color:inherit;">
                         <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6M11 8v6"/></svg></div>
                         <h3>Research-Gap Finder</h3>
                         <p>Underexplored topics, conflicting claims and single-paper gaps — every gap evidence-backed.</p>
                     </a>
-                    <a href="{{ url_for('flashcards_home') }}" class="feature-card b-card b-card--feature b-reveal b-d1" style="text-decoration:none;color:inherit;">
+                    <a href="{{ url_for('research.flashcards_home') }}" class="feature-card b-card b-card--feature b-reveal b-d1" style="text-decoration:none;color:inherit;">
                         <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M8 5v14"/></svg></div>
                         <h3>Flashcards &amp; Quizzes</h3>
                         <p>Auto-generated cards and MCQs from your papers — every answer traceable to its passage.</p>

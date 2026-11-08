@@ -13,7 +13,7 @@
             <div class="b-cta-row">
                 <a class="b-btn b-btn--primary b-magnet" href="{{ url_for('litreview_export', rid=review.id, format='md') }}">Download Markdown</a>
                 <a class="b-btn b-btn--ghost b-magnet" href="{{ url_for('litreview_export', rid=review.id, format='html') }}">Download HTML</a>
-                <a class="b-btn b-btn--ghost" href="{{ url_for('litreview_home') }}">All reviews</a>
+                <a class="b-btn b-btn--ghost" href="{{ url_for('research.litreview_home') }}">All reviews</a>
             </div>
         </div>
     </div>

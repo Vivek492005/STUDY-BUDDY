@@ -199,7 +199,7 @@ def test_import_arxiv_invalid_id_400(client):
 
 def test_import_arxiv_api_failure_502(client, monkeypatch):
     _authed(client)
-    monkeypatch.setattr("unified_app.fetch_arxiv",
+    monkeypatch.setattr("studybuddy.research_routes.fetch_arxiv",
                         lambda *a, **k: {"error": "arXiv is unreachable"})
     resp = client.post("/api/study/import/arxiv", json={"arxiv_id": "1706.03762"})
     assert resp.status_code == 502
@@ -214,7 +214,7 @@ def test_import_arxiv_happy_path(client, app, monkeypatch):
             "arxiv_id": "1706.03762", "pdf_url": "https://arxiv.org/pdf/1706.03762",
             "openalex_id": "W2741809807", "url": "https://arxiv.org/abs/1706.03762",
             "source": "arxiv", "fetched_at": "2026-10-14T00:00:00+00:00"}
-    monkeypatch.setattr("unified_app.fetch_arxiv", lambda *a, **k: dict(meta))
+    monkeypatch.setattr("studybuddy.research_routes.fetch_arxiv", lambda *a, **k: dict(meta))
     resp = client.post("/api/study/import/arxiv", json={"arxiv_id": "1706.03762"})
     assert resp.status_code == 200, resp.get_data(as_text=True)[:300]
     body = resp.get_json()
@@ -233,7 +233,7 @@ def test_import_doi_invalid_400(client):
 
 def test_import_doi_api_failure_502(client, monkeypatch):
     _authed(client)
-    monkeypatch.setattr("unified_app.fetch_doi",
+    monkeypatch.setattr("studybuddy.research_routes.fetch_doi",
                         lambda *a, **k: {"error": "OpenAlex timed out"})
     resp = client.post("/api/study/import/doi",
                        json={"doi": "10.1038/nature12373"})
@@ -247,14 +247,14 @@ def test_graph_requires_login(client):
 def test_graph_happy_and_error(client, monkeypatch):
     _authed(client)
     monkeypatch.setattr(
-        "unified_app.fetch_citation_graph",
+        "studybuddy.research_routes.fetch_citation_graph",
         lambda *a, **k: {"nodes": [{"id": "W1", "title": "T",
                                    "is_center": True}],
                          "edges": []})
     resp = client.get("/api/study/import/W1/graph")
     assert resp.status_code == 200
     assert resp.get_json()["nodes"]
-    monkeypatch.setattr("unified_app.fetch_citation_graph",
+    monkeypatch.setattr("studybuddy.research_routes.fetch_citation_graph",
                         lambda *a, **k: {"error": "rate limited"})
     assert client.get("/api/study/import/W1/graph").status_code == 502
 
@@ -267,7 +267,7 @@ def test_import_pdf_bad_url_400(client):
 
 def test_import_pdf_download_failure_502(client, monkeypatch):
     _authed(client)
-    monkeypatch.setattr("unified_app.arxiv_download_pdf",
+    monkeypatch.setattr("studybuddy.research_routes.arxiv_download_pdf",
                         lambda *a, **k: False)
     resp = client.post("/api/study/import/pdf",
                        json={"pdf_url": "https://arxiv.org/pdf/1706.03762",

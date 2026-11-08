@@ -46,13 +46,13 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     <ul class="b-dropdown-menu" role="menu" aria-label="Research tools">
-                        <li><a href="{{ url_for('research_home') }}" role="menuitem">Research hub</a></li>
+                        <li><a href="{{ url_for('research.research_home') }}" role="menuitem">Research hub</a></li>
                         <li><a href="{{ url_for('study_library.study_library') }}" role="menuitem">Document library</a></li>
-                        <li><a href="{{ url_for('study_import_page') }}" role="menuitem">arXiv / DOI import</a></li>
-                        <li><a href="{{ url_for('cite_page') }}" role="menuitem">Citation formatter</a></li>
-                        <li><a href="{{ url_for('litreview_home') }}" role="menuitem">Literature reviews</a></li>
-                        <li><a href="{{ url_for('gapfinder_home') }}" role="menuitem">Research-gap finder</a></li>
-                        <li><a href="{{ url_for('flashcards_home') }}" role="menuitem">Flashcards &amp; quizzes</a></li>
+                        <li><a href="{{ url_for('research.study_import_page') }}" role="menuitem">arXiv / DOI import</a></li>
+                        <li><a href="{{ url_for('research.cite_page') }}" role="menuitem">Citation formatter</a></li>
+                        <li><a href="{{ url_for('research.litreview_home') }}" role="menuitem">Literature reviews</a></li>
+                        <li><a href="{{ url_for('research.gapfinder_home') }}" role="menuitem">Research-gap finder</a></li>
+                        <li><a href="{{ url_for('research.flashcards_home') }}" role="menuitem">Flashcards &amp; quizzes</a></li>
                     </ul>
                 </li>
                 <li class="b-dropdown">

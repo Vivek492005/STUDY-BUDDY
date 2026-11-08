@@ -91,7 +91,7 @@ def test_import_page_renders_past_imports(client, app):
 
 def test_arxiv_import_dedupes(client, app, monkeypatch):
     _authed(client)
-    monkeypatch.setattr("unified_app.fetch_arxiv",
+    monkeypatch.setattr("studybuddy.research_routes.fetch_arxiv",
                         lambda *a, **k: dict(ARXIV_META))
     first = client.post("/api/study/import/arxiv",
                         json={"arxiv_id": "1706.03762"})
@@ -111,7 +111,7 @@ def test_doi_import_stores_retraction_flags(client, app, monkeypatch):
     _authed(client)
     meta = dict(ARXIV_META, arxiv_id=None, doi="10.1234/retracted",
                 is_retracted=True, oa_version="submittedVersion")
-    monkeypatch.setattr("unified_app.fetch_doi", lambda *a, **k: dict(meta))
+    monkeypatch.setattr("studybuddy.research_routes.fetch_doi", lambda *a, **k: dict(meta))
     resp = client.post("/api/study/import/doi",
                        json={"doi": "10.1234/retracted"})
     assert resp.status_code == 200
@@ -181,7 +181,7 @@ def test_search_route_shapes(client, monkeypatch):
                "venue": "ICML", "doi": "10.3/ccc", "arxiv_id": None,
                "pdf_url": None, "openalex_id": "W9", "abstract": "Abs.",
                "sources": ["openalex"], "source": "openalex"}]
-    monkeypatch.setattr("unified_app.search_papers",
+    monkeypatch.setattr("studybuddy.research_routes.search_papers",
                         lambda *a, **k: canned)
     resp = client.post("/api/study/import/search", json={"query": "found"})
     assert resp.status_code == 200
@@ -200,7 +200,7 @@ def test_search_route_requires_login(app):
 
 def test_full_import_with_pdf(client, app, monkeypatch):
     _authed(client)
-    monkeypatch.setattr("unified_app.fetch_arxiv",
+    monkeypatch.setattr("studybuddy.research_routes.fetch_arxiv",
                         lambda *a, **k: dict(ARXIV_META))
 
     def fake_download(url, dest):
@@ -208,7 +208,7 @@ def test_full_import_with_pdf(client, app, monkeypatch):
             fh.write(_pdf_bytes(["Attention mechanism transforms models."]))
         return True
 
-    monkeypatch.setattr("unified_app.arxiv_download_pdf", fake_download)
+    monkeypatch.setattr("studybuddy.research_routes.arxiv_download_pdf", fake_download)
     resp = client.post("/api/study/import/full",
                        json={"arxiv_id": "1706.03762"})
     assert resp.status_code == 200, resp.get_data(as_text=True)[:400]
@@ -223,9 +223,9 @@ def test_full_import_with_pdf(client, app, monkeypatch):
 
 def test_full_import_doc_null_on_pdf_failure(client, app, monkeypatch):
     _authed(client)
-    monkeypatch.setattr("unified_app.fetch_arxiv",
+    monkeypatch.setattr("studybuddy.research_routes.fetch_arxiv",
                         lambda *a, **k: dict(ARXIV_META))
-    monkeypatch.setattr("unified_app.arxiv_download_pdf",
+    monkeypatch.setattr("studybuddy.research_routes.arxiv_download_pdf",
                         lambda *a, **k: False)
     resp = client.post("/api/study/import/full",
                        json={"arxiv_id": "1706.03762"})
@@ -255,7 +255,7 @@ def test_two_step_pdf_route_still_works(client, app, monkeypatch):
             fh.write(_pdf_bytes(["Imported paper body text here."]))
         return True
 
-    monkeypatch.setattr("unified_app.arxiv_download_pdf", fake_download)
+    monkeypatch.setattr("studybuddy.research_routes.arxiv_download_pdf", fake_download)
     resp = client.post("/api/study/import/pdf", json={
         "pdf_url": "https://arxiv.org/pdf/1706.03762",
         "title": "Attention", "arxiv_id": "1706.03762"})
@@ -345,7 +345,7 @@ def test_citations_route_shapes(client, app, monkeypatch):
                           "openalex_id": "W999",
                           "cited_paper_title": "Seed Paper"}],
               "bridges": []}
-    monkeypatch.setattr("unified_app.recent_citations",
+    monkeypatch.setattr("studybuddy.research_routes.recent_citations",
                         lambda *a, **k: canned)
     resp = client.get("/api/study/import/citations")
     assert resp.status_code == 200
