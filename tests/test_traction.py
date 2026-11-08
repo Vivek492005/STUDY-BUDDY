@@ -83,15 +83,22 @@ def _make_user(email, name="Test User"):
     return user
 
 
-def _seed_traction_data():
+def _seed_traction_data(now=FIXED_NOW):
     """Seed 3 users with today/yesterday activity. Returns (bounds, users).
+
+    Activity timestamps are relative to ``now`` (default FIXED_NOW, for
+    the tests that call compute_traction(now=FIXED_NOW) directly).
+    Tests that hit the HTTP endpoint MUST pass real now: the endpoint
+    computes with the real clock, so FIXED_NOW-relative seeds drift out
+    of "today" as soon as the suite runs on a later date (this exact
+    bug made test_endpoint_reflects_seeded_data fail after 2026-11-05).
 
     user1: session + quiz + DSA solved + interview done + resume — TODAY.
     user2: session + quiz + DSA solved + resume — YESTERDAY; interview
            started but NOT completed (total_score None → must not count).
     user3: created yesterday, no activity at all.
     """
-    bounds = traction_mod._window_bounds(FIXED_NOW)
+    bounds = traction_mod._window_bounds(now)
     today = bounds["today_start"] + timedelta(hours=2)
     yesterday = bounds["yesterday_start"] + timedelta(hours=2)
 
@@ -253,7 +260,10 @@ def test_endpoint_reflects_seeded_data(app, client):
     """Endpoint returns the same seeded counts over HTTP."""
     with app.app_context():
         traction_mod.clear_traction_cache()
-        _seed_traction_data()
+        # Seed relative to REAL now: the endpoint computes with the real
+        # clock, so FIXED_NOW-relative seeds fall out of "today" on any
+        # run date after 2026-11-05.
+        _seed_traction_data(now=datetime.now(UTC))
     resp = client.get("/api/traction")
     assert resp.status_code == 200
     data = resp.get_json()

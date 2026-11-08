@@ -47,7 +47,10 @@ def test_audited_pages_have_no_bare_inline_scripts(csrf_client):
 
 def test_inline_script_nonce_matches_csp_header(csrf_client):
     r = csrf_client.get("/")
-    header = r.headers.get("Content-Security-Policy-Report-Only") or ""
+    # Enforced by default; fall back to the report-only header only when
+    # the CSP_REPORT_ONLY=1 opt-out is active.
+    header = (r.headers.get("Content-Security-Policy")
+              or r.headers.get("Content-Security-Policy-Report-Only") or "")
     m = re.search(r"'nonce-([^']+)'", header)
     assert m, "CSP header must carry a per-request nonce"
     html = r.get_data(as_text=True)

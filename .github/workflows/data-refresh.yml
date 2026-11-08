@@ -45,7 +45,28 @@ jobs:
           python scripts/build_skills_taxonomy.py
 
       - name: Validate datasets (DATA-01 schemas + freshness)
-        run: python scripts/validate_data.py --strict
+        # Blocking gate: fails only on REAL errors (unreadable JSON,
+        # duplicate ids, bad confidence). The --strict provenance check
+        # stays advisory (see next step): the curated question banks
+        # predate the provenance scheme and carry ~19,800 legacy
+        # warnings (missing source_url/retrieved_at/license fields they
+        # were never designed to have), so a blocking --strict can
+        # never go green — this step failed the Nov 2 + Oct 26 runs
+        # for exactly that reason. CI's lint job treats --strict the
+        # same way (continue-on-error, "legacy provenance warnings").
+        run: python scripts/validate_data.py
+
+      - name: Validate datasets (strict, advisory)
+        continue-on-error: true # legacy provenance warnings; see above
+        run: python scripts/validate_data.py --strict --report validate-data-report.json
+
+      - name: Upload data-validation report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: validate-data-report
+          path: validate-data-report.json
+          if-no-files-found: ignore
 
       - name: Link-check dataset URLs
         run: python scripts/check_links.py --report

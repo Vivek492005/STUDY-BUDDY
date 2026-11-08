@@ -56,7 +56,10 @@ jobs:
       - run: set -o pipefail; python -m pytest tests/ -q -n auto -p no:cacheprovider --tb=line -W error::DeprecationWarning -W "ignore::DeprecationWarning:flask_login.login_manager" --cov=studybuddy --cov-report=term-missing 2>&1 | tail -60
         env:
           STUDYBUDDY_NO_PARSE_SANDBOX: "1"
-          CSP_REPORT_ONLY: "1"
+          # Eval 4 P0: no CSP_REPORT_ONLY here — the suite runs in the
+          # enforced CSP mode (production default) so the CSP header
+          # tests cover the real mode. Report-only is still covered by
+          # test_csp_report_only_when_env_set (monkeypatched).
       # TEST-04: Benchmarks on every PR (small subset)
       - run: set -o pipefail; python benchmarks/run.py --quick 2>&1 | tail -10
         env:
@@ -103,7 +106,8 @@ jobs:
       - run: set -o pipefail; python -m pytest tests/ -q -n auto -p no:cacheprovider --tb=line 2>&1 | tail -50
         env:
           STUDYBUDDY_NO_PARSE_SANDBOX: "1"
-          CSP_REPORT_ONLY: "1"
+          # Eval 4 P0: enforced CSP mode (production default) — see the
+          # test-sqlite job above; no CSP_REPORT_ONLY here.
 
   security:
     name: Bandit + pip-audit

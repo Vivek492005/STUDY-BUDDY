@@ -9,6 +9,9 @@ google-genai==2.31.0
 # released 2026-11-03) and then errors because a range is not pinned
 # with ==. Pinning 2.62.1 makes the pin match what the resolver picks.
 google-auth==2.62.1
+# CVE-2026-49272 in oauthlib 4.0.0: pin 4.0.1 directly (transitive via
+# requests-oauthlib / google-auth-oauthlib) so pip-audit stays clean.
+oauthlib==4.0.1
 pypdf==6.21.4
 python-docx==1.2.0
 gunicorn==26.2.0
