@@ -32,9 +32,24 @@ class TestReproducibleBuilds:
         text = open(os.path.join(REPO, "requirements.txt")).read()
         for pkg, ver in [("flask", "3.1.3"), ("werkzeug", "3.1.9"),
                          ("gunicorn", "26.2.0"), ("pypdf", "6.21.4"),
-                         ("oauthlib", "4.0.1")]:
+                         ("oauthlib", "4.0.1"),
+                         ("google-auth", "2.62.1")]:
             assert re.search(rf"^{pkg}=={re.escape(ver)}\b", text, re.M), \
                 f"{pkg}=={ver} missing from lockfile"
+
+    def test_security_pins_survive_dev_lock(self):
+        """SEC-07 pins must also be present in requirements-dev.txt.
+
+        CI installs requirements-dev.txt (not requirements.txt), so a
+        stale dev lockfile keeps the vulnerable version in the CI env
+        even after the app lockfile is bumped (2026-11-08: oauthlib
+        4.0.0 / CVE-2026-49272 failed CI while requirements.txt had
+        4.0.1)."""
+        text = open(os.path.join(REPO, "requirements-dev.txt")).read()
+        for pkg, ver in [("oauthlib", "4.0.1"),
+                         ("google-auth", "2.62.1")]:
+            assert re.search(rf"^{pkg}=={re.escape(ver)}\b", text, re.M), \
+                f"{pkg}=={ver} missing from dev lockfile"
 
 
 class TestCIFoundation:
