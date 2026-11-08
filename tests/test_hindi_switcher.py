@@ -91,12 +91,34 @@ def test_html_lang_follows_locale_on_standalone_and_base_pages(client):
 
 
 def test_switcher_states_hindi_scope_in_ui(client):
-    # Honest scope: Hindi covers the landing page; the rest of the site
-    # stays in English. The switcher's tooltip says so in the UI itself,
-    # not just in docs/configuration.md.
+    # Honest scope: Hindi covers the landing page and the shared
+    # navigation; other page bodies stay in English. The switcher's
+    # tooltip says so in the UI itself, not just in
+    # docs/configuration.md.
     resp = client.get("/")
     assert resp.status_code == 200
     assert (
-        b"Hindi translation currently covers the landing page"
+        b"Hindi translation currently covers the landing page and the navigation"
         in resp.data
     )
+
+
+def test_nav_labels_render_in_hindi(client):
+    # P1 (Eval 4, 2026-11-08): the shared nav is translated, so Hindi
+    # labels appear on every page — not just the landing page.
+    resp = client.get("/?lang=hi")
+    assert resp.status_code == 200
+    for label in ("रिज़्यूमे", "करियर", "रिसर्च", "हब", "साइन अप"):
+        assert label.encode("utf-8") in resp.data
+    # Same nav on a non-landing page.
+    resp = client.get("/learn/roadmaps?lang=hi")
+    assert resp.status_code == 200
+    for label in ("रिज़्यूमे", "करियर", "अल्टीमेट लैब"):
+        assert label.encode("utf-8") in resp.data
+
+
+def test_nav_labels_stay_english_by_default(client):
+    resp = client.get("/learn/roadmaps")
+    assert resp.status_code == 200
+    assert b"Resume" in resp.data
+    assert "रिज़्यूमे".encode("utf-8") not in resp.data

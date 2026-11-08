@@ -17,7 +17,7 @@ benchmarks/             gold sets + run.py harness (ENG-09)
 tests/                  9,820 tests; conftest.py has shared fixtures
 ```
 
-Start: read `docs/PROJECT_OVERVIEW.md`, then `studybuddy/parsing.py`
+Start: read `README.md`, then `studybuddy/parsing.py`
 (the parser is the heart of the product), then the module you want to touch.
 
 ## Getting started

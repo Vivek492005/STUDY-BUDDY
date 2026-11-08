@@ -14,74 +14,75 @@
         </button>
         <nav aria-label="Primary" id="b-nav-menu">
             <ul class="b-nav-links" style="list-style:none;margin:0;padding:0;">
-                <li><a href="{{ url_for('index') }}" class="{{ 'b-active' if _nav == 'hub' }}">Hub</a></li>
-                <li><a href="{{ url_for('resume_home') }}" class="{{ 'b-active' if _nav == 'resume' }}">Resume</a></li>
+                <li><a href="{{ url_for('index') }}" class="{{ 'b-active' if _nav == 'hub' }}">{{ _('Hub') }}</a></li>
+                <li><a href="{{ url_for('resume_home') }}" class="{{ 'b-active' if _nav == 'resume' }}">{{ _('Resume') }}</a></li>
                 <li class="b-dropdown">
-                    <button type="button" class="b-dropbtn {{ 'b-active' if _nav == 'practice' }}" aria-haspopup="true" aria-expanded="false">Practice
+                    <button type="button" class="b-dropbtn {{ 'b-active' if _nav == 'practice' }}" aria-haspopup="true" aria-expanded="false">{{ _('Practice') }}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     <ul class="b-dropdown-menu" role="menu" aria-label="Practice tools">
-                        <li><a href="{{ url_for('practice') }}" role="menuitem">Practice hub</a></li>
-                        <li><a href="{{ url_for('dsa.dsa_home') }}" role="menuitem">DSA practice</a></li>
-                        <li><a href="{{ url_for('interview_home') }}" role="menuitem">Mock interviews</a></li>
-                        <li><a href="{{ url_for('coach_home') }}" role="menuitem">Communication coach</a></li>
-                        <li><a href="{{ url_for('aptitude_home') }}" role="menuitem">Aptitude tests</a></li>
-                        <li><a href="{{ url_for('star_home') }}" role="menuitem">STAR builder</a></li>
-                        <li><a href="{{ url_for('peer_hub') }}" role="menuitem">Peer mock interviews</a></li>
+                        <li><a href="{{ url_for('practice') }}" role="menuitem">{{ _('Practice hub') }}</a></li>
+                        <li><a href="{{ url_for('dsa.dsa_home') }}" role="menuitem">{{ _('DSA practice') }}</a></li>
+                        <li><a href="{{ url_for('interview_home') }}" role="menuitem">{{ _('Mock interviews') }}</a></li>
+                        <li><a href="{{ url_for('coach_home') }}" role="menuitem">{{ _('Communication coach') }}</a></li>
+                        <li><a href="{{ url_for('aptitude_home') }}" role="menuitem">{{ _('Aptitude tests') }}</a></li>
+                        <li><a href="{{ url_for('star_home') }}" role="menuitem">{{ _('STAR builder') }}</a></li>
+                        <li><a href="{{ url_for('peer_hub') }}" role="menuitem">{{ _('Peer mock interviews') }}</a></li>
                     </ul>
                 </li>
                 <li class="b-dropdown">
-                    <button type="button" class="b-dropbtn {{ 'b-active' if _nav == 'learn' }}" aria-haspopup="true" aria-expanded="false">Learn
+                    <button type="button" class="b-dropbtn {{ 'b-active' if _nav == 'learn' }}" aria-haspopup="true" aria-expanded="false">{{ _('Learn') }}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     <ul class="b-dropdown-menu" role="menu" aria-label="Learning tools">
-                        <li><a href="{{ url_for('learn.learn_hub') }}" role="menuitem">Learning hub</a></li>
-                        <li><a href="{{ url_for('learn.roadmaps_home') }}" role="menuitem">Skill roadmaps</a></li>
-                        <li><a href="{{ url_for('learn.quizzes_home') }}" role="menuitem">Skill quizzes</a></li>
-                        <li><a href="{{ url_for('learn.certs_home') }}" role="menuitem">Certifications</a></li>
+                        <li><a href="{{ url_for('learn.learn_hub') }}" role="menuitem">{{ _('Learning hub') }}</a></li>
+                        <li><a href="{{ url_for('learn.roadmaps_home') }}" role="menuitem">{{ _('Skill roadmaps') }}</a></li>
+                        <li><a href="{{ url_for('learn.quizzes_home') }}" role="menuitem">{{ _('Skill quizzes') }}</a></li>
+                        <li><a href="{{ url_for('learn.certs_home') }}" role="menuitem">{{ _('Certifications') }}</a></li>
                     </ul>
                 </li>
                 <li class="b-dropdown">
-                    <button type="button" class="b-dropbtn {{ 'b-active' if _nav == 'research' }}" aria-haspopup="true" aria-expanded="false">Research
+                    <button type="button" class="b-dropbtn {{ 'b-active' if _nav == 'research' }}" aria-haspopup="true" aria-expanded="false">{{ _('Research') }}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     <ul class="b-dropdown-menu" role="menu" aria-label="Research tools">
-                        <li><a href="{{ url_for('research.research_home') }}" role="menuitem">Research hub</a></li>
-                        <li><a href="{{ url_for('study_library.study_library') }}" role="menuitem">Document library</a></li>
-                        <li><a href="{{ url_for('research.study_import_page') }}" role="menuitem">arXiv / DOI import</a></li>
-                        <li><a href="{{ url_for('research.cite_page') }}" role="menuitem">Citation formatter</a></li>
-                        <li><a href="{{ url_for('research.litreview_home') }}" role="menuitem">Literature reviews</a></li>
-                        <li><a href="{{ url_for('research.gapfinder_home') }}" role="menuitem">Research-gap finder</a></li>
-                        <li><a href="{{ url_for('research.flashcards_home') }}" role="menuitem">Flashcards &amp; quizzes</a></li>
+                        <li><a href="{{ url_for('research.research_home') }}" role="menuitem">{{ _('Research hub') }}</a></li>
+                        <li><a href="{{ url_for('study_library.study_library') }}" role="menuitem">{{ _('Document library') }}</a></li>
+                        <li><a href="{{ url_for('research.study_import_page') }}" role="menuitem">{{ _('arXiv / DOI import') }}</a></li>
+                        <li><a href="{{ url_for('research.cite_page') }}" role="menuitem">{{ _('Citation formatter') }}</a></li>
+                        <li><a href="{{ url_for('research.litreview_home') }}" role="menuitem">{{ _('Literature reviews') }}</a></li>
+                        <li><a href="{{ url_for('research.gapfinder_home') }}" role="menuitem">{{ _('Research-gap finder') }}</a></li>
+                        <li><a href="{{ url_for('research.flashcards_home') }}" role="menuitem">{{ _('Flashcards & quizzes') }}</a></li>
                     </ul>
                 </li>
                 <li class="b-dropdown">
-                    <button type="button" class="b-dropbtn {{ 'b-active' if _nav == 'career' }}" aria-haspopup="true" aria-expanded="false">Career
+                    <button type="button" class="b-dropbtn {{ 'b-active' if _nav == 'career' }}" aria-haspopup="true" aria-expanded="false">{{ _('Career') }}
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     <ul class="b-dropdown-menu" role="menu" aria-label="Career tools">
-                        <li><a href="{{ url_for('career.tracker_board') }}" role="menuitem">Application tracker</a></li>
-                        <li><a href="{{ url_for('career.assessment_quiz') }}" role="menuitem">Career discovery</a></li>
-                        <li><a href="{{ url_for('salary_explorer') }}" role="menuitem">Salary explorer</a></li>
-                        <li><a href="{{ url_for('opportunity_board') }}" role="menuitem">Opportunity radar</a></li>
-                        <li><a href="{{ url_for('portfolio_builder') }}" role="menuitem">Portfolio builder</a></li>
-                        <li><a href="{{ url_for('momentum_hub') }}" role="menuitem">Momentum</a></li>
-                        <li><a href="{{ url_for('retrospectives_hub') }}" role="menuitem">Rejection retrospectives</a></li>
-                        <li><a href="{{ url_for('mentors.mentors_hub') }}" role="menuitem">Mentors</a></li>
-                        <li><a href="{{ url_for('health_review_hub') }}" role="menuitem">Career health review</a></li>
+                        <li><a href="{{ url_for('career.tracker_board') }}" role="menuitem">{{ _('Application tracker') }}</a></li>
+                        <li><a href="{{ url_for('career.assessment_quiz') }}" role="menuitem">{{ _('Career discovery') }}</a></li>
+                        <li><a href="{{ url_for('salary_explorer') }}" role="menuitem">{{ _('Salary explorer') }}</a></li>
+                        <li><a href="{{ url_for('opportunity_board') }}" role="menuitem">{{ _('Opportunity radar') }}</a></li>
+                        <li><a href="{{ url_for('portfolio_builder') }}" role="menuitem">{{ _('Portfolio builder') }}</a></li>
+                        <li><a href="{{ url_for('momentum_hub') }}" role="menuitem">{{ _('Momentum') }}</a></li>
+                        <li><a href="{{ url_for('retrospectives_hub') }}" role="menuitem">{{ _('Rejection retrospectives') }}</a></li>
+                        <li><a href="{{ url_for('mentors.mentors_hub') }}" role="menuitem">{{ _('Mentors') }}</a></li>
+                        <li><a href="{{ url_for('health_review_hub') }}" role="menuitem">{{ _('Career health review') }}</a></li>
                     </ul>
                 </li>
-                <li><a href="/ultimate/lab" class="{{ 'b-active' if _nav == 'lab' }}">Ultimate Lab</a></li>
+                <li><a href="/ultimate/lab" class="{{ 'b-active' if _nav == 'lab' }}">{{ _('Ultimate Lab') }}</a></li>
                 {% include "_auth_links.html" %}
             </ul>
         </nav>
         <div class="b-lang-switch" role="group" aria-label="Language">
             <a href="{{ switch_url('en') }}"{% if current_locale == 'en' %} aria-current="true" style="font-weight:700"{% endif %}>EN</a>
             <span aria-hidden="true">|</span>
-            {# Honest scope (audit fix, 2026-10-28): Hindi covers the
-               landing page; the rest of the site stays in English.
+            {# Honest scope (audit fix, 2026-10-28; nav added 2026-11-08):
+               Hindi covers the landing page and the shared navigation;
+               other page bodies stay in English.
                See docs/configuration.md "Internationalization". #}
-            <a href="{{ switch_url('hi') }}" title="Hindi translation currently covers the landing page; other pages stay in English."{% if current_locale == 'hi' %} aria-current="true" style="font-weight:700"{% endif %}>हिंदी</a>
+            <a href="{{ switch_url('hi') }}" title="Hindi translation currently covers the landing page and the navigation; other pages stay in English."{% if current_locale == 'hi' %} aria-current="true" style="font-weight:700"{% endif %}>हिंदी</a>
         </div>
         {% if llm_consent_given is defined and not llm_consent_given %}
         {# SEC-09 (audit Stage 4): prompt signed-in users whose LLM

@@ -86,13 +86,15 @@ documented under "Rate-limit storage" anyway.
 
 ## Internationalization (Hindi) — honest scope
 
-- The landing page (`/`) is fully translated: 50 strings in
+- The landing page (`/`) is fully translated, and the shared
+  navigation (`templates/_site_nav.html` + `_auth_links.html`) is
+  translated too: 86 strings in
   `translations/hi/LC_MESSAGES/messages.po`, rendered via the stdlib
   `.po` reader in `studybuddy/i18n.py` (no Flask-Babel required).
   Strings with no Hindi entry fall back to English.
-- The shared navigation and all other page bodies remain English.
-  The switcher (EN | हिंदी, in the shared nav) therefore changes the
-  landing page's language and persists the choice in a `lang` cookie;
+- All other page bodies remain English. The switcher (EN | हिंदी, in
+  the shared nav) therefore changes the landing page's and the
+  navigation's language and persists the choice in a `lang` cookie;
   it does not translate the rest of the site. This scope is stated
   here and in the switcher's tooltip — not implied otherwise.
 - Locale resolution: `?lang` (validated; invalid values never set a

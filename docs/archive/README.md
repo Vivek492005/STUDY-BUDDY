@@ -24,7 +24,7 @@ place.
 - Deployment: root `README.md` (Installation & Setup, Production,
   Deployment sections) + `render.yaml` (authoritative) +
   `docs/ops/` runbooks.
-- Architecture: `docs/PROJECT_OVERVIEW.md`, `docs/ops/`, `docs/api/`.
+- Architecture: `docs/ops/`, `docs/api/`.
 - Licence: root `LICENSE` (MIT, 2026 Vivek Bartwal). The old
   `docs/LICENSE` copy (2025, different holder) was corrected to match
   the root file during the same cleanup; it is not archived.

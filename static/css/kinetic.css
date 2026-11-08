@@ -63,7 +63,16 @@
   gap: 12px;
 }
 .b-brand img { border-radius: 0 !important; }
-.b-brand .sb-brand-accent { color: var(--sb-blue); }
+/* a11y (Eval 4, 2026-11-08): --sb-blue #2447ff is 3.22:1 on the dark nav
+   (#0a0a0a) — fails WCAG AA 4.5:1 at mobile widths where the brand is
+   18.4px bold (below the large-text bar). #6b8aff is 6.32:1 on the same
+   background. --sb-blue itself is kept for cursor/gradient use.
+   Exception: the landing page (body.sb-editorial) has a cream nav
+   background (#f2f1ea) where #6b8aff is only 2.76:1, so the landing
+   keeps the original blue (5.39:1 on cream). Every other page's nav
+   sits on #0a0a0a. */
+.b-brand .sb-brand-accent { color: #6b8aff; }
+body.sb-editorial .b-brand .sb-brand-accent { color: var(--sb-blue); }
 .b-nav-links { gap: 26px; }
 .b-nav-links a,
 .b-nav-links .b-dropbtn {

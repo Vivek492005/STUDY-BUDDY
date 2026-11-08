@@ -689,6 +689,12 @@ a.b-card:hover, a.b-card:focus-visible { color: inherit; }
   [data-theme="resume"] #b-nav-menu { background: rgba(4, 18, 26, .97); }
   [data-theme="research"] #b-nav-menu { background: rgba(13, 7, 22, .97); }
   #b-nav-menu.b-open { display: block; }
+  /* Mobile-nav fix (P1 Eval 4 verification, 2026-11-08): the <=900px rule
+     above hides every plain nav link (Hub, Resume, Ultimate Lab,
+     Dashboard). Nothing restored them when the hamburger opened, so the
+     menu showed only dropdown buttons + Sign Up on phones. Restore the
+     plain links when the menu is open. */
+  #b-nav-menu.b-open .b-nav-links a:not(.b-btn) { display: block; }
   #b-nav-menu .b-nav-links { flex-direction: column; align-items: stretch; gap: 2px; }
   #b-nav-menu .b-nav-links > li > a, #b-nav-menu .b-dropbtn { padding: .7rem .2rem; font-size: 1rem; }
   .b-dropdown-menu {

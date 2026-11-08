@@ -156,3 +156,112 @@ msgstr "मेरा रिज़्यूमे विश्लेषित क
 
 msgid "Explore the tools"
 msgstr "टूल्स देखें"
+
+# Shared navigation (P1 Eval 4, 2026-11-08): main nav + auth links.
+msgid "Hub"
+msgstr "हब"
+
+msgid "Resume"
+msgstr "रिज़्यूमे"
+
+msgid "Research"
+msgstr "रिसर्च"
+
+msgid "Career"
+msgstr "करियर"
+
+msgid "Ultimate Lab"
+msgstr "अल्टीमेट लैब"
+
+msgid "Practice hub"
+msgstr "अभ्यास हब"
+
+msgid "DSA practice"
+msgstr "DSA अभ्यास"
+
+msgid "Mock interviews"
+msgstr "मॉक इंटरव्यू"
+
+msgid "Communication coach"
+msgstr "कम्युनिकेशन कोच"
+
+msgid "Aptitude tests"
+msgstr "एप्टीट्यूड टेस्ट"
+
+msgid "STAR builder"
+msgstr "STAR बिल्डर"
+
+msgid "Peer mock interviews"
+msgstr "पीयर मॉक इंटरव्यू"
+
+msgid "Learning hub"
+msgstr "लर्निंग हब"
+
+msgid "Skill roadmaps"
+msgstr "स्किल रोडमैप"
+
+msgid "Skill quizzes"
+msgstr "स्किल क्विज़"
+
+msgid "Certifications"
+msgstr "सर्टिफिकेशन"
+
+msgid "Research hub"
+msgstr "रिसर्च हब"
+
+msgid "Document library"
+msgstr "डॉक्यूमेंट लाइब्रेरी"
+
+msgid "arXiv / DOI import"
+msgstr "arXiv / DOI इम्पोर्ट"
+
+msgid "Citation formatter"
+msgstr "साइटेशन फॉर्मैटर"
+
+msgid "Literature reviews"
+msgstr "लिटरेचर रिव्यू"
+
+msgid "Research-gap finder"
+msgstr "रिसर्च-गैप फाइंडर"
+
+msgid "Flashcards & quizzes"
+msgstr "फ्लैशकार्ड और क्विज़"
+
+msgid "Application tracker"
+msgstr "एप्लिकेशन ट्रैकर"
+
+msgid "Career discovery"
+msgstr "करियर डिस्कवरी"
+
+msgid "Salary explorer"
+msgstr "सैलरी एक्सप्लोरर"
+
+msgid "Opportunity radar"
+msgstr "अवसर रडार"
+
+msgid "Portfolio builder"
+msgstr "पोर्टफोलियो बिल्डर"
+
+msgid "Momentum"
+msgstr "मोमेंटम"
+
+msgid "Rejection retrospectives"
+msgstr "रिजेक्शन रेट्रोस्पेक्टिव"
+
+msgid "Mentors"
+msgstr "मेंटर्स"
+
+msgid "Career health review"
+msgstr "करियर हेल्थ रिव्यू"
+
+msgid "Dashboard"
+msgstr "डैशबोर्ड"
+
+msgid "Login"
+msgstr "लॉगिन"
+
+msgid "Sign Up"
+msgstr "साइन अप"
+
+msgid "Logout"
+msgstr "लॉगआउट"

@@ -1,10 +1,10 @@
 {# Shared auth links snippet. Include inside a .b-nav-links list.
    Keeps the bento nav theme in every template. #}
 {% if current_user.is_authenticated %}
-    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('dashboard') }}">{{ _('Dashboard') }}</a></li>
     <li><span class="b-nav-user" title="{{ current_user.email }}">{{ current_user.name }}</span></li>
-    <li><form method="POST" action="{{ url_for('auth.logout') }}" style="display:inline; margin:0;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" class="b-btn b-btn--ghost b-btn--sm" style="font-family:inherit;">Logout</button></form></li>
+    <li><form method="POST" action="{{ url_for('auth.logout') }}" style="display:inline; margin:0;"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" class="b-btn b-btn--ghost b-btn--sm" style="font-family:inherit;">{{ _('Logout') }}</button></form></li>
 {% else %}
-    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-    <li><a href="{{ url_for('auth.register') }}" class="b-btn b-btn--primary b-btn--sm">Sign Up</a></li>
+    <li><a href="{{ url_for('auth.login') }}">{{ _('Login') }}</a></li>
+    <li><a href="{{ url_for('auth.register') }}" class="b-btn b-btn--primary b-btn--sm">{{ _('Sign Up') }}</a></li>
 {% endif %}
