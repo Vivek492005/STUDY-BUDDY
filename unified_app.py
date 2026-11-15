@@ -3629,7 +3629,7 @@ def _public_sitemap_urls(app, base):
     pages appear automatically."""
     excluded = {"/health", "/healthz", "/readyz", "/version",
                 "/robots.txt", "/sitemap.xml", "/login", "/register",
-                "/logout", "/verify-email",
+                "/logout", "/verify-email", "/forgot-password",
                 # Manually auth-gated (no @login_required decorator — the
                 # view itself answers 401 for anonymous users), so the
                 # decorator detector above cannot see them. The anonymous-

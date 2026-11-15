@@ -55,6 +55,8 @@ def test_sitemap_lists_public_pages(client):
         assert p in paths, f"{p} missing from sitemap"
     for p in GATED:
         assert p not in paths, f"login-gated {p} must not be in sitemap"
+    # Auth utility pages are not content and must not be listed.
+    assert "/forgot-password" not in paths
     # No API, static, ops or parameterized URLs.
     assert not any("/api/" in p or "/static/" in p for p in paths)
     assert not any(p in ("/health", "/healthz", "/readyz", "/version",

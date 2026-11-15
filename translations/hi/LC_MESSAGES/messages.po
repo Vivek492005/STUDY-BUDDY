@@ -157,6 +157,9 @@ msgstr "मेरा रिज़्यूमे विश्लेषित क
 msgid "Explore the tools"
 msgstr "टूल्स देखें"
 
+msgid "Try the demo — no sign-up"
+msgstr "डेमो आज़माएँ — बिना साइन-अप के"
+
 # Shared navigation (P1 Eval 4, 2026-11-08): main nav + auth links.
 msgid "Hub"
 msgstr "हब"
