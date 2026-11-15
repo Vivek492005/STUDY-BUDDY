@@ -88,4 +88,3 @@ jobs:
             Review the diff, then merge — data deploys with the app.
           branch: chore/weekly-data-refresh
           delete-branch: true
-          labels: data-refresh, automated
