@@ -12,6 +12,10 @@ google-auth==2.62.1
 # CVE-2026-49272 in oauthlib 4.0.0: pin 4.0.1 directly (transitive via
 # requests-oauthlib / google-auth-oauthlib) so pip-audit stays clean.
 oauthlib==4.0.1
+# CVE-2026-126360 (ReDoS in traceparent parsing) in opentelemetry-api
+# 1.45.1: pin 1.45.2 directly (transitive via google-api-core) so
+# pip-audit stays clean.
+opentelemetry-api==1.45.2
 pypdf==6.21.4
 python-docx==1.2.0
 gunicorn==26.2.0

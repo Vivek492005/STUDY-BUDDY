@@ -6,6 +6,9 @@ pytest-xdist==3.8.0
 ruff==0.17.1
 bandit==1.9.4
 pip-audit==2.10.1
+# GHSA-xmj3-9gf7-h52w in setuptools 84.0.0 (Windows wheel path escape):
+# pin 84.1.0 so the CI-env pip-audit stays clean (CI installs this file).
+setuptools==84.1.0
 pre-commit
 flask-migrate  # also in requirements.in (needed for flask db in prod)
 pytest-cov

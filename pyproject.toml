@@ -25,6 +25,7 @@ dependencies = [
     "google-api-python-client",
     "google-auth==2.62.1",
     "oauthlib==4.0.1",
+    "opentelemetry-api==1.45.2",
     "google-auth-httplib2",
     "google-auth-oauthlib",
     "flask-wtf",

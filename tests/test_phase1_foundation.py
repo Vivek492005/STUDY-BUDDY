@@ -33,7 +33,8 @@ class TestReproducibleBuilds:
         for pkg, ver in [("flask", "3.1.3"), ("werkzeug", "3.1.9"),
                          ("gunicorn", "26.2.0"), ("pypdf", "6.21.4"),
                          ("oauthlib", "4.0.1"),
-                         ("google-auth", "2.62.1")]:
+                         ("google-auth", "2.62.1"),
+                         ("opentelemetry-api", "1.45.2")]:
             assert re.search(rf"^{pkg}=={re.escape(ver)}\b", text, re.M), \
                 f"{pkg}=={ver} missing from lockfile"
 
@@ -47,7 +48,9 @@ class TestReproducibleBuilds:
         4.0.1)."""
         text = open(os.path.join(REPO, "requirements-dev.txt")).read()
         for pkg, ver in [("oauthlib", "4.0.1"),
-                         ("google-auth", "2.62.1")]:
+                         ("google-auth", "2.62.1"),
+                         ("opentelemetry-api", "1.45.2"),
+                         ("setuptools", "84.1.0")]:
             assert re.search(rf"^{pkg}=={re.escape(ver)}\b", text, re.M), \
                 f"{pkg}=={ver} missing from dev lockfile"
 
