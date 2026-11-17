@@ -16,6 +16,10 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CSV_PATH = os.path.join(REPO, "data", "skills_db.csv")
 OUT_PATH = os.path.join(REPO, "data", "taxonomy", "skills_taxonomy.json")
 
+# Pre-existing alias conflict(s) the suite tolerates (first writer wins).
+# Any other duplicate is a build failure — see build().
+KNOWN_DUPES = {"budgeting"}
+
 # ---------------------------------------------------------------------------
 # Curated enrichment for high-traffic / Indian-market skills.
 # name -> {"aliases": [...], "parent": "...", "related": [...]}
@@ -61,7 +65,12 @@ ENRICH = {
         "related": ["Nuxt.js", "React", "Angular"],
     },
     "JavaScript": {
-        "aliases": ["js", "ecmascript", "es6", "es2015", "vanilla js"],
+        # ECMAScript edition names are aliases of JavaScript itself
+        # (pinned by test_javascript_ecma_editions); the 2026-11-16
+        # rebuild dropped es2016+ because they lived only in the JSON.
+        "aliases": ["js", "ecmascript", "es6", "es2015", "es2016", "es2017",
+                    "es2018", "es2019", "es2020", "es2021", "es2022",
+                    "es2023", "es2024", "vanilla js", "vanilla javascript"],
         "related": ["TypeScript", "Node.js", "React"],
     },
     "TypeScript": {
@@ -245,7 +254,10 @@ def build():
             entry["related"] = related
         skills.append(entry)
 
-    # sanity: alias -> skill must be unique (first writer wins, deterministic)
+    # sanity: alias -> skill must be unique (first writer wins, deterministic).
+    # A new duplicate is a BUILD FAILURE: the 2026-11-16 refresh shipped
+    # library names (django, flask, ...) as Python aliases and broke
+    # test_aliases_unique. Only KNOWN_DUPES pass through with a warning.
     seen = {}
     dupes = []
     for s in skills:
@@ -254,10 +266,15 @@ def build():
                 dupes.append((a, seen[a], s["name"]))
             else:
                 seen.setdefault(a, s["name"])
+    bad_dupes = [d for d in dupes if d[0] not in KNOWN_DUPES]
     if dupes:
         print(f"WARNING: {len(dupes)} duplicate aliases (first wins):")
         for a, first, second in dupes[:10]:
             print(f"  '{a}': {first} (kept) vs {second} (dropped)")
+    if bad_dupes:
+        print(f"ERROR: {len(bad_dupes)} new duplicate aliases — "
+              "fix the CSV/ENRICH source.")
+        raise SystemExit(1)
 
     taxonomy = {
         "version": "1.0.0",

@@ -1,5 +1,5 @@
 skill,category,aliases
-Python,Programming,python|py|pandas|numpy|django|flask|fastapi|pytest|sqlalchemy|celery|pydantic|poetry
+Python,Programming,python|py
 Java,Programming,java|jdk|jre
 JavaScript,Programming,javascript|js|ecmascript
 TypeScript,Programming,typescript|ts

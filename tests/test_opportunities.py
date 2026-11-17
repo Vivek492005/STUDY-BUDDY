@@ -1,11 +1,12 @@
 """Tests for Wave 1 feature #9: opportunity radar."""
 import json
-from datetime import date
+from datetime import date, timedelta
 
 import pytest
 from markupsafe import escape
 
 from studybuddy.opportunities import (
+    CLOSING_SOON_DAYS,
     get_opportunity,
     list_opportunities,
     load_dataset,
@@ -22,7 +23,7 @@ def authed_client(client):
     return client
 
 
-def _bm(client, opp_id="gate-2027", remove=False):
+def _bm(client, opp_id="no-such-opp", remove=False):
     url = "/opportunities/bookmark/remove" if remove else "/opportunities/bookmark"
     return client.post(url, data=json.dumps({"opp_id": opp_id}),
                        content_type="application/json")
@@ -44,10 +45,12 @@ def _board_picks():
 def test_dataset_loads():
     data = load_dataset()
     curated = [o for o in data["opportunities"] if o.get("curated", True)]
-    # 68 after the Phase 3 refresh (27 + 41 verified additions,
-    # including the first curated competitions).
-    assert len(curated) == 68
-    assert set(o["type"] for o in curated) == {
+    # Counts move with every weekly refresh (49 curated after the
+    # 2026-11-16 refresh, down from 68 — expired entries pruned), so
+    # assert a substantial set, not an exact snapshot: this is a
+    # tripwire against an emptied dataset, not a census.
+    assert len(curated) >= 20
+    assert set(o["type"] for o in curated) <= {
         "internship", "scholarship", "exam", "hackathon", "competition"}
     # auto-refresh may have added hackathon/competition/internship entries;
     # every type in the file must still be a known type.
@@ -59,16 +62,37 @@ def test_dataset_loads():
 
 
 def test_closing_soon_logic_fixed_today():
-    opps = list_opportunities(today=date(2026, 10, 14))
-    by_id = {o["id"]: o for o in opps}
-    assert by_id["gate-2027"]["closing_soon"] is True       # 6 days
-    assert by_id["gate-2027"]["days_left"] == 6
-    # (ms-engage-2026 was removed in the 2026-10-24 refresh as
-    # unverifiable; Build With AI: Basics is the 12-day case now.)
-    assert by_id["devpost-30447-build-with-ai-basics"]["closing_soon"] is True  # 12 days
-    assert by_id["reliance-foundation-ug-2026"]["closing_soon"] is True  # 14 days, inclusive
-    assert by_id["aicte-pragati-2026"]["closing_soon"] is False          # 17 days
-    assert by_id["upsc-cse-2027"]["closing_soon"] is False
+    # No hardcoded listings: the weekly refresh prunes expired entries
+    # (GATE 2027, Build With AI, Reliance UG, AICTE Pragati all left in
+    # the 2026-11-16 refresh), so the cases derive from whatever dated
+    # entries the dataset currently holds.
+    assert CLOSING_SOON_DAYS == 14  # the pinned spec: 14-day window
+    dated = [o for o in load_dataset()["opportunities"] if o.get("deadline")]
+    assert len(dated) >= 2
+    first = min(dated, key=lambda o: o["deadline"])
+    dl = date.fromisoformat(first["deadline"])
+    # The 14-day boundary is inclusive.
+    by_id = {o["id"]: o for o in
+             list_opportunities(today=dl - timedelta(days=14))}
+    assert by_id[first["id"]]["closing_soon"] is True
+    assert by_id[first["id"]]["days_left"] == 14
+    by_id = {o["id"]: o for o in
+             list_opportunities(today=dl - timedelta(days=15))}
+    assert by_id[first["id"]]["closing_soon"] is False
+    assert by_id[first["id"]]["days_left"] == 15
+    # The rule holds for every entry at an arbitrary today.
+    today = dl - timedelta(days=6)
+    listed = list_opportunities(today=today)
+    assert any(o["closing_soon"] for o in listed)
+    assert any(not o["closing_soon"] for o in listed)
+    for o in listed:
+        if o["deadline"] is None:
+            assert o["days_left"] is None
+            assert o["closing_soon"] is False
+            continue
+        expected = (date.fromisoformat(o["deadline"]) - today).days
+        assert o["days_left"] == expected
+        assert o["closing_soon"] is (0 <= expected <= CLOSING_SOON_DAYS)
 
 
 def test_sorted_by_deadline_nulls_not_present():
@@ -89,13 +113,10 @@ def test_type_filter_and_invalid():
     counts = {}
     for o in curated:
         counts[o["type"]] = counts.get(o["type"], 0) + 1
-    # Curated counts after the Phase 3 refresh (verified from the file):
-    # 41 real additions, including the first curated competitions.
-    assert counts.get("exam") == 25
-    assert counts.get("scholarship") == 20
-    assert counts.get("internship") == 13
-    assert counts.get("hackathon") == 4
-    assert counts.get("competition") == 6
+    # Exact per-type counts move with every weekly refresh (exam 25 -> 22
+    # in the 2026-11-16 refresh); assert every known type is represented.
+    for t in ("exam", "scholarship", "internship", "hackathon", "competition"):
+        assert counts.get(t, 0) >= 1, f"no curated {t} entries"
     # filtered listing returns only that type (auto entries included)
     for o in list_opportunities(opp_type="hackathon"):
         assert o["type"] == "hackathon"
@@ -103,7 +124,10 @@ def test_type_filter_and_invalid():
 
 
 def test_opp_exists():
-    assert opp_exists("gate-2027") is True
+    live_id = list_opportunities()[0]["id"]
+    assert opp_exists(live_id) is True
+    assert get_opportunity(live_id) is not None
+    assert get_opportunity(live_id)["id"] == live_id
     assert opp_exists("nope") is False
     assert get_opportunity("nope") is None
 
@@ -172,15 +196,16 @@ def test_bookmark_invalid_opp_404(authed_client):
 
 
 def test_bookmark_isolation(client, app):
+    exam, _internship = _board_picks()
     register(client, email="a@a.com")
     login(client, email="a@a.com")
-    _bm(client, opp_id="gate-2027")
+    _bm(client, opp_id=exam["id"])
     # second user (logout is POST-only)
     client.post("/logout", follow_redirects=False)
     register(client, name="Bee", email="b@b.com")
     login(client, email="b@b.com")
     html = client.get("/opportunities").get_data(as_text=True)
     assert "★ Saved" not in html  # B sees nothing saved
-    assert _bm(client, opp_id="gate-2027", remove=True).status_code == 404  # can't remove A's
+    assert _bm(client, opp_id=exam["id"], remove=True).status_code == 404  # can't remove A's
     with app.app_context():
         assert OpportunityBookmark.query.count() == 1

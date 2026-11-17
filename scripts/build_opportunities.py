@@ -26,12 +26,27 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCES_MD = ROOT / "docs" / "data" / "sources.md"
 OPPORTUNITIES_JSON = ROOT / "data" / "opportunities.json"
 
+# The dict envelope studybuddy/opportunities.py requires (OPPS_SCHEMA):
+# _load_from_disk() does data.get("meta") / data.get("opportunities") and
+# raises on a bare list. The --write path must preserve this envelope —
+# the 2026-11-16 weekly refresh wrote the bare list and broke
+# /opportunities (PR #60 review).
+META_NOTICE = (
+    "Curated starter set for student guidance. Deadlines are indicative — "
+    "always verify dates and eligibility on the official website before applying."
+)
+META_SCHEMA_DOC = (
+    "See opportunities.py OPPS_SCHEMA for the documented JSON schema used "
+    "to extend this dataset."
+)
+
 TAGS = {"internship", "hackathon", "scholarship", "exam", "fellowship", "job"}
 INDIA_MARKERS = re.compile(r"india|indian|inr|₹|delhi|mumbai|bengaluru|bangalore|hyderabad|chennai|pune|kolkata|ahmedabad|remote", re.I)
 
 
-def validate_sources_md(path: Path = SOURCES_MD) -> list[str]:
+def validate_sources_md(path: Path | None = None) -> list[str]:
     """Each source entry must name its terms/license (DATA-03 legal-sources rule)."""
+    path = path or SOURCES_MD
     errors: list[str] = []
     if not path.is_file():
         return [f"sources file missing: {path}"]
@@ -50,11 +65,38 @@ def validate_sources_md(path: Path = SOURCES_MD) -> list[str]:
     return errors
 
 
-def load_opportunities(path: Path = OPPORTUNITIES_JSON) -> list[dict]:
+def load_opportunities(path: Path | None = None) -> list[dict]:
+    # NB: resolved at call time (not as a default arg) so tests can
+    # monkeypatch OPPORTUNITIES_JSON.
+    path = path or OPPORTUNITIES_JSON
     if not path.is_file():
         return []
     data = json.loads(path.read_text(encoding="utf-8"))
     return data if isinstance(data, list) else data.get("opportunities", [])
+
+
+def _envelope(items: list[dict], today: date | None = None) -> dict:
+    """Wrap pruned items in the dict envelope the app loader requires.
+
+    Preserves the current file's meta (if it is a dict) and stamps
+    last_refresh/last_updated to today; synthesizes the standard meta
+    when the current file is a bare list (legacy broken state).
+    """
+    today = today or date.today()
+    stamp = today.isoformat()
+    meta: dict = {
+        "last_refresh": stamp,
+        "last_updated": stamp,
+        "notice": META_NOTICE,
+        "schema_doc": META_SCHEMA_DOC,
+    }
+    try:
+        current = json.loads(OPPORTUNITIES_JSON.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        current = None
+    if isinstance(current, dict) and isinstance(current.get("meta"), dict):
+        meta = {**current["meta"], **meta}
+    return {"meta": meta, "opportunities": items}
 
 
 def dedupe(items: list[dict]) -> tuple[list[dict], int]:
@@ -125,8 +167,11 @@ def main(argv: list[str] | None = None) -> int:
         items = [i for i in items if id(i) not in expired_ids]
 
     if args.write:
-        OPPORTUNITIES_JSON.write_text(json.dumps(items, indent=2, ensure_ascii=False) + "\n",
-                                      encoding="utf-8")
+        envelope = _envelope(items)
+        OPPORTUNITIES_JSON.write_text(
+            json.dumps(envelope, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
 
     report = {
         "sources_errors": errors,

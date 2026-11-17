@@ -79,7 +79,29 @@ def main():
         except (json.JSONDecodeError, OSError) as e:
             errors.append(f"{name}: unreadable ({e})")
             continue
-        records = data if isinstance(data, list) else data.get("items", [])
+        if name == "opportunities":
+            # The app loader requires the dict envelope (meta +
+            # "opportunities"); a bare list breaks /opportunities with
+            # AttributeError — the 2026-11-16 weekly refresh shipped one
+            # (PR #60 review). This is a blocking error, not a warning.
+            if not isinstance(data, dict):
+                errors.append(
+                    f"{name}: must be an object with 'meta' + "
+                    f"'opportunities', got {type(data).__name__}"
+                )
+                continue
+            meta = data.get("meta") or {}
+            for field in ("last_updated", "notice", "schema_doc"):
+                if field not in meta:
+                    errors.append(f"{name}: meta missing '{field}'")
+            records = data.get("opportunities")
+            if not isinstance(records, list) or not records:
+                errors.append(
+                    f"{name}: 'opportunities' must be a non-empty list"
+                )
+                continue
+        else:
+            records = data if isinstance(data, list) else data.get("items", [])
         if not isinstance(records, list):
             warnings.append(f"{name}: not a list, skipping provenance check")
             continue
