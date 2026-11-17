@@ -147,6 +147,11 @@ class TestObservability:
         data = resp.get_json()
         assert "ready" in data and "checks" in data
         assert data["checks"]["db"] == "ok"
+        # Migrations check must resolve: a missing script_location in
+        # alembic.ini used to raise CommandError -> ready:false on prod
+        # (found live 2026-11-17). On the create_all test DB the honest
+        # answer is "behind" (never stamped), never "error".
+        assert not str(data["checks"]["migrations"]).startswith("error")
         # never leak secrets
         assert "SECRET" not in resp.get_data(as_text=True).upper().replace(
             "SECRET_KEY", "")

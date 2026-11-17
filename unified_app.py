@@ -3759,8 +3759,14 @@ def register_routes(app):
             # migrations/ lives next to unified_app.py (repo root)
             mig_dir = os.path.join(os.path.dirname(__file__), "migrations")
             if os.path.isdir(mig_dir):
-                script = ScriptDirectory.from_config(
-                    AlembicConfig(os.path.join(mig_dir, "alembic.ini")))
+                # alembic.ini carries no script_location (Flask-Migrate
+                # sets it programmatically, so `flask db` never
+                # noticed) — without it, from_config raises
+                # CommandError and /readyz reports ready:false on
+                # every deploy (found live 2026-11-17).
+                _cfg = AlembicConfig(os.path.join(mig_dir, "alembic.ini"))
+                _cfg.set_main_option("script_location", mig_dir)
+                script = ScriptDirectory.from_config(_cfg)
                 heads = script.get_heads()
                 from alembic.runtime.migration import MigrationContext
                 with db.engine.connect() as conn:

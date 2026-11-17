@@ -813,12 +813,22 @@ def _ultimate_history():
     except (TypeError, ValueError):
         limit = 20
     limit = max(1, min(limit, 50))
+    try:
+        offset = int(request.args.get("offset", "0"))
+    except (TypeError, ValueError):
+        offset = 0
+    offset = max(0, offset)
+    # Full input/output per run (for the My Lab export); the list view
+    # keeps the 500-char preview by default so history stays light.
+    include_io = request.args.get("include_io", "").lower() in (
+        "1", "true", "yes")
     LabRun, LabSave, _LabFav, _LabPath, _db = _lab_models()
     saved_ids = {s.run_id for s in
                  LabSave.query.filter_by(user_id=current_user.id).all()}
     rows = (LabRun.query.filter_by(user_id=current_user.id)
-            .order_by(LabRun.id.desc()).limit(limit).all())
-    return jsonify({"ok": True, "runs": [_run_public(r, saved_ids)
+            .order_by(LabRun.id.desc()).limit(limit).offset(offset).all())
+    return jsonify({"ok": True, "runs": [_run_public(r, saved_ids,
+                                                      include_io=include_io)
                                          for r in rows]})
 
 

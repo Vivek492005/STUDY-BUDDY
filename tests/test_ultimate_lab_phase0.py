@@ -172,3 +172,69 @@ def test_per_family_and_global_limits():
         assert run("github/readme-grade", {"readme_text": "# Hi"}) == 429
     finally:
         limiter.enabled = False
+
+
+def _seed_runs(app, email, n):
+    """Insert n LabRun rows directly (fast; skips tool execution)."""
+    import json as _json
+    from unified_app import LabRun, db
+    uid = _user_id(app, email)
+    with app.app_context():
+        for i in range(n):
+            db.session.add(LabRun(
+                user_id=uid, tool_id="bullets/star-convert",
+                feature="AI Bullet Rewriter",
+                input_hash="%064x" % i,
+                input_json=_json.dumps({"bullet_text": "seed %d" % i}),
+                output_json=_json.dumps({"star": "out %d" % i}),
+                basis="rule-based"))
+        db.session.commit()
+    return uid
+
+
+def test_history_export_pagination_and_full_io(client, app):
+    """Export paging: limit+offset walk the whole history with full IO."""
+    _authed(client)
+    _seed_runs(app, "labphase0@example.com", 55)
+    page1 = client.get("/api/ultimate/history?limit=50").get_json()
+    assert len(page1["runs"]) == 50
+    page2 = client.get("/api/ultimate/history?limit=50&offset=50").get_json()
+    assert len(page2["runs"]) == 5
+    ids = [r["id"] for r in page1["runs"]] + [r["id"] for r in page2["runs"]]
+    assert len(set(ids)) == 55  # every run exactly once
+    assert ids == sorted(ids, reverse=True)  # newest first
+    # Default list view keeps the preview only (light payloads).
+    assert "output_preview" in page1["runs"][0]
+    assert "input" not in page1["runs"][0]
+    # include_io=1 carries the full input/output (the export payload).
+    full = client.get("/api/ultimate/history?limit=2&include_io=1").get_json()
+    assert full["runs"][0]["input"]["bullet_text"] == "seed 54"
+    assert full["runs"][0]["output"]["star"] == "out 54"
+    # Bad params fall back safely.
+    assert len(client.get(
+        "/api/ultimate/history?limit=abc").get_json()["runs"]) == 20
+    first = client.get("/api/ultimate/history?offset=-5").get_json()
+    assert first["runs"][0]["id"] == ids[0]
+
+
+def test_lab_migration_creates_tables(tmp_path):
+    """Alembic upgrade creates the four Lab tables (Phase 0, ARC-03)."""
+    import os
+    import sqlite3
+    import subprocess
+    import sys
+    from pathlib import Path
+    repo = Path(__file__).resolve().parent.parent
+    db_url = f"sqlite:///{tmp_path}/labmig.db"
+    env = dict(os.environ, DATABASE_URL=db_url, SKIP_DB_INIT="1",
+               OPP_NO_AUTO_REFRESH="1", FLASK_APP="unified_app",
+               SECRET_KEY="migration-test")
+    r = subprocess.run([sys.executable, "-m", "flask", "db", "upgrade"],
+                       cwd=repo, env=env, capture_output=True, text=True,
+                       timeout=120)
+    assert r.returncode == 0, r.stderr[-500:]
+    con = sqlite3.connect(str(tmp_path / "labmig.db"))
+    tables = {row[0] for row in con.execute(
+        "select name from sqlite_master where type='table'")}
+    for t in ("lab_run", "lab_save", "lab_tool_favorite", "lab_path_progress"):
+        assert t in tables, f"{t} missing after flask db upgrade"

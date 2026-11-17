@@ -117,6 +117,7 @@
     <p class="lab-desc">Your private run history, saved outputs and favourite tools. Runs are never shared with anyone.</p>
     <div id="lab-favs" aria-live="polite"></div>
     <div id="lab-history" aria-live="polite"></div>
+    <button id="lab-export-history" class="b-btn b-btn--sm b-btn--ghost" type="button">Export history</button>
     <button id="lab-clear-history" class="b-btn b-btn--sm b-btn--ghost" type="button">Delete all history</button>
   </div>
 
@@ -1062,6 +1063,7 @@
     var favsBox = document.getElementById('lab-favs');
     var histBox = document.getElementById('lab-history');
     var clearBtn = document.getElementById('lab-clear-history');
+    var exportBtn = document.getElementById('lab-export-history');
 
     function toolName(id) {
         for (var i = 0; i < state.tools.length; i++) {
@@ -1180,6 +1182,59 @@
     }
 
     function loadMyLab() { loadFavorites(); loadHistory(); }
+
+    /* Export the full run history as one JSON download. Pages through
+       the history API (50 runs per page, full input/output) so the
+       export is complete no matter how many runs exist. */
+    function exportHistory() {
+        if (!exportBtn) return;
+        exportBtn.disabled = true;
+        exportBtn.textContent = 'Exporting…';
+        var all = [];
+        var offset = 0;
+        function page() {
+            return fetch('/api/ultimate/history?limit=50&offset=' + offset + '&include_io=1',
+                { headers: { 'Accept': 'application/json' } })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (!d || !Array.isArray(d.runs)) throw new Error('bad response');
+                    all = all.concat(d.runs);
+                    if (d.runs.length < 50) return all;
+                    offset += 50;
+                    return page();
+                });
+        }
+        page().then(function (runs) {
+            exportBtn.disabled = false;
+            exportBtn.textContent = 'Export history';
+            if (runs.length === 0) {
+                exportBtn.textContent = 'Nothing to export';
+                setTimeout(function () { exportBtn.textContent = 'Export history'; }, 2000);
+                return;
+            }
+            var payload = {
+                exported_at: new Date().toISOString(),
+                source: 'study-buddy-lab',
+                runs: runs
+            };
+            var blob = new Blob([JSON.stringify(payload, null, 2)],
+                { type: 'application/json' });
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'study-buddy-lab-history-' +
+                new Date().toISOString().slice(0, 10) + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }).catch(function () {
+            exportBtn.disabled = false;
+            exportBtn.textContent = 'Export failed — retry';
+            setTimeout(function () { exportBtn.textContent = 'Export history'; }, 3000);
+        });
+    }
+    if (exportBtn) exportBtn.addEventListener('click', exportHistory);
 
     if (clearBtn) {
         clearBtn.addEventListener('click', function () {
