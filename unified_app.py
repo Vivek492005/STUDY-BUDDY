@@ -2869,6 +2869,27 @@ def create_app(config_overrides=None):
     if config_overrides:
         app.config.update(config_overrides)
 
+    # PERF-08 (docs/ops/postgres-pooling.md): Neon free scales to zero
+    # after 5 min idle and any pooled connection held across the sleep
+    # is dead — without pre-ping the first DB request after idle 500s
+    # (verified live 2026-11-17: login POST flapped 500/200/500 on the
+    # public service while the control service answered fine).
+    # Postgres only: connect_args carries a Postgres statement_timeout
+    # that SQLite rejects, and SQLite needs no pooling.
+    _engine_url = app.config.get("SQLALCHEMY_DATABASE_URI") or ""
+    if _engine_url.startswith(("postgresql", "postgres")):
+        app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+            "pool_pre_ping": True,  # validate before use; dead ones replaced
+            "pool_recycle": 300,  # never hold a conn across Neon's 5-min sleep
+            "pool_size": 3,  # 1 worker x 4 gthreads (OPS-09) + headroom
+            "max_overflow": 5,  # burst allowance; hard ceiling 8 conns
+            "pool_timeout": 30,  # fail fast instead of queueing forever
+            "connect_args": {
+                "connect_timeout": 10,
+                "options": "-c statement_timeout=30000",
+            },
+        }
+
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
     db.init_app(app)
