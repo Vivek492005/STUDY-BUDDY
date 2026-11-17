@@ -4,7 +4,7 @@ import json
 from datetime import date
 
 
-from studybuddy.opportunities import list_opportunities
+from studybuddy.opportunities import list_opportunities, load_dataset
 from tests.conftest import login, register
 from tests.test_portfolio import _save
 from unified_app import CareerAssessment, Portfolio, User, db
@@ -40,7 +40,10 @@ def test_refresh_status_shape(client):
     resp = client.get("/api/opportunities/refresh-status")
     assert resp.status_code == 200
     body = resp.get_json()
-    assert body["total"] == 128 and body["open"] + body["closed"] == 128
+    # Total moves with every weekly refresh (128 -> 98 in the 2026-11-16
+    # refresh); derive it from the dataset instead of hardcoding it.
+    total = len(load_dataset()["opportunities"])
+    assert body["total"] == total and body["open"] + body["closed"] == total
     assert body["last_updated"] and body["last_refresh"]
 
 

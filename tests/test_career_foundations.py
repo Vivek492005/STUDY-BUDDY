@@ -3,9 +3,18 @@ and the freshness/deadlines template wiring."""
 
 import json
 from datetime import date, timedelta
+from pathlib import Path
 
 from unified_app import (JobApplication, OpportunityBookmark, Portfolio,
                          User, db)
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _opportunities_last_updated():
+    """last_updated from the dataset itself — it moves every refresh."""
+    with open(REPO_ROOT / "data" / "opportunities.json", encoding="utf-8") as f:
+        return json.load(f)["meta"]["last_updated"]
 
 
 def _authed(client, email="career0@example.com", name="Career Zero"):
@@ -37,7 +46,8 @@ def test_freshness_statuses():
     sal = freshness_status("salary")
     assert sal["last_updated"] == "2026-10-26" and sal["stale"] is False
     opp = freshness_status("opportunities")
-    assert opp["last_updated"] == "2026-10-25" and opp["stale"] is False
+    assert opp["last_updated"] == _opportunities_last_updated()
+    assert opp["stale"] is False
     stale = freshness_status("opportunities", today=date(2027, 3, 1))
     assert stale["stale"] is True and "out of date" in stale["message"]
     unknown = freshness_status("nope")
@@ -161,4 +171,5 @@ def test_salary_and_opportunity_pages_show_freshness(client):
     assert b"Fresh" in sal.data and b"2026-10-26" in sal.data
     opp = client.get("/opportunities")
     assert opp.status_code == 200
-    assert b"Fresh" in opp.data and b"2026-10-25" in opp.data
+    assert b"Fresh" in opp.data
+    assert _opportunities_last_updated().encode() in opp.data
