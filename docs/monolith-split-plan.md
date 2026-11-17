@@ -15,7 +15,7 @@ mentors → ultimate → benchmark → auth → research).
 - Routes share `limiter`, `csrf`, `db`, and helper closures defined in
   `register_routes`. Moving a route means moving (or lazy-importing) its
   dependencies too.
-- The full test suite (~9,820 tests) plus CI (12 jobs) is the gate for
+- The full test suite (~9,945 tests) plus CI (12 jobs) is the gate for
   every phase. A phase that goes red is reverted, not patched forward.
 
 ## The one hard rule

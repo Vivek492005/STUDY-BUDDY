@@ -62,3 +62,28 @@ class TestVersionBenchmarks:
                         encoding="utf-8")
         assert unified_app._load_benchmark_scores(str(good)) == {
             "n_items": 3, "skill_f1": 0.5}
+
+
+class TestReadyzLlm:
+    """2026-11-17: /readyz exposes LLM config (names/mode only, never
+    keys) so prod provider setup is verifiable without dashboard access.
+    A missing key must never make the service unready (rule-based
+    fallbacks exist)."""
+
+    def test_llm_block_present_with_shape(self, client):
+        body = client.get("/readyz").get_json()
+        llm = body["checks"]["llm"]
+        assert llm["mode"] in ("off", "byok", "server")
+        assert isinstance(llm["providers"], list)
+        assert isinstance(llm["ready"], bool)
+        # Only provider NAMES ever appear — no key material.
+        assert set(llm["providers"]) <= {"gemini", "groq", "openrouter"}
+
+    def test_llm_block_reflects_configured_key(self, client, monkeypatch):
+        monkeypatch.setenv("GROQ_API_KEY", "test-key-not-real")
+        monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+        monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+        body = client.get("/readyz").get_json()
+        llm = body["checks"]["llm"]
+        assert llm["providers"] == ["groq"]
+        assert llm["ready"] is True

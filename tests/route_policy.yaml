@@ -185,7 +185,7 @@
 "/portfolio": auth
 "/portfolio/download": auth
 "/portfolio/save": auth
-"/practice": auth
+"/practice": public
 "/privacy": public
 "/profile": auth
 "/profile/ai-key": auth
@@ -195,7 +195,7 @@
 "/profile/unlink/leetcode": auth
 "/readyz": public
 "/register": public
-"/research": auth
+"/research": public
 "/research/api/flashcards/<int:sid>/progress": auth
 "/research/api/flashcards/<int:sid>/quiz": auth
 "/research/api/flashcards/<int:sid>/stats": auth
@@ -204,7 +204,7 @@
 "/research/api/gaps/analyze": auth
 "/research/api/review/<int:rid>": auth
 "/research/api/review/generate": auth
-"/research/cite": auth
+"/research/cite": public
 "/research/collections/<token>": public
 "/research/flashcards": auth
 "/research/flashcards/<int:sid>": auth
@@ -214,11 +214,11 @@
 "/research/review": auth
 "/research/review/<int:rid>": auth
 "/research/review/<int:rid>/export": auth
-"/research/trending": auth
+"/research/trending": public
 "/resend-verification": auth
 "/reset-password/<token>": public
 "/results/<analysis_id>": auth
-"/resume": auth
+"/resume": public
 "/resume-versions": auth
 "/resume-versions/<int:version_id>": auth
 "/resume-versions/<int:version_id>/delete": auth
@@ -250,10 +250,10 @@
 "/api/salary/curve": public
 "/api/salary/evaluate": auth
 "/api/salary/scripts": public
-"/salary": auth
-"/salary/data": auth
+"/salary": public
+"/salary/data": public
 "/sitemap.xml": public
-"/star": auth
+"/star": public
 "/star/drafts": auth
 "/star/drafts/<int:draft_id>/delete": auth
 "/star/save": auth

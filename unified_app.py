@@ -3779,6 +3779,18 @@ def register_routes(app):
         checks["secret_key"] = ("ok" if app.secret_key else "missing")
         if not app.secret_key:
             ok = False
+        # LLM providers configured? Informational only — rule-based
+        # fallbacks exist, so a missing key never makes us unready.
+        # Exposes provider NAMES + mode only, never keys.
+        try:
+            from studybuddy import ai_gateway
+            checks["llm"] = {
+                "mode": ai_gateway.llm_mode(),
+                "providers": ai_gateway.providers_configured(),
+                "ready": ai_gateway.ai_ready(),
+            }
+        except Exception:  # noqa: BLE001 - readiness must not raise
+            checks["llm"] = "error"
         return jsonify({"ready": ok, "checks": checks}), 200 if ok else 503
 
     @app.route('/version')

@@ -43,7 +43,11 @@ class TestRoutePolicy:
 
     def test_auth_routes_reject_anonymous(self, client, app):
         policy = load_policy()
-        # Sample: test GET on auth routes (skip POST-only to avoid CSRF noise)
+        # Full coverage: EVERY auth GET route is checked (no sampling).
+        # The old 30-route sample never reached /resume, /practice,
+        # /salary, /star, /research, /research/cite, /research/trending
+        # or /salary/data, so 8 mislabelled routes survived CI until the
+        # 2026-11-17 audit caught them (all 8 are public hubs by design).
         checked = 0
         for route, cls in policy.items():
             if cls != "auth":
@@ -62,6 +66,4 @@ class TestRoutePolicy:
             assert r.status_code in (302, 401, 403, 404, 405, 400), \
                 f"{route}: anonymous GET got {r.status_code}, expected 302/401"
             checked += 1
-            if checked >= 30:  # sample to keep test fast
-                break
         assert checked > 0, "no auth routes tested"
