@@ -3647,15 +3647,50 @@ def _is_login_required_view(view_func):
     return False
 
 
+def _sitemap_detail_urls(base):
+    """Absolute URLs for public detail pages — parameterized routes the
+    url_map walk in _public_sitemap_urls cannot enumerate. Every ID
+    comes from the same module-cached loaders the views use, so a
+    listed URL renders 200 anonymously (pinned by the anonymous-200
+    test in tests/test_seo.py). IDs that would 404 are never listed:
+    A2Z learn pages only for problems that HAVE a lesson (64 of 495),
+    roadmaps only for skills (roles have no detail page), aptitude
+    only for (track, topic) pairs the practice view accepts."""
+    from studybuddy.a2z_lessons import lesson_ids as a2z_lesson_ids
+    from studybuddy.aptitude_test import topics as aptitude_topics
+    from studybuddy.aptitude_test import track_of_category
+    from studybuddy.cert_guide import all_certs
+    from studybuddy.dsa_practice import all_problems
+    from studybuddy.learning_roadmaps import list_skills as roadmap_skills
+
+    root = base.rstrip("/")
+    urls = [f"{root}/dsa/{p['id']}" for p in all_problems()]
+    urls += [f"{root}/dsa/a2z/{pid}/learn"
+             for pid in sorted(a2z_lesson_ids())]
+    urls += [f"{root}/learn/certs/{c['id']}" for c in all_certs()]
+    urls += [f"{root}/learn/roadmaps/{s['id']}" for s in roadmap_skills()]
+    seen = set()
+    for sub, cat, _n in aptitude_topics():
+        track = track_of_category(cat)
+        if track is None or (track, sub) in seen:
+            continue
+        seen.add((track, sub))
+        urls.append(f"{root}/aptitude/practice/{track}/{sub}")
+    return urls
+
+
 def _public_sitemap_urls(app, base):
-    """Absolute URLs for /sitemap.xml: public GET pages with no URL
-    variables. API/static/ops/auth endpoints and login-gated pages are
-    excluded — a sitemap listing pages a crawler cannot read is worse
-    than a short one. Derived from the live url_map, so new public
-    pages appear automatically."""
+    """Absolute URLs for /sitemap.xml: public GET pages plus public
+    detail pages (see _sitemap_detail_urls). API/static/ops/auth
+    endpoints, JSON feeds and login-gated pages are excluded — a
+    sitemap listing pages a crawler cannot read is worse than a short
+    one. Derived from the live url_map, so new public pages appear
+    automatically."""
     excluded = {"/health", "/healthz", "/readyz", "/version",
                 "/robots.txt", "/sitemap.xml", "/login", "/register",
                 "/logout", "/verify-email", "/forgot-password",
+                # JSON feed, not a page — crawlers gain nothing from it.
+                "/salary/data",
                 # Manually auth-gated (no @login_required decorator — the
                 # view itself answers 401 for anonymous users), so the
                 # decorator detector above cannot see them. The anonymous-
@@ -3668,7 +3703,8 @@ def _public_sitemap_urls(app, base):
         if "GET" not in (rule.methods or set()):
             continue
         path = str(rule.rule)
-        if "<" in path or path.startswith(("/api/", "/static/")):
+        if "<" in path or path.startswith(
+                ("/api/", "/static/", "/auth/")):
             continue
         if path in excluded or path.startswith("/account/"):
             continue
@@ -3676,6 +3712,7 @@ def _public_sitemap_urls(app, base):
         if view is not None and _is_login_required_view(view):
             continue
         urls.append(base.rstrip("/") + path)
+    urls += _sitemap_detail_urls(base)
     return sorted(urls)
 
 
