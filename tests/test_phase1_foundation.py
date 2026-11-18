@@ -35,6 +35,7 @@ class TestReproducibleBuilds:
                          ("oauthlib", "4.0.1"),
                          ("google-auth", "2.62.1"),
                          ("sentry-sdk", "2.75.0"),
+                         ("redis", "8.1.0"),
                          ("opentelemetry-api", "1.45.2")]:
             assert re.search(rf"^{pkg}=={re.escape(ver)}\b", text, re.M), \
                 f"{pkg}=={ver} missing from lockfile"
@@ -51,6 +52,7 @@ class TestReproducibleBuilds:
         for pkg, ver in [("oauthlib", "4.0.1"),
                          ("google-auth", "2.62.1"),
                          ("sentry-sdk", "2.75.0"),
+                         ("redis", "8.1.0"),
                          ("opentelemetry-api", "1.45.2"),
                          ("setuptools", "84.1.0")]:
             assert re.search(rf"^{pkg}=={re.escape(ver)}\b", text, re.M), \

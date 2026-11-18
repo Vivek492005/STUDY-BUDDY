@@ -26,6 +26,10 @@ google-auth-httplib2
 google-auth-oauthlib
 flask-wtf
 flask-limiter
+# B-5 (shared rate-limit store): Flask-Limiter's Redis backend (limits
+# storage) imports the redis client — without this pin, setting
+# RATELIMIT_STORAGE_URI to a Redis URL would crash boot with ImportError.
+redis==8.1.0
 flask-sqlalchemy
 flask-login
 psycopg2-binary

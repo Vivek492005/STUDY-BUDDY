@@ -40,6 +40,16 @@ class BaseConfig:
 
     RATELIMIT_DEFAULTS = ["200 per day", "60 per hour"]
 
+    # B-5: when the shared store is unreachable (or its free quota is
+    # exhausted) Flask-Limiter raises on every request by default — the
+    # whole site 500s. Set RATELIMIT_SWALLOW_ERRORS=true when activating
+    # a Redis store so a store outage fails OPEN (limits pause) instead
+    # of taking the app down. Default false: strict while on memory://,
+    # where storage errors effectively never happen.
+    RATELIMIT_SWALLOW_ERRORS = os.environ.get(
+        "RATELIMIT_SWALLOW_ERRORS", "false"
+    ).lower() in ("1", "true", "yes")
+
     # Feature flags (ARC-12)
     FEATURE_LABS = True
     FEATURE_COMMUNITY = True

@@ -75,7 +75,8 @@ Without `SMTP_USER` + `SMTP_PASSWORD` + `MAIL_FROM` the mailer is a no-op and pa
 
 | Variable | Default | Description |
 |---|---|---|
-| `RATELIMIT_STORAGE_URI` | `memory://` | Flask-Limiter backend. In-process by default (exact on Render with its single worker; resets on deploy/restart). Set to a Redis URL for a shared store — full procedure in `docs/ops/rate-limits.md`. |
+| `RATELIMIT_STORAGE_URI` | `memory://` | Flask-Limiter backend. In-process by default (exact on Render with its single worker; resets on deploy/restart). Set to a Redis URL for a shared store — the `redis` client is pinned in requirements, so no code change is needed; full procedure in `docs/ops/rate-limits.md`. |
+| `RATELIMIT_SWALLOW_ERRORS` | `false` | B-5: set `true` when `RATELIMIT_STORAGE_URI` points at Redis, so a store outage or exhausted free quota fails OPEN (rate limits pause) instead of 500ing every request. |
 
 ## Runtime + refresh flags
 

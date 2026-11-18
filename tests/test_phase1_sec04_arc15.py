@@ -40,6 +40,26 @@ class TestRateLimitKeying:
         assert 'def _rate_limit_key' in src
         assert 'user:{' in src  # user id preferred when authenticated
 
+    def test_redis_client_available_for_shared_store(self):
+        # B-5: Flask-Limiter's Redis backend (limits storage) imports
+        # the redis client — a Redis RATELIMIT_STORAGE_URI crashes boot
+        # without this dependency installed.
+        import redis
+
+        assert redis.__version__.startswith("8.")
+
+    def test_swallow_errors_config_wired(self):
+        # B-5: the config key must be the exact one Flask-Limiter reads
+        # (flask_limiter.constants.ConfigVars.SWALLOW_ERRORS), and it
+        # must default to strict (False) while on memory:// storage.
+        from flask_limiter.constants import ConfigVars
+
+        from app.config import BaseConfig
+
+        assert ConfigVars.SWALLOW_ERRORS == "RATELIMIT_SWALLOW_ERRORS"
+        assert hasattr(BaseConfig, "RATELIMIT_SWALLOW_ERRORS")
+        assert BaseConfig.RATELIMIT_SWALLOW_ERRORS is False
+
     def test_login_has_stricter_limit(self, client):
         # brute-force guard present on /login route rules
         rules = [str(r) for r in client.application.url_map.iter_rules()
