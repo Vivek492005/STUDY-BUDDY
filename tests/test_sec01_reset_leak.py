@@ -7,12 +7,10 @@ the flash entirely: the requester sees only the generic message, the
 token stays hashed server-side, and the link is never emitted in a
 response, a flash, or a log.
 
-No mailer exists in this codebase yet (verified 2026-10-28: no
-Flask-Mail, no mailer module, no email-provider env config), so these
-tests assert the no-mailer behaviour: token row created, nothing
-leaked. When email delivery lands (see docs/ops/password-reset-email.md),
-extend this file with a mailer-stub test — do not weaken these
-assertions.
+Email delivery landed in B-2 (2026-11-18, studybuddy/mailer.py): the
+reset link is emailed when the mailer is configured and still never
+leaks into a response, flash, or log. The mailer-stub tests below pin
+that; do not weaken these assertions.
 """
 
 from unified_app import PasswordResetToken, User, db
@@ -78,3 +76,49 @@ def test_forgot_password_responses_identical_known_vs_unknown(client, app):
     assert known.status_code == unknown.status_code == 200
     assert (b"If an account exists with that email" in known.data) == \
            (b"If an account exists with that email" in unknown.data)
+
+
+def test_forgot_password_sends_reset_email_via_mailer(
+        client, app, monkeypatch):
+    """B-2: with the mailer stubbed, the reset email goes to the user's
+    address with a reset link — and nothing leaks in the response."""
+    uid = _make_user(app)
+    sent = []
+
+    def _fake_send(to_addr, reset_link):
+        sent.append((to_addr, reset_link))
+        return True
+
+    monkeypatch.setattr("studybuddy.mailer.send_password_reset_email",
+                        _fake_send)
+    r = client.post("/forgot-password",
+                    data={"email": "reset@test.com"},
+                    follow_redirects=True)
+    assert r.status_code == 200
+    assert b"If an account exists with that email" in r.data
+    assert b"Reset link" not in r.data
+    assert b"reset-password/" not in r.data
+    assert len(sent) == 1
+    assert sent[0][0] == "reset@test.com"
+    assert "/reset-password/" in sent[0][1]
+    with app.app_context():
+        rows = PasswordResetToken.query.filter_by(user_id=uid).all()
+        assert len(rows) == 1
+
+
+def test_forgot_password_unknown_email_sends_nothing(
+        client, app, monkeypatch):
+    """B-2: unknown address triggers no mailer call at all."""
+    sent = []
+
+    def _fake_send(to_addr, reset_link):
+        sent.append((to_addr, reset_link))
+        return True
+
+    monkeypatch.setattr("studybuddy.mailer.send_password_reset_email",
+                        _fake_send)
+    r = client.post("/forgot-password",
+                    data={"email": "nobody@nowhere.com"},
+                    follow_redirects=True)
+    assert r.status_code == 200
+    assert sent == []

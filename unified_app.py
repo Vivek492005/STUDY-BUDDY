@@ -3936,16 +3936,23 @@ def register_routes(app):
                 # to the requester and NEVER logged. The previous code
                 # flashed the raw link to an unauthenticated requester,
                 # which defeated the generic message below and allowed
-                # takeover of any account whose email is known. No mailer
-                # exists in this codebase yet, so there is no delivery
-                # channel: the token is stored hashed server-side (as
-                # before) and the link itself is deliberately discarded
-                # here — it is not flashed, not returned, and not written
-                # to logs (raw tokens in log storage would recreate the
-                # same exposure). Self-service reset therefore requires
-                # email integration; see docs/ops/password-reset-email.md.
-                # Until then the requester sees only the generic message
-                # below, identical for existing and unknown addresses.
+                # takeover of any account whose email is known. B-2
+                # (2026-11-18): the link is delivered by email when the
+                # mailer is configured (studybuddy/mailer.py, env-only
+                # credentials); when it is not configured the token is
+                # stored hashed server-side as before and the requester
+                # still sees only the generic message below. A mail
+                # failure must never change the response or leak
+                # anything, so the send is best-effort and its result
+                # is ignored here.
+                try:
+                    from studybuddy.mailer import send_password_reset_email
+                    reset_link = url_for('reset_password', token=raw,
+                                         _external=True)
+                    send_password_reset_email(user.email, reset_link)
+                except Exception:
+                    log.warning("password reset email failed",
+                                exc_info=True)
                 log.info("password_reset_issued user_id_hash=%s",
                          _safe_user_ref_id(user.id))
             flash(done_msg, 'info')

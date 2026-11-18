@@ -58,6 +58,19 @@ documented under "Rate-limit storage" anyway.
 | `SENTRY_DSN` | — | Sentry DSN. No-op unless set (SDK in `requirements.txt` since B-3, 2026-11-18; still needs a DSN to activate). Reports are PII-scrubbed by `studybuddy/sentry_init.py`. |
 | `SENTRY_ENVIRONMENT` / `SENTRY_RELEASE` / `SENTRY_TRACES_RATE` / `SENTRY_PROFILES_RATE` | — | Optional Sentry tuning; read only when a DSN is set. |
 
+## Email (password reset, B-2)
+
+| Variable | Default | Description |
+|---|---|---|
+| `SMTP_HOST` | `smtp-relay.brevo.com` | SMTP relay host (Brevo free relay by default; any SMTP provider works). |
+| `SMTP_PORT` | `587` | SMTP relay port. Port 465 uses implicit TLS. |
+| `SMTP_USER` | — | Relay username (Brevo: login email). Required to send. |
+| `SMTP_PASSWORD` | — | Relay password (Brevo: SMTP key). Required to send. Set in the Render dashboard, never in the repo. |
+| `MAIL_FROM` | — | Verified sender address. Required to send. |
+| `SMTP_USE_TLS` | `1` | `1` = STARTTLS on ports other than 465. |
+
+Without `SMTP_USER` + `SMTP_PASSWORD` + `MAIL_FROM` the mailer is a no-op and password reset behaves as before (generic message, token stored, no email sent).
+
 ## Rate-limit storage
 
 | Variable | Default | Description |
