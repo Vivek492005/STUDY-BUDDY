@@ -41,6 +41,7 @@ dependencies = [
     "pyyaml",
     "joserfc==1.7.6",
     "pyasn1==0.6.5",
+    "sentry-sdk==2.75.0",
 ]
 
 [project.optional-dependencies]

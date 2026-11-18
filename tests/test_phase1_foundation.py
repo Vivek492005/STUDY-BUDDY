@@ -34,6 +34,7 @@ class TestReproducibleBuilds:
                          ("gunicorn", "26.2.0"), ("pypdf", "6.21.4"),
                          ("oauthlib", "4.0.1"),
                          ("google-auth", "2.62.1"),
+                         ("sentry-sdk", "2.75.0"),
                          ("opentelemetry-api", "1.45.2")]:
             assert re.search(rf"^{pkg}=={re.escape(ver)}\b", text, re.M), \
                 f"{pkg}=={ver} missing from lockfile"
@@ -49,6 +50,7 @@ class TestReproducibleBuilds:
         text = open(os.path.join(REPO, "requirements-dev.txt")).read()
         for pkg, ver in [("oauthlib", "4.0.1"),
                          ("google-auth", "2.62.1"),
+                         ("sentry-sdk", "2.75.0"),
                          ("opentelemetry-api", "1.45.2"),
                          ("setuptools", "84.1.0")]:
             assert re.search(rf"^{pkg}=={re.escape(ver)}\b", text, re.M), \

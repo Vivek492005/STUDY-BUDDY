@@ -2930,6 +2930,11 @@ def create_app(config_overrides=None):
     if app.config.get("TESTING"):
         limiter.enabled = False
 
+    # OPS-06 (B-3): Sentry error tracking. init_sentry is a no-op unless
+    # SENTRY_DSN is set and never raises, so a bad DSN can't break boot.
+    from studybuddy.sentry_init import init_sentry
+    init_sentry(app)
+
     register_routes(app)
     register_error_handlers(app)
     register_security_headers(app)

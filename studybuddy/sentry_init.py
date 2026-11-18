@@ -4,7 +4,7 @@ Disabled by default. Set ``SENTRY_DSN`` in the environment to enable.
 Never enable without the scrubber below — resumes, API keys and auth
 tokens must never leave the server in an error report (PRIV-01).
 
-Wiring (in unified_app.py, inside create_app — REPORTED, not applied):
+Wiring (in unified_app.py, inside create_app — applied in B-3, 2026-11-18):
 
     from studybuddy.sentry_init import init_sentry
     init_sentry(app)   # no-op unless SENTRY_DSN is set
@@ -116,8 +116,9 @@ def scrub_event(event, hint=None):  # noqa: ARG001 - Sentry before_send signatur
 def init_sentry(app=None):
     """Initialize Sentry if SENTRY_DSN is set; otherwise a no-op.
 
-    Returns the sentry_sdk module on success, None when disabled or when
-    sentry_sdk is not installed (dependency is optional by design).
+    Returns the sentry_sdk module on success, None when disabled, when
+    sentry_sdk is not installed, or when init fails (bad DSN, bad sample
+    rates). Never raises: a misconfigured DSN must not break boot.
     """
     dsn = os.environ.get("SENTRY_DSN", "").strip()
     if not dsn:
@@ -131,19 +132,30 @@ def init_sentry(app=None):
                     "error tracking disabled.")
         return None
 
-    sentry_sdk.init(
-        dsn=dsn,
-        before_send=scrub_event,
-        integrations=[FlaskIntegration()],
-        # Never attach request bodies/PII by default.
-        send_default_pii=False,
-        traces_sample_rate=float(os.environ.get("SENTRY_TRACES_RATE", "0.05")),
-        profiles_sample_rate=float(
-            os.environ.get("SENTRY_PROFILES_RATE", "0.0")),
-        environment=os.environ.get("SENTRY_ENVIRONMENT",
-                                   os.environ.get("FLASK_ENV", "production")),
-        release=os.environ.get("SENTRY_RELEASE", "study-buddy@1.0.0"),
-    )
+    try:
+        traces_rate = float(os.environ.get("SENTRY_TRACES_RATE", "0.05"))
+        profiles_rate = float(
+            os.environ.get("SENTRY_PROFILES_RATE", "0.0"))
+        sentry_sdk.init(
+            dsn=dsn,
+            before_send=scrub_event,
+            integrations=[FlaskIntegration()],
+            # No send_default_pii option: in sentry-sdk 2.75 the option is
+            # deprecated (passing it warns) and omitting it maps to False
+            # internally (client.py: send_default_pii defaults to False
+            # when unset), so PII stays off with no warning.
+            traces_sample_rate=traces_rate,
+            profiles_sample_rate=profiles_rate,
+            environment=os.environ.get(
+                "SENTRY_ENVIRONMENT",
+                os.environ.get("FLASK_ENV", "production")),
+            release=os.environ.get("SENTRY_RELEASE", "study-buddy@1.0.0"),
+        )
+    except Exception:
+        # Bad DSN (BadDsn) or bad tuning values must never break boot.
+        log.warning("Sentry init failed; error tracking disabled.",
+                    exc_info=True)
+        return None
     if app is not None and hasattr(app, "logger"):
         app.logger.info("Sentry error tracking enabled (PII scrubbing on).")
     return sentry_sdk

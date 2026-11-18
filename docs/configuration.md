@@ -55,7 +55,7 @@ documented under "Rate-limit storage" anyway.
 
 | Variable | Default | Description |
 |---|---|---|
-| `SENTRY_DSN` | — | Sentry DSN. No-op unless set AND `sentry-sdk` is installed (it is not in `requirements.txt` as of 2026-10-28; see the audit-fixes progress note, BLOCKED B-3, for enablement). Reports are PII-scrubbed by `studybuddy/sentry_init.py`. |
+| `SENTRY_DSN` | — | Sentry DSN. No-op unless set (SDK in `requirements.txt` since B-3, 2026-11-18; still needs a DSN to activate). Reports are PII-scrubbed by `studybuddy/sentry_init.py`. |
 | `SENTRY_ENVIRONMENT` / `SENTRY_RELEASE` / `SENTRY_TRACES_RATE` / `SENTRY_PROFILES_RATE` | — | Optional Sentry tuning; read only when a DSN is set. |
 
 ## Rate-limit storage

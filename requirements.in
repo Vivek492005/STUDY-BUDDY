@@ -38,3 +38,6 @@ psycopg[binary]
 pyyaml
 joserfc==1.7.6  # CVE-2026-119284 in 1.7.5
 pyasn1==0.6.5  # CVEs in 0.6.4
+# B-3 (OPS-06): Sentry error tracking. init_sentry() is a no-op unless
+# SENTRY_DSN is set; the SDK is pinned so the lockfile stays deterministic.
+sentry-sdk==2.75.0

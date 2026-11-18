@@ -279,6 +279,33 @@ def test_init_sentry_disabled_without_dsn(monkeypatch):
     assert init_sentry() is None
 
 
+def test_init_sentry_bad_dsn_is_noop(monkeypatch):
+    """A malformed DSN must not raise — init returns None (B-3)."""
+    monkeypatch.setenv("SENTRY_DSN", "not-a-valid-dsn")
+    assert init_sentry() is None
+
+
+def test_init_sentry_bad_rate_is_noop(monkeypatch):
+    """A non-numeric sample rate must not raise — init returns None (B-3)."""
+    monkeypatch.setenv("SENTRY_DSN",
+                       "https://abc123@o0.ingest.sentry.io/0")
+    monkeypatch.setenv("SENTRY_TRACES_RATE", "banana")
+    assert init_sentry() is None
+
+
+def test_create_app_boots_with_garbage_sentry_dsn(monkeypatch):
+    """Boot must survive a garbage SENTRY_DSN (B-3 wiring proof)."""
+    monkeypatch.setenv("SENTRY_DSN", "not-a-valid-dsn")
+    from unified_app import create_app
+    app = create_app({
+        "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "SECRET_KEY": "test-secret-key",
+        "WTF_CSRF_ENABLED": False,
+    })
+    assert app is not None
+
+
 # ---------------------------------------------------------------------------
 # OPS-09: gunicorn config values
 # ---------------------------------------------------------------------------
