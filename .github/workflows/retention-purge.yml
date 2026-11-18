@@ -1,0 +1,80 @@
+# B-4: weekly data-retention purge (the ₹0 scheduling option).
+#
+# The retention code (studybuddy/retention.py + scripts/purge_stale_data.py)
+# deletes transient analyses older than 90 days from 10 tables; saved
+# artifacts are never purged. The code's own docs prescribe a Render Cron
+# Job, but Render cron jobs have no free instance type ($1/month minimum
+# per cron service, verified Nov 2026) and the project runs on a decided
+# ₹0 budget — so this GitHub Actions workflow is the zero-cost path.
+# ADR 0004 sanctions both mechanisms. (The $1/mo Render Cron Job remains
+# an alternative; see docs in ~/workspace/user/files/
+# study-buddy-b4-retention-cron.md.)
+#
+# Activation: create a repo secret named DATABASE_URL (Settings → Secrets
+# and variables → Actions) holding the Neon direct connection string —
+# the same value the Render services use. The workflow FAILS LOUDLY
+# without it, so a missing secret can never silently no-op.
+#
+# Safety: scheduled runs are DRY-RUN until the PURGE_APPLY flag below is
+# flipped to 'true' (after the first dry-run logs are reviewed). Manual
+# runs from the Actions tab can apply immediately via the `apply` input.
+# First real deletions would occur ~mid-Feb 2027 anyway (the Neon DB was
+# fresh-started 2026-11-17, so nothing is >90 days old until then).
+name: Weekly retention purge (B-4)
+
+on:
+  schedule:
+    # Every Sunday 03:30 UTC (09:00 IST; avoids the Monday data-refresh).
+    - cron: "30 3 * * 0"
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Actually delete (otherwise dry-run only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retention-purge
+  cancel-in-progress: false
+
+# Flip to 'true' after reviewing the first dry-run logs. Until then,
+# scheduled runs only count (never delete).
+env:
+  PURGE_APPLY: "false"
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Purge stale analyses (90 days)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::DATABASE_URL secret is not set. Create it in Settings -> Secrets and variables -> Actions (Neon direct string, same value as the Render services)."
+            exit 1
+          fi
+          APPLY="${{ inputs.apply }}"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$PURGE_APPLY" = "true" ]; then
+            APPLY="true"
+          fi
+          if [ "$APPLY" = "true" ]; then
+            echo "Applying purge (deleting rows older than 90 days)."
+            python scripts/purge_stale_data.py --apply
+          else
+            echo "Dry-run only (nothing deleted). Flip PURGE_APPLY to 'true' to enable scheduled deletes."
+            python scripts/purge_stale_data.py
+          fi
