@@ -457,10 +457,13 @@ class TractionEvent(db.Model):
     """One privacy-safe traction event (live dashboard tracker).
 
     Append-only. Stores event type + timestamp + user id ONLY — no IP,
-    no user agent, no PII. Currently only ``session`` events exist:
-    a successful login, or a logged-in user's first landing-page /
-    dashboard visit of the day (remember-me sessions). Aggregate COUNTs
-    over this table power "active users" and "sessions today" in
+    no user agent, no PII. ``session`` events: a successful login, or a
+    logged-in user's first landing-page / dashboard visit of the day
+    (remember-me sessions). ``anon_session`` events: an anonymous
+    visitor's first visit of the day, keyed by a random session id
+    (uuid4 hex in a first-party cookie, user_id NULL) — never by IP or
+    fingerprint. Aggregate COUNTs over this table power "active users",
+    "sessions today" and the anonymous-visitor counts in
     studybuddy/traction.py.
     """
     __tablename__ = "traction_event"
@@ -468,6 +471,11 @@ class TractionEvent(db.Model):
     event_type = db.Column(db.String(30), nullable=False, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True,
                         index=True)
+    # Anonymous sessions only (NULL on session events): the random id
+    # from the sb_anon cookie, used to dedupe to one event per session
+    # per day. Added 2026-11-19 (migration ef8a36f12059); prod gets it
+    # via _ensure_prod_schema's additive self-heal.
+    session_id = db.Column(db.String(36), nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC),
                            nullable=False, index=True)
 
@@ -476,6 +484,8 @@ class TractionEvent(db.Model):
                  "event_type", "created_at"),
         db.Index("ix_traction_event_user_created",
                  "user_id", "created_at"),
+        db.Index("ix_traction_event_anon_session",
+                 "event_type", "session_id", "created_at"),
     )
 
     user = db.relationship("User", backref=db.backref("traction_events",
@@ -3069,6 +3079,34 @@ def register_security_headers(app):
               "Please log in again.", "info")
         return redirect(url_for("auth.login"))
 
+    @app.before_request
+    def _record_anon_session():
+        # Live Traction Tracker (anonymous visitors): record at most one
+        # anon_session event per anonymous session per IST day.
+        #
+        # Deliberately recorded on the SECOND request, not the first:
+        # the event is only written when the request already carries a
+        # valid sb_anon cookie (minted by _set_security_headers on the
+        # first HTML response). Bots and scanners that never persist
+        # cookies would otherwise mint a new "visitor" on every single
+        # request and inflate the count; real browsers return with the
+        # cookie on the second page view or the /api/traction poll.
+        # Single-page bounces that leave within seconds are not counted
+        # — an accepted undercount in exchange for a bot-resistant
+        # metric. Never raises; never runs for logged-in users (they are
+        # counted via user_id session events, never double-counted).
+        if current_user.is_authenticated:
+            return None
+        if request.endpoint == "static":
+            return None
+        try:
+            session_id = request.cookies.get(traction_mod.ANON_COOKIE_NAME)
+            if traction_mod.is_valid_anon_session_id(session_id):
+                traction_mod.ensure_daily_anon_session_event(session_id)
+        except Exception:
+            log.exception("Anon session event failed (non-fatal)")
+        return None
+
     @app.after_request
     def _set_security_headers(resp):
         resp.headers.setdefault("X-Content-Type-Options", "nosniff")
@@ -3125,6 +3163,27 @@ def register_security_headers(app):
             if cand in set(_avail()):
                 resp.set_cookie("lang", cand, max_age=365 * 86400,
                                 samesite="Lax")
+        # Live Traction Tracker (anonymous visitors): mint the anonymous
+        # session cookie on HTML responses for visitors who don't have
+        # one. The cookie holds ONLY a random id (uuid4 hex) — no
+        # personal data, no fingerprint, no cross-site tracking — and
+        # lets the tracker count distinct daily visitors (see
+        # _record_anon_session and Privacy Policy §6). 90-day lifetime;
+        # clearing cookies removes it. Anonymous users only: logged-in
+        # users are counted by user id, never by cookie. Set AFTER the
+        # lang cookie above so ?lang=hi responses keep lang first in
+        # the Set-Cookie headers.
+        if not current_user.is_authenticated and resp.mimetype == "text/html":
+            _anon = request.cookies.get(traction_mod.ANON_COOKIE_NAME)
+            if not traction_mod.is_valid_anon_session_id(_anon):
+                resp.set_cookie(
+                    traction_mod.ANON_COOKIE_NAME,
+                    uuid.uuid4().hex,
+                    max_age=traction_mod.ANON_COOKIE_MAX_AGE_SECONDS,
+                    httponly=True,
+                    secure=request.is_secure,
+                    samesite="Lax",
+                )
         return resp
 
     # SEC-05: CSP violation reporting endpoint (rate-limited, no payloads

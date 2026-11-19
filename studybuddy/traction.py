@@ -15,6 +15,21 @@ user at EVERY moment. That drives the design:
   "updating…"; on first-load failure it shows honest zeros.
 - Privacy: aggregate counts only. The only new table (traction_event)
   stores event type + timestamp + user id — no IP, no user agent, no PII.
+  Anonymous visitors are counted the same way: a random session id
+  (uuid4 hex, stored in a first-party cookie) backs at most one
+  ``anon_session`` event per session per day — no IP, no fingerprint,
+  no cross-site tracking (see _record_anon_session in unified_app.py
+  and Privacy Policy §6).
+
+Anonymous resume analyses (the no-signup /try demo) are counted too:
+``resumes_today`` / ``resumes_total`` combine registered analyses with
+AnonymousAnalysis rows, and the anonymous split is exposed separately
+(``anonymous_resumes_today`` / ``anonymous_resumes_total``) so the two
+populations are never confused. One honesty caveat: anonymous rows are
+deleted 24h after creation (privacy by design), so
+``anonymous_resumes_total`` is the count of rows currently stored — a
+rolling ~24h figure, not an all-time total — and the anonymous part of
+``resumes_today_delta`` is a lower bound for the same reason.
 
 Module layout mirrors studybuddy/momentum.py: no top-level Flask imports;
 unified_app models are imported lazily inside functions, so there are no
@@ -31,6 +46,7 @@ matches how the stored values are read back on both SQLite and Postgres
 from __future__ import annotations
 
 import logging
+import re
 import threading
 import time
 from datetime import UTC, datetime, timedelta, timezone
@@ -44,6 +60,16 @@ IST = timezone(timedelta(hours=5, minutes=30))
 CACHE_TTL_SECONDS = 60
 
 SESSION_EVENT = "session"
+
+# Anonymous visitor sessions (2026-11-19): one event per anonymous
+# session per IST day, keyed by a random session id — never by IP or
+# fingerprint. user_id stays NULL on these rows, so registered-user
+# counters (which all filter user_id.isnot(None) or event_type ==
+# "session") can never pick them up.
+ANON_SESSION_EVENT = "anon_session"
+ANON_COOKIE_NAME = "sb_anon"
+ANON_COOKIE_MAX_AGE_SECONDS = 90 * 86400  # 90 days, matches retention
+_ANON_SESSION_RE = re.compile(r"^[0-9a-f]{32}$")  # uuid4 hex
 
 # ---------------------------------------------------------------------------
 # Cache (in-memory, per-process; each gunicorn worker keeps its own copy).
@@ -130,6 +156,10 @@ def _zeros_payload(now: datetime | None = None) -> dict:
         "resumes_today": 0,
         "resumes_today_delta": 0,
         "resumes_total": 0,
+        "anonymous_resumes_today": 0,
+        "anonymous_resumes_total": 0,
+        "anonymous_active_today": 0,
+        "anonymous_active_week": 0,
         "generated_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "today_label": "Today · 12:00 AM IST onwards",
         "degraded": True,
@@ -203,6 +233,55 @@ def ensure_daily_session_event(user_id: int, now: datetime | None = None) -> boo
         return False
 
 
+def is_valid_anon_session_id(value) -> bool:
+    """A well-formed anonymous session id: 32 lowercase hex chars
+    (uuid4 hex). Anything else is treated as absent — junk cookie
+    values must never create garbage session rows."""
+    return isinstance(value, str) and bool(_ANON_SESSION_RE.match(value))
+
+
+def ensure_daily_anon_session_event(session_id: str, now: datetime | None = None) -> bool:
+    """Record an anonymous visitor session event, at most one per
+    session per IST day. Returns True if a row was inserted, False
+    otherwise. Never raises — a tracking failure must never break
+    any user flow."""
+    try:
+        from unified_app import TractionEvent, db
+
+        if not is_valid_anon_session_id(session_id):
+            return False
+        bounds = _window_bounds(now)
+        exists = (
+            db.session.query(TractionEvent.id)
+            .filter(
+                TractionEvent.event_type == ANON_SESSION_EVENT,
+                TractionEvent.session_id == session_id,
+                TractionEvent.created_at >= bounds["today_start"],
+            )
+            .first()
+        )
+        if exists is not None:
+            return False
+        event = TractionEvent(
+            event_type=ANON_SESSION_EVENT,
+            user_id=None,
+            session_id=session_id,
+            created_at=(now or datetime.now(UTC)),
+        )
+        db.session.add(event)
+        db.session.commit()
+        return True
+    except Exception:
+        log.exception("ensure_daily_anon_session_event failed (non-fatal)")
+        try:
+            from unified_app import db
+
+            db.session.rollback()
+        except Exception:
+            pass
+        return False
+
+
 # ---------------------------------------------------------------------------
 # Metric computation (may raise — get_traction() guards it).
 # ---------------------------------------------------------------------------
@@ -262,10 +341,27 @@ def _active_users(
     return int(db.session.query(union.subquery()).count() or 0)
 
 
+def _anonymous_active(db, TractionEvent, start, end=None) -> int:
+    """Distinct anonymous sessions with an anon_session event in
+    [start, end). COUNT(DISTINCT session_id) — robust against duplicate
+    rows if two concurrent first visits race the existence check."""
+    from sqlalchemy import distinct, func
+
+    q = db.session.query(func.count(distinct(TractionEvent.session_id))).filter(
+        TractionEvent.event_type == ANON_SESSION_EVENT,
+        TractionEvent.session_id.isnot(None),
+        TractionEvent.created_at >= start,
+    )
+    if end is not None:
+        q = q.filter(TractionEvent.created_at < end)
+    return int(q.scalar() or 0)
+
+
 def compute_traction(now: datetime | None = None) -> dict:
     """Compute all metrics from real DB data. May raise on DB errors —
     callers must use get_traction(), which fails open."""
     from unified_app import (
+        AnonymousAnalysis,
         AptitudeAttempt,
         DSAProgress,
         InterviewSession,
@@ -376,12 +472,39 @@ def compute_traction(now: datetime | None = None) -> dict:
     )
     interviews_total = _count(done_interviews)
 
-    resumes = db.session.query(ResumeAnalysis.id)
-    resumes_today = _count(_in_window(resumes, ResumeAnalysis.created_at, today_start))
-    resumes_yesterday = _count(
-        _in_window(resumes, ResumeAnalysis.created_at, yesterday_start, today_start)
+    # Resumes: registered analyses PLUS anonymous /try analyses.
+    # Anonymous rows expire after 24h and are deleted opportunistically,
+    # so no expiry filter is needed — but anonymous_resumes_total is a
+    # rolling ~24h figure, not all-time (see module docstring), and the
+    # anonymous part of yesterday's count is a lower bound.
+    anon_resumes = db.session.query(AnonymousAnalysis.id)
+    anonymous_resumes_today = _count(
+        _in_window(anon_resumes, AnonymousAnalysis.created_at, today_start)
     )
-    resumes_total = _count(resumes)
+    anonymous_resumes_yesterday = _count(
+        _in_window(
+            anon_resumes, AnonymousAnalysis.created_at, yesterday_start, today_start
+        )
+    )
+    anonymous_resumes_total = _count(anon_resumes)
+
+    resumes = db.session.query(ResumeAnalysis.id)
+    resumes_today = (
+        _count(_in_window(resumes, ResumeAnalysis.created_at, today_start))
+        + anonymous_resumes_today
+    )
+    resumes_yesterday = (
+        _count(_in_window(resumes, ResumeAnalysis.created_at, yesterday_start, today_start))
+        + anonymous_resumes_yesterday
+    )
+    resumes_total = _count(resumes) + anonymous_resumes_total
+
+    # Anonymous visitors: distinct sessions, today and rolling 7 days.
+    # Separate from active_today/active_week by construction — anon
+    # events carry user_id NULL and a different event_type, so they can
+    # never leak into the registered counters.
+    anonymous_active_today = _anonymous_active(db, TractionEvent, today_start)
+    anonymous_active_week = _anonymous_active(db, TractionEvent, week_start)
 
     # 7-day trend, one real COUNT per metric per IST day. Reuses the same
     # windowed queries as the headline metrics — no new tables, no
@@ -437,6 +560,10 @@ def compute_traction(now: datetime | None = None) -> dict:
         "resumes_today": resumes_today,
         "resumes_today_delta": resumes_today - resumes_yesterday,
         "resumes_total": resumes_total,
+        "anonymous_resumes_today": anonymous_resumes_today,
+        "anonymous_resumes_total": anonymous_resumes_total,
+        "anonymous_active_today": anonymous_active_today,
+        "anonymous_active_week": anonymous_active_week,
         "generated_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "today_label": "Today · 12:00 AM IST onwards",
         "degraded": False,

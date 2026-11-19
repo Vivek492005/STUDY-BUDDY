@@ -583,7 +583,7 @@ paths:
       summary: Live traction metrics from real platform data
       x-flask-path: /api/traction
       x-auth: public
-      x-response-keys: [active_today, active_week, active_week_delta, new_users_week, daily, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, generated_at, today_label, degraded]
+      x-response-keys: [active_today, active_week, active_week_delta, new_users_week, daily, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, anonymous_resumes_today, anonymous_resumes_total, anonymous_active_today, anonymous_active_week, generated_at, today_label, degraded]
       responses:
         '200':
           description: Aggregate traction counts (60s server-side cache; never errors — a DB failure returns last-good numbers or honest zeros with degraded=true)
@@ -591,7 +591,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [active_today, active_week, active_week_delta, new_users_week, daily, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, generated_at, today_label, degraded]
+                required: [active_today, active_week, active_week_delta, new_users_week, daily, total_users, sessions_today, quizzes_total, dsa_total, interviews_total, resumes_total, anonymous_resumes_today, anonymous_resumes_total, anonymous_active_today, anonymous_active_week, generated_at, today_label, degraded]
                 properties:
                   active_today: {type: integer}
                   active_today_delta: {type: integer}
@@ -625,6 +625,10 @@ paths:
                   resumes_today: {type: integer}
                   resumes_today_delta: {type: integer}
                   resumes_total: {type: integer}
+                  anonymous_resumes_today: {type: integer, description: "Anonymous /try resume analyses created today (IST). Included in resumes_today; shown separately so the split stays honest."}
+                  anonymous_resumes_total: {type: integer, description: "Anonymous analyses currently stored. Anonymous rows are deleted 24h after creation (privacy by design), so this is a rolling ~24h figure, not an all-time total."}
+                  anonymous_active_today: {type: integer, description: "Distinct anonymous visitor sessions today (random first-party cookie id; no IP, no fingerprint). Never mixed into active_today."}
+                  anonymous_active_week: {type: integer, description: "Distinct anonymous visitor sessions in the rolling last 7 days."}
                   generated_at: {type: string}
                   today_label: {type: string}
                   degraded: {type: boolean}
