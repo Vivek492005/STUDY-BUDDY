@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <script nonce="{{ csp_nonce() }}">document.documentElement.classList.replace('no-js', 'js');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ _("STUDY-BUDDY — Free Resume, Interview & DSA Prep for B.Tech Students") }}</title>
+    <title>{{ _("STUDY-BUDDY — Free Resume, Interview & DSA Prep for Students") }}</title>
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
-    <meta name="description" content="Free resume, interview and DSA prep for B.Tech students: analyse your resume, practise 1,455 interview questions and 495 DSA problems, and plan your career — free, no sign-up needed.">
+    <meta name="description" content="Free resume, interview and DSA prep for students: analyse your resume, practise 1,455 interview questions and 495 DSA problems, and plan your career — free, no sign-up needed.">
     <link rel="canonical" href="{{ request.base_url }}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="STUDY-BUDDY">
-    <meta property="og:title" content="STUDY-BUDDY — Free resume, interview &amp; DSA prep for B.Tech students">
+    <meta property="og:title" content="STUDY-BUDDY — Free resume, interview &amp; DSA prep for students">
     <meta property="og:description" content="Analyse your resume, practise 1,455 interview questions and 495 DSA problems, and plan your career — free, no sign-up needed.">
     <meta property="og:image" content="{{ url_for('static', filename='img/social-preview.png', _external=True) }}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="STUDY-BUDDY — Free resume, interview &amp; DSA prep for B.Tech students">
+    <meta name="twitter:title" content="STUDY-BUDDY — Free resume, interview &amp; DSA prep for students">
     <meta name="twitter:description" content="Analyse your resume, practise 1,455 interview questions and 495 DSA problems, and plan your career — free, no sign-up needed.">
     <meta name="twitter:image" content="{{ url_for('static', filename='img/social-preview.png', _external=True) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bento.css') }}">
@@ -87,7 +87,7 @@
           "applicationCategory": "EducationalApplication",
           "operatingSystem": "Web",
           "url": "{{ request.url_root }}",
-          "description": "Free resume, interview and DSA prep for B.Tech students: resume analysis, mock interviews, aptitude and DSA practice, and research tools.",
+          "description": "Free resume, interview and DSA prep for students: resume analysis, mock interviews, aptitude and DSA practice, and research tools.",
           "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
           "featureList": "Resume analysis, JD matching, mock interviews, DSA practice, aptitude practice, skill quizzes, learning roadmaps, certification guides"
         },
@@ -134,13 +134,12 @@
     <main class="b-wrap" id="main-content" tabindex="-1">
         <!-- HERO — Mode A editorial. No fake scores, no floating badges. -->
         <section class="sb-hero" aria-label="Introduction">
-            <p class="sb-kicker">{{ _("Free & open source — for B.Tech students") }}</p>
+            <p class="sb-kicker">{{ _("Free & open source — for students") }}</p>
             <div class="sb-hero-grid">
-                <h1 class="sb-display" aria-label="{{ _("Free resume, interview and DSA prep for B.Tech students.") }}">
+                <h1 class="sb-display" aria-label="{{ _("Free resume, interview and DSA prep for students.") }}">
                     <span class="sb-mask"><span>{{ _("Free resume,") }}</span></span>
                     <span class="sb-mask"><span style="--sb-delay:90ms">{{ _("Interview,") }}</span></span>
-                    <span class="sb-mask"><span style="--sb-delay:180ms">{{ _("DSA prep") }}</span></span>
-                    <span class="sb-mask"><span style="--sb-delay:270ms"><span class="sb-accent">{{ _("For B.Tech") }}</span></span></span>
+                    <span class="sb-mask"><span style="--sb-delay:180ms"><span class="sb-accent">{{ _("DSA prep") }}</span></span></span>
                 </h1>
                 <div class="sb-hero-visual">
                     <img class="sb-hero-photo" src="{{ url_for('static', filename='img/hero-student-back.jpg') }}" alt="" aria-hidden="true">

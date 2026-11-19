@@ -166,7 +166,7 @@ def test_homepage_og_tags(client):
     r = client.get("/")
     body = r.get_data(as_text=True)
     assert ("STUDY-BUDDY — Free resume, interview &amp; DSA prep "
-            "for B.Tech students") in body
+            "for students") in body
     assert "1,455 interview questions and 495 DSA problems" in body
     assert 'name="twitter:card" content="summary_large_image"' in body
 
@@ -177,14 +177,15 @@ def test_homepage_h1_new_message(client):
     m = re.search(r"<h1[^>]*>(.*?)</h1>", body, re.S)
     assert m, "no H1 on homepage"
     h1 = m.group(0)
-    for line in ["Free resume,", "Interview,", "DSA prep", "For B.Tech"]:
+    for line in ["Free resume,", "Interview,", "DSA prep"]:
         assert line in h1, f"H1 line missing: {line}"
+    assert "For B.Tech" not in h1
     assert ("Free resume, interview and DSA prep "
-            "for B.Tech students.") in h1
+            "for students.") in h1
     assert "Get hired" not in h1
-    # Kinetic system preserved: 4 masked lines with staggered delays.
-    assert h1.count('class="sb-mask"') == 4
-    assert "--sb-delay:90ms" in h1 and "--sb-delay:270ms" in h1
+    # Kinetic system preserved: 3 masked lines with staggered delays.
+    assert h1.count('class="sb-mask"') == 3
+    assert "--sb-delay:90ms" in h1 and "--sb-delay:180ms" in h1
 
 
 def test_try_is_primary_hero_cta(client):

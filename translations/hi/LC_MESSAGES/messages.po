@@ -115,14 +115,11 @@ msgstr "मुख्य सामग्री पर जाएँ"
 msgid "Free & open source — for students"
 msgstr "छात्रों के लिए — मुफ़्त और ओपन सोर्स"
 
-msgid "STUDY-BUDDY — Free Resume, Interview & DSA Prep for B.Tech Students"
-msgstr "STUDY-BUDDY — B.Tech छात्रों के लिए मुफ़्त Resume, Interview और DSA तैयारी"
+msgid "STUDY-BUDDY — Free Resume, Interview & DSA Prep for Students"
+msgstr "STUDY-BUDDY — छात्रों के लिए मुफ़्त Resume, Interview और DSA तैयारी"
 
-msgid "Free & open source — for B.Tech students"
-msgstr "B.Tech छात्रों के लिए — मुफ़्त और ओपन सोर्स"
-
-msgid "Free resume, interview and DSA prep for B.Tech students."
-msgstr "B.Tech छात्रों के लिए मुफ़्त resume, interview और DSA तैयारी।"
+msgid "Free resume, interview and DSA prep for students."
+msgstr "छात्रों के लिए मुफ़्त resume, interview और DSA तैयारी।"
 
 msgid "Free resume,"
 msgstr "मुफ़्त resume,"
@@ -132,9 +129,6 @@ msgstr "Interview,"
 
 msgid "DSA prep"
 msgstr "DSA तैयारी"
-
-msgid "For B.Tech"
-msgstr "B.Tech के लिए"
 
 msgid "Learn Practice Build Get hired."
 msgstr "सीखें, अभ्यास करें, बनाएँ, नौकरी पाएँ।"
