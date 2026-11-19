@@ -1,5 +1,7 @@
 """WS2-ENG tests: ENG-07 JD matcher v2, ENG-10 outcomes, ENG-11 jobs, ENG-12 interview v2."""
 
+from datetime import date, timedelta
+
 import pytest
 
 from studybuddy import eng_jd_v2, eng_outcomes, eng_jobs, eng_interview_v2
@@ -221,20 +223,26 @@ def test_disclaimer_is_correlational_not_causal():
 # ---------------------------------------------------------------------------
 
 def _cards():
+    # Dates are relative to today: a hardcoded "fresh" date silently turns
+    # expired once MAX_CARD_AGE_DAYS passes (broke 2026-11-19, 31 days after
+    # the fixture's 2026-10-19). Relative dates keep the fixture true forever.
+    fresh = (date.today() - timedelta(days=1)).isoformat()
+    stale = (date.today()
+             - timedelta(days=eng_jobs.MAX_CARD_AGE_DAYS + 10)).isoformat()
     return [
         eng_jobs.make_job_card(
             title="Backend Intern", company="Acme", location="Bengaluru",
             level="intern", source="Adzuna", source_url="https://example.com/1",
-            last_verified="2026-10-19",
+            last_verified=fresh,
             jd_text="Requirements:\n- Python required\n- SQL required\n\nNice to have:\n- Docker preferred"),
         eng_jobs.make_job_card(
             title="Backend Intern", company="Acme", location="Bengaluru",
             level="intern", source="Adzuna", source_url="https://example.com/1",
-            last_verified="2026-10-19", jd_text="Requirements:\n- Python required"),
+            last_verified=fresh, jd_text="Requirements:\n- Python required"),
         eng_jobs.make_job_card(
             title="Frontend Fresher", company="Beta", location="Remote",
             level="fresher", source="RemoteOK", source_url="https://example.com/2",
-            last_verified="2026-01-01",
+            last_verified=stale,
             jd_text="Requirements:\n- React required"),
     ]
 
