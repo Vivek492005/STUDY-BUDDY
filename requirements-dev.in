@@ -3,7 +3,7 @@
 -r requirements.in
 pytest==9.1.1
 pytest-xdist==3.8.0
-ruff==0.17.1
+ruff==0.17.5
 bandit==1.9.4
 pip-audit==2.10.1
 # GHSA-xmj3-9gf7-h52w in setuptools 84.0.0 (Windows wheel path escape):
