@@ -1,43 +1,11 @@
 {
   "meta": {
-    "last_refresh": "2026-11-16",
-    "last_updated": "2026-11-16",
+    "last_refresh": "2026-11-23",
+    "last_updated": "2026-11-23",
     "notice": "Curated starter set for student guidance. Deadlines are indicative — always verify dates and eligibility on the official website before applying.",
     "schema_doc": "See opportunities.py OPPS_SCHEMA for the documented JSON schema used to extend this dataset."
   },
   "opportunities": [
-    {
-      "curated": true,
-      "deadline": "2026-11-18",
-      "eligibility": "Graduates aged 20–30; probationary officer posts in public-sector banks.",
-      "id": "ibps-po-2027",
-      "india_relevance": "unknown",
-      "link": "https://www.ibps.in",
-      "organization": "IBPS",
-      "source": "curated",
-      "status": "open",
-      "tags": [
-        "exam"
-      ],
-      "title": "IBPS PO 2027",
-      "type": "exam"
-    },
-    {
-      "curated": true,
-      "deadline": "2026-11-20",
-      "eligibility": "Pre-final-year undergraduates; stipend-supported research with IITR faculty.",
-      "id": "iitr-spark-2027",
-      "india_relevance": "unknown",
-      "link": "https://www.iitr.ac.in",
-      "organization": "IIT Roorkee",
-      "source": "curated",
-      "status": "open",
-      "tags": [
-        "internship"
-      ],
-      "title": "SPARK Summer Research Internship 2027",
-      "type": "internship"
-    },
     {
       "curated": true,
       "deadline": "2026-11-25",
@@ -166,22 +134,6 @@
       ],
       "title": "NEET UG 2027",
       "type": "exam"
-    },
-    {
-      "curated": false,
-      "deadline": "2026-11-18",
-      "eligibility": "Online; Prize pool $1,000,000; Open to student builders; see official page for eligibility and team rules.",
-      "id": "devpost-31024-meta-vr-start-developer-competition-2026",
-      "india_relevance": "unknown",
-      "link": "https://start-developer-competition-26.devpost.com/",
-      "organization": "Meta",
-      "source": "devpost",
-      "status": "open",
-      "tags": [
-        "hackathon"
-      ],
-      "title": "Meta VR Start Developer Competition 2026",
-      "type": "hackathon"
     },
     {
       "curated": false,
@@ -1001,22 +953,6 @@
     },
     {
       "curated": true,
-      "deadline": "2026-11-16",
-      "eligibility": "Students graduating in 2027 (B.E./B.Tech, M.E./M.Tech, BCA/MCA, B.Sc./M.Sc. and related courses) with a valid TCS NextStep CT/DT reference ID; individual participation.",
-      "id": "tcs-hackquest-11",
-      "india_relevance": "unknown",
-      "link": "https://hackquest.tcsapps.com/",
-      "organization": "TCS",
-      "source": "curated",
-      "status": "open",
-      "tags": [
-        "hackathon"
-      ],
-      "title": "TCS HackQuest Season 11",
-      "type": "hackathon"
-    },
-    {
-      "curated": true,
       "deadline": "2026-12-06",
       "eligibility": "Graduation degree holders or final-year students applying for MBA/PGDM admissions; scores accepted by XLRI, XIMB, MICA, IMT and others.",
       "id": "xat-2027",
@@ -1061,22 +997,6 @@
         "exam"
       ],
       "title": "NID DAT 2027",
-      "type": "exam"
-    },
-    {
-      "curated": true,
-      "deadline": "2026-11-16",
-      "eligibility": "Students applying for B.Des., M.Des., MFM, MFTech or BFTech programmes at NIFT campuses.",
-      "id": "nift-2027",
-      "india_relevance": "unknown",
-      "link": "https://www.nift.ac.in",
-      "organization": "National Institute of Fashion Technology",
-      "source": "curated",
-      "status": "open",
-      "tags": [
-        "exam"
-      ],
-      "title": "NIFT 2027",
       "type": "exam"
     },
     {
