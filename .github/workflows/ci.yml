@@ -32,7 +32,7 @@ jobs:
         run: python scripts/validate_data.py --strict --report validate-data-report.json
       - name: Upload data-validation report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: validate-data-report
           path: validate-data-report.json
