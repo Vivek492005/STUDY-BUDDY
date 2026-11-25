@@ -70,7 +70,7 @@ HYBRID_TFIDF_WEIGHT = 0.5
 #: ~40 common English stopwords stripped before scoring.
 _STOPWORDS = frozenset(
     """
-    a an the and or but if then else when at by for with about into through
+    a an the and or but how if then else when at by for with about into through
     during before after above below to from up down in out on off over under
     again further once here there all any both each few more most other some
     such no nor not only own same so than too very can will just should now
